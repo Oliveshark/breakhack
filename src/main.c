@@ -94,11 +94,10 @@ void run()
 {
 	SDL_Event event;
 	bool quit = false;
-	int ticks;
 
 	while (!quit)
 	{
-		ticks = SDL_GetTicks();
+		int ticks = SDL_GetTicks();
 
 		while (SDL_PollEvent(&event) != 0) {
 			if (event.type == SDL_QUIT)
