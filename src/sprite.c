@@ -27,16 +27,17 @@ void sprite_load_texture(Sprite *sprite, char *path, SDL_Renderer *renderer)
 	sprite->texture = texture_create(path, renderer);
 }
 
-void sprite_render(Sprite *s, SDL_Renderer *renderer)
+void sprite_render(Sprite *s, Camera *cam)
 {
+	Position cameraPos = camera_to_camera_position(cam, &s->pos);
 	SDL_Rect draw_box = (SDL_Rect) {
-		s->pos.x,
-		s->pos.y,
+		cameraPos.x,
+		cameraPos.y,
 		s->texture->dim.width,
 		s->texture->dim.height
 	};
 
-	SDL_RenderCopy(renderer,
+	SDL_RenderCopy(cam->renderer,
 		       s->texture->texture,
 		       &s->texture->clip,
 		       &draw_box);

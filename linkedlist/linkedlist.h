@@ -9,11 +9,11 @@ typedef struct Node LinkedList;
 
 LinkedList* linkedlist_create();
 
-void linkedlist_push(LinkedList **head, void *value, size_t size);
+void linkedlist_push(LinkedList **head, void *value, unsigned int size);
 
 void* linkedlist_pop(LinkedList **head);
 
-void linkedlist_append(LinkedList **head, void *value, size_t size);
+void linkedlist_append(LinkedList **head, void *value, unsigned int size);
 
 void* linkedlist_poplast(LinkedList **head);
 

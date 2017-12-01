@@ -7,6 +7,8 @@
 #include "player.h"
 #include "screenresolution.h"
 #include "dimension.h"
+#include "camera.h"
+#include "map.h"
 
 #define SCREEN_WIDTH	1024
 #define SCREEN_HEIGHT	768
@@ -15,6 +17,9 @@ static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
 static Sprite		*gPlayer	= NULL;
 static LinkedList	*gSpriteList	= NULL;
+static Map		*gMap		= NULL;
+
+static Camera		gCamera;
 
 static
 bool initSDL()
@@ -71,6 +76,7 @@ static
 bool initGame()
 {
 	gSpriteList = linkedlist_create();
+	gMap = map_create(gRenderer);
 	return gSpriteList == NULL;
 }
 
@@ -80,6 +86,10 @@ bool init()
 	bool result = true;
 	result = result && initSDL();
 	result = result && initGame();
+	if (result) {
+		gCamera.pos = (Position) { 0, 0 };
+		gCamera.renderer = gRenderer;
+	}
 	return result;
 }
 
@@ -108,7 +118,8 @@ void run()
 
 		SDL_RenderClear(gRenderer);
 
-		sprite_render(gPlayer, gRenderer);
+		map_render(gMap, &gCamera);
+		sprite_render(gPlayer, &gCamera);
 
 		SDL_RenderPresent(gRenderer);
 
@@ -122,6 +133,7 @@ static
 void close()
 {
 	sprite_destroy(gPlayer);
+	map_destroy(gMap);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
 	IMG_Quit();

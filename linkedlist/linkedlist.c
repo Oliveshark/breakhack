@@ -3,7 +3,7 @@
 #include "linkedlist.h"
 
 static
-void *linkedlist_malloc(size_t size)
+void *linkedlist_malloc(unsigned int size)
 {
 	void *ptr;
 	ptr = malloc(size);
@@ -28,14 +28,14 @@ LinkedList* linkedlist_create()
 	return NULL;
 }
 
-static void copy_data(void *dest, void *src, size_t size)
+static void copy_data(void *dest, void *src, unsigned int size)
 {
 	int i;
 	for (i = 0; i < size; ++i)
 		*(char*)(dest + i) = *(char*)(src + i);
 }
 
-void linkedlist_push(LinkedList **head, void *value, size_t size)
+void linkedlist_push(LinkedList **head, void *value, unsigned int size)
 {
 
 	LinkedList *node = linkedlist_node_create();
@@ -59,7 +59,7 @@ void* linkedlist_pop(LinkedList **head)
 	return data;
 }
 
-void linkedlist_append(LinkedList **head, void *value, size_t size)
+void linkedlist_append(LinkedList **head, void *value, unsigned int size)
 {
 	if (*head == NULL) {
 		*head = linkedlist_node_create();

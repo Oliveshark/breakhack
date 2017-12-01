@@ -5,6 +5,7 @@
 
 #include "texture.h"
 #include "position.h"
+#include "camera.h"
 
 typedef struct Sprite_t{
 	Texture *texture;
@@ -16,7 +17,7 @@ Sprite* sprite_create();
 
 void sprite_load_texture(Sprite *, char *path, SDL_Renderer *);
 
-void sprite_render(Sprite*, SDL_Renderer*);
+void sprite_render(Sprite*, Camera*);
 
 void sprite_destroy(Sprite *);
 
