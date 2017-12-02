@@ -27,6 +27,7 @@ target_link_libraries(breakhack
 	-lSDL2_mixer
 	-lSDL2_ttf
 	-lX11
+	-lXrandr
 	)
 
 # TESTS:

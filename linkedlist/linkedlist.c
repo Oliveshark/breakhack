@@ -93,6 +93,16 @@ void* linkedlist_poplast(LinkedList **head)
 	return linkedlist_poplast(&nextNode);
 }
 
+void* linkedlist_get(LinkedList **head, unsigned int index)
+{
+	if (*head == NULL)
+		return NULL;
+	if (index == 0)
+		return (*head)->data;
+
+	return linkedlist_get(&(*head)->next, --index);
+}
+
 void linkedlist_destroy(LinkedList **head)
 {
 	if (*head == NULL) {

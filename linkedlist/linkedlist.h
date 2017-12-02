@@ -17,6 +17,8 @@ void linkedlist_append(LinkedList **head, void *value, unsigned int size);
 
 void* linkedlist_poplast(LinkedList **head);
 
+void* linkedlist_get(LinkedList **head, unsigned int index);
+
 void linkedlist_destroy(LinkedList **head);
 
 unsigned int linkedlist_size(LinkedList *head);

@@ -114,6 +114,34 @@ START_TEST(test_linkedlist_pop)
 }
 END_TEST
 
+START_TEST(test_linkedlist_get_index)
+{
+	int value1 = 1;
+	int value2 = 2;
+
+	int *get;
+
+	LinkedList *list = linkedlist_create();
+
+	ck_assert(linkedlist_size(list) == 0);
+
+	linkedlist_push(&list, &value2, sizeof(int));
+	linkedlist_push(&list, &value1, sizeof(int));
+
+	ck_assert(linkedlist_size(list) == 2);
+
+	get = linkedlist_get(&list, 1);
+
+	ck_assert(linkedlist_size(list) == 2);
+
+	ck_assert(*get == value2);
+
+	linkedlist_destroy(&list);
+
+	ck_assert(list == NULL);
+}
+END_TEST
+
 Suite* t_suite_create()
 {
 	Suite *s;
@@ -127,6 +155,7 @@ Suite* t_suite_create()
 	tcase_add_test(tc_core, test_linkedlist_pop);
 	tcase_add_test(tc_core, test_linkedlist_append);
 	tcase_add_test(tc_core, test_linkedlist_poplast);
+	tcase_add_test(tc_core, test_linkedlist_get_index);
 	suite_add_tcase(s, tc_core);
 
 	return s;
