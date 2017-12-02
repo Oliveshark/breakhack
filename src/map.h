@@ -15,7 +15,7 @@
 
 typedef struct {
 	unsigned int textureIndex;
-	Position clipPosition;
+	SDL_Rect clip;
 } MapTile;
 
 typedef struct {
@@ -29,7 +29,11 @@ typedef struct {
 	int level;
 } Map;
 
-Map* map_create(SDL_Renderer *renderer);
+Map* map_create();
+
+int map_add_texture(Map*, const char *path, SDL_Renderer*);
+
+void map_add_tile(Map *map, Position *room_pos, Position *tile_pos, MapTile*);
 
 void map_render(Map*, Camera*);
 

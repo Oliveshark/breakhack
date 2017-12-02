@@ -10,7 +10,7 @@ typedef struct {
 	SDL_Rect clip;
 } Texture;
 
-Texture* texture_create(char *path, SDL_Renderer *renderer);
+Texture* texture_create(const char *path, SDL_Renderer *renderer);
 
 void texture_destroy(Texture *texture);
 

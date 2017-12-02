@@ -2,7 +2,7 @@
 #include "texture.h"
 #include "util.h"
 
-Texture* texture_create(char *path, SDL_Renderer *renderer)
+Texture* texture_create(const char *path, SDL_Renderer *renderer)
 {
 	Texture *newTexture = NULL;
 	SDL_Surface *surface = IMG_Load(path);

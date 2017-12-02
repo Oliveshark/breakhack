@@ -1,4 +1,5 @@
 #include "map.h"
+#include "map_lua.h"
 #include "util.h"
 
 static
@@ -16,7 +17,7 @@ Room* create_room()
 	return room;
 }
 
-Map* map_create(SDL_Renderer *renderer)
+Map* map_create()
 {
 	int i, j;
 
@@ -34,11 +35,45 @@ Map* map_create(SDL_Renderer *renderer)
 	return map;
 }
 
+void map_add_tile(Map *map, Position *room_pos, Position *tile_pos, MapTile *tile)
+{
+	MapTile **oldTile = &map->rooms[room_pos->x][room_pos->y]->tiles[tile_pos->x][tile_pos->y];
+	if (*oldTile != NULL) {
+		free(*oldTile);
+		*oldTile = NULL;
+	}
+	*oldTile = tile;
+}
+
+int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
+{
+	Texture *t = texture_create(path, renderer);
+	linkedlist_append(&map->textures, t, sizeof(*t));
+	return linkedlist_size(map->textures) - 1;
+}
+
 static
 void map_tile_render(Map *map, MapTile *tile, Position *pos, Camera *cam)
 {
 	if (tile == NULL)
 		return;
+
+	Position camPos = camera_to_camera_position(cam, pos);
+	SDL_Rect draw_box = (SDL_Rect) {
+		camPos.x,
+		camPos.y,
+		64,
+		64
+	};
+
+	Texture *texture = linkedlist_get(&map->textures, tile->textureIndex);
+
+	SDL_RenderCopy(cam->renderer,
+		       texture->texture,
+		       &tile->clip,
+		       &draw_box
+		      );
+
 }
 
 void map_render(Map *map, Camera *cam)
@@ -54,7 +89,11 @@ void map_render(Map *map, Camera *cam)
 	room = map->rooms[roomPos.x][roomPos.y];
 	for (i=0; i < MAP_ROOM_HEIGHT; ++i) {
 		for (j=0; j < MAP_ROOM_WIDTH; ++j) {
-			map_tile_render(map, room->tiles[i][j], &roomCords, cam);
+			Position tilePos = (Position) {
+				roomCords.x + j*64,
+				roomCords.y + i*64
+			};
+			map_tile_render(map, room->tiles[i][j], &tilePos, cam);
 		}
 	}
 }

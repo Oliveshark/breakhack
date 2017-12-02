@@ -17,6 +17,7 @@ add_executable(breakhack
 	src/util
 	src/player
 	src/map
+	src/map_lua
 	src/camera
 	)
 
@@ -28,6 +29,7 @@ target_link_libraries(breakhack
 	-lSDL2_ttf
 	-lX11
 	-lXrandr
+	-llua
 	)
 
 # TESTS:

@@ -9,6 +9,7 @@
 #include "dimension.h"
 #include "camera.h"
 #include "map.h"
+#include "map_lua.h"
 
 #define SCREEN_WIDTH	1024
 #define SCREEN_HEIGHT	768
@@ -25,7 +26,8 @@ static
 bool initSDL()
 {
 	int imgFlags = IMG_INIT_PNG;
-	Dimension dim = getScreenDimensions();
+	//Dimension dim = getScreenDimensions();
+	Dimension dim = (Dimension) { 1920, 1080 };
 	double scale = 1.0;
 
 	if (dim.height > 1080) {
@@ -76,7 +78,7 @@ static
 bool initGame()
 {
 	gSpriteList = linkedlist_create();
-	gMap = map_create(gRenderer);
+	gMap = map_lua_generator_run(gRenderer);
 	return gSpriteList == NULL;
 }
 
