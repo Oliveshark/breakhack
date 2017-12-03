@@ -12,6 +12,7 @@
 #define MAP_ROOM_WIDTH	16
 #define MAP_V_ROOM_COUNT 10
 #define MAP_H_ROOM_COUNT 10
+#define TILE_DIMENSION 64
 
 typedef struct {
 	unsigned int textureIndex;
@@ -36,6 +37,8 @@ int map_add_texture(Map*, const char *path, SDL_Renderer*);
 void map_add_tile(Map *map, Position *room_pos, Position *tile_pos, MapTile*);
 
 void map_render(Map*, Camera*);
+
+void map_set_current_room(Map*, Position*);
 
 void map_destroy(Map*);
 

@@ -26,8 +26,8 @@ static
 bool initSDL()
 {
 	int imgFlags = IMG_INIT_PNG;
-	//Dimension dim = getScreenDimensions();
-	Dimension dim = (Dimension) { 1920, 1080 };
+	Dimension dim = getScreenDimensions();
+	//Dimension dim = (Dimension) { 1920, 1080 };
 	double scale = 1.0;
 
 	if (dim.height > 1080) {
@@ -102,21 +102,33 @@ void loadMedia()
 }
 
 static
+bool handle_events()
+{
+	static SDL_Event event;
+	bool quit = false;
+
+	while (SDL_PollEvent(&event) != 0) {
+		if (event.type == SDL_QUIT) {
+			quit = true;
+		} else {
+			gPlayer->handle_event(gPlayer, &event);
+			camera_follow_position(&gCamera, &gPlayer->pos);
+			map_set_current_room(gMap, &gPlayer->pos);
+		}
+	}
+	return quit;
+}
+
+static
 void run()
 {
-	SDL_Event event;
 	bool quit = false;
 
 	while (!quit)
 	{
 		int ticks = SDL_GetTicks();
 
-		while (SDL_PollEvent(&event) != 0) {
-			if (event.type == SDL_QUIT)
-				quit = true;
-			else
-				gPlayer->handle_event(gPlayer, &event);
-		}
+		quit = handle_events();
 
 		SDL_RenderClear(gRenderer);
 

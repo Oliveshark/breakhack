@@ -62,8 +62,8 @@ void map_tile_render(Map *map, MapTile *tile, Position *pos, Camera *cam)
 	SDL_Rect draw_box = (SDL_Rect) {
 		camPos.x,
 		camPos.y,
-		64,
-		64
+		TILE_DIMENSION,
+		TILE_DIMENSION
 	};
 
 	Texture *texture = linkedlist_get(&map->textures, tile->textureIndex);
@@ -82,19 +82,41 @@ void map_render(Map *map, Camera *cam)
 	Room *room;
 	Position roomPos = { map->currentRoom.x, map->currentRoom.y };
 	Position roomCords = {
-		roomPos.x * MAP_ROOM_WIDTH * 64,
-		roomPos.y * MAP_ROOM_HEIGHT * 64
+		roomPos.x * MAP_ROOM_WIDTH * TILE_DIMENSION,
+		roomPos.y * MAP_ROOM_HEIGHT * TILE_DIMENSION
 	};
 
 	room = map->rooms[roomPos.x][roomPos.y];
 	for (i=0; i < MAP_ROOM_HEIGHT; ++i) {
 		for (j=0; j < MAP_ROOM_WIDTH; ++j) {
 			Position tilePos = (Position) {
-				roomCords.x + j*64,
-				roomCords.y + i*64
+				roomCords.x + j*TILE_DIMENSION,
+				roomCords.y + i*TILE_DIMENSION
 			};
 			map_tile_render(map, room->tiles[i][j], &tilePos, cam);
 		}
+	}
+}
+
+void map_set_current_room(Map *map, Position *pos)
+{
+	unsigned int room_width, room_height;
+
+	room_width = MAP_ROOM_WIDTH * TILE_DIMENSION;
+	room_height = MAP_ROOM_HEIGHT * TILE_DIMENSION;
+
+	if (pos->x <= 0) {
+		map->currentRoom.x = 0;
+	} else {
+		unsigned int room_cord_x = pos->x - (pos->x % room_width);
+		map->currentRoom.x = room_cord_x / room_width;
+	}
+
+	if (pos->y <= 0) {
+		map->currentRoom.y = 0;
+	} else {
+		unsigned int room_cord_y = pos->y - (pos->y % room_height);
+		map->currentRoom.y = room_cord_y / room_height;
 	}
 }
 
