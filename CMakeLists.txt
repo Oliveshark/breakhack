@@ -9,7 +9,7 @@ include(FindLua)
 add_subdirectory(linkedlist)
 
 include_directories(linkedlist
-	${LUA_INCLUDE_DIRS}
+	${LUA_INCLUDE_DIR}
 	)
 
 add_definitions("-Wall")
