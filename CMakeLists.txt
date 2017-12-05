@@ -4,8 +4,14 @@ SET(CMAKE_COLOR_MAKEFILE ON)
 
 project(breakhack C)
 
+include(FindLua)
+
 add_subdirectory(linkedlist)
-include_directories(linkedlist)
+
+include_directories(linkedlist
+	${LUA_INCLUDE_DIRS}
+	)
+
 add_definitions("-Wall")
 
 # PROGRAMS:
@@ -24,13 +30,13 @@ add_executable(breakhack
 
 target_link_libraries(breakhack
 	linkedlist
+	${LUA_LIBRARIES}
 	-lSDL2
 	-lSDL2_image
 	-lSDL2_mixer
 	-lSDL2_ttf
 	-lX11
 	-lXrandr
-	-llua
 	)
 
 # TESTS:
