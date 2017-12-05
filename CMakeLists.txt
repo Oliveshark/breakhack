@@ -26,6 +26,8 @@ add_executable(breakhack
 	src/map_lua
 	src/camera
 	src/timer
+	src/roommatrix
+	src/position
 	)
 
 target_link_libraries(breakhack

@@ -6,4 +6,6 @@ typedef struct {
 	int y;
 } Position;
 
+Position position_to_matrix_coords(Position*);
+
 #endif // POSITION_H_

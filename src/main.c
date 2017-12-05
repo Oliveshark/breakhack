@@ -11,6 +11,7 @@
 #include "map.h"
 #include "map_lua.h"
 #include "timer.h"
+#include "roommatrix.h"
 
 #define SCREEN_WIDTH	1024
 #define SCREEN_HEIGHT	768
@@ -20,6 +21,7 @@ static SDL_Renderer	*gRenderer	= NULL;
 static Sprite		*gPlayer	= NULL;
 static LinkedList	*gSpriteList	= NULL;
 static Map		*gMap		= NULL;
+static RoomMatrix	*gRoomMatrix	= NULL;
 
 static Camera		gCamera;
 
@@ -92,6 +94,7 @@ bool init()
 	if (result) {
 		gCamera.pos = (Position) { 0, 0 };
 		gCamera.renderer = gRenderer;
+		gRoomMatrix = roommatrix_create();
 	}
 	return result;
 }
@@ -112,7 +115,7 @@ bool handle_events()
 		if (event.type == SDL_QUIT) {
 			quit = true;
 		} else {
-			gPlayer->handle_event(gPlayer, &event);
+			gPlayer->handle_event(gPlayer, gRoomMatrix, &event);
 			camera_follow_position(&gCamera, &gPlayer->pos);
 			map_set_current_room(gMap, &gPlayer->pos);
 		}
@@ -131,6 +134,7 @@ void run()
 		timer_start(fpsTimer);
 
 		quit = handle_events();
+		roommatrix_populate_from_map(gRoomMatrix, gMap);
 
 		SDL_RenderClear(gRenderer);
 

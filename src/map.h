@@ -8,24 +8,19 @@
 #include "sprite.h"
 #include "camera.h"
 #include "position.h"
+#include "defines.h"
 
-#define MAP_ROOM_HEIGHT 12
-#define MAP_ROOM_WIDTH	16
-#define MAP_V_ROOM_COUNT 10
-#define MAP_H_ROOM_COUNT 10
-#define TILE_DIMENSION 64
-
-typedef struct {
+typedef struct MapTile_t {
 	unsigned int textureIndex;
 	SDL_Rect clip;
 	bool collider;
 } MapTile;
 
-typedef struct {
+typedef struct Room_t {
 	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 } Room;
 
-typedef struct {
+typedef struct Map_t {
 	Room* rooms[MAP_H_ROOM_COUNT][MAP_V_ROOM_COUNT];
 	LinkedList *textures;
 	Position currentRoom;

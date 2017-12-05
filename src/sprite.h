@@ -6,11 +6,12 @@
 #include "texture.h"
 #include "position.h"
 #include "camera.h"
+#include "roommatrix.h"
 
-typedef struct Sprite_t{
+typedef struct Sprite_t {
 	Texture *texture;
 	Position pos;
-	void (*handle_event)(struct Sprite_t *sprite, SDL_Event*);
+	void (*handle_event)(struct Sprite_t*, RoomMatrix*, SDL_Event*);
 } Sprite;
 
 Sprite* sprite_create();

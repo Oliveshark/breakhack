@@ -2,30 +2,67 @@
 #include "player.h"
 
 static
-void handle_player_input(Sprite *sprite, SDL_Event *event)
+bool has_collided(Sprite *sprite, RoomMatrix *matrix)
 {
-	unsigned int width = sprite->texture->dim.width;
-	unsigned int height = sprite->texture->dim.height;
+	Position pos = position_to_matrix_coords(&sprite->pos);
+	return matrix->spaces[pos.x][pos.y].occupied;
+}
+
+static
+void move_left(Sprite *sprite, RoomMatrix *matrix)
+{
+	sprite->texture->clip.y = 16;
+	sprite->pos.x -= TILE_DIMENSION;
+	if (has_collided(sprite, matrix))
+		sprite->pos.x += TILE_DIMENSION;
+}
+
+static
+void move_right(Sprite *sprite, RoomMatrix *matrix)
+{
+	sprite->texture->clip.y = 32;
+	sprite->pos.x += TILE_DIMENSION;
+	if (has_collided(sprite, matrix))
+		sprite->pos.x -= TILE_DIMENSION;
+}
+
+static
+void move_up(Sprite *sprite, RoomMatrix *matrix)
+{
+	sprite->texture->clip.y = 48;
+	sprite->pos.y -= TILE_DIMENSION;
+	if (has_collided(sprite, matrix))
+		sprite->pos.y += TILE_DIMENSION;
+}
+
+static
+void move_down(Sprite *sprite, RoomMatrix *matrix)
+{
+	sprite->texture->clip.y = 0;
+	sprite->pos.y += TILE_DIMENSION;
+	if (has_collided(sprite, matrix))
+		sprite->pos.y -= TILE_DIMENSION;
+}
+
+static
+void handle_player_input(Sprite *sprite, RoomMatrix *matrix, SDL_Event *event)
+{
 	static unsigned int step = 1;
 
 	if (event->type == SDL_KEYDOWN) {
 		switch (event->key.keysym.sym) {
-		case SDLK_LEFT:
-			sprite->texture->clip.y = 16;
-			sprite->pos.x -= width;
-			break;
-		case SDLK_RIGHT:
-			sprite->texture->clip.y = 32;
-			sprite->pos.x += width;
-			break;
-		case SDLK_UP:
-			sprite->texture->clip.y = 48;
-			sprite->pos.y -= height;
-			break;
-		case SDLK_DOWN:
-			sprite->texture->clip.y = 0;
-			sprite->pos.y += height;
-			break;
+			case SDLK_LEFT:
+				move_left(sprite, matrix);
+				break;
+			case SDLK_RIGHT:
+				move_right(sprite, matrix);
+				break;
+			case SDLK_UP:
+				move_up(sprite, matrix);
+				break;
+			case SDLK_DOWN:
+				move_down(sprite, matrix);
+				break;
 		}
 		sprite->texture->clip.x = 16*step;
 		if (step == 3)
