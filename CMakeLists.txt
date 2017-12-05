@@ -19,6 +19,7 @@ add_executable(breakhack
 	src/map
 	src/map_lua
 	src/camera
+	src/timer
 	)
 
 target_link_libraries(breakhack

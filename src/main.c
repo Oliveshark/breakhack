@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "map.h"
 #include "map_lua.h"
+#include "timer.h"
 
 #define SCREEN_WIDTH	1024
 #define SCREEN_HEIGHT	768
@@ -123,10 +124,11 @@ static
 void run()
 {
 	bool quit = false;
+	Timer* fpsTimer = timer_create();
 
 	while (!quit)
 	{
-		int ticks = SDL_GetTicks();
+		timer_start(fpsTimer);
 
 		quit = handle_events();
 
@@ -137,10 +139,13 @@ void run()
 
 		SDL_RenderPresent(gRenderer);
 
-		ticks = SDL_GetTicks() - ticks;
+		int ticks = timer_get_ticks(fpsTimer);
 		if (ticks < 1000/60)
 			SDL_Delay((1000/60) - ticks);
+		timer_stop(fpsTimer);
 	}
+
+	timer_destroy(fpsTimer);
 }
 
 static
