@@ -1,0 +1,10 @@
+x Add walls and stuff to maps
+- Implement simple box collisions
+- Add enemies (generated through lua)
+- Htting enemies
+- Moving enemies
+- Lower levels
+- XP
+- gui
+- Items
+- More gui

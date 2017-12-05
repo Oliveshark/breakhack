@@ -2,6 +2,7 @@
 #define	MAP_H_
 
 #include <SDL2/SDL.h>
+#include <stdbool.h>
 #include <linkedlist.h>
 
 #include "sprite.h"
@@ -17,14 +18,15 @@
 typedef struct {
 	unsigned int textureIndex;
 	SDL_Rect clip;
+	bool collider;
 } MapTile;
 
 typedef struct {
-	MapTile* tiles[MAP_ROOM_HEIGHT][MAP_ROOM_WIDTH];
+	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 } Room;
 
 typedef struct {
-	Room* rooms[MAP_V_ROOM_COUNT][MAP_H_ROOM_COUNT];
+	Room* rooms[MAP_H_ROOM_COUNT][MAP_V_ROOM_COUNT];
 	LinkedList *textures;
 	Position currentRoom;
 	int level;
@@ -34,7 +36,7 @@ Map* map_create();
 
 int map_add_texture(Map*, const char *path, SDL_Renderer*);
 
-void map_add_tile(Map *map, Position *room_pos, Position *tile_pos, MapTile*);
+void map_add_tile(Map *map, Position *tile_pos, MapTile*);
 
 void map_render(Map*, Camera*);
 

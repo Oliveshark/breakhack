@@ -9,8 +9,8 @@ Room* create_room()
 	Room *room;
 
 	room = ec_malloc(sizeof(Room));
-	for (i=0; i < MAP_ROOM_HEIGHT; ++i) {
-		for (j=0; j < MAP_ROOM_WIDTH; ++j) {
+	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			room->tiles[i][j] = NULL;
 		}
 	}
@@ -26,8 +26,8 @@ Map* map_create()
 	map->currentRoom = (Position) { 0, 0 };
 	map->level = 1;
 	
-	for (i=0; i < MAP_V_ROOM_COUNT; ++i) {
-		for (j=0; j < MAP_H_ROOM_COUNT; ++j) {
+	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {
+		for (j=0; j < MAP_V_ROOM_COUNT; ++j) {
 			map->rooms[i][j] = create_room();
 		}
 	}
@@ -35,9 +35,10 @@ Map* map_create()
 	return map;
 }
 
-void map_add_tile(Map *map, Position *room_pos, Position *tile_pos, MapTile *tile)
+void map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
 {
-	MapTile **oldTile = &map->rooms[room_pos->x][room_pos->y]->tiles[tile_pos->x][tile_pos->y];
+	const Position *cr = &map->currentRoom;
+	MapTile **oldTile = &map->rooms[cr->x][cr->y]->tiles[tile_pos->x][tile_pos->y];
 	if (*oldTile != NULL) {
 		free(*oldTile);
 		*oldTile = NULL;
@@ -87,11 +88,11 @@ void map_render(Map *map, Camera *cam)
 	};
 
 	room = map->rooms[roomPos.x][roomPos.y];
-	for (i=0; i < MAP_ROOM_HEIGHT; ++i) {
-		for (j=0; j < MAP_ROOM_WIDTH; ++j) {
+	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			Position tilePos = (Position) {
-				roomCords.x + j*TILE_DIMENSION,
-				roomCords.y + i*TILE_DIMENSION
+				roomCords.x + i*TILE_DIMENSION,
+				roomCords.y + j*TILE_DIMENSION
 			};
 			map_tile_render(map, room->tiles[i][j], &tilePos, cam);
 		}
@@ -118,14 +119,19 @@ void map_set_current_room(Map *map, Position *pos)
 		unsigned int room_cord_y = pos->y - (pos->y % room_height);
 		map->currentRoom.y = room_cord_y / room_height;
 	}
+
+	if (map->currentRoom.x >= MAP_H_ROOM_COUNT)
+		map->currentRoom.x = MAP_H_ROOM_COUNT - 1;
+	if (map->currentRoom.y >= MAP_V_ROOM_COUNT)
+		map->currentRoom.y = MAP_V_ROOM_COUNT - 1;
 }
 
 static
 void map_room_destroy(Room *room)
 {
 	int i, j;
-	for (i=0; i < MAP_ROOM_HEIGHT; ++i) {
-		for (j=0; j < MAP_ROOM_WIDTH; ++j) {
+	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			if (room->tiles[i][j]) {
 				free(room->tiles[i][j]);
 			}
@@ -137,8 +143,8 @@ void map_room_destroy(Room *room)
 void map_destroy(Map *map)
 {
 	int i, j;
-	for (i=0; i < MAP_V_ROOM_COUNT; ++i) {
-		for (j=0; j < MAP_H_ROOM_COUNT; ++j) {
+	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {
+		for (j=0; j < MAP_V_ROOM_COUNT; ++j) {
 			map_room_destroy(map->rooms[i][j]);
 		}
 	}

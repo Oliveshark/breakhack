@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 
 #include <lua.h>
 #include <lualib.h>
@@ -55,6 +56,21 @@ SDL_Renderer* luaL_checksdlrenderer(lua_State *L)
 }
 
 static
+int l_map_set_current_room(lua_State *L)
+{
+	Map *map;
+	unsigned int room_x, room_y;
+
+	map = luaL_checkmap(L, 1);
+	room_x = luaL_checkinteger(L, 2);
+	room_y = luaL_checkinteger(L, 3);
+	
+	map->currentRoom = (Position) { room_y, room_x };
+
+	return 0;
+}
+
+static
 int l_add_texture(lua_State *L)
 {
 	Map *map;
@@ -74,26 +90,25 @@ static
 int l_add_tile(lua_State *L)
 {
 	Map *map;
-	int room_x, room_y, tile_x, tile_y;
+	int tile_x, tile_y;
 	int texture_index, tile_clip_x, tile_clip_y;
+	bool collider;
 
 	map = luaL_checkmap(L, 1);
-	room_x = luaL_checkinteger(L, 2);
-	room_y = luaL_checkinteger(L, 3);
-	tile_x = luaL_checkinteger(L, 4);
-	tile_y = luaL_checkinteger(L, 5);
-	texture_index = luaL_checkinteger(L, 6);
-	tile_clip_x = luaL_checkinteger(L, 7);
-	tile_clip_y = luaL_checkinteger(L, 8);
+	tile_x = luaL_checkinteger(L, 2);
+	tile_y = luaL_checkinteger(L, 3);
+	texture_index = luaL_checkinteger(L, 4);
+	tile_clip_x = luaL_checkinteger(L, 5);
+	tile_clip_y = luaL_checkinteger(L, 6);
+	collider = lua_toboolean(L, 7);
 
-	Position roomPos = (Position) { room_x, room_y };
 	Position tilePos = (Position) { tile_x, tile_y };
 	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
 
 	MapTile *tile = malloc(sizeof(MapTile));
-	*tile = (MapTile) { texture_index, clip };
+	*tile = (MapTile) { texture_index, clip, collider };
 
-	map_add_tile(map, &roomPos, &tilePos, tile);
+	map_add_tile(map, &tilePos, tile);
 
 	return 0;
 }
@@ -124,6 +139,9 @@ Map* map_lua_generator_run(SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_add_texture);
 	lua_setglobal(L, "add_texture");
+
+	lua_pushcfunction(L, l_map_set_current_room);
+	lua_setglobal(L, "set_current_room");
 
 	result = lua_pcall(L, 0, LUA_MULTRET, 0);
 	if (result) {
