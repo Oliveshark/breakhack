@@ -14,7 +14,8 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 	int i, j;
 	Room *r;
 
-	r = m->rooms[m->currentRoom.x][m->currentRoom.y];
+	rm->roomPos = m->currentRoom;
+	r = m->rooms[rm->roomPos.x][rm->roomPos.y];
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
@@ -34,6 +35,7 @@ void roommatrix_reset(RoomMatrix *m)
 			m->spaces[i][j].player = NULL;
 		}
 	}
+	m->roomPos = (Position) { 0, 0 };
 }
 
 void roommatrix_destroy(RoomMatrix *m)

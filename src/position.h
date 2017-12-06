@@ -8,4 +8,6 @@ typedef struct {
 
 Position position_to_matrix_coords(Position*);
 
+Position position_to_room_coords(Position*);
+
 #endif // POSITION_H_

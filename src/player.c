@@ -4,8 +4,13 @@
 static
 bool has_collided(Sprite *sprite, RoomMatrix *matrix)
 {
-	Position pos = position_to_matrix_coords(&sprite->pos);
-	return matrix->spaces[pos.x][pos.y].occupied;
+	Position roomCoord = position_to_room_coords(&sprite->pos);
+	if (roomCoord.x != matrix->roomPos.x || roomCoord.y != matrix->roomPos.y) {
+		return false;
+	}
+
+	Position matrixPos = position_to_matrix_coords(&sprite->pos);
+	return matrix->spaces[matrixPos.x][matrixPos.y].occupied;
 }
 
 static

@@ -65,7 +65,7 @@ int l_map_set_current_room(lua_State *L)
 	room_x = luaL_checkinteger(L, 2);
 	room_y = luaL_checkinteger(L, 3);
 	
-	map->currentRoom = (Position) { room_y, room_x };
+	map->currentRoom = (Position) { room_x, room_y };
 
 	return 0;
 }

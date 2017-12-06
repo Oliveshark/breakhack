@@ -157,6 +157,7 @@ void close()
 {
 	sprite_destroy(gPlayer);
 	map_destroy(gMap);
+	roommatrix_destroy(gRoomMatrix);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
 	IMG_Quit();

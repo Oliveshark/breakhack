@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "defines.h"
+#include "position.h"
 
 typedef struct Sprite_t Sprite;
 typedef struct Map_t Map;
@@ -15,6 +16,7 @@ typedef struct {
 
 typedef struct {
 	RoomSpace spaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	Position roomPos;
 } RoomMatrix;
 
 RoomMatrix* roommatrix_create();
