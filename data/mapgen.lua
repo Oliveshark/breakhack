@@ -89,16 +89,16 @@ load_textures(map)
 local map_matrix = generate_path()
 
 -- Print path [Debug]
-for i=1,10 do
-	for j=1,10 do
-		if not map_matrix[j][i].goal then
-			io.write(map_matrix[j][i].path_dir .. " ")
-		else
-			io.write("G ")
-		end
-	end
-	io.write("\n")
-end
+--for i=1,10 do
+	--for j=1,10 do
+		--if not map_matrix[j][i].goal then
+			--io.write(map_matrix[j][i].path_dir .. " ")
+		--else
+			--io.write("G ")
+		--end
+	--end
+	--io.write("\n")
+--end
 
 for i=1,10 do
 	for j=1,10 do

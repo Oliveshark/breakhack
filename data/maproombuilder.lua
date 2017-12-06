@@ -1,3 +1,9 @@
+-- CONSTANTS
+UP		= 1
+LEFT	= 2
+RIGHT	= 3
+DOWN	= 4
+
 -- Textures
 local floorTexture = nil
 local wallTexture = nil
@@ -36,12 +42,12 @@ function load_textures(map)
 	floor_bottomleft	= { floorTexture, xo +  0, yo + 32, false }
 	floor_bottomright	= { floorTexture, xo + 32, yo + 32, false }
 
-	wall_topleft		= { wallTexture, xo +  0, yo +  0, false }
-	wall_topright		= { wallTexture, xo + 32, yo +  0, false }
-	wall_bottomleft		= { wallTexture, xo +  0, yo + 32, false }
-	wall_bottomright	= { wallTexture, xo + 32, yo + 32, false }
-	wall_vertical		= { wallTexture, xo +  0, yo + 16, false }
-	wall_horizontal		= { wallTexture, xo + 16, yo + 0, false }
+	wall_topleft		= { wallTexture, xo +  0, yo +  0, true }
+	wall_topright		= { wallTexture, xo + 32, yo +  0, true }
+	wall_bottomleft		= { wallTexture, xo +  0, yo + 32, true }
+	wall_bottomright	= { wallTexture, xo + 32, yo + 32, true }
+	wall_vertical		= { wallTexture, xo +  0, yo + 16, true }
+	wall_horizontal		= { wallTexture, xo + 16, yo +  0, true }
 end
 
 function create_room ()
@@ -105,16 +111,24 @@ function add_exit(map, direction)
 	if direction > 4 then return end
 
 	if direction == UP then
+		add_tile(map, 6, 0, unpack(wall_bottomright))
 		add_tile(map, 7, 0, unpack(floor_center))
 		add_tile(map, 8, 0, unpack(floor_center))
+		add_tile(map, 9, 0, unpack(wall_bottomleft))
 	elseif direction == LEFT then
+		add_tile(map, 0, 4, unpack(wall_bottomright))
 		add_tile(map, 0, 5, unpack(floor_center))
 		add_tile(map, 0, 6, unpack(floor_center))
+		add_tile(map, 0, 7, unpack(wall_topright))
 	elseif direction == RIGHT then
+		add_tile(map, 15, 4, unpack(wall_bottomleft))
 		add_tile(map, 15, 5, unpack(floor_center))
 		add_tile(map, 15, 6, unpack(floor_center))
+		add_tile(map, 15, 7, unpack(wall_topleft))
 	elseif direction == DOWN then
+		add_tile(map, 6, 11, unpack(wall_topright))
 		add_tile(map, 7, 11, unpack(floor_center))
 		add_tile(map, 8, 11, unpack(floor_center))
+		add_tile(map, 9, 11, unpack(wall_topleft))
 	end
 end

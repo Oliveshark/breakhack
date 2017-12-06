@@ -145,7 +145,8 @@ Map* map_lua_generator_run(SDL_Renderer *renderer)
 
 	result = lua_pcall(L, 0, LUA_MULTRET, 0);
 	if (result) {
-		fprintf(stderr, "[!!] Failed to run script: %s\n", lua_tostring(L, -1));
+		fprintf(stderr, "[!!] Failed to run script: %s\n",
+			lua_tostring(L, -1));
 		exit(-1);
 	}
 
