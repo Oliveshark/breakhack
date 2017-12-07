@@ -43,7 +43,7 @@ target_link_libraries(breakhack
 # TESTS:
 enable_testing()
 
-add_executable(test_util test/check_util src/util)
+add_executable(test_util EXCLUDE_FROM_ALL test/check_util src/util)
 target_compile_options(test_util PRIVATE -pthread)
 target_link_libraries(test_util -lcheck)
 add_test(test_util test_util)
