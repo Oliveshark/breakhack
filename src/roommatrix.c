@@ -14,11 +14,15 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 	int i, j;
 	Room *r;
 
+	roommatrix_reset(rm);
+
 	rm->roomPos = m->currentRoom;
 	r = m->rooms[rm->roomPos.x][rm->roomPos.y];
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
+			if (!r->tiles[i][j])
+				continue;
 			rm->spaces[i][j].occupied = r->tiles[i][j]->collider;
 		}
 	}

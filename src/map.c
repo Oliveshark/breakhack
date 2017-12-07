@@ -50,6 +50,14 @@ int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
 {
 	Texture *t = texture_create(path, renderer);
 	linkedlist_append(&map->textures, t, sizeof(*t));
+
+	/* Freeing the texture preserves the underlying SDL_Texture* which
+	 * isn't duplicated when it's being added to the list.
+	 * texture_destroy() would destroy that too and break rendering.
+	 * Unstable solution. Might cause problems if Texture is ever extended
+	 * with more data.
+	 */
+	free(t);
 	return linkedlist_size(map->textures) - 1;
 }
 
@@ -149,7 +157,7 @@ void map_destroy(Map *map)
 		}
 	}
 	while (map->textures != NULL) {
-		SDL_DestroyTexture(linkedlist_poplast(&map->textures));
+		texture_destroy(linkedlist_poplast(&map->textures));
 	}
 	free(map);
 }

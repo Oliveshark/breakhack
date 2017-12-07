@@ -35,6 +35,11 @@ static void copy_data(void *dest, void *src, unsigned int size)
 		*(char*)(dest + i) = *(char*)(src + i);
 }
 
+/**
+ * Warning! This can get a bit wonky if you append/push a complex struct that
+ * contains pointers. The pointers will be copied and not duplicated in that
+ * case. Be careful.
+ */
 void linkedlist_push(LinkedList **head, void *value, unsigned int size)
 {
 
@@ -59,6 +64,11 @@ void* linkedlist_pop(LinkedList **head)
 	return data;
 }
 
+/**
+ * Warning! This can get a bit wonky if you append/push a complex struct that
+ * contains pointers. The pointers will be copied and not duplicated in that
+ * case. Be careful.
+ */
 void linkedlist_append(LinkedList **head, void *value, unsigned int size)
 {
 	if (*head == NULL) {
