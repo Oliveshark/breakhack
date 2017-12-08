@@ -8,16 +8,19 @@
 #include "sprite.h"
 #include "camera.h"
 #include "position.h"
+#include "timer.h"
 #include "defines.h"
 
 typedef struct MapTile_t {
-	unsigned int textureIndex;
+	int textureIndex0;
+	int textureIndex1;
 	SDL_Rect clip;
 	bool collider;
 } MapTile;
 
 typedef struct Room_t {
 	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	MapTile* secondary_tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 } Room;
 
@@ -25,6 +28,7 @@ typedef struct Map_t {
 	Room* rooms[MAP_H_ROOM_COUNT][MAP_V_ROOM_COUNT];
 	LinkedList *textures;
 	Position currentRoom;
+	Timer *renderTimer;
 	int level;
 } Map;
 

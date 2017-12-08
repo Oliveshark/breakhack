@@ -19,6 +19,11 @@ void timer_stop(Timer *t)
 	t->startTime = 0;
 }
 
+bool timer_started(Timer *t)
+{
+	return t->startTime != 0;
+}
+
 unsigned int timer_get_ticks(Timer *t)
 {
 	if (!t->startTime)

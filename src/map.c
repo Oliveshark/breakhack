@@ -25,6 +25,7 @@ Map* map_create()
 	Map *map = ec_malloc(sizeof(Map));
 	map->textures = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
+	map->renderTimer = timer_create();
 	map->level = 1;
 	
 	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {
@@ -76,8 +77,15 @@ int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
 static
 void map_tile_render(Map *map, MapTile *tile, Position *pos, Camera *cam)
 {
+	static bool second_texture = false;
+
 	if (tile == NULL)
 		return;
+
+	if (timer_get_ticks(map->renderTimer) > 300) {
+		timer_start(map->renderTimer);
+		second_texture = !second_texture;
+	}
 
 	Position camPos = camera_to_camera_position(cam, pos);
 	SDL_Rect draw_box = (SDL_Rect) {
@@ -87,7 +95,12 @@ void map_tile_render(Map *map, MapTile *tile, Position *pos, Camera *cam)
 		TILE_DIMENSION
 	};
 
-	Texture *texture = linkedlist_get(&map->textures, tile->textureIndex);
+	Texture *texture;
+	if (tile->textureIndex1 >= 0 && second_texture) {
+		texture = linkedlist_get(&map->textures, tile->textureIndex1);
+	} else {
+		texture = linkedlist_get(&map->textures, tile->textureIndex0);
+	}
 
 	SDL_RenderCopy(cam->renderer,
 		       texture->texture,
@@ -101,6 +114,11 @@ void map_render(Map *map, Camera *cam)
 {
 	int i, j;
 	Room *room;
+
+	if (!timer_started(map->renderTimer)) {
+		timer_start(map->renderTimer);
+	}
+
 	Position roomPos = { map->currentRoom.x, map->currentRoom.y };
 	Position roomCords = {
 		roomPos.x * MAP_ROOM_WIDTH * TILE_DIMENSION,
@@ -175,5 +193,6 @@ void map_destroy(Map *map)
 	while (map->textures != NULL) {
 		texture_destroy(linkedlist_poplast(&map->textures));
 	}
+	timer_destroy(map->renderTimer);
 	free(map);
 }
