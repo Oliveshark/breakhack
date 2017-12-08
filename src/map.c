@@ -12,6 +12,7 @@ Room* create_room()
 	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			room->tiles[i][j] = NULL;
+			room->decorations[i][j] = NULL;
 		}
 	}
 	return room;
@@ -39,6 +40,17 @@ void map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
 {
 	const Position *cr = &map->currentRoom;
 	MapTile **oldTile = &map->rooms[cr->x][cr->y]->tiles[tile_pos->x][tile_pos->y];
+	if (*oldTile != NULL) {
+		free(*oldTile);
+		*oldTile = NULL;
+	}
+	*oldTile = tile;
+}
+
+void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
+{
+	const Position *cr = &map->currentRoom;
+	MapTile **oldTile = &map->rooms[cr->x][cr->y]->decorations[tile_pos->x][tile_pos->y];
 	if (*oldTile != NULL) {
 		free(*oldTile);
 		*oldTile = NULL;
@@ -103,6 +115,7 @@ void map_render(Map *map, Camera *cam)
 				roomCords.y + j*TILE_DIMENSION
 			};
 			map_tile_render(map, room->tiles[i][j], &tilePos, cam);
+			map_tile_render(map, room->decorations[i][j], &tilePos, cam);
 		}
 	}
 }
@@ -142,6 +155,9 @@ void map_room_destroy(Room *room)
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			if (room->tiles[i][j]) {
 				free(room->tiles[i][j]);
+			}
+			if (room->decorations[i][j]) {
+				free(room->decorations[i][j]);
 			}
 		}
 	}

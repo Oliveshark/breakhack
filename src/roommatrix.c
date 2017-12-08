@@ -21,9 +21,10 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			if (!r->tiles[i][j])
-				continue;
-			rm->spaces[i][j].occupied = r->tiles[i][j]->collider;
+			if (r->tiles[i][j])
+				rm->spaces[i][j].occupied = r->tiles[i][j]->collider;
+			if (!rm->spaces[i][j].occupied && r->decorations[i][j])
+				rm->spaces[i][j].occupied = r->decorations[i][j]->collider;
 		}
 	}
 }

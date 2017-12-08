@@ -72,7 +72,6 @@ bool initSDL()
 		printf("[!!] Unable to initiate img loading: %s\n", IMG_GetError());
 		return false;
 	}
-
 		
 	return true;
 }

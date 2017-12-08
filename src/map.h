@@ -18,6 +18,7 @@ typedef struct MapTile_t {
 
 typedef struct Room_t {
 	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 } Room;
 
 typedef struct Map_t {
@@ -32,6 +33,8 @@ Map* map_create();
 int map_add_texture(Map*, const char *path, SDL_Renderer*);
 
 void map_add_tile(Map *map, Position *tile_pos, MapTile*);
+
+void map_add_decoration(Map *map, Position *tile_pos, MapTile*);
 
 void map_render(Map*, Camera*);
 

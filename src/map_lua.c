@@ -113,6 +113,32 @@ int l_add_tile(lua_State *L)
 	return 0;
 }
 
+static int l_add_decoration(lua_State *L)
+{
+	Map *map;
+	int tile_x, tile_y;
+	int texture_index, tile_clip_x, tile_clip_y;
+	bool collider;
+
+	map = luaL_checkmap(L, 1);
+	tile_x = luaL_checkinteger(L, 2);
+	tile_y = luaL_checkinteger(L, 3);
+	texture_index = luaL_checkinteger(L, 4);
+	tile_clip_x = luaL_checkinteger(L, 5);
+	tile_clip_y = luaL_checkinteger(L, 6);
+	collider = lua_toboolean(L, 7);
+
+	Position tilePos = (Position) { tile_x, tile_y };
+	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
+
+	MapTile *tile = malloc(sizeof(MapTile));
+	*tile = (MapTile) { texture_index, clip, collider };
+
+	map_add_decoration(map, &tilePos, tile);
+
+	return 0;
+}
+
 Map* map_lua_generator_run(SDL_Renderer *renderer)
 {
 	int status, result;
@@ -136,6 +162,9 @@ Map* map_lua_generator_run(SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_add_tile);
 	lua_setglobal(L, "add_tile");
+
+	lua_pushcfunction(L, l_add_decoration);
+	lua_setglobal(L, "add_decoration");
 
 	lua_pushcfunction(L, l_add_texture);
 	lua_setglobal(L, "add_texture");

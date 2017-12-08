@@ -1,3 +1,6 @@
+-- FUNCTIONS
+local random = math.random
+
 -- CONSTANTS
 local UP	= 1
 local LEFT	= 2
@@ -6,8 +9,9 @@ local DOWN	= 4
 
 -- Textures
 local textures = {
-	floorTexture = nil,
-	wallTexture = nil
+	floor = nil,
+	walls = nil,
+	decor = nil,
 }
 
 local floor = {
@@ -19,7 +23,7 @@ local floor = {
 	topleft = nil,
 	topright = nil,
 	bottomleft = nil,
-	bottomright = nil,
+	bottomright = nil
 }
 
 local wall = {
@@ -31,29 +35,81 @@ local wall = {
 	horizontal = nil
 }
 
+local floorDecor = { }
+local wallDecor = { }
+
 function load_textures(map)
-	textures.floorTexture = add_texture(map, "assets/Objects/Floor.png")
-	textures.wallTexture = add_texture(map, "assets/Objects/Wall.png")
+	textures.floor = add_texture(map, "assets/Objects/Floor.png")
+	textures.walls = add_texture(map, "assets/Objects/Wall.png")
+	textures.decor = add_texture(map, "assets/Objects/Decor0.png")
 
 	local xo = 0
 	local yo = 48
 
-	floor.center		= { textures.floorTexture, xo + 16, yo + 16, false }
-	floor.top			= { textures.floorTexture, xo + 16, yo +  0, false }
-	floor.bottom		= { textures.floorTexture, xo + 16, yo + 32, false }
-	floor.left			= { textures.floorTexture, xo +  0, yo + 16, false }
-	floor.right			= { textures.floorTexture, xo + 32, yo + 16, false }
-	floor.topleft		= { textures.floorTexture, xo +  0, yo +  0, false }
-	floor.topright		= { textures.floorTexture, xo + 32, yo +  0, false }
-	floor.bottomleft	= { textures.floorTexture, xo +  0, yo + 32, false }
-	floor.bottomright	= { textures.floorTexture, xo + 32, yo + 32, false }
+	floor.center		= { textures.floor, xo + 16, yo + 16, false }
+	floor.top			= { textures.floor, xo + 16, yo +  0, false }
+	floor.bottom		= { textures.floor, xo + 16, yo + 32, false }
+	floor.left			= { textures.floor, xo +  0, yo + 16, false }
+	floor.right			= { textures.floor, xo + 32, yo + 16, false }
+	floor.topleft		= { textures.floor, xo +  0, yo +  0, false }
+	floor.topright		= { textures.floor, xo + 32, yo +  0, false }
+	floor.bottomleft	= { textures.floor, xo +  0, yo + 32, false }
+	floor.bottomright	= { textures.floor, xo + 32, yo + 32, false }
 
-	wall.topleft		= { textures.wallTexture, xo +  0, yo +  0, true }
-	wall.topright		= { textures.wallTexture, xo + 32, yo +  0, true }
-	wall.bottomleft		= { textures.wallTexture, xo +  0, yo + 32, true }
-	wall.bottomright	= { textures.wallTexture, xo + 32, yo + 32, true }
-	wall.vertical		= { textures.wallTexture, xo +  0, yo + 16, true }
-	wall.horizontal		= { textures.wallTexture, xo + 16, yo +  0, true }
+	wall.topleft		= { textures.walls, xo +  0, yo +  0, true }
+	wall.topright		= { textures.walls, xo + 32, yo +  0, true }
+	wall.bottomleft		= { textures.walls, xo +  0, yo + 32, true }
+	wall.bottomright	= { textures.walls, xo + 32, yo + 32, true }
+	wall.vertical		= { textures.walls, xo +  0, yo + 16, true }
+	wall.horizontal		= { textures.walls, xo + 16, yo +  0, true }
+
+	-- Skulls
+	table.insert(floorDecor, { textures.decor,       0, 12 * 16, false })
+	table.insert(floorDecor, { textures.decor,      32, 12 * 16, false })
+	table.insert(floorDecor, { textures.decor,       0, 13 * 16, false })
+	table.insert(floorDecor, { textures.decor,      32, 13 * 16, false })
+
+	-- Bones
+	table.insert(floorDecor, { textures.decor,      16, 12 * 16, false })
+	table.insert(floorDecor, { textures.decor,      48, 12 * 16, false })
+	table.insert(floorDecor, { textures.decor,      16, 13 * 16, false })
+	table.insert(floorDecor, { textures.decor,      48, 13 * 16, false })
+
+	-- Urns
+	table.insert(floorDecor, { textures.decor,  0 * 16,      48, true })
+	table.insert(floorDecor, { textures.decor,  1 * 16,      48, true })
+	table.insert(floorDecor, { textures.decor,  2 * 16,      48, true })
+	table.insert(floorDecor, { textures.decor,  3 * 16,      48, true })
+	table.insert(floorDecor, { textures.decor,  4 * 16,      48, true })
+	table.insert(floorDecor, { textures.decor,  5 * 16,      48, true })
+	table.insert(floorDecor, { textures.decor,  6 * 16,      48, false })
+	table.insert(floorDecor, { textures.decor,  7 * 16,      48, false })
+
+	-- Headstones
+	table.insert(floorDecor, { textures.decor,  0 * 16, 17 * 16, true })
+	table.insert(floorDecor, { textures.decor,  1 * 16, 17 * 16, true })
+	table.insert(floorDecor, { textures.decor,  2 * 16, 17 * 16, true })
+	table.insert(floorDecor, { textures.decor,  3 * 16, 17 * 16, true })
+	table.insert(floorDecor, { textures.decor,  4 * 16, 17 * 16, true })
+	table.insert(floorDecor, { textures.decor,  0 * 16, 18 * 16, true })
+	table.insert(floorDecor, { textures.decor,  1 * 16, 18 * 16, true })
+	table.insert(floorDecor, { textures.decor,  2 * 16, 18 * 16, true })
+	table.insert(floorDecor, { textures.decor,  3 * 16, 18 * 16, true })
+	table.insert(floorDecor, { textures.decor,  4 * 16, 18 * 16, true })
+
+	-- Webs
+	table.insert(floorDecor, { textures.decor,  0 * 16, 19 * 16, false })
+	table.insert(floorDecor, { textures.decor,  1 * 16, 19 * 16, false })
+	table.insert(floorDecor, { textures.decor,  2 * 16, 19 * 16, false })
+	table.insert(floorDecor, { textures.decor,  3 * 16, 19 * 16, false })
+	table.insert(floorDecor, { textures.decor,  4 * 16, 19 * 16, false })
+
+	-- Altars
+	table.insert(floorDecor, { textures.decor,  0 * 16, 20 * 16, true })
+	table.insert(floorDecor, { textures.decor,  1 * 16, 20 * 16, true })
+	table.insert(floorDecor, { textures.decor,  2 * 16, 20 * 16, true })
+	table.insert(floorDecor, { textures.decor,  3 * 16, 20 * 16, true })
+	table.insert(floorDecor, { textures.decor,  4 * 16, 20 * 16, true })
 end
 
 function create_room ()
@@ -64,6 +120,13 @@ function create_room ()
 		path_dir = 0,
 		type = "room"
 	}
+end
+
+local function add_random_decor_to_room()
+	local decor_count = random(4) - 1
+	for i=1,decor_count do
+		add_decoration(map, random(11)+1, random(8)+1, unpack(floorDecor[random(#floorDecor)]))
+	end
 end
 
 local function add_tiles_to_room (map)
@@ -92,6 +155,8 @@ local function add_tiles_to_room (map)
 			end
 		end
 	end
+
+	add_random_decor_to_room()
 end
 
 local function add_walls_to_room (map)
