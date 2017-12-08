@@ -43,8 +43,9 @@ function load_textures(map)
 	textures.walls = add_texture(map, "assets/Objects/Wall.png")
 	textures.decor = add_texture(map, "assets/Objects/Decor0.png")
 
-	local xo = 0
-	local yo = 48
+	math.randomseed(os.time())
+	local xo = (random(3) - 1) * 112
+	local yo = (random(7)) * 48
 
 	floor.center		= { textures.floor, xo + 16, yo + 16, false }
 	floor.top			= { textures.floor, xo + 16, yo +  0, false }
@@ -55,6 +56,10 @@ function load_textures(map)
 	floor.topright		= { textures.floor, xo + 32, yo +  0, false }
 	floor.bottomleft	= { textures.floor, xo +  0, yo + 32, false }
 	floor.bottomright	= { textures.floor, xo + 32, yo + 32, false }
+	floor.singletop		= { textures.floor, xo + 48, yo +  0, false }
+	floor.singlebottom	= { textures.floor, xo + 48, yo + 32, false }
+	floor.singleleft	= { textures.floor, xo + 64, yo + 16, false }
+	floor.singleright	= { textures.floor, xo + 96, yo + 16, false }
 
 	wall.topleft		= { textures.walls, xo +  0, yo +  0, true }
 	wall.topright		= { textures.walls, xo + 32, yo +  0, true }
@@ -85,6 +90,15 @@ function load_textures(map)
 	table.insert(floorDecor, { textures.decor,  6 * 16,      48, false })
 	table.insert(floorDecor, { textures.decor,  7 * 16,      48, false })
 
+	-- Racks
+	table.insert(floorDecor, { textures.decor,  0 * 16, 11 * 16, true })
+	table.insert(floorDecor, { textures.decor,  1 * 16, 11 * 16, true })
+	table.insert(floorDecor, { textures.decor,  2 * 16, 11 * 16, true })
+	table.insert(floorDecor, { textures.decor,  3 * 16, 11 * 16, true })
+	table.insert(floorDecor, { textures.decor,  4 * 16, 11 * 16, true })
+	table.insert(floorDecor, { textures.decor,  5 * 16, 11 * 16, true })
+	table.insert(floorDecor, { textures.decor,  6 * 16, 11 * 16, true })
+
 	-- Headstones
 	table.insert(floorDecor, { textures.decor,  0 * 16, 17 * 16, true })
 	table.insert(floorDecor, { textures.decor,  1 * 16, 17 * 16, true })
@@ -98,18 +112,18 @@ function load_textures(map)
 	table.insert(floorDecor, { textures.decor,  4 * 16, 18 * 16, true })
 
 	-- Webs
-	table.insert(floorDecor, { textures.decor,  0 * 16, 19 * 16, false })
-	table.insert(floorDecor, { textures.decor,  1 * 16, 19 * 16, false })
-	table.insert(floorDecor, { textures.decor,  2 * 16, 19 * 16, false })
-	table.insert(floorDecor, { textures.decor,  3 * 16, 19 * 16, false })
-	table.insert(floorDecor, { textures.decor,  4 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { textures.decor,  0 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { textures.decor,  1 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { textures.decor,  2 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { textures.decor,  3 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { textures.decor,  4 * 16, 19 * 16, false })
 
 	-- Altars
 	table.insert(floorDecor, { textures.decor,  0 * 16, 20 * 16, true })
 	table.insert(floorDecor, { textures.decor,  1 * 16, 20 * 16, true })
 	table.insert(floorDecor, { textures.decor,  2 * 16, 20 * 16, true })
-	table.insert(floorDecor, { textures.decor,  3 * 16, 20 * 16, true })
-	table.insert(floorDecor, { textures.decor,  4 * 16, 20 * 16, true })
+	--table.insert(floorDecor, { textures.decor,  3 * 16, 20 * 16, true })
+	--table.insert(floorDecor, { textures.decor,  4 * 16, 20 * 16, true })
 end
 
 function create_room ()
@@ -184,23 +198,23 @@ local function add_exit(map, direction)
 
 	if direction == UP then
 		add_tile(map, 6, 0, unpack(wall.bottomright))
-		add_tile(map, 7, 0, unpack(floor.center))
-		add_tile(map, 8, 0, unpack(floor.center))
+		add_tile(map, 7, 0, unpack(floor.singleleft))
+		add_tile(map, 8, 0, unpack(floor.singleright))
 		add_tile(map, 9, 0, unpack(wall.bottomleft))
 	elseif direction == LEFT then
 		add_tile(map, 0, 4, unpack(wall.bottomright))
-		add_tile(map, 0, 5, unpack(floor.center))
-		add_tile(map, 0, 6, unpack(floor.center))
+		add_tile(map, 0, 5, unpack(floor.singletop))
+		add_tile(map, 0, 6, unpack(floor.singlebottom))
 		add_tile(map, 0, 7, unpack(wall.topright))
 	elseif direction == RIGHT then
 		add_tile(map, 15, 4, unpack(wall.bottomleft))
-		add_tile(map, 15, 5, unpack(floor.center))
-		add_tile(map, 15, 6, unpack(floor.center))
+		add_tile(map, 15, 5, unpack(floor.singletop))
+		add_tile(map, 15, 6, unpack(floor.singlebottom))
 		add_tile(map, 15, 7, unpack(wall.topleft))
 	elseif direction == DOWN then
 		add_tile(map, 6, 11, unpack(wall.topright))
-		add_tile(map, 7, 11, unpack(floor.center))
-		add_tile(map, 8, 11, unpack(floor.center))
+		add_tile(map, 7, 11, unpack(floor.singleleft))
+		add_tile(map, 8, 11, unpack(floor.singleright))
 		add_tile(map, 9, 11, unpack(wall.topleft))
 	end
 end
