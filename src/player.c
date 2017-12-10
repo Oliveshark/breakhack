@@ -101,9 +101,9 @@ Sprite* player_create(class_t class, SDL_Renderer *renderer)
 	}
 
 	sprite_load_texture(player, asset, renderer);
-	player->pos = (Position) { 64, 64 };
+	player->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
 	player->texture->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	player->texture->dim = (Dimension) { 64, 64 };
+	player->texture->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
 	player->handle_event = &handle_player_input;
 
 	return player;

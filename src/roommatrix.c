@@ -57,7 +57,7 @@ static void
 set_light_for_tile(RoomMatrix *matrix, int x, int y)
 {
 	int x_max, x_min, y_max, y_min, i, j;
-	int lightval;
+	int lightval, distance_modifier;
 	RoomSpace *space;
 
 	space = &matrix->spaces[x][y];
@@ -74,7 +74,8 @@ set_light_for_tile(RoomMatrix *matrix, int x, int y)
 	for (i = x_min; i <= x_max; ++i) {
 		for (j = y_min; j <= y_max; ++j) {
 			lightval = matrix->spaces[i][j].light;
-			lightval += 255 - (max(abs(x-i), abs(y-j)) * 50);
+			distance_modifier = abs(x-i) == abs(y-j) ? abs(x-i) + 1 : max(abs(x-i), abs(y-j));
+			lightval += 255 - (distance_modifier * 50);
 			lightval = min(255, lightval);
 			lightval = max(0, lightval);
 			matrix->spaces[i][j].light = lightval;
@@ -104,7 +105,12 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 			light = max(0, 230 - matrix->spaces[i][j].light);
 			SDL_SetRenderDrawColor(cam->renderer,
 					       0, 0, 0, light);
-			SDL_Rect box = (SDL_Rect) { i*64, j*64, 64, 64 };
+			SDL_Rect box = (SDL_Rect) {
+				i*TILE_DIMENSION,
+				j*TILE_DIMENSION,
+				TILE_DIMENSION,
+				TILE_DIMENSION
+			};
 			SDL_RenderFillRect(cam->renderer, &box);
 		}
 	}

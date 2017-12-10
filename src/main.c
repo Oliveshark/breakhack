@@ -13,9 +13,6 @@
 #include "timer.h"
 #include "roommatrix.h"
 
-#define SCREEN_WIDTH	1024
-#define SCREEN_HEIGHT	768
-
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
 static Sprite		*gPlayer	= NULL;
