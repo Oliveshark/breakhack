@@ -16,6 +16,7 @@ typedef struct MapTile_t {
 	int textureIndex1;
 	SDL_Rect clip;
 	bool collider;
+	bool lightsource;
 } MapTile;
 
 typedef struct Room_t {

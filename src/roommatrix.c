@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "roommatrix.h"
 #include "util.h"
 #include "map.h"
@@ -21,10 +22,90 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			if (r->tiles[i][j])
+			if (r->tiles[i][j]) {
 				rm->spaces[i][j].occupied = r->tiles[i][j]->collider;
-			if (!rm->spaces[i][j].occupied && r->decorations[i][j])
-				rm->spaces[i][j].occupied = r->decorations[i][j]->collider;
+				rm->spaces[i][j].lightsource = r->tiles[i][j]->lightsource;
+			}
+			if (r->decorations[i][j]) {
+				rm->spaces[i][j].occupied |= r->decorations[i][j]->collider;
+				rm->spaces[i][j].lightsource |= r->decorations[i][j]->lightsource;
+			}
+		}
+	}
+}
+
+static int
+min(int a, int b)
+{
+	return a > b ? b : a;
+}
+
+static int
+max(int a, int b)
+{
+	return a > b ? a : b;
+}
+
+void
+roommatrix_add_lightsource(RoomMatrix *matrix, Position *pos)
+{
+	Position mpos = position_to_matrix_coords(pos);
+	matrix->spaces[mpos.x][mpos.y].lightsource = true;
+}
+
+static void
+set_light_for_tile(RoomMatrix *matrix, int x, int y)
+{
+	int x_max, x_min, y_max, y_min, i, j;
+	int lightval;
+	RoomSpace *space;
+
+	space = &matrix->spaces[x][y];
+	if (!space->lightsource)
+		return;
+
+	space->light = 255;
+
+	x_max = min(x + 5, MAP_ROOM_WIDTH - 1);
+	x_min = max(x - 5, 0);
+	y_max = min(y + 5, MAP_ROOM_HEIGHT - 1);
+	y_min = max(y - 5, 0);
+
+	for (i = x_min; i <= x_max; ++i) {
+		for (j = y_min; j <= y_max; ++j) {
+			lightval = matrix->spaces[i][j].light;
+			lightval += 255 - (max(abs(x-i), abs(y-j)) * 50);
+			lightval = min(255, lightval);
+			lightval = max(0, lightval);
+			matrix->spaces[i][j].light = lightval;
+		}
+	}
+}
+
+void
+roommatrix_build_lightmap(RoomMatrix *matrix)
+{
+	int i, j;
+
+	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
+			set_light_for_tile(matrix, i, j);
+		}
+	}
+}
+
+void
+roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
+{
+	int i, j, light;
+
+	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
+			light = max(0, 230 - matrix->spaces[i][j].light);
+			SDL_SetRenderDrawColor(cam->renderer,
+					       0, 0, 0, light);
+			SDL_Rect box = (SDL_Rect) { i*64, j*64, 64, 64 };
+			SDL_RenderFillRect(cam->renderer, &box);
 		}
 	}
 }
@@ -36,6 +117,8 @@ void roommatrix_reset(RoomMatrix *m)
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			m->spaces[i][j].occupied = false;
+			m->spaces[i][j].lightsource = false;
+			m->spaces[i][j].light = 0;
 			m->spaces[i][j].character = NULL;
 			m->spaces[i][j].player = NULL;
 		}

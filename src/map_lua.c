@@ -86,57 +86,61 @@ int l_add_texture(lua_State *L)
 	return 1;
 }
 
-static
-int l_add_tile(lua_State *L)
-{
-	Map *map;
-	int tile_x, tile_y;
-	int texture_index, tile_clip_x, tile_clip_y;
-	bool collider;
-
-	map = luaL_checkmap(L, 1);
-	tile_x = luaL_checkinteger(L, 2);
-	tile_y = luaL_checkinteger(L, 3);
-	texture_index = luaL_checkinteger(L, 4);
-	tile_clip_x = luaL_checkinteger(L, 5);
-	tile_clip_y = luaL_checkinteger(L, 6);
-	collider = lua_toboolean(L, 7);
-
-	Position tilePos = (Position) { tile_x, tile_y };
-	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
-
-	MapTile *tile = malloc(sizeof(MapTile));
-	*tile = (MapTile) { texture_index, -1, clip, collider };
-
-	map_add_tile(map, &tilePos, tile);
-
-	return 0;
-}
-
-static int l_add_decoration(lua_State *L)
+static void
+extract_tile_data(lua_State *L,
+		  void (*f_add_tile)(Map*, Position*, MapTile*))
 {
 	Map *map;
 	int tile_x, tile_y;
 	int t_index0, t_index1, tile_clip_x, tile_clip_y;
-	bool collider;
+	bool collider, lightsource;
 
 	map = luaL_checkmap(L, 1);
 	tile_x = luaL_checkinteger(L, 2);
 	tile_y = luaL_checkinteger(L, 3);
-	t_index0 = luaL_checkinteger(L, 4);
-	t_index1 = luaL_checkinteger(L, 5);
-	tile_clip_x = luaL_checkinteger(L, 6);
-	tile_clip_y = luaL_checkinteger(L, 7);
-	collider = lua_toboolean(L, 8);
+
+	// Read the table
+	lua_settop(L, 4);
+	luaL_checktype(L, 4, LUA_TTABLE);
+
+	// Get the fields from the table
+	lua_getfield(L, 4, "textureIndex0");
+	lua_getfield(L, 4, "textureIndex1");
+	lua_getfield(L, 4, "tileClipX");
+	lua_getfield(L, 4, "tileClipY");
+	lua_getfield(L, 4, "isCollider");
+	lua_getfield(L, 4, "isLightSource");
+
+	t_index0 = luaL_checkinteger(L, -6);
+	t_index1 = luaL_checkinteger(L, -5);
+	tile_clip_x = luaL_checkinteger(L, -4);
+	tile_clip_y = luaL_checkinteger(L, -3);
+	collider = lua_toboolean(L, -2);
+	lightsource = lua_toboolean(L, -1);
+
+	// Clear the stack
+	lua_pop(L, 6);
 
 	Position tilePos = (Position) { tile_x, tile_y };
 	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
 
 	MapTile *tile = malloc(sizeof(MapTile));
-	*tile = (MapTile) { t_index0, t_index1, clip, collider };
+	*tile = (MapTile) { t_index0, t_index1, clip, collider, lightsource };
 
-	map_add_decoration(map, &tilePos, tile);
+	f_add_tile(map, &tilePos, tile);
+}
 
+static
+int l_add_tile(lua_State *L)
+{
+	extract_tile_data(L, &map_add_tile);
+	return 0;
+}
+
+static
+int l_add_decoration(lua_State *L)
+{
+	extract_tile_data(L, &map_add_decoration);
 	return 0;
 }
 

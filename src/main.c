@@ -62,6 +62,10 @@ bool initSDL()
 		printf("[!!] Unable to create renderer: %s\n", SDL_GetError());
 		return false;
 	}
+	if (SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND) < 0) {
+		printf("[!!] Unable to set blend mode: %s\n", SDL_GetError());
+		return false;
+	}
 	if (SDL_RenderSetLogicalSize(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT) < 0)
 	{
 		printf("[!!] Unable to initiate scaling: %s\n", SDL_GetError());
@@ -134,11 +138,15 @@ void run()
 
 		quit = handle_events();
 		roommatrix_populate_from_map(gRoomMatrix, gMap);
+		roommatrix_add_lightsource(gRoomMatrix,
+					   &gPlayer->pos);
+		roommatrix_build_lightmap(gRoomMatrix);
 
 		SDL_RenderClear(gRenderer);
 
 		map_render(gMap, &gCamera);
 		sprite_render(gPlayer, &gCamera);
+		roommatrix_render_lightmap(gRoomMatrix, &gCamera);
 
 		SDL_RenderPresent(gRenderer);
 
