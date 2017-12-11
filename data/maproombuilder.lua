@@ -29,7 +29,7 @@ local wall = {
 }
 
 local floorDecor = { }
-local wallDecor = { }
+local lightDecor = { }
 
 local function load_decor_textures()
 	td0 = add_texture(map, "assets/Objects/Decor0.png")
@@ -95,9 +95,10 @@ local function load_decor_textures()
 	-- Statues
 	--table.insert(floorDecor, { td0, td1,  3 * 16, 20 * 16, true })
 	--table.insert(floorDecor, { td0, td1,  4 * 16, 20 * 16, true })
-	
-	wallDecor.candle0 = { td0, td1,  0, 8 * 16, false, true }
-	wallDecor.candle1 = { td0, td1, 16, 8 * 16, false, true }
+
+	lightDecor.candle0 = { td0, td1,  0, 8 * 16, false, true }
+	lightDecor.candle1 = { td0, td1, 16, 8 * 16, false, true }
+	lightDecor.candle2 = { td0, td1, 32, 8 * 16, true, true }
 end
 
 function load_textures(map)
@@ -195,22 +196,25 @@ local function add_walls_to_room (map)
 		for j=0,11 do
 			if (i == 0 and j == 0) then
 				add_tile(map, i, j, repack(wall.topleft))
-				--add_decoration(map, i, j, repack(wallDecor.candle0))
 			elseif (i == 15 and j == 0) then
 				add_tile(map, i, j, repack(wall.topright))
-				--add_decoration(map, i, j, repack(wallDecor.candle0))
 			elseif (i == 0 and j == 11) then
 				add_tile(map, i, j, repack(wall.bottomleft))
-				--add_decoration(map, i, j, repack(wallDecor.candle0))
 			elseif (i == 15 and j == 11) then
 				add_tile(map, i, j, repack(wall.bottomright))
-				--add_decoration(map, i, j, repack(wallDecor.candle0))
 			elseif (i == 0 or i == 15) then
 				add_tile(map, i, j, repack(wall.vertical))
 			elseif (j == 0 or j == 11) then
 				add_tile(map, i, j, repack(wall.horizontal))
 			end
 		end
+	end
+
+	if random(2) == 1 then
+		add_decoration(map, 4, 3, repack(lightDecor.candle2))
+		add_decoration(map, 11, 3, repack(lightDecor.candle2))
+		add_decoration(map, 4, 9, repack(lightDecor.candle2))
+		add_decoration(map, 11, 9, repack(lightDecor.candle2))
 	end
 end
 
@@ -255,6 +259,12 @@ local function build_vert_center_coridoor(map, offset)
 		add_tile(map, 8, offset+j, repack(floor.center));
 		add_tile(map, 9, offset+j, repack(wall.vertical));
 	end
+	if random(2) == 1 then
+		add_decoration(map, 6, offset + 2, repack(lightDecor.candle1))
+	end
+	if random(2) == 1 then 
+		add_decoration(map, 9, offset + 2, repack(lightDecor.candle1))
+	end
 end
 
 local function build_horiz_center_coridoor(map, offset)
@@ -263,6 +273,12 @@ local function build_horiz_center_coridoor(map, offset)
 		add_tile(map, offset+i, 5, repack(floor.center));
 		add_tile(map, offset+i, 6, repack(floor.center));
 		add_tile(map, offset+i, 7, repack(wall.horizontal));
+	end
+	if random(2) == 1 then
+		add_decoration(map, offset+3, 4, repack(lightDecor.candle1))
+	end
+	if random(2) == 1 then 
+		add_decoration(map, offset+3, 7, repack(lightDecor.candle1))
 	end
 end
 
