@@ -16,7 +16,7 @@ bool has_collided(Sprite *sprite, RoomMatrix *matrix)
 static
 void move_left(Sprite *sprite, RoomMatrix *matrix)
 {
-	sprite->texture->clip.y = 16;
+	sprite->textures[0]->clip.y = 16;
 	sprite->pos.x -= TILE_DIMENSION;
 	if (has_collided(sprite, matrix))
 		sprite->pos.x += TILE_DIMENSION;
@@ -25,7 +25,7 @@ void move_left(Sprite *sprite, RoomMatrix *matrix)
 static
 void move_right(Sprite *sprite, RoomMatrix *matrix)
 {
-	sprite->texture->clip.y = 32;
+	sprite->textures[0]->clip.y = 32;
 	sprite->pos.x += TILE_DIMENSION;
 	if (has_collided(sprite, matrix))
 		sprite->pos.x -= TILE_DIMENSION;
@@ -34,7 +34,7 @@ void move_right(Sprite *sprite, RoomMatrix *matrix)
 static
 void move_up(Sprite *sprite, RoomMatrix *matrix)
 {
-	sprite->texture->clip.y = 48;
+	sprite->textures[0]->clip.y = 48;
 	sprite->pos.y -= TILE_DIMENSION;
 	if (has_collided(sprite, matrix))
 		sprite->pos.y += TILE_DIMENSION;
@@ -43,7 +43,7 @@ void move_up(Sprite *sprite, RoomMatrix *matrix)
 static
 void move_down(Sprite *sprite, RoomMatrix *matrix)
 {
-	sprite->texture->clip.y = 0;
+	sprite->textures[0]->clip.y = 0;
 	sprite->pos.y += TILE_DIMENSION;
 	if (has_collided(sprite, matrix))
 		sprite->pos.y -= TILE_DIMENSION;
@@ -69,7 +69,7 @@ void handle_player_input(Sprite *sprite, RoomMatrix *matrix, SDL_Event *event)
 				move_down(sprite, matrix);
 				break;
 		}
-		sprite->texture->clip.x = 16*step;
+		sprite->textures[0]->clip.x = 16*step;
 		if (step == 3)
 			step = 0;
 		else
@@ -100,10 +100,10 @@ Sprite* player_create(class_t class, SDL_Renderer *renderer)
 			break;
 	}
 
-	sprite_load_texture(player, asset, renderer);
+	sprite_load_texture(player, asset, 0, renderer);
 	player->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
-	player->texture->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	player->texture->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
+	player->textures[0]->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	player->textures[0]->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
 	player->handle_event = &handle_player_input;
 
 	return player;

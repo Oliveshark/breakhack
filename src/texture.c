@@ -9,7 +9,7 @@ Texture* texture_create(const char *path, SDL_Renderer *renderer)
 
 	if (surface == NULL)
 	{
-		printf("Failed to load texture (%s): %s\n", path, IMG_GetError());
+		printf("[!!] Failed to load texture (%s): %s\n", path, IMG_GetError());
 	}
 	else
 	{
@@ -18,13 +18,13 @@ Texture* texture_create(const char *path, SDL_Renderer *renderer)
 		newTexture->dim.width = surface->w;
 		newTexture->clip.x = 0;
 		newTexture->clip.y = 0;
-		newTexture->clip.h = surface->h;
 		newTexture->clip.w = surface->w;
+		newTexture->clip.h = surface->h;
 		newTexture->texture = SDL_CreateTextureFromSurface(renderer,
 								   surface);
 		if (newTexture->texture == NULL)
 		{
-			printf("Failed to create texture (%s): %s\n",
+			printf("[!!] Failed to create texture (%s): %s\n",
 			       path,
 			       SDL_GetError());
 		}
@@ -33,6 +33,22 @@ Texture* texture_create(const char *path, SDL_Renderer *renderer)
 	}
 
 	return newTexture;
+}
+
+void 
+texture_render(Texture *texture, Position *p, Camera *cam)
+{
+	SDL_Rect draw_box = (SDL_Rect) {
+		p->x,
+		p->y,
+		texture->dim.width,
+		texture->dim.height
+	};
+
+	SDL_RenderCopy(cam->renderer,
+		       texture->texture,
+		       &texture->clip,
+		       &draw_box);
 }
 
 void texture_destroy(Texture *texture)

@@ -7,7 +7,9 @@ Sprite* sprite_create_default()
 	Position pos = { 0, 0 };
 
 	Sprite *s = ec_malloc(sizeof(Sprite));
-	*s = (Sprite) { NULL, pos, NULL };
+	*s = (Sprite) { { NULL, NULL }, false, pos, NULL, NULL };
+
+	s->renderTimer = timer_create();
 
 	return s;
 }
@@ -17,35 +19,61 @@ Sprite* sprite_create()
 	return sprite_create_default();
 }
 
-void sprite_load_texture(Sprite *sprite, char *path, SDL_Renderer *renderer)
+void 
+sprite_load_texture(Sprite *sprite,
+		    char *path,
+		    int index,
+		    SDL_Renderer *renderer)
 {
-	if (sprite->texture != NULL) {
-		texture_destroy(sprite->texture);
-		sprite->texture = NULL;
+	if (index > 1)
+		fatal("in sprite_load_texture() index out of bounds");
+
+	if (sprite->destroyTextures && sprite->textures[index] != NULL) {
+		texture_destroy(sprite->textures[index]);
+		sprite->textures[index] = NULL;
 	}
 
-	sprite->texture = texture_create(path, renderer);
+	sprite->textures[index] = texture_create(path, renderer);
+	sprite->destroyTextures = true;
+}
+
+void
+sprite_set_texture(Sprite *s, Texture *t, int index)
+{
+	if (index > 1)
+		fatal("in sprite_set_texture() index out of bounds");
+	if (s->destroyTextures)
+		fatal("in sprite_set_texture() sprite contains loaded textures");
+
+	s->textures[index] = t;
 }
 
 void sprite_render(Sprite *s, Camera *cam)
 {
-	Position cameraPos = camera_to_camera_position(cam, &s->pos);
-	SDL_Rect draw_box = (SDL_Rect) {
-		cameraPos.x,
-		cameraPos.y,
-		s->texture->dim.width,
-		s->texture->dim.height
-	};
+	static int t_index = 0;
 
-	SDL_RenderCopy(cam->renderer,
-		       s->texture->texture,
-		       &s->texture->clip,
-		       &draw_box);
+	if (!timer_started(s->renderTimer))
+		timer_start(s->renderTimer);
+
+	if (timer_get_ticks(s->renderTimer) > 300) {
+		timer_stop(s->renderTimer);
+		timer_start(s->renderTimer);
+		if (s->textures[1])
+			t_index = t_index == 0 ? 1 : 0;
+	}
+
+	Position cameraPos = camera_to_camera_position(cam, &s->pos);
+	texture_render(s->textures[t_index], &cameraPos, cam);
 }
 
 void sprite_destroy(Sprite *sprite)
 {
-	if (sprite->texture)
-		texture_destroy(sprite->texture);
+	if (sprite->destroyTextures) {
+		if (sprite->textures[0])
+			texture_destroy(sprite->textures[0]);
+		if (sprite->textures[1])
+			texture_destroy(sprite->textures[1]);
+	}
+	timer_destroy(sprite->renderTimer);
 	free(sprite);
 }

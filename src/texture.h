@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 #include "dimension.h"
+#include "position.h"
+#include "camera.h"
 
 typedef struct {
 	SDL_Texture *texture;
@@ -11,6 +13,8 @@ typedef struct {
 } Texture;
 
 Texture* texture_create(const char *path, SDL_Renderer *renderer);
+
+void texture_render(Texture*, Position*, Camera*);
 
 void texture_destroy(Texture *texture);
 
