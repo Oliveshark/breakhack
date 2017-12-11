@@ -1,4 +1,4 @@
-require "data/maproombuilder"
+local room_builder = require "data/maproombuilder"
 
 -- Setting up some functions
 local time = os.time
@@ -35,7 +35,7 @@ local function generate_path ()
 	for i=1,10 do
 		map_matrix[i] = {}
 		for j=1,10 do
-			map_matrix[i][j] = create_room()
+			map_matrix[i][j] = room_builder.create_room()
 		end
 	end
 
@@ -116,7 +116,7 @@ end
 
 -- BEGIN SCRIPT
 map = create_map() -- 'map' needs to be global
-load_textures(map)
+room_builder.load_textures(map)
 local map_matrix = generate_path()
 
 -- Print path [Debug]
@@ -128,9 +128,9 @@ for i=1,10 do
 		if room.active then
 			set_current_room(map, i-1, j-1);
 			if room.type == "room" then
-				build_square_room(map, room)
+				room_builder.build_square_room(map, room)
 			elseif room.type == "coridoor" then
-				build_coridoor_room(map, room)
+				room_builder.build_coridoor_room(map, room)
 			end
 		end
 	end

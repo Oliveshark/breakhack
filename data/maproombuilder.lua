@@ -101,48 +101,6 @@ local function load_decor_textures()
 	lightDecor.candle2 = { td0, td1, 32, 8 * 16, true, true }
 end
 
-function load_textures(map)
-	t_floor = add_texture(map, "assets/Objects/Floor.png")
-	t_wall = add_texture(map, "assets/Objects/Wall.png")
-
-	math.randomseed(os.time())
-	local xo = (random(3) - 1) * 112
-	local yo = (random(7)) * 48
-
-	floor.center		= { t_floor, -1, xo + 16, yo + 16, false }
-	floor.top			= { t_floor, -1, xo + 16, yo +  0, false }
-	floor.bottom		= { t_floor, -1, xo + 16, yo + 32, false }
-	floor.left			= { t_floor, -1, xo +  0, yo + 16, false }
-	floor.right			= { t_floor, -1, xo + 32, yo + 16, false }
-	floor.topleft		= { t_floor, -1, xo +  0, yo +  0, false }
-	floor.topright		= { t_floor, -1, xo + 32, yo +  0, false }
-	floor.bottomleft	= { t_floor, -1, xo +  0, yo + 32, false }
-	floor.bottomright	= { t_floor, -1, xo + 32, yo + 32, false }
-	floor.singletop		= { t_floor, -1, xo + 48, yo +  0, false }
-	floor.singlebottom	= { t_floor, -1, xo + 48, yo + 32, false }
-	floor.singleleft	= { t_floor, -1, xo + 64, yo + 16, false }
-	floor.singleright	= { t_floor, -1, xo + 96, yo + 16, false }
-
-	wall.topleft		= { t_wall, -1, xo +  0, yo +  0, true }
-	wall.topright		= { t_wall, -1, xo + 32, yo +  0, true }
-	wall.bottomleft		= { t_wall, -1, xo +  0, yo + 32, true }
-	wall.bottomright	= { t_wall, -1, xo + 32, yo + 32, true }
-	wall.vertical		= { t_wall, -1, xo +  0, yo + 16, true }
-	wall.horizontal		= { t_wall, -1, xo + 16, yo +  0, true }
-
-	load_decor_textures()
-end
-
-function create_room ()
-	return {
-		exits = {},
-		active = false,
-		goal = false,
-		path_dir = 0,
-		type = "room"
-	}
-end
-
 local function repack(data)
 	return {
 		textureIndex0	= data[1],
@@ -244,14 +202,6 @@ local function add_exit(map, direction)
 	end
 end
 
-function build_square_room(map, room)
-	add_tiles_to_room(map);
-	add_walls_to_room(map);
-	for exit=1, #room.exits do
-		add_exit(map, room.exits[exit]);
-	end
-end
-
 local function build_vert_center_coridoor(map, offset)
 	for j=0,4 do
 		add_tile(map, 6, offset+j, repack(wall.vertical));
@@ -315,7 +265,9 @@ local function build_center_corner_walls(map, exits)
 	end
 end
 
-function build_coridoor_room(map, room)
+local module = {}
+
+function module.build_coridoor_room(map, room)
 	local exits = {
 		up = false,
 		down = false,
@@ -353,3 +305,55 @@ function build_coridoor_room(map, room)
 
 	build_center_corner_walls(map, exits)
 end
+
+function module.create_room ()
+	return {
+		exits = {},
+		active = false,
+		goal = false,
+		path_dir = 0,
+		type = "room"
+	}
+end
+
+function module.build_square_room(map, room)
+	add_tiles_to_room(map);
+	add_walls_to_room(map);
+	for exit=1, #room.exits do
+		add_exit(map, room.exits[exit]);
+	end
+end
+
+function module.load_textures(map)
+	t_floor = add_texture(map, "assets/Objects/Floor.png")
+	t_wall = add_texture(map, "assets/Objects/Wall.png")
+
+	math.randomseed(os.time())
+	local xo = (random(3) - 1) * 112
+	local yo = (random(7)) * 48
+
+	floor.center		= { t_floor, -1, xo + 16, yo + 16, false }
+	floor.top			= { t_floor, -1, xo + 16, yo +  0, false }
+	floor.bottom		= { t_floor, -1, xo + 16, yo + 32, false }
+	floor.left			= { t_floor, -1, xo +  0, yo + 16, false }
+	floor.right			= { t_floor, -1, xo + 32, yo + 16, false }
+	floor.topleft		= { t_floor, -1, xo +  0, yo +  0, false }
+	floor.topright		= { t_floor, -1, xo + 32, yo +  0, false }
+	floor.bottomleft	= { t_floor, -1, xo +  0, yo + 32, false }
+	floor.bottomright	= { t_floor, -1, xo + 32, yo + 32, false }
+	floor.singletop		= { t_floor, -1, xo + 48, yo +  0, false }
+	floor.singlebottom	= { t_floor, -1, xo + 48, yo + 32, false }
+	floor.singleleft	= { t_floor, -1, xo + 64, yo + 16, false }
+	floor.singleright	= { t_floor, -1, xo + 96, yo + 16, false }
+
+	wall.topleft		= { t_wall, -1, xo +  0, yo +  0, true }
+	wall.topright		= { t_wall, -1, xo + 32, yo +  0, true }
+	wall.bottomleft		= { t_wall, -1, xo +  0, yo + 32, true }
+	wall.bottomright	= { t_wall, -1, xo + 32, yo + 32, true }
+	wall.vertical		= { t_wall, -1, xo +  0, yo + 16, true }
+	wall.horizontal		= { t_wall, -1, xo + 16, yo +  0, true }
+
+	load_decor_textures()
+end
+
+return module
