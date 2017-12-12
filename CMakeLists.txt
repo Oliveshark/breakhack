@@ -7,6 +7,7 @@ project(breakhack C)
 include(FindLua)
 
 add_subdirectory(linkedlist)
+add_subdirectory(hashtable)
 
 include_directories(linkedlist
 	${LUA_INCLUDE_DIR}
@@ -32,6 +33,7 @@ add_executable(breakhack
 
 target_link_libraries(breakhack
 	linkedlist
+	hashtable
 	${LUA_LIBRARIES}
 	-lSDL2
 	-lSDL2_image

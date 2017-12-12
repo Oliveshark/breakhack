@@ -1,0 +1,151 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <limits.h>
+#include "hashtable.h"
+
+static void*
+ec_malloc(unsigned int size)
+{
+	void *ptr = malloc(size);
+	if (ptr == NULL) {
+		fprintf(stderr, "[!!] Failed to allocate hashtable\n");
+		exit(-1);
+	}
+
+	return ptr;
+}
+
+
+Hashtable*
+ht_create(unsigned int size)
+{
+	Hashtable *table;
+	unsigned int i;
+
+	if (size < 1)
+		return NULL;
+
+	table = ec_malloc(sizeof(Hashtable));
+	table->size = size;
+	table->entries = ec_malloc(sizeof(Entry) * size);
+
+	for (i = 0; i < size; ++i) {
+		table->entries[i] = NULL;
+	}
+
+	return table;
+}
+
+static unsigned int
+hash(Hashtable *table, char *key)
+{
+	unsigned long int hashval = 0;
+	int i = 0;
+
+	while (hashval < ULONG_MAX && i < strlen(key)) {
+		hashval = hashval << 8;
+		hashval += key[i++];
+	}
+
+	return hashval % table->size;
+}
+
+static Entry*
+entry_create(char *key, void *value)
+{
+	Entry *entry;
+
+	entry = ec_malloc(sizeof(Entry));
+	entry->key = strdup(key);
+	entry->value = value;
+	entry->next = NULL;
+
+	return entry;
+}
+
+void
+ht_set(Hashtable *table, char *key, void *val)
+{
+	int hashkey = 0;
+	Entry *newEntry;
+	Entry *next;
+	Entry *last;
+
+	hashkey = hash(table, key);
+
+	next = table->entries[hashkey];
+
+	/* Find a position */
+	while (next != NULL
+	       && next->key != NULL
+	       && strcmp(key, next->key) > 0)
+	{
+		last = next;
+		next = next->next;
+	}
+
+	if (next && next->key && strcmp(key, next->key) == 0) {
+		/* Collision */
+		free(next->value);
+		next->value = val;
+	} else {
+		/* New entry */
+		newEntry = entry_create(key, val);
+
+		if (next == table->entries[hashkey]) {
+			table->entries[hashkey] = newEntry;
+			newEntry->next = next;
+		} else if(next == NULL) {
+			last->next = newEntry;
+		} else {
+			newEntry->next = next;
+			last->next = newEntry;
+		}
+	}
+}
+
+void*
+ht_get(Hashtable *table, char *key)
+{
+	int hashkey = 0;
+	Entry *entry;
+
+	hashkey = hash(table, key);
+
+	entry = table->entries[hashkey];
+
+	while (entry && entry->key && strcmp(entry->key, key) > 0) {
+		entry = entry->next;
+	}
+
+	if (!entry || !entry->key || strcmp(entry->key, key) != 0) {
+		return NULL;
+	}
+	return entry->value;
+}
+
+void
+ht_destroy(Hashtable *table)
+{
+	Entry *entry, *next;
+	unsigned int i;
+
+	if (table == NULL) {
+		return;
+	}
+
+	for (i = 0; i < table->size; ++i) {
+		entry = table->entries[i];
+		if (entry == NULL)
+			continue;
+		while (entry) {
+			next = entry->next;
+			free(entry->value);
+			entry->value = NULL;
+			free(entry);
+			entry = next;
+		}
+	}
+	free(table);
+}
