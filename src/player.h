@@ -3,10 +3,18 @@
 
 #include <SDL2/SDL.h>
 #include "sprite.h"
+#include "stats.h"
 
 enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR };
 typedef enum PlayerClass class_t;
 
-Sprite* player_create(class_t, SDL_Renderer*);
+typedef struct {
+	Sprite *sprite;
+	Stats stats;
+} Player;
+
+Player* player_create(class_t, SDL_Renderer*);
+
+void player_destroy(Player*);
 
 #endif // PLAYER_H_

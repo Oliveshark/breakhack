@@ -1,8 +1,16 @@
 #include <string.h>
 #include "player.h"
 
-static
-bool has_collided(Sprite *sprite, RoomMatrix *matrix)
+static Stats classStats[] = {
+	(Stats) { 11, 11, 11, 1 }, /* ENGINEER */
+	(Stats) { 11, 11, 11, 1 }, /* MAGE */
+	(Stats) { 11, 11, 11, 1 }, /* PALADIN */
+	(Stats) { 11, 11, 11, 2 }, /* ROGUE */
+	(Stats) { 11, 11, 11, 1 }, /* WARRIOR */
+};
+
+static bool 
+has_collided(Sprite *sprite, RoomMatrix *matrix)
 {
 	Position roomCoord = position_to_room_coords(&sprite->pos);
 	if (roomCoord.x != matrix->roomPos.x || roomCoord.y != matrix->roomPos.y) {
@@ -13,8 +21,8 @@ bool has_collided(Sprite *sprite, RoomMatrix *matrix)
 	return matrix->spaces[matrixPos.x][matrixPos.y].occupied;
 }
 
-static
-void move_left(Sprite *sprite, RoomMatrix *matrix)
+static void
+move_left(Sprite *sprite, RoomMatrix *matrix)
 {
 	sprite->textures[0]->clip.y = 16;
 	sprite->pos.x -= TILE_DIMENSION;
@@ -77,34 +85,51 @@ void handle_player_input(Sprite *sprite, RoomMatrix *matrix, SDL_Event *event)
 	}
 }
 
-Sprite* player_create(class_t class, SDL_Renderer *renderer)
+Player* 
+player_create(class_t class, SDL_Renderer *renderer)
 {
-	Sprite *player = sprite_create();
-	char asset[100];
+	Player *player = malloc(sizeof(Player));
+	player->sprite = sprite_create();
 
+	char asset[100];
 	switch (class) {
 		case ENGINEER:
 			strcpy(asset, "assets/Commissions/Engineer.png");
+			player->stats = classStats[ENGINEER];
 			break;
 		case MAGE:
 			strcpy(asset, "assets/Commissions/Mage.png");
+			player->stats = classStats[MAGE];
 			break;
 		case PALADIN:
 			strcpy(asset, "assets/Commissions/Paladin.png");
+			player->stats = classStats[PALADIN];
 			break;
 		case ROGUE:
 			strcpy(asset, "assets/Commissions/Rogue.png");
+			player->stats = classStats[ROGUE];
 			break;
 		case WARRIOR:
 			strcpy(asset, "assets/Commissions/Warrior.png");
+			player->stats = classStats[WARRIOR];
 			break;
 	}
 
-	sprite_load_texture(player, asset, 0, renderer);
-	player->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
-	player->textures[0]->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	player->textures[0]->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
-	player->handle_event = &handle_player_input;
+	sprite_load_texture(player->sprite, asset, 0, renderer);
+	player->sprite->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
+	player->sprite->textures[0]->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	player->sprite->textures[0]->dim = (Dimension) {
+		TILE_DIMENSION, TILE_DIMENSION };
+	player->sprite->handle_event = &handle_player_input;
 
 	return player;
+}
+
+void
+player_destroy(Player *player)
+{
+	if (player->sprite)
+		sprite_destroy(player->sprite);
+
+	free(player);
 }

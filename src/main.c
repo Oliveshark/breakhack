@@ -15,7 +15,7 @@
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
-static Sprite		*gPlayer	= NULL;
+static Player		*gPlayer	= NULL;
 static LinkedList	*gSpriteList	= NULL;
 static Map		*gMap		= NULL;
 static RoomMatrix	*gRoomMatrix	= NULL;
@@ -115,9 +115,11 @@ bool handle_events()
 		if (event.type == SDL_QUIT) {
 			quit = true;
 		} else {
-			gPlayer->handle_event(gPlayer, gRoomMatrix, &event);
-			camera_follow_position(&gCamera, &gPlayer->pos);
-			map_set_current_room(gMap, &gPlayer->pos);
+			gPlayer->sprite->handle_event(gPlayer->sprite,
+						      gRoomMatrix,
+						      &event);
+			camera_follow_position(&gCamera, &gPlayer->sprite->pos);
+			map_set_current_room(gMap, &gPlayer->sprite->pos);
 		}
 	}
 	return quit;
@@ -136,13 +138,13 @@ void run()
 		quit = handle_events();
 		roommatrix_populate_from_map(gRoomMatrix, gMap);
 		roommatrix_add_lightsource(gRoomMatrix,
-					   &gPlayer->pos);
+					   &gPlayer->sprite->pos);
 		roommatrix_build_lightmap(gRoomMatrix);
 
 		SDL_RenderClear(gRenderer);
 
 		map_render(gMap, &gCamera);
-		sprite_render(gPlayer, &gCamera);
+		sprite_render(gPlayer->sprite, &gCamera);
 		roommatrix_render_lightmap(gRoomMatrix, &gCamera);
 
 		SDL_RenderPresent(gRenderer);
@@ -159,7 +161,7 @@ void run()
 static
 void close()
 {
-	sprite_destroy(gPlayer);
+	player_destroy(gPlayer);
 	map_destroy(gMap);
 	roommatrix_destroy(gRoomMatrix);
 	SDL_DestroyWindow(gWindow);
