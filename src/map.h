@@ -39,13 +39,16 @@ typedef struct Map_t {
 
 Map* map_create();
 
-void map_add_monster(Map*, Monster*);
 
 int map_add_texture(Map*, const char *path, SDL_Renderer*);
 
 void map_add_tile(Map *map, Position *tile_pos, MapTile*);
 
 void map_add_decoration(Map *map, Position *tile_pos, MapTile*);
+
+Texture* map_add_monster_texture(Map*, char *path, SDL_Renderer*);
+
+void map_add_monster(Map*, Monster*);
 
 void map_render(Map*, Camera*);
 

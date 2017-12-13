@@ -12,6 +12,8 @@ typedef struct {
 
 Monster* monster_create();
 
+void monster_render(Monster*, Camera*);
+
 void monster_destroy(Monster*);
 
 #endif // MONSTER_H_

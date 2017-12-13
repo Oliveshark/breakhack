@@ -10,6 +10,12 @@ monster_create()
 }
 
 void
+monster_render(Monster *m, Camera *cam)
+{
+	sprite_render(m->sprite, cam);
+}
+
+void
 monster_destroy(Monster *m)
 {
 	sprite_destroy(m->sprite);

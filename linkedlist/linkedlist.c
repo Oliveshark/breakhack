@@ -28,24 +28,11 @@ LinkedList* linkedlist_create()
 	return NULL;
 }
 
-static void copy_data(void *dest, void *src, unsigned int size)
-{
-	int i;
-	for (i = 0; i < size; ++i)
-		*(char*)(dest + i) = *(char*)(src + i);
-}
-
-/**
- * Warning! This can get a bit wonky if you append/push a complex struct that
- * contains pointers. The pointers will be copied and not duplicated in that
- * case. Be careful.
- */
-void linkedlist_push(LinkedList **head, void *value, unsigned int size)
+void linkedlist_push(LinkedList **head, void *value)
 {
 
 	LinkedList *node = linkedlist_node_create();
-	node->data = linkedlist_malloc(size);
-	copy_data(node->data, value, size);
+	node->data = value;
 	node->next = *head;
 
 	*head = node;
@@ -64,20 +51,22 @@ void* linkedlist_pop(LinkedList **head)
 	return data;
 }
 
-/**
- * Warning! This can get a bit wonky if you append/push a complex struct that
- * contains pointers. The pointers will be copied and not duplicated in that
- * case. Be careful.
- */
-void linkedlist_append(LinkedList **head, void *value, unsigned int size)
+void linkedlist_append(LinkedList **head, void *value)
 {
+	LinkedList *node;
+
 	if (*head == NULL) {
 		*head = linkedlist_node_create();
-		(*head)->data = linkedlist_malloc(size);
-		copy_data((*head)->data, value, size);
-	} else {
-		linkedlist_append(&(*head)->next, value, size);
+		(*head)->data = value;
+		return;
 	}
+
+	node = *head;
+	while (node->next != NULL)
+		node = node->next;
+
+	node->next = linkedlist_node_create();
+	node->next->data = value;
 }
 
 void* linkedlist_poplast(LinkedList **head)
@@ -113,16 +102,23 @@ void* linkedlist_get(LinkedList **head, unsigned int index)
 	return linkedlist_get(&(*head)->next, --index);
 }
 
+void linkedlist_each(LinkedList **head, void (*fun)(void*))
+{
+	LinkedList *next = *head;
+
+	while (next != NULL) {
+		fun(next->data);
+		next = next->next;
+	}
+}
+
 void linkedlist_destroy(LinkedList **head)
 {
 	if (*head == NULL) {
 		return;
 	}
-	if ((*head)->next != NULL) {
-		linkedlist_destroy(&(*head)->next);
-		free((*head)->next);
-		(*head)->next = NULL;
-	}
+
+	linkedlist_destroy(&(*head)->next);
 
 	free((*head)->data);
 	(*head)->data = NULL;

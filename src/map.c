@@ -61,18 +61,30 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 	*oldTile = tile;
 }
 
+Texture*
+map_add_monster_texture(Map *map, char *path, SDL_Renderer *renderer)
+{
+	Texture *t;
+
+	t = ht_get(map->monsterTextures, path);
+	if (!t) {
+		t = texture_create(path, renderer);
+		ht_set(map->monsterTextures, path, t);
+	}
+
+	return t;
+}
+
+void
+map_add_monster(Map *map, Monster *m)
+{
+	linkedlist_append(&map->monsters, m);
+}
+
 int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
 {
 	Texture *t = texture_create(path, renderer);
-	linkedlist_append(&map->textures, t, sizeof(*t));
-
-	/* Freeing the texture preserves the underlying SDL_Texture* which
-	 * isn't duplicated when it's being added to the list.
-	 * texture_destroy() would destroy that too and break rendering.
-	 * Unstable solution. Might cause problems if Texture is ever extended
-	 * with more data.
-	 */
-	free(t);
+	linkedlist_append(&map->textures, t);
 	return linkedlist_size(map->textures) - 1;
 }
 
@@ -114,8 +126,9 @@ void map_tile_render(Map *map, MapTile *tile, Position *pos, Camera *cam)
 
 void map_render(Map *map, Camera *cam)
 {
-	int i, j;
+	unsigned int i, j, monster_count;
 	Room *room;
+	Monster *monster;
 
 	if (!timer_started(map->renderTimer)) {
 		timer_start(map->renderTimer);
@@ -135,8 +148,17 @@ void map_render(Map *map, Camera *cam)
 				roomCords.y + j*TILE_DIMENSION
 			};
 			map_tile_render(map, room->tiles[i][j], &tilePos, cam);
-			map_tile_render(map, room->decorations[i][j], &tilePos, cam);
+			map_tile_render(map,
+					room->decorations[i][j],
+					&tilePos,
+					cam);
 		}
+	}
+
+	monster_count = linkedlist_size(map->monsters);
+	for (i = 0; i < monster_count; ++i) {
+		monster = linkedlist_get(&map->monsters, i);
+		monster_render(monster, cam);
 	}
 }
 
