@@ -5,8 +5,7 @@
 START_TEST(test_hashtable_create)
 {
 	Hashtable *table = ht_create(10);
-	ck_assert( table->size == 10 );
-	ck_assert( table != NULL );
+	ck_assert( table != NULL && table->size == 10 );
 	ht_destroy(table);
 }
 END_TEST
