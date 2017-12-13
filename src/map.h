@@ -4,12 +4,14 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <linkedlist.h>
+#include <hashtable.h>
 
 #include "sprite.h"
 #include "camera.h"
 #include "position.h"
 #include "timer.h"
 #include "defines.h"
+#include "monster.h"
 
 typedef struct MapTile_t {
 	int textureIndex0;
@@ -28,12 +30,16 @@ typedef struct Room_t {
 typedef struct Map_t {
 	Room* rooms[MAP_H_ROOM_COUNT][MAP_V_ROOM_COUNT];
 	LinkedList *textures;
+	Hashtable *monsterTextures;
+	LinkedList *monsters;
 	Position currentRoom;
 	Timer *renderTimer;
 	int level;
 } Map;
 
 Map* map_create();
+
+void map_add_monster(Map*, Monster*);
 
 int map_add_texture(Map*, const char *path, SDL_Renderer*);
 

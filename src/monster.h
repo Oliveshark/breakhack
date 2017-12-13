@@ -10,4 +10,8 @@ typedef struct {
 	Stats stats;
 } Monster;
 
+Monster* monster_create();
+
+void monster_destroy(Monster*);
+
 #endif // MONSTER_H_

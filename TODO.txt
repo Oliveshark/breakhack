@@ -1,10 +1,14 @@
 x Add walls and stuff to maps
-- Implement simple box collisions
-- Add enemies (generated through lua)
-- Htting enemies
+x Implement simple box collisions
+o Add enemies (generated through lua)
+	x Monster object created
+	- Lua bindings for creation
+- Hitting enemies
 - Moving enemies
 - Lower levels
 - XP
 - gui
 - Items
 - More gui
+
+Legend: ( '-' = future) ( 'x' = completed ) ( 'o' = begun )

@@ -20,4 +20,6 @@ void* ht_get(Hashtable*, char *key);
 
 void ht_destroy(Hashtable*);
 
+void ht_destroy_custom(Hashtable*, void (*destroy_value)(void*));
+
 #endif // HASHTABLE_H_

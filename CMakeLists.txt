@@ -43,6 +43,7 @@ add_executable(breakhack
 	src/timer
 	src/roommatrix
 	src/position
+	src/monster
 	)
 
 target_link_libraries(breakhack

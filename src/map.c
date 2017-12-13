@@ -24,6 +24,8 @@ Map* map_create()
 
 	Map *map = ec_malloc(sizeof(Map));
 	map->textures = linkedlist_create();
+	map->monsterTextures = ht_create(100);
+	map->monsters = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
 	map->renderTimer = timer_create();
 	map->level = 1;
@@ -191,8 +193,12 @@ void map_destroy(Map *map)
 		}
 	}
 	while (map->textures != NULL) {
-		texture_destroy(linkedlist_poplast(&map->textures));
+		texture_destroy(linkedlist_pop(&map->textures));
 	}
+	while (map->monsters != NULL) {
+		monster_destroy(linkedlist_pop(&map->textures));
+	}
+	ht_destroy_custom(map->monsterTextures, (void (*)(void*)) texture_destroy);
 	timer_destroy(map->renderTimer);
 	free(map);
 }

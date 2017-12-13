@@ -128,6 +128,12 @@ ht_get(Hashtable *table, char *key)
 void
 ht_destroy(Hashtable *table)
 {
+	ht_destroy_custom(table, free);
+}
+
+void
+ht_destroy_custom(Hashtable *table, void (*destroy_value)(void *value))
+{
 	Entry *entry, *next;
 	unsigned int i;
 
@@ -141,11 +147,12 @@ ht_destroy(Hashtable *table)
 			continue;
 		while (entry) {
 			next = entry->next;
-			free(entry->value);
+			destroy_value(entry->value);
 			entry->value = NULL;
 			free(entry);
 			entry = next;
 		}
 	}
+	free(table->entries);
 	free(table);
 }
