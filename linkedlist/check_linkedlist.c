@@ -184,7 +184,7 @@ increase(int *number)
 START_TEST (test_linkedlist_each)
 {
 	LinkedList *list;
-	int *pop, *append;
+	int *append;
 	int i;
 
 	list = linkedlist_create();
@@ -198,7 +198,7 @@ START_TEST (test_linkedlist_each)
 	linkedlist_each(&list, (void (*)(void*)) increase);
 
 	for (i = 0; i < 10; ++i) {
-		pop = linkedlist_pop(&list);
+		int *pop = linkedlist_pop(&list);
 		ck_assert( i+1 == *pop );
 		free(pop);
 		pop = NULL;

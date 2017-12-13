@@ -128,7 +128,6 @@ void map_render(Map *map, Camera *cam)
 {
 	unsigned int i, j, monster_count;
 	Room *room;
-	Monster *monster;
 
 	if (!timer_started(map->renderTimer)) {
 		timer_start(map->renderTimer);
@@ -157,7 +156,7 @@ void map_render(Map *map, Camera *cam)
 
 	monster_count = linkedlist_size(map->monsters);
 	for (i = 0; i < monster_count; ++i) {
-		monster = linkedlist_get(&map->monsters, i);
+		Monster *monster = linkedlist_get(&map->monsters, i);
 		monster_render(monster, cam);
 	}
 }
