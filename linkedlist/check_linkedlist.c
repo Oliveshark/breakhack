@@ -184,13 +184,12 @@ increase(int *number)
 START_TEST (test_linkedlist_each)
 {
 	LinkedList *list;
-	int *append;
 	int i;
 
 	list = linkedlist_create();
 
 	for (i = 0; i < 10; ++i) {
-		append = malloc(sizeof(int));
+		int *append = malloc(sizeof(int));
 		*append = i;
 		linkedlist_append(&list, append);
 	}
