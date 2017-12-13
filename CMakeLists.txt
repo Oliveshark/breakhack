@@ -58,8 +58,9 @@ target_link_libraries(breakhack
 
 # TESTS:
 IF (CHECK_FOUND)
+	find_package(Threads REQUIRED)
 	enable_testing()
 	add_executable(test_util test/check_util src/util)
-	target_link_libraries(test_util ${CHECK_LIBRARIES})
+	target_link_libraries(test_util ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_util test_util)
 ENDIF (CHECK_FOUND)
