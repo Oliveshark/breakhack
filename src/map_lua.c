@@ -144,6 +144,54 @@ int l_add_decoration(lua_State *L)
 	return 0;
 }
 
+static int
+l_add_monster(lua_State *L)
+{
+	Monster *monster;
+	Map *map;
+	int x, y, clip_x, clip_y;
+	const char *texture_path_1, *texture_path_2;
+	Texture *texture1, *texture2;
+	SDL_Renderer *renderer;
+
+	renderer = luaL_checksdlrenderer(L);
+	map = luaL_checkmap(L, 1);
+	x = luaL_checkinteger(L, 2);
+	y = luaL_checkinteger(L, 3);
+
+	// Read the table
+	lua_settop(L, 4);
+	luaL_checktype(L, 4, LUA_TTABLE);
+
+	lua_getfield(L, 4, "texturePath1");
+	lua_getfield(L, 4, "texturePath2");
+	lua_getfield(L, 4, "clipX");
+	lua_getfield(L, 4, "clipY");
+
+	texture_path_1 = luaL_checkstring(L, -4);
+	texture_path_2 = luaL_checkstring(L, -3);
+	clip_x = luaL_checkinteger(L, -2);
+	clip_y = luaL_checkinteger(L, -1);
+
+	texture1 = map_add_monster_texture(map, texture_path_1, renderer);
+	texture2 = map_add_monster_texture(map, texture_path_2, renderer);
+
+	texture1->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
+	texture2->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
+
+	lua_pop(L, 4);
+
+	monster = monster_create();
+	monster->clip = (SDL_Rect) { clip_x, clip_y, 16, 16 };
+	monster->sprite->pos = (Position) { x, y };
+	sprite_set_texture(monster->sprite, texture1, 0);
+	sprite_set_texture(monster->sprite, texture2, 1);
+
+	map_add_monster(map, monster);
+
+	return 0;
+}
+
 Map* map_lua_generator_run(SDL_Renderer *renderer)
 {
 	int status, result;
@@ -176,6 +224,9 @@ Map* map_lua_generator_run(SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_map_set_current_room);
 	lua_setglobal(L, "set_current_room");
+
+	lua_pushcfunction(L, l_add_monster);
+	lua_setglobal(L, "add_monster");
 
 	result = lua_pcall(L, 0, LUA_MULTRET, 0);
 	if (result) {

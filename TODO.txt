@@ -2,7 +2,8 @@ x Add walls and stuff to maps
 x Implement simple box collisions
 o Add enemies (generated through lua)
 	x Monster object created
-	- Lua bindings for creation
+	x Lua bindings for creation
+	o Making some better generation and randomeness
 - Hitting enemies
 - Moving enemies
 - Lower levels

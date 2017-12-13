@@ -7,7 +7,7 @@ Sprite* sprite_create_default()
 	Position pos = { 0, 0 };
 
 	Sprite *s = ec_malloc(sizeof(Sprite));
-	*s = (Sprite) { { NULL, NULL }, false, pos, NULL, NULL };
+	*s = (Sprite) { { NULL, NULL }, false, pos, NULL, 0, NULL };
 
 	s->renderTimer = timer_create();
 
@@ -50,20 +50,19 @@ sprite_set_texture(Sprite *s, Texture *t, int index)
 
 void sprite_render(Sprite *s, Camera *cam)
 {
-	static int t_index = 0;
+	if (s->textures[1]) {
+		if (!timer_started(s->renderTimer))
+			timer_start(s->renderTimer);
 
-	if (!timer_started(s->renderTimer))
-		timer_start(s->renderTimer);
-
-	if (timer_get_ticks(s->renderTimer) > 300) {
-		timer_stop(s->renderTimer);
-		timer_start(s->renderTimer);
-		if (s->textures[1])
-			t_index = t_index == 0 ? 1 : 0;
+		if (timer_get_ticks(s->renderTimer) > 300) {
+			timer_stop(s->renderTimer);
+			timer_start(s->renderTimer);
+			s->texture_index = s->texture_index == 0 ? 1 : 0;
+		}
 	}
 
 	Position cameraPos = camera_to_camera_position(cam, &s->pos);
-	texture_render(s->textures[t_index], &cameraPos, cam);
+	texture_render(s->textures[s->texture_index], &cameraPos, cam);
 }
 
 void sprite_destroy(Sprite *sprite)

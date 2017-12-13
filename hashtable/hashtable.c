@@ -38,7 +38,7 @@ ht_create(unsigned int size)
 }
 
 static unsigned int
-hash(Hashtable *table, char *key)
+hash(Hashtable *table, const char *key)
 {
 	unsigned long int hashval = 0;
 	int i = 0;
@@ -52,7 +52,7 @@ hash(Hashtable *table, char *key)
 }
 
 static Entry*
-entry_create(char *key, void *value)
+entry_create(const char *key, void *value)
 {
 	Entry *entry;
 
@@ -65,7 +65,7 @@ entry_create(char *key, void *value)
 }
 
 void
-ht_set(Hashtable *table, char *key, void *val)
+ht_set(Hashtable *table, const char *key, void *val)
 {
 	int hashkey = 0;
 	Entry *newEntry;
@@ -106,7 +106,7 @@ ht_set(Hashtable *table, char *key, void *val)
 }
 
 void*
-ht_get(Hashtable *table, char *key)
+ht_get(Hashtable *table, const char *key)
 {
 	int hashkey = 0;
 	Entry *entry;
@@ -149,6 +149,7 @@ ht_destroy_custom(Hashtable *table, void (*destroy_value)(void *value))
 			next = entry->next;
 			destroy_value(entry->value);
 			entry->value = NULL;
+			free(entry->key);
 			free(entry);
 			entry = next;
 		}

@@ -65,15 +65,19 @@ void handle_player_input(Sprite *sprite, RoomMatrix *matrix, SDL_Event *event)
 	if (event->type == SDL_KEYDOWN) {
 		switch (event->key.keysym.sym) {
 			case SDLK_LEFT:
+			case SDLK_h:
 				move_left(sprite, matrix);
 				break;
 			case SDLK_RIGHT:
+			case SDLK_l:
 				move_right(sprite, matrix);
 				break;
 			case SDLK_UP:
+			case SDLK_k:
 				move_up(sprite, matrix);
 				break;
 			case SDLK_DOWN:
+			case SDLK_j:
 				move_down(sprite, matrix);
 				break;
 		}

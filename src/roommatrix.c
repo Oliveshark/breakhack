@@ -12,8 +12,10 @@ RoomMatrix* roommatrix_create()
 
 void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 {
-	int i, j;
+	int i, j, monster_count;
+	Position monster_matrix_pos;
 	Room *r;
+	Monster *monster;
 
 	roommatrix_reset(rm);
 
@@ -31,6 +33,15 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 				rm->spaces[i][j].lightsource |= r->decorations[i][j]->lightsource;
 			}
 		}
+	}
+
+	monster_count = linkedlist_size(m->monsters);
+	for (i = 0; i < monster_count; ++i) {
+		monster = linkedlist_get(&m->monsters, i);
+		if (!position_in_room(&monster->sprite->pos, &m->currentRoom))
+			continue;
+		monster_matrix_pos = position_to_matrix_coords(&monster->sprite->pos);
+		rm->spaces[monster_matrix_pos.x][monster_matrix_pos.y].occupied = true;
 	}
 }
 

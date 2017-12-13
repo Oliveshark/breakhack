@@ -14,9 +14,9 @@ typedef struct table_t {
 
 Hashtable* ht_create(unsigned int size);
 
-void ht_set(Hashtable*, char *key, void *val);
+void ht_set(Hashtable*, const char *key, void *val);
 
-void* ht_get(Hashtable*, char *key);
+void* ht_get(Hashtable*, const char *key);
 
 void ht_destroy(Hashtable*);
 

@@ -62,7 +62,7 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 }
 
 Texture*
-map_add_monster_texture(Map *map, char *path, SDL_Renderer *renderer)
+map_add_monster_texture(Map *map, const char *path, SDL_Renderer *renderer)
 {
 	Texture *t;
 
@@ -218,7 +218,7 @@ void map_destroy(Map *map)
 		texture_destroy(linkedlist_pop(&map->textures));
 	}
 	while (map->monsters != NULL) {
-		monster_destroy(linkedlist_pop(&map->textures));
+		monster_destroy(linkedlist_pop(&map->monsters));
 	}
 	ht_destroy_custom(map->monsterTextures, (void (*)(void*)) texture_destroy);
 	timer_destroy(map->renderTimer);

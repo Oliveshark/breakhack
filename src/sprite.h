@@ -14,6 +14,7 @@ typedef struct Sprite_t {
 	bool destroyTextures;
 	Position pos;
 	Timer *renderTimer;
+	unsigned int texture_index;
 	void (*handle_event)(struct Sprite_t*, RoomMatrix*, SDL_Event*);
 } Sprite;
 

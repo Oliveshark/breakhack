@@ -1,4 +1,5 @@
 local room_builder = require "data/maproombuilder"
+local monster_gen = require "data/monstergen"
 
 -- Setting up some functions
 local time = os.time
@@ -121,6 +122,8 @@ local map_matrix = generate_path()
 
 -- Print path [Debug]
 -- print_matrix(map_matrix)
+
+monster_gen.add_monster_to_room(map);
 
 for i=1,10 do
 	for j=1,10 do

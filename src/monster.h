@@ -8,6 +8,7 @@
 typedef struct {
 	Sprite *sprite;
 	Stats stats;
+	SDL_Rect clip;
 } Monster;
 
 Monster* monster_create();

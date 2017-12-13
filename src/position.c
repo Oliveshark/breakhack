@@ -28,3 +28,25 @@ Position position_to_room_coords(Position *src)
 
 	return pos;
 }
+
+bool position_in_room(Position *pos, Position *roomPos)
+{
+	unsigned int room_px_width, room_px_height, room_x_px, room_y_px;
+
+	room_px_width = TILE_DIMENSION * MAP_ROOM_WIDTH;
+	room_px_height = TILE_DIMENSION * MAP_ROOM_HEIGHT;
+
+	room_x_px = roomPos->x * room_px_width;
+	room_y_px = roomPos->y * room_px_height;
+
+	if (pos->x < room_x_px)
+		return false;
+	else if (pos->x > room_x_px + room_px_width)
+		return false;
+	else if (pos->y < room_y_px)
+		return false;
+	else if (pos->y > room_y_px + room_px_height)
+		return false;
+
+	return true;
+}
