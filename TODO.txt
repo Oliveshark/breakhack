@@ -1,9 +1,10 @@
 x Add walls and stuff to maps
 x Implement simple box collisions
-o Add enemies (generated through lua)
+x Add enemies (generated through lua)
 	x Monster object created
 	x Lua bindings for creation
-	o Making some better generation and randomeness
+	x Making some better generation and randomeness
+- Move "texture clip" from texture to sprite
 - Hitting enemies
 - Moving enemies
 - Lower levels

@@ -123,8 +123,6 @@ local map_matrix = generate_path()
 -- Print path [Debug]
 -- print_matrix(map_matrix)
 
-monster_gen.add_monster_to_room(map);
-
 for i=1,10 do
 	for j=1,10 do
 		local room = map_matrix[i][j]
@@ -132,6 +130,7 @@ for i=1,10 do
 			set_current_room(map, i-1, j-1);
 			if room.type == "room" then
 				room_builder.build_square_room(map, room)
+				monster_gen.add_monster_to_room(map, i-1, j-1);
 			elseif room.type == "coridoor" then
 				room_builder.build_coridoor_room(map, room)
 			end

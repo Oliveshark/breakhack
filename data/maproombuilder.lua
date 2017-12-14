@@ -170,8 +170,14 @@ local function add_walls_to_room (map)
 
 	if random(2) == 1 then
 		add_decoration(map, 4, 3, repack(lightDecor.candle2))
+	end
+	if random(2) == 1 then
 		add_decoration(map, 11, 3, repack(lightDecor.candle2))
+	end
+	if random(2) == 1 then
 		add_decoration(map, 4, 9, repack(lightDecor.candle2))
+	end
+	if random(2) == 1 then
 		add_decoration(map, 11, 9, repack(lightDecor.candle2))
 	end
 end
