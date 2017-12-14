@@ -24,7 +24,7 @@ has_collided(Sprite *sprite, RoomMatrix *matrix)
 static void
 move_left(Sprite *sprite, RoomMatrix *matrix)
 {
-	sprite->textures[0]->clip.y = 16;
+	sprite->clip.y = 16;
 	sprite->pos.x -= TILE_DIMENSION;
 	if (has_collided(sprite, matrix))
 		sprite->pos.x += TILE_DIMENSION;
@@ -33,7 +33,7 @@ move_left(Sprite *sprite, RoomMatrix *matrix)
 static
 void move_right(Sprite *sprite, RoomMatrix *matrix)
 {
-	sprite->textures[0]->clip.y = 32;
+	sprite->clip.y = 32;
 	sprite->pos.x += TILE_DIMENSION;
 	if (has_collided(sprite, matrix))
 		sprite->pos.x -= TILE_DIMENSION;
@@ -42,7 +42,7 @@ void move_right(Sprite *sprite, RoomMatrix *matrix)
 static
 void move_up(Sprite *sprite, RoomMatrix *matrix)
 {
-	sprite->textures[0]->clip.y = 48;
+	sprite->clip.y = 48;
 	sprite->pos.y -= TILE_DIMENSION;
 	if (has_collided(sprite, matrix))
 		sprite->pos.y += TILE_DIMENSION;
@@ -51,7 +51,7 @@ void move_up(Sprite *sprite, RoomMatrix *matrix)
 static
 void move_down(Sprite *sprite, RoomMatrix *matrix)
 {
-	sprite->textures[0]->clip.y = 0;
+	sprite->clip.y = 0;
 	sprite->pos.y += TILE_DIMENSION;
 	if (has_collided(sprite, matrix))
 		sprite->pos.y -= TILE_DIMENSION;
@@ -81,7 +81,7 @@ void handle_player_input(Sprite *sprite, RoomMatrix *matrix, SDL_Event *event)
 				move_down(sprite, matrix);
 				break;
 		}
-		sprite->textures[0]->clip.x = 16*step;
+		sprite->clip.x = 16*step;
 		if (step == 3)
 			step = 0;
 		else
@@ -121,7 +121,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 
 	sprite_load_texture(player->sprite, asset, 0, renderer);
 	player->sprite->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
-	player->sprite->textures[0]->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
 	player->sprite->textures[0]->dim = (Dimension) {
 		TILE_DIMENSION, TILE_DIMENSION };
 	player->sprite->handle_event = &handle_player_input;

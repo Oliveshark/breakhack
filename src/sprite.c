@@ -7,7 +7,14 @@ Sprite* sprite_create_default()
 	Position pos = { 0, 0 };
 
 	Sprite *s = ec_malloc(sizeof(Sprite));
-	*s = (Sprite) { { NULL, NULL }, false, pos, NULL, 0, NULL };
+	*s = (Sprite) {
+		{ NULL, NULL },
+		(SDL_Rect) { 0, 0, 16, 16 },
+		false, pos,
+		NULL,
+		0,
+		NULL
+	};
 
 	s->renderTimer = timer_create();
 
@@ -62,7 +69,10 @@ void sprite_render(Sprite *s, Camera *cam)
 	}
 
 	Position cameraPos = camera_to_camera_position(cam, &s->pos);
-	texture_render(s->textures[s->texture_index], &cameraPos, cam);
+	texture_render_clip(s->textures[s->texture_index],
+			    &cameraPos,
+			    &s->clip,
+			    cam);
 }
 
 void sprite_destroy(Sprite *sprite)

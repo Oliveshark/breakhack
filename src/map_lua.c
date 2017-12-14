@@ -182,7 +182,7 @@ l_add_monster(lua_State *L)
 	lua_pop(L, 4);
 
 	monster = monster_create();
-	monster->clip = (SDL_Rect) { clip_x, clip_y, 16, 16 };
+	monster->sprite->clip = (SDL_Rect) { clip_x, clip_y, 16, 16 };
 	monster->sprite->pos = (Position) { x, y };
 	sprite_set_texture(monster->sprite, texture1, 0);
 	sprite_set_texture(monster->sprite, texture2, 1);

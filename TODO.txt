@@ -4,8 +4,8 @@ x Add enemies (generated through lua)
 	x Monster object created
 	x Lua bindings for creation
 	x Making some better generation and randomeness
-- Move "texture clip" from texture to sprite
-- Hitting enemies
+x Move "clip" from texture to sprite
+o Hitting enemies
 - Moving enemies
 - Lower levels
 - XP

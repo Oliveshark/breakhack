@@ -11,6 +11,7 @@
 
 typedef struct Sprite_t {
 	Texture* textures[2];
+	SDL_Rect clip;
 	bool destroyTextures;
 	Position pos;
 	Timer *renderTimer;

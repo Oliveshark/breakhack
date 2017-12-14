@@ -9,12 +9,13 @@
 typedef struct {
 	SDL_Texture *texture;
 	Dimension dim;
-	SDL_Rect clip;
 } Texture;
 
 Texture* texture_create(const char *path, SDL_Renderer *renderer);
 
 void texture_render(Texture*, Position*, Camera*);
+
+void texture_render_clip(Texture*, Position*, SDL_Rect*, Camera*);
 
 void texture_destroy(Texture *texture);
 
