@@ -8,9 +8,10 @@
 enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR };
 typedef enum PlayerClass class_t;
 
-typedef struct {
+typedef struct Player_t {
 	Sprite *sprite;
 	Stats stats;
+	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 
 Player* player_create(class_t, SDL_Renderer*);

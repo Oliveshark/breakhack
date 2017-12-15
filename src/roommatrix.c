@@ -25,12 +25,18 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			if (r->tiles[i][j]) {
-				rm->spaces[i][j].occupied = r->tiles[i][j]->collider;
-				rm->spaces[i][j].lightsource = r->tiles[i][j]->lightsource;
+				rm->spaces[i][j].occupied =
+					r->tiles[i][j]->collider;
+
+				rm->spaces[i][j].lightsource =
+					r->tiles[i][j]->lightsource;
 			}
 			if (r->decorations[i][j]) {
-				rm->spaces[i][j].occupied |= r->decorations[i][j]->collider;
-				rm->spaces[i][j].lightsource |= r->decorations[i][j]->lightsource;
+				rm->spaces[i][j].occupied |=
+					r->decorations[i][j]->collider;
+
+				rm->spaces[i][j].lightsource |=
+					r->decorations[i][j]->lightsource;
 			}
 		}
 	}
@@ -40,8 +46,13 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 		monster = linkedlist_get(&m->monsters, i);
 		if (!position_in_room(&monster->sprite->pos, &m->currentRoom))
 			continue;
-		monster_matrix_pos = position_to_matrix_coords(&monster->sprite->pos);
-		rm->spaces[monster_matrix_pos.x][monster_matrix_pos.y].occupied = true;
+		monster_matrix_pos =
+			position_to_matrix_coords(&monster->sprite->pos);
+
+		rm->spaces[monster_matrix_pos.x][monster_matrix_pos.y]
+			.occupied = true;
+		rm->spaces[monster_matrix_pos.x][monster_matrix_pos.y]
+			.monster = monster;
 	}
 }
 
@@ -85,7 +96,8 @@ set_light_for_tile(RoomMatrix *matrix, int x, int y)
 	for (i = x_min; i <= x_max; ++i) {
 		for (j = y_min; j <= y_max; ++j) {
 			lightval = matrix->spaces[i][j].light;
-			distance_modifier = abs(x-i) == abs(y-j) ? abs(x-i) + 1 : max(abs(x-i), abs(y-j));
+			distance_modifier = abs(x-i) == abs(y-j) ?
+				abs(x-i) + 1 : max(abs(x-i), abs(y-j));
 			lightval += 255 - (distance_modifier * 50);
 			lightval = min(255, lightval);
 			lightval = max(0, lightval);
@@ -136,7 +148,7 @@ void roommatrix_reset(RoomMatrix *m)
 			m->spaces[i][j].occupied = false;
 			m->spaces[i][j].lightsource = false;
 			m->spaces[i][j].light = 0;
-			m->spaces[i][j].character = NULL;
+			m->spaces[i][j].monster = NULL;
 			m->spaces[i][j].player = NULL;
 		}
 	}

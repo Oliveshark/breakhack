@@ -5,7 +5,8 @@ x Add enemies (generated through lua)
 	x Lua bindings for creation
 	x Making some better generation and randomeness
 x Move "clip" from texture to sprite
-o Hitting enemies
+x Hitting enemies
+- Nicer enemy hits (Text textures, healthbars?)
 - Moving enemies
 - Lower levels
 - XP

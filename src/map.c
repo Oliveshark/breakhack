@@ -76,6 +76,34 @@ map_add_monster_texture(Map *map, const char *path, SDL_Renderer *renderer)
 }
 
 void
+map_clear_dead_monsters(Map *map)
+{
+	LinkedList *last, *current, *next;
+
+	last = NULL;
+	current = map->monsters;
+
+	while (current != NULL) {
+		if (((Monster*) current->data)->stats.hp <= 0) {
+			if (last == NULL)
+				map->monsters = current->next;
+			else
+				last->next = current->next;
+
+			monster_destroy(current->data);
+			current->data = NULL;
+			next = current->next;
+			current->next = NULL;
+			linkedlist_destroy(&current);
+			current = next;
+			continue;
+		}
+		last = current;
+		current = current->next;
+	}
+}
+
+void
 map_add_monster(Map *map, Monster *m)
 {
 	linkedlist_append(&map->monsters, m);

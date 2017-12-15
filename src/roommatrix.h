@@ -8,13 +8,15 @@
 
 typedef struct Sprite_t Sprite;
 typedef struct Map_t Map;
+typedef struct Monster_t Monster;
+typedef struct Player_t Player;
 
 typedef struct {
 	bool occupied;
 	bool lightsource;
 	unsigned int light;
-	Sprite* character;
-	Sprite* player;
+	Monster* monster;
+	Player* player;
 } RoomSpace;
 
 typedef struct {

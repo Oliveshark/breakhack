@@ -16,7 +16,6 @@ typedef struct Sprite_t {
 	Position pos;
 	Timer *renderTimer;
 	unsigned int texture_index;
-	void (*handle_event)(struct Sprite_t*, RoomMatrix*, SDL_Event*);
 } Sprite;
 
 Sprite* sprite_create();

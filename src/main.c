@@ -30,9 +30,9 @@ bool initSDL()
 	//Dimension dim = (Dimension) { 1920, 1080 };
 	double scale = 1.0;
 
-	if (dim.height > 1080) {
+	if (dim.height > 768) {
 		printf("[**] Hi resolution screen detected (%u x %u)\n", dim.width, dim.height);
-		scale = ((double) dim.height)/1080;
+		scale = ((double) dim.height)/768;
 		printf("[**] Scaling by %f\n", scale);
 	}
 
@@ -115,9 +115,9 @@ bool handle_events()
 		if (event.type == SDL_QUIT) {
 			quit = true;
 		} else {
-			gPlayer->sprite->handle_event(gPlayer->sprite,
-						      gRoomMatrix,
-						      &event);
+			gPlayer->handle_event(gPlayer,
+					      gRoomMatrix,
+					      &event);
 			camera_follow_position(&gCamera, &gPlayer->sprite->pos);
 			map_set_current_room(gMap, &gPlayer->sprite->pos);
 		}
@@ -136,6 +136,7 @@ void run()
 		timer_start(fpsTimer);
 
 		quit = handle_events();
+		map_clear_dead_monsters(gMap);
 		roommatrix_populate_from_map(gRoomMatrix, gMap);
 		roommatrix_add_lightsource(gRoomMatrix,
 					   &gPlayer->sprite->pos);

@@ -120,8 +120,10 @@ void linkedlist_destroy(LinkedList **head)
 
 	linkedlist_destroy(&(*head)->next);
 
-	free((*head)->data);
-	(*head)->data = NULL;
+	if ((*head)->data != NULL) {
+		free((*head)->data);
+		(*head)->data = NULL;
+	}
 	free(*head);
 	*head = NULL;
 }

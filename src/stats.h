@@ -2,10 +2,14 @@
 #define	STATS_H_
 
 typedef struct {
-	unsigned int hp;	/* Hit points 		*/
-	unsigned int dmg;	/* Damage modifier */
-	unsigned int atk;	/* Attack rating */
-	unsigned int speed;	/* Speed */
+	int hp;	/* Hit points 		*/
+	int dmg;	/* Damage modifier */
+	int atk;	/* Attack rating */
+	int def;	/* Defence rating */
+	int speed;	/* Speed */
 } Stats;
+
+void
+stats_fight(Stats *attacker, Stats *defender);
 
 #endif // STATS_H_

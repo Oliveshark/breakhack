@@ -5,7 +5,7 @@
 #include "sprite.h"
 #include "stats.h"
 
-typedef struct {
+typedef struct Monster_t {
 	Sprite *sprite;
 	Stats stats;
 } Monster;

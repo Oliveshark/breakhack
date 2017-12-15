@@ -12,8 +12,7 @@ Sprite* sprite_create_default()
 		(SDL_Rect) { 0, 0, 16, 16 },
 		false, pos,
 		NULL,
-		0,
-		NULL
+		0
 	};
 
 	s->renderTimer = timer_create();

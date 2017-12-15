@@ -44,6 +44,7 @@ add_executable(breakhack
 	src/roommatrix
 	src/position
 	src/monster
+	src/stats
 	)
 
 target_link_libraries(breakhack
