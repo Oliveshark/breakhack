@@ -45,6 +45,7 @@ add_executable(breakhack
 	src/position
 	src/monster
 	src/stats
+	src/actiontext
 	)
 
 target_link_libraries(breakhack

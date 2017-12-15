@@ -9,7 +9,7 @@ typedef struct {
 	int speed;	/* Speed */
 } Stats;
 
-void
+unsigned int
 stats_fight(Stats *attacker, Stats *defender);
 
 #endif // STATS_H_

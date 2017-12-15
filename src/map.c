@@ -68,7 +68,8 @@ map_add_monster_texture(Map *map, const char *path, SDL_Renderer *renderer)
 
 	t = ht_get(map->monsterTextures, path);
 	if (!t) {
-		t = texture_create(path, renderer);
+		t = texture_create();
+		texture_load_from_file(t, path, renderer);
 		ht_set(map->monsterTextures, path, t);
 	}
 
@@ -111,7 +112,8 @@ map_add_monster(Map *map, Monster *m)
 
 int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
 {
-	Texture *t = texture_create(path, renderer);
+	Texture *t = texture_create();
+	texture_load_from_file(t, path, renderer);
 	linkedlist_append(&map->textures, t);
 	return linkedlist_size(map->textures) - 1;
 }

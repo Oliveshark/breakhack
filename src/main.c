@@ -65,12 +65,20 @@ bool initSDL()
 	}
 	if (SDL_RenderSetLogicalSize(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT) < 0)
 	{
-		printf("[!!] Unable to initiate scaling: %s\n", SDL_GetError());
+		printf("[!!] Unable to initiate scaling: %s\n",
+		       SDL_GetError());
 		return false;
 	}
 
 	if ( (IMG_Init(imgFlags) & imgFlags) == 0 ) {
-		printf("[!!] Unable to initiate img loading: %s\n", IMG_GetError());
+		printf("[!!] Unable to initiate img loading: %s\n",
+		       IMG_GetError());
+		return false;
+	}
+
+	if ( TTF_Init() == -1 ) {
+		printf("[!!] Unable to initiate ttf library: %s\n",
+		       TTF_GetError());
 		return false;
 	}
 		

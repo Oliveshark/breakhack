@@ -2,16 +2,27 @@
 #define	TEXTURE_H_
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "dimension.h"
 #include "position.h"
 #include "camera.h"
 
 typedef struct {
 	SDL_Texture *texture;
+	TTF_Font *font;
 	Dimension dim;
 } Texture;
 
-Texture* texture_create(const char *path, SDL_Renderer *renderer);
+Texture* texture_create();
+
+void texture_load_from_file(Texture*, const char *path, SDL_Renderer*);
+
+void texture_load_font(Texture*, const char *path, unsigned int size);
+
+void texture_load_from_text(Texture*,
+							const char *text,
+							SDL_Color,
+							SDL_Renderer*);
 
 void texture_render(Texture*, Position*, Camera*);
 

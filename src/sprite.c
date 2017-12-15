@@ -39,7 +39,8 @@ sprite_load_texture(Sprite *sprite,
 		sprite->textures[index] = NULL;
 	}
 
-	sprite->textures[index] = texture_create(path, renderer);
+	sprite->textures[index] = texture_create();
+	texture_load_from_file(sprite->textures[index], path, renderer);
 	sprite->destroyTextures = true;
 }
 
