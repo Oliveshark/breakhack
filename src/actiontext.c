@@ -35,7 +35,7 @@ actiontext_render(ActionText *t, Camera *cam)
 		timer_start(t->timer);
 
 	Position cameraPos = camera_to_camera_position(cam, &t->pos);
-	if (timer_get_ticks(t->timer) < 100) {
+	if (timer_get_ticks(t->timer) < 300) {
 		texture_render(t->texture, &cameraPos, cam);
 	} else {
 		timer_stop(t->timer);

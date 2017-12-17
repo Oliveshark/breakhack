@@ -11,10 +11,15 @@ typedef enum PlayerClass class_t;
 typedef struct Player_t {
 	Sprite *sprite;
 	Stats stats;
+	unsigned int xp;
+	unsigned int total_steps;
+	unsigned int steps;
 	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 
 Player* player_create(class_t, SDL_Renderer*);
+
+void player_print(Player*);
 
 void player_destroy(Player*);
 

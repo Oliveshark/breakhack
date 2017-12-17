@@ -6,10 +6,14 @@ x Add enemies (generated through lua)
 	x Making some better generation and randomeness
 x Move "clip" from texture to sprite
 x Hitting enemies
-- Nicer enemy hits (Text textures, healthbars?)
-- Moving enemies
+x Nicer enemy hits (Text textures, healthbars?)
+	- This could need some love later on. (Misses seem to be broken) (Add hits to stats)
+x Moving enemies
+	x Stupid roaming enemies
+	- Smart agressive enemies
+	- Fleeing enemies
 - Lower levels
-- XP
+o XP
 - gui
 - Items
 - More gui

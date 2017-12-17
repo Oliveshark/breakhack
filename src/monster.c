@@ -1,7 +1,9 @@
+#include <assert.h>
 #include "monster.h"
 #include "util.h"
 #include "player.h"
 #include "monster.h"
+#include "random.h"
 
 static void
 monster_load_texts(Monster *m, SDL_Renderer *renderer)
@@ -27,7 +29,7 @@ monster_create(SDL_Renderer *renderer)
 	Monster *m = ec_malloc(sizeof(Monster));
 	m->sprite = sprite_create();
 	m->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	m->stats = (Stats) { 11, 1, 0, 0, 1 };
+	m->stats = (Stats) { 11, 1, 0, 0, 1, 1 };
 
 	monster_load_texts(m, renderer);
 
@@ -43,6 +45,93 @@ monster_update_pos(Monster *m, Position pos)
 	textPos.y += 10;
 	m->hitText->pos = textPos;
 	m->missText->pos = textPos;
+}
+
+static bool
+has_collided(Monster *monster, RoomMatrix *matrix)
+{
+	if (!position_in_room(&monster->sprite->pos, &matrix->roomPos))
+		return true;
+
+	Position roomPos = position_to_matrix_coords(&monster->sprite->pos);
+	RoomSpace *space = &matrix->spaces[roomPos.x][roomPos.y];
+	return space->occupied;
+}
+
+static bool
+move_left(Monster *m, RoomMatrix *rm)
+{
+	m->sprite->pos.x -= TILE_DIMENSION;
+	if (has_collided(m, rm)) {
+	    m->sprite->pos.x += TILE_DIMENSION;
+	    return false;
+	}
+	return true;
+}
+
+static bool
+move_right(Monster *m, RoomMatrix *rm)
+{
+	m->sprite->pos.x += TILE_DIMENSION;
+	if (has_collided(m, rm)) {
+	    m->sprite->pos.x -= TILE_DIMENSION;
+	    return false;
+	}
+	return true;
+}
+
+static bool
+move_up(Monster *m, RoomMatrix *rm)
+{
+	m->sprite->pos.y -= TILE_DIMENSION;
+	if (has_collided(m, rm)) {
+	    m->sprite->pos.y += TILE_DIMENSION;
+	    return false;
+	}
+	return true;
+}
+
+static bool
+move_down(Monster *m, RoomMatrix *rm)
+{
+	m->sprite->pos.y += TILE_DIMENSION;
+	if (has_collided(m, rm)) {
+	    m->sprite->pos.y -= TILE_DIMENSION;
+	    return false;
+	}
+	return true;
+}
+
+void
+monster_move(Monster *m, RoomMatrix *rm)
+{
+	unsigned int i, maxMoveAttempts = 6;
+	Position monsterRoomPos;
+
+	if (get_random(4) == 0)
+		return;
+
+	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
+	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = false;
+	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = NULL;
+
+	for (i = 0; i < maxMoveAttempts; ++i) {
+		int move = get_random(3);
+		if (move == 0 && move_left(m, rm))
+			break;
+		else if (move == 1 && move_right(m, rm))
+			break;
+		else if (move == 2 && move_up(m, rm))
+			break;
+		else if (move == 3 && move_down(m, rm))
+			break;
+	}
+
+	monster_update_pos(m, m->sprite->pos);
+
+	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
+	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = true;
+	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = m;
 }
 
 void

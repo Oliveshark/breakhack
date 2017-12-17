@@ -29,6 +29,12 @@ Position position_to_room_coords(Position *src)
 	return pos;
 }
 
+bool
+position_equals(const Position *p1, const Position *p2)
+{
+	return p1->x == p2->x && p1->y == p2->y;
+}
+
 bool position_in_room(Position *pos, Position *roomPos)
 {
 	unsigned int room_px_width, room_px_height, room_x_px, room_y_px;

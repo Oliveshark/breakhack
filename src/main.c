@@ -104,6 +104,7 @@ bool init()
 		gCamera.renderer = gRenderer;
 		gRoomMatrix = roommatrix_create();
 	}
+
 	return result;
 }
 
@@ -149,6 +150,16 @@ void run()
 		roommatrix_add_lightsource(gRoomMatrix,
 					   &gPlayer->sprite->pos);
 		roommatrix_build_lightmap(gRoomMatrix);
+
+		if (gPlayer->steps == gPlayer->stats.speed) {
+			player_print(gPlayer);
+			gPlayer->steps = 0;
+			Position rp =
+				position_to_matrix_coords(&gPlayer->sprite->pos);
+			gRoomMatrix->spaces[rp.x][rp.y].occupied = true;
+			gRoomMatrix->spaces[rp.x][rp.y].player = gPlayer;
+			map_move_monsters(gMap, gRoomMatrix);
+		}
 
 		SDL_RenderClear(gRenderer);
 

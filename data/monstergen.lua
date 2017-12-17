@@ -83,6 +83,15 @@ local enemies = {
 	{ texturePaths.pest0, texturePaths.pest1, 16, 112 },
 	{ texturePaths.pest0, texturePaths.pest1, 32, 112 },
 	{ texturePaths.pest0, texturePaths.pest1, 48, 112 },
+
+	{ texturePaths.undead0, texturePaths.undead1,   0, 32 };
+	{ texturePaths.undead0, texturePaths.undead1,  16, 32 };
+	{ texturePaths.undead0, texturePaths.undead1,  32, 32 };
+	{ texturePaths.undead0, texturePaths.undead1,  48, 32 };
+	{ texturePaths.undead0, texturePaths.undead1,  64, 32 };
+	{ texturePaths.undead0, texturePaths.undead1,  80, 32 };
+	{ texturePaths.undead0, texturePaths.undead1,  96, 32 };
+	{ texturePaths.undead0, texturePaths.undead1, 112, 32 };
 }
 
 local function repack(data)

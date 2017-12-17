@@ -48,9 +48,11 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile*);
 
 Texture* map_add_monster_texture(Map*, const char *path, SDL_Renderer*);
 
-void map_clear_dead_monsters(Map*);
-
 void map_add_monster(Map*, Monster*);
+
+void map_move_monsters(Map*, RoomMatrix*);
+
+void map_clear_dead_monsters(Map*);
 
 void map_render(Map*, Camera*);
 

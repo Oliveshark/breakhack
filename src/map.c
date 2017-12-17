@@ -110,6 +110,19 @@ map_add_monster(Map *map, Monster *m)
 	linkedlist_append(&map->monsters, m);
 }
 
+void
+map_move_monsters(Map *map, RoomMatrix *rm)
+{
+	LinkedList *m = map->monsters;
+	while (m) {
+		Monster *monster = m->data;
+		m = m->next;
+		if (!position_in_room(&monster->sprite->pos, &map->currentRoom))
+			continue;
+		monster_move(monster, rm);
+	}
+}
+
 int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
 {
 	Texture *t = texture_create();
@@ -156,7 +169,8 @@ void map_tile_render(Map *map, MapTile *tile, Position *pos, Camera *cam)
 
 void map_render(Map *map, Camera *cam)
 {
-	unsigned int i, j, monster_count;
+	unsigned int i, j;
+	LinkedList *monsterItem;
 	Room *room;
 
 	if (!timer_started(map->renderTimer)) {
@@ -184,9 +198,10 @@ void map_render(Map *map, Camera *cam)
 		}
 	}
 
-	monster_count = linkedlist_size(map->monsters);
-	for (i = 0; i < monster_count; ++i) {
-		Monster *monster = linkedlist_get(&map->monsters, i);
+	monsterItem = map->monsters;
+	while (monsterItem) {
+		Monster *monster = monsterItem->data;
+		monsterItem = monsterItem->next;
 		monster_render(monster, cam);
 	}
 }

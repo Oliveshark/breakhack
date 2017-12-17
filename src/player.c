@@ -3,11 +3,11 @@
 #include "monster.h"
 
 static Stats classStats[] = {
-	(Stats) { 11, 5, 7, 2, 1 }, /* ENGINEER */
-	(Stats) { 11, 5, 7, 2, 1 }, /* MAGE */
-	(Stats) { 11, 5, 7, 2, 1 }, /* PALADIN */
-	(Stats) { 11, 5, 7, 2, 2 }, /* ROGUE */
-	(Stats) { 11, 5, 7, 2, 1 }, /* WARRIOR */
+	(Stats) { 11, 5, 7, 2, 1, 1 }, /* ENGINEER */
+	(Stats) { 11, 5, 7, 2, 1, 1 }, /* MAGE */
+	(Stats) { 11, 5, 7, 2, 1, 1 }, /* PALADIN */
+	(Stats) { 11, 5, 7, 2, 2, 1 }, /* ROGUE */
+	(Stats) { 11, 5, 7, 2, 1, 1 }, /* WARRIOR */
 };
 
 static bool 
@@ -27,13 +27,31 @@ has_collided(Player *player, RoomMatrix *matrix)
 	if (space->monster != NULL) {
 		unsigned int hit = stats_fight(&player->stats,
 					       &space->monster->stats);
-		if (hit > 0)
+		if (hit > 0) {
 			space->monster->hitText->active = true;
-		else
+			space->monster->missText->active = false;
+		} else {
+			// TODO(Linus): The misses seem to be missing
 			space->monster->missText->active = true;
+			space->monster->hitText->active = false;
+		}
+
+		if (space->monster->stats.hp <= 0) {
+			// TODO(Linus): This needs some love later on.
+			player->xp += 10;
+		}
 	}
 
 	return collided;
+}
+
+static void
+player_step(Player *p, RoomMatrix* m)
+{
+	Position pos = position_to_matrix_coords(&p->sprite->pos);
+	m->spaces[pos.x][pos.y].occupied = true;
+	p->total_steps++;
+	p->steps++;
 }
 
 static void
@@ -41,8 +59,10 @@ move_left(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 16;
 	player->sprite->pos.x -= TILE_DIMENSION;
-	if (has_collided(player, matrix))
+	if (has_collided(player, matrix)) {
 		player->sprite->pos.x += TILE_DIMENSION;
+	}
+	player_step(player, matrix);
 }
 
 static
@@ -50,8 +70,10 @@ void move_right(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 32;
 	player->sprite->pos.x += TILE_DIMENSION;
-	if (has_collided(player, matrix))
+	if (has_collided(player, matrix)) {
 		player->sprite->pos.x -= TILE_DIMENSION;
+	}
+	player_step(player, matrix);
 }
 
 static
@@ -59,8 +81,10 @@ void move_up(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 48;
 	player->sprite->pos.y -= TILE_DIMENSION;
-	if (has_collided(player, matrix))
+	if (has_collided(player, matrix)) {
 		player->sprite->pos.y += TILE_DIMENSION;
+	}
+	player_step(player, matrix);
 }
 
 static
@@ -68,8 +92,10 @@ void move_down(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 0;
 	player->sprite->pos.y += TILE_DIMENSION;
-	if (has_collided(player, matrix))
+	if (has_collided(player, matrix)) {
 		player->sprite->pos.y -= TILE_DIMENSION;
+	}
+	player_step(player, matrix);
 }
 
 static
@@ -109,6 +135,9 @@ player_create(class_t class, SDL_Renderer *renderer)
 {
 	Player *player = malloc(sizeof(Player));
 	player->sprite = sprite_create();
+	player->total_steps = 0;
+	player->steps = 0;
+	player->xp = 0;
 
 	char asset[100];
 	switch (class) {
@@ -142,6 +171,21 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->handle_event = &handle_player_input;
 
 	return player;
+}
+
+void
+player_print(Player *p)
+{
+	Position roomPos = position_to_matrix_coords(&p->sprite->pos);
+	Position pos = p->sprite->pos;
+
+	printf("\n");
+	printf("--------=== <[ Player Stats ]> ===--------\n");
+	printf("HP: %u\n", p->stats.hp);
+	printf("Level: %u   XP: %u\n", p->stats.lvl, p->xp);
+	printf("Pos: %dx%d  RoomPos: %dx%d\n", pos.x, pos.y, roomPos.x, roomPos.y);
+	printf("Steps: %u\n", p->total_steps);
+	printf("------------------------------------------\n");
 }
 
 void

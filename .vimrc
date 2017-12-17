@@ -1,3 +1,3 @@
-nnoremap <F1> :Make -C build --no-print-directory -l<cr>
-set makeprg=make\ -C\ build\ --no-print-directory\ -l
+nnoremap <F1> :Make<cr>
+au FileType c setl makeprg=ninja\ -C\ build
 let g:syntastic_c_include_dirs = [ 'linkedlist', 'hashtable' ]

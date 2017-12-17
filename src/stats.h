@@ -7,6 +7,7 @@ typedef struct {
 	int atk;	/* Attack rating */
 	int def;	/* Defence rating */
 	int speed;	/* Speed */
+	int lvl;	/* Level */
 } Stats;
 
 unsigned int

@@ -12,10 +12,11 @@ RoomMatrix* roommatrix_create()
 
 void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 {
-	int i, j, monster_count;
+	int i, j;
 	Position monster_matrix_pos;
 	Room *r;
 	Monster *monster;
+	LinkedList *monsterItem;
 
 	roommatrix_reset(rm);
 
@@ -41,11 +42,14 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 		}
 	}
 
-	monster_count = linkedlist_size(m->monsters);
-	for (i = 0; i < monster_count; ++i) {
-		monster = linkedlist_get(&m->monsters, i);
+	monsterItem = m->monsters;
+	while (monsterItem) {
+		monster = monsterItem->data;
+		monsterItem = monsterItem->next;
+
 		if (!position_in_room(&monster->sprite->pos, &m->currentRoom))
 			continue;
+
 		monster_matrix_pos =
 			position_to_matrix_coords(&monster->sprite->pos);
 

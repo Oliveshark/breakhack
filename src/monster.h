@@ -17,6 +17,8 @@ Monster* monster_create(SDL_Renderer*);
 
 void monster_update_pos(Monster*, Position);
 
+void monster_move(Monster*, RoomMatrix*);
+
 void monster_render(Monster*, Camera*);
 
 void monster_destroy(Monster*);
