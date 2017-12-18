@@ -10,10 +10,13 @@ x Nicer enemy hits (Text textures, healthbars?)
 	- This could need some love later on. (Misses seem to be broken) (Add hits to stats)
 x Moving enemies
 	x Stupid roaming enemies
-	- Smart agressive enemies
-	- Fleeing enemies
+	x Smart agressive enemies
+	x Fleeing enemies
+	- Add hooks to lua
 - Lower levels
 o XP
+	- Some xp amount logic
+	- Level threshholds
 - gui
 - Items
 - More gui

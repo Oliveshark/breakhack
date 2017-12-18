@@ -157,6 +157,7 @@ void roommatrix_reset(RoomMatrix *m)
 		}
 	}
 	m->roomPos = (Position) { 0, 0 };
+	m->playerRoomPos = (Position) { 1, 1 };
 }
 
 void roommatrix_destroy(RoomMatrix *m)

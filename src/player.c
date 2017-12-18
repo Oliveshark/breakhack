@@ -31,7 +31,6 @@ has_collided(Player *player, RoomMatrix *matrix)
 			space->monster->hitText->active = true;
 			space->monster->missText->active = false;
 		} else {
-			// TODO(Linus): The misses seem to be missing
 			space->monster->missText->active = true;
 			space->monster->hitText->active = false;
 		}
@@ -48,8 +47,6 @@ has_collided(Player *player, RoomMatrix *matrix)
 static void
 player_step(Player *p, RoomMatrix* m)
 {
-	Position pos = position_to_matrix_coords(&p->sprite->pos);
-	m->spaces[pos.x][pos.y].occupied = true;
 	p->total_steps++;
 	p->steps++;
 }
@@ -181,10 +178,10 @@ player_print(Player *p)
 
 	printf("\n");
 	printf("--------=== <[ Player Stats ]> ===--------\n");
-	printf("HP: %u\n", p->stats.hp);
-	printf("Level: %u   XP: %u\n", p->stats.lvl, p->xp);
+	printf("HP: %d\n", p->stats.hp);
+	printf("Level: %d   XP: %d\n", p->stats.lvl, p->xp);
 	printf("Pos: %dx%d  RoomPos: %dx%d\n", pos.x, pos.y, roomPos.x, roomPos.y);
-	printf("Steps: %u\n", p->total_steps);
+	printf("Steps: %d\n", p->total_steps);
 	printf("------------------------------------------\n");
 }
 

@@ -30,6 +30,7 @@ monster_create(SDL_Renderer *renderer)
 	m->sprite = sprite_create();
 	m->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
 	m->stats = (Stats) { 11, 1, 0, 0, 1, 1 };
+	m->state = AGRESSIVE;
 
 	monster_load_texts(m, renderer);
 
@@ -55,6 +56,11 @@ has_collided(Monster *monster, RoomMatrix *matrix)
 
 	Position roomPos = position_to_matrix_coords(&monster->sprite->pos);
 	RoomSpace *space = &matrix->spaces[roomPos.x][roomPos.y];
+
+	if (space->player) {
+		stats_fight(&monster->stats, &space->player->stats);
+	}
+
 	return space->occupied;
 }
 
@@ -102,18 +108,13 @@ move_down(Monster *m, RoomMatrix *rm)
 	return true;
 }
 
-void
-monster_move(Monster *m, RoomMatrix *rm)
+static void
+monster_drunk_walk(Monster *m, RoomMatrix *rm)
 {
 	unsigned int i, maxMoveAttempts = 6;
-	Position monsterRoomPos;
 
 	if (get_random(2) == 0)
 		return;
-
-	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
-	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = false;
-	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = NULL;
 
 	for (i = 0; i < maxMoveAttempts; ++i) {
 		int move = get_random(3);
@@ -126,6 +127,78 @@ monster_move(Monster *m, RoomMatrix *rm)
 		else if (move == 3 && move_down(m, rm))
 			break;
 	}
+}
+
+static void
+monster_agressive_walk(Monster *m, RoomMatrix *rm)
+{
+	int x_dist, y_dist;
+	Position mPos;
+
+	mPos = position_to_matrix_coords(&m->sprite->pos);
+
+	x_dist = mPos.x - rm->playerRoomPos.x;
+	y_dist = mPos.y - rm->playerRoomPos.y;
+
+
+	if (abs(x_dist) > abs(y_dist)) {
+		if (x_dist > 0)
+			move_left(m, rm);
+		else
+			move_right(m, rm);
+	} else {
+		if (y_dist > 0)
+			move_up(m, rm);
+		else
+			move_down(m, rm);
+	}
+}
+
+static void
+monster_coward_walk(Monster *m, RoomMatrix *rm)
+{
+	int x_dist, y_dist;
+	Position mPos;
+
+	mPos = position_to_matrix_coords(&m->sprite->pos);
+
+	x_dist = mPos.x - rm->playerRoomPos.x;
+	y_dist = mPos.y - rm->playerRoomPos.y;
+
+
+	if (abs(x_dist) > abs(y_dist)) {
+		if (x_dist > 0)
+			move_right(m, rm);
+		else
+			move_left(m, rm);
+	} else {
+		if (y_dist > 0)
+			move_down(m, rm);
+		else
+			move_up(m, rm);
+	}
+}
+
+void
+monster_move(Monster *m, RoomMatrix *rm)
+{
+	Position monsterRoomPos;
+
+	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
+	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = false;
+	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = NULL;
+
+	switch (m->state) {
+		case PASSIVE:
+			monster_drunk_walk(m, rm);
+			break;
+		case AGRESSIVE:
+			monster_agressive_walk(m, rm);
+			break;
+		case COWARD:
+			monster_coward_walk(m, rm);
+			break;
+	};
 
 	monster_update_pos(m, m->sprite->pos);
 

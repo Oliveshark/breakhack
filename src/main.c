@@ -158,6 +158,7 @@ void run()
 				position_to_matrix_coords(&gPlayer->sprite->pos);
 			gRoomMatrix->spaces[rp.x][rp.y].occupied = true;
 			gRoomMatrix->spaces[rp.x][rp.y].player = gPlayer;
+			gRoomMatrix->playerRoomPos = rp;
 			map_move_monsters(gMap, gRoomMatrix);
 		}
 

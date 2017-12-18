@@ -6,11 +6,14 @@
 #include "stats.h"
 #include "actiontext.h"
 
+typedef enum { PASSIVE, AGRESSIVE, COWARD } State;
+
 typedef struct Monster_t {
 	Sprite *sprite;
 	ActionText *hitText;
 	ActionText *missText;
 	Stats stats;
+	State state;
 } Monster;
 
 Monster* monster_create(SDL_Renderer*);

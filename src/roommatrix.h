@@ -22,6 +22,7 @@ typedef struct {
 typedef struct {
 	RoomSpace spaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	Position roomPos;
+	Position playerRoomPos;
 } RoomMatrix;
 
 RoomMatrix* roommatrix_create();
