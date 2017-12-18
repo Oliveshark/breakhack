@@ -179,9 +179,9 @@ player_print(Player *p)
 	printf("\n");
 	printf("--------=== <[ Player Stats ]> ===--------\n");
 	printf("HP: %d\n", p->stats.hp);
-	printf("Level: %d   XP: %d\n", p->stats.lvl, p->xp);
+	printf("Level: %d   XP: %u\n", p->stats.lvl, p->xp);
 	printf("Pos: %dx%d  RoomPos: %dx%d\n", pos.x, pos.y, roomPos.x, roomPos.y);
-	printf("Steps: %d\n", p->total_steps);
+	printf("Steps: %u\n", p->total_steps);
 	printf("------------------------------------------\n");
 }
 
