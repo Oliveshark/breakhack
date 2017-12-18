@@ -5,6 +5,11 @@
 unsigned int
 get_random(unsigned int max)
 {
-	srand(time(NULL));
+	static bool seeded = false;
+	if (!seeded) {
+		srand(time(NULL));
+		seeded = true;
+	}
+
 	return rand() % (max + 1);
 }

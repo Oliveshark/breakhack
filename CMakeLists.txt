@@ -47,6 +47,7 @@ add_executable(breakhack
 	src/stats
 	src/actiontext
 	src/random
+	src/pathfind
 	)
 
 target_link_libraries(breakhack

@@ -108,7 +108,7 @@ monster_move(Monster *m, RoomMatrix *rm)
 	unsigned int i, maxMoveAttempts = 6;
 	Position monsterRoomPos;
 
-	if (get_random(4) == 0)
+	if (get_random(2) == 0)
 		return;
 
 	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);

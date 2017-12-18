@@ -37,6 +37,8 @@ local texturePaths = {
 }
 
 local enemies = {
+
+	-- PESTS
 	{ texturePaths.pest0, texturePaths.pest1,   0, 0 },
 	{ texturePaths.pest0, texturePaths.pest1,  16, 0 },
 	{ texturePaths.pest0, texturePaths.pest1,  32, 0 },
@@ -83,6 +85,25 @@ local enemies = {
 	{ texturePaths.pest0, texturePaths.pest1, 16, 112 },
 	{ texturePaths.pest0, texturePaths.pest1, 32, 112 },
 	{ texturePaths.pest0, texturePaths.pest1, 48, 112 },
+
+	-- UNDEAD
+	{ texturePaths.undead0, texturePaths.undead1,   0,  0 };
+	{ texturePaths.undead0, texturePaths.undead1,  16,  0 };
+	{ texturePaths.undead0, texturePaths.undead1,  32,  0 };
+	{ texturePaths.undead0, texturePaths.undead1,  48,  0 };
+	{ texturePaths.undead0, texturePaths.undead1,  64,  0 };
+	{ texturePaths.undead0, texturePaths.undead1,  80,  0 };
+	{ texturePaths.undead0, texturePaths.undead1,  96,  0 };
+	{ texturePaths.undead0, texturePaths.undead1, 112,  0 };
+
+	{ texturePaths.undead0, texturePaths.undead1,   0, 16 };
+	{ texturePaths.undead0, texturePaths.undead1,  16, 16 };
+	{ texturePaths.undead0, texturePaths.undead1,  32, 16 };
+	{ texturePaths.undead0, texturePaths.undead1,  48, 16 };
+	{ texturePaths.undead0, texturePaths.undead1,  64, 16 };
+	{ texturePaths.undead0, texturePaths.undead1,  80, 16 };
+	{ texturePaths.undead0, texturePaths.undead1,  96, 16 };
+	{ texturePaths.undead0, texturePaths.undead1, 112, 16 };
 
 	{ texturePaths.undead0, texturePaths.undead1,   0, 32 };
 	{ texturePaths.undead0, texturePaths.undead1,  16, 32 };
