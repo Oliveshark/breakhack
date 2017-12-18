@@ -43,6 +43,8 @@ player_step(Player *p, RoomMatrix* m)
 {
 	p->total_steps++;
 	p->steps++;
+	p->missText->pos = p->sprite->pos;
+	p->hitText->pos = p->sprite->pos;
 }
 
 static void
@@ -121,6 +123,24 @@ void handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 	}
 }
 
+static void
+player_load_texts(Player *p, SDL_Renderer *renderer)
+{
+	ActionText *t = actiontext_create();
+	actiontext_load_font(t, "assets/GUI/SDS_6x6.ttf", 14);
+	t->color = (SDL_Color) { 255, 100, 0 };
+	actiontext_set_text(t, "HIT", renderer);
+	t->pos = p->sprite->pos;
+	p->hitText = t;
+
+	t = actiontext_create();
+	actiontext_load_font(t, "assets/GUI/SDS_6x6.ttf", 14);
+	t->color = (SDL_Color) { 255, 255, 0 };
+	actiontext_set_text(t, "MISS", renderer);
+	t->pos = p->sprite->pos;
+	p->missText = t;
+}
+
 Player* 
 player_create(class_t class, SDL_Renderer *renderer)
 {
@@ -161,10 +181,32 @@ player_create(class_t class, SDL_Renderer *renderer)
 		TILE_DIMENSION, TILE_DIMENSION };
 	player->handle_event = &handle_player_input;
 
+	player_load_texts(player, renderer);
+
 	return player;
 }
 
 void
+player_hit(Player *p, unsigned int dmg)
+{
+	if (dmg > 0) {
+		p->hitText->active = true;
+		p->missText->active = false;
+	} else {
+		p->missText->active = true;
+		p->hitText->active = false;
+	}
+}
+
+void
+player_render(Player *player, Camera *cam)
+{
+	sprite_render(player->sprite, cam);
+	actiontext_render(player->hitText, cam);
+	actiontext_render(player->missText, cam);
+}
+
+static void
 player_print(Player *p)
 {
 	Position roomPos = position_to_matrix_coords(&p->sprite->pos);
@@ -180,10 +222,19 @@ player_print(Player *p)
 }
 
 void
+player_reset_steps(Player *p)
+{
+	p->steps = 0;
+	player_print(p);
+}
+
+void
 player_destroy(Player *player)
 {
 	if (player->sprite)
 		sprite_destroy(player->sprite);
+	actiontext_destroy(player->hitText);
+	actiontext_destroy(player->missText);
 
 	free(player);
 }

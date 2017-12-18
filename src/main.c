@@ -111,7 +111,7 @@ bool init()
 static
 void loadMedia()
 {
-	gPlayer = player_create(WARRIOR, gRenderer);
+	gPlayer = player_create(ROGUE, gRenderer);
 }
 
 static
@@ -152,20 +152,15 @@ void run()
 		roommatrix_build_lightmap(gRoomMatrix);
 
 		if (gPlayer->steps == gPlayer->stats.speed) {
-			player_print(gPlayer);
-			gPlayer->steps = 0;
-			Position rp =
-				position_to_matrix_coords(&gPlayer->sprite->pos);
-			gRoomMatrix->spaces[rp.x][rp.y].occupied = true;
-			gRoomMatrix->spaces[rp.x][rp.y].player = gPlayer;
-			gRoomMatrix->playerRoomPos = rp;
+			player_reset_steps(gPlayer);
+			roommatrix_update_with_player(gRoomMatrix, gPlayer);
 			map_move_monsters(gMap, gRoomMatrix);
 		}
 
 		SDL_RenderClear(gRenderer);
 
 		map_render(gMap, &gCamera);
-		sprite_render(gPlayer->sprite, &gCamera);
+		player_render(gPlayer, &gCamera);
 		roommatrix_render_lightmap(gRoomMatrix, &gCamera);
 
 		SDL_RenderPresent(gRenderer);

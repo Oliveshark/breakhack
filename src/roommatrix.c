@@ -2,6 +2,7 @@
 #include "roommatrix.h"
 #include "util.h"
 #include "map.h"
+#include "player.h"
 
 RoomMatrix* roommatrix_create()
 {
@@ -70,6 +71,15 @@ static int
 max(int a, int b)
 {
 	return a > b ? a : b;
+}
+
+void
+roommatrix_update_with_player(RoomMatrix *rm, Player *p)
+{
+	Position rp = position_to_matrix_coords(&p->sprite->pos);
+	rm->spaces[rp.x][rp.y].occupied = true;
+	rm->spaces[rp.x][rp.y].player = p;
+	rm->playerRoomPos = rp;
 }
 
 void

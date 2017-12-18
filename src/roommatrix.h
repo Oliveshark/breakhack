@@ -29,6 +29,8 @@ RoomMatrix* roommatrix_create();
 
 void roommatrix_populate_from_map(RoomMatrix*, Map*);
 
+void roommatrix_update_with_player(RoomMatrix*, Player*);
+
 void roommatrix_add_lightsource(RoomMatrix*, Position*);
 
 void roommatrix_build_lightmap(RoomMatrix*);

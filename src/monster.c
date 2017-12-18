@@ -60,7 +60,9 @@ has_collided(Monster *monster, RoomMatrix *matrix)
 	RoomSpace *space = &matrix->spaces[roomPos.x][roomPos.y];
 
 	if (space->player) {
-		stats_fight(&monster->stats, &space->player->stats);
+		unsigned int dmg = stats_fight(&monster->stats,
+					       &space->player->stats);
+		player_hit(space->player, dmg);
 	}
 
 	return space->occupied;
