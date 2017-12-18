@@ -27,13 +27,7 @@ has_collided(Player *player, RoomMatrix *matrix)
 	if (space->monster != NULL) {
 		unsigned int hit = stats_fight(&player->stats,
 					       &space->monster->stats);
-		if (hit > 0) {
-			space->monster->hitText->active = true;
-			space->monster->missText->active = false;
-		} else {
-			space->monster->missText->active = true;
-			space->monster->hitText->active = false;
-		}
+		monster_hit(space->monster, hit);
 
 		if (space->monster->stats.hp <= 0) {
 			// TODO(Linus): This needs some love later on.

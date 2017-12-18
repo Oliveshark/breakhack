@@ -7,13 +7,16 @@ x Add enemies (generated through lua)
 x Move "clip" from texture to sprite
 x Hitting enemies
 x Nicer enemy hits (Text textures, healthbars?)
-	- This could need some love later on. (Misses seem to be broken) (Add hits to stats)
+	- This could need some love later on.
+	- Add hits to stats
+	- Player hits
 x Moving enemies
 	x Stupid roaming enemies
 	x Smart agressive enemies
 	x Fleeing enemies
-	- Add hooks to lua
-- Lower levels
+	x Add hooks to lua
+	x Add movement depending on state (aggro, scared, passive)
+- Lower dungeon levels
 o XP
 	- Some xp amount logic
 	- Level threshholds

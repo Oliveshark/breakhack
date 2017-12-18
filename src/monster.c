@@ -30,7 +30,9 @@ monster_create(SDL_Renderer *renderer)
 	m->sprite = sprite_create();
 	m->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
 	m->stats = (Stats) { 11, 1, 0, 0, 1, 1 };
-	m->state = AGRESSIVE;
+	m->state.normal = PASSIVE;
+	m->state.challenge = AGRESSIVE;
+	m->state.current = m->state.normal;
 
 	monster_load_texts(m, renderer);
 
@@ -113,7 +115,7 @@ monster_drunk_walk(Monster *m, RoomMatrix *rm)
 {
 	unsigned int i, maxMoveAttempts = 6;
 
-	if (get_random(2) == 0)
+	if (get_random(5) >= 2)
 		return;
 
 	for (i = 0; i < maxMoveAttempts; ++i) {
@@ -188,14 +190,14 @@ monster_move(Monster *m, RoomMatrix *rm)
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = false;
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = NULL;
 
-	switch (m->state) {
+	switch (m->state.current) {
 		case PASSIVE:
 			monster_drunk_walk(m, rm);
 			break;
 		case AGRESSIVE:
 			monster_agressive_walk(m, rm);
 			break;
-		case COWARD:
+		case SCARED:
 			monster_coward_walk(m, rm);
 			break;
 	};
@@ -205,6 +207,20 @@ monster_move(Monster *m, RoomMatrix *rm)
 	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = true;
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = m;
+}
+
+void
+monster_hit(Monster *monster, unsigned int dmg)
+{
+	if (dmg > 0) {
+		monster->hitText->active = true;
+		monster->missText->active = false;
+	} else {
+		monster->missText->active = true;
+		monster->hitText->active = false;
+	}
+
+	monster->state.current = monster->state.challenge;
 }
 
 void

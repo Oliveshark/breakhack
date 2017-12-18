@@ -36,6 +36,13 @@ local texturePaths = {
 	undead1 = "assets/Characters/Undead1.png",
 }
 
+
+local state = {
+	passive = 0,
+	agressive = 1,
+	scared = 2,
+}
+
 local enemies = {
 
 	-- PESTS
@@ -87,32 +94,33 @@ local enemies = {
 	{ texturePaths.pest0, texturePaths.pest1, 48, 112 },
 
 	-- UNDEAD
-	{ texturePaths.undead0, texturePaths.undead1,   0,  0 };
-	{ texturePaths.undead0, texturePaths.undead1,  16,  0 };
-	{ texturePaths.undead0, texturePaths.undead1,  32,  0 };
-	{ texturePaths.undead0, texturePaths.undead1,  48,  0 };
-	{ texturePaths.undead0, texturePaths.undead1,  64,  0 };
-	{ texturePaths.undead0, texturePaths.undead1,  80,  0 };
-	{ texturePaths.undead0, texturePaths.undead1,  96,  0 };
-	{ texturePaths.undead0, texturePaths.undead1, 112,  0 };
+	{ texturePaths.undead0, texturePaths.undead1,   0,  0, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  16,  0, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  32,  0, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  48,  0, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  64,  0, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  80,  0, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  96,  0, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1, 112,  0, state.passive, state.agressive };
 
-	{ texturePaths.undead0, texturePaths.undead1,   0, 16 };
-	{ texturePaths.undead0, texturePaths.undead1,  16, 16 };
-	{ texturePaths.undead0, texturePaths.undead1,  32, 16 };
-	{ texturePaths.undead0, texturePaths.undead1,  48, 16 };
-	{ texturePaths.undead0, texturePaths.undead1,  64, 16 };
-	{ texturePaths.undead0, texturePaths.undead1,  80, 16 };
-	{ texturePaths.undead0, texturePaths.undead1,  96, 16 };
-	{ texturePaths.undead0, texturePaths.undead1, 112, 16 };
+	{ texturePaths.undead0, texturePaths.undead1,   0, 16, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  16, 16, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  32, 16, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  48, 16, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  64, 16, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  80, 16, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  96, 16, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1, 112, 16, state.passive, state.agressive };
 
-	{ texturePaths.undead0, texturePaths.undead1,   0, 32 };
-	{ texturePaths.undead0, texturePaths.undead1,  16, 32 };
-	{ texturePaths.undead0, texturePaths.undead1,  32, 32 };
-	{ texturePaths.undead0, texturePaths.undead1,  48, 32 };
-	{ texturePaths.undead0, texturePaths.undead1,  64, 32 };
-	{ texturePaths.undead0, texturePaths.undead1,  80, 32 };
-	{ texturePaths.undead0, texturePaths.undead1,  96, 32 };
-	{ texturePaths.undead0, texturePaths.undead1, 112, 32 };
+	{ texturePaths.undead0, texturePaths.undead1,   0, 32, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  16, 32, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  32, 32, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  48, 32, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  64, 32, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  80, 32, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  96, 32, state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1, 112, 32,
+	state.passive, state.scared };
 }
 
 local function repack(data)
@@ -121,6 +129,8 @@ local function repack(data)
 		texturePath2 	= data[2],
 		clipX			= data[3],
 		clipY			= data[4],
+		nstate			= data[5] or state.passive,
+		cstate			= data[6] or state.scared
 	}
 end
 

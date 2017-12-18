@@ -149,7 +149,7 @@ l_add_monster(lua_State *L)
 {
 	Monster *monster;
 	Map *map;
-	int x, y, clip_x, clip_y;
+	int x, y, clip_x, clip_y, nstate, cstate;
 	const char *texture_path_1, *texture_path_2;
 	Texture *texture1, *texture2;
 	SDL_Renderer *renderer;
@@ -167,11 +167,15 @@ l_add_monster(lua_State *L)
 	lua_getfield(L, 4, "texturePath2");
 	lua_getfield(L, 4, "clipX");
 	lua_getfield(L, 4, "clipY");
+	lua_getfield(L, 4, "nstate");
+	lua_getfield(L, 4, "cstate");
 
-	texture_path_1 = luaL_checkstring(L, -4);
-	texture_path_2 = luaL_checkstring(L, -3);
-	clip_x = luaL_checkinteger(L, -2);
-	clip_y = luaL_checkinteger(L, -1);
+	texture_path_1 = luaL_checkstring(L, -6);
+	texture_path_2 = luaL_checkstring(L, -5);
+	clip_x = luaL_checkinteger(L, -4);
+	clip_y = luaL_checkinteger(L, -3);
+	nstate = luaL_checkinteger(L, -2);
+	cstate = luaL_checkinteger(L, -1);
 
 	texture1 = map_add_monster_texture(map, texture_path_1, renderer);
 	texture2 = map_add_monster_texture(map, texture_path_2, renderer);
@@ -186,6 +190,9 @@ l_add_monster(lua_State *L)
 	monster_update_pos(monster, (Position) { x, y });
 	sprite_set_texture(monster->sprite, texture1, 0);
 	sprite_set_texture(monster->sprite, texture2, 1);
+	monster->state.normal = nstate;
+	monster->state.challenge = cstate;
+	monster->state.current = nstate;
 
 	map_add_monster(map, monster);
 

@@ -6,7 +6,13 @@
 #include "stats.h"
 #include "actiontext.h"
 
-typedef enum { PASSIVE, AGRESSIVE, COWARD } State;
+typedef enum { PASSIVE, AGRESSIVE, SCARED } StateType;
+
+typedef struct {
+	StateType current;
+	StateType normal;
+	StateType challenge;
+} State;
 
 typedef struct Monster_t {
 	Sprite *sprite;
@@ -23,6 +29,8 @@ void monster_update_pos(Monster*, Position);
 void monster_move(Monster*, RoomMatrix*);
 
 void monster_render(Monster*, Camera*);
+
+void monster_hit(Monster*, unsigned int dmg);
 
 void monster_destroy(Monster*);
 
