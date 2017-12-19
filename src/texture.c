@@ -5,7 +5,7 @@
 #include "util.h"
 
 Texture*
-texture_create()
+texture_create(void)
 {
 	Texture *t = ec_malloc(sizeof(Texture));
 	t->dim.height = 0;

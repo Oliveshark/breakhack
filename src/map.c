@@ -3,7 +3,7 @@
 #include "util.h"
 
 static
-Room* create_room()
+Room* create_room(void)
 {
 	int i, j;
 	Room *room;

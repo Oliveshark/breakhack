@@ -25,7 +25,7 @@ typedef struct {
 	Position playerRoomPos;
 } RoomMatrix;
 
-RoomMatrix* roommatrix_create();
+RoomMatrix* roommatrix_create(void);
 
 void roommatrix_populate_from_map(RoomMatrix*, Map*);
 

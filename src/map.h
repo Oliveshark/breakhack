@@ -37,7 +37,7 @@ typedef struct Map_t {
 	int level;
 } Map;
 
-Map* map_create();
+Map* map_create(void);
 
 
 int map_add_texture(Map*, const char *path, SDL_Renderer*);

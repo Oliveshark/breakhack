@@ -3,6 +3,6 @@
 
 #include "dimension.h"
 
-Dimension getScreenDimensions();
+Dimension getScreenDimensions(void);
 
 #endif // SCREENRESOLUTION_H_

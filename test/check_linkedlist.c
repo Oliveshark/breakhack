@@ -207,7 +207,8 @@ START_TEST (test_linkedlist_each)
 }
 END_TEST
 
-Suite* t_suite_create()
+static Suite*
+t_suite_create(void)
 {
 	Suite *s;
 	TCase *tc_core;

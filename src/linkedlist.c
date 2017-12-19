@@ -15,7 +15,7 @@ void *linkedlist_malloc(unsigned int size)
 }
 
 static
-LinkedList* linkedlist_node_create()
+LinkedList* linkedlist_node_create(void)
 {
 	LinkedList *newList = linkedlist_malloc(sizeof(LinkedList));
 	newList->next = NULL;

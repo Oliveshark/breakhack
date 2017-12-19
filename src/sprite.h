@@ -18,7 +18,7 @@ typedef struct Sprite_t {
 	unsigned int texture_index;
 } Sprite;
 
-Sprite* sprite_create();
+Sprite* sprite_create(void);
 
 void sprite_load_texture(Sprite *, char *path, int index, SDL_Renderer *);
 

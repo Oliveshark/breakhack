@@ -7,7 +7,7 @@ struct Node {
 };
 typedef struct Node LinkedList;
 
-LinkedList* linkedlist_create();
+LinkedList* linkedlist_create(void);
 
 void linkedlist_push(LinkedList **head, void *value);
 

@@ -1,7 +1,7 @@
 #ifndef DEFINES_H_
 #define	DEFINES_H_
 
-#define WINDOWS 0
+#include "config.h"
 
 /* Room/Map dimensions */
 #define MAP_ROOM_WIDTH		16
@@ -15,5 +15,12 @@
 /* Display stuff */
 #define SCREEN_WIDTH	MAP_ROOM_WIDTH * TILE_DIMENSION
 #define SCREEN_HEIGHT	MAP_ROOM_HEIGHT * TILE_DIMENSION
+
+/* Windows and compile crap */
+#ifdef _WIN32
+#define strdup _strdup
+#endif // _WIN32
+
+#define UNUSED(x) (void)(x)
 
 #endif // DEFINES_H_

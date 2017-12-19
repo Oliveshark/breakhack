@@ -15,7 +15,7 @@ typedef struct {
 	SDL_Color color;
 } ActionText;
 
-ActionText* actiontext_create();
+ActionText* actiontext_create(void);
 
 void actiontext_load_font(ActionText*, const char *path, unsigned int size);
 

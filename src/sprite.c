@@ -2,7 +2,7 @@
 #include "util.h"
 
 static
-Sprite* sprite_create_default()
+Sprite* sprite_create_default(void)
 {
 	Position pos = { 0, 0 };
 

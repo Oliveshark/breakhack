@@ -1,12 +1,15 @@
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "player.h"
 #include "monster.h"
+#include "util.h"
 
 #define ENGINEER_STATS	{ 11, 5, 7, 2, 1, 1 }
-#define MAGE_STATS		{ 11, 5, 7, 2, 1, 1 }
+#define MAGE_STATS	{ 11, 5, 7, 2, 1, 1 }
 #define PALADIN_STATS	{ 11, 5, 7, 2, 1, 1 }
-#define ROGUE_STATS		{ 11, 5, 7, 2, 2, 1 }
+#define ROGUE_STATS	{ 11, 5, 7, 2, 2, 1 }
 #define WARRIOR_STATS	{ 11, 5, 7, 2, 1, 1 }
 
 static bool 
@@ -38,7 +41,7 @@ has_collided(Player *player, RoomMatrix *matrix)
 }
 
 static void
-player_step(Player *p, RoomMatrix* m)
+player_step(Player *p)
 {
 	p->total_steps++;
 	p->steps++;
@@ -54,7 +57,7 @@ move_left(Player *player, RoomMatrix *matrix)
 	if (has_collided(player, matrix)) {
 		player->sprite->pos.x += TILE_DIMENSION;
 	}
-	player_step(player, matrix);
+	player_step(player);
 }
 
 static
@@ -65,7 +68,7 @@ void move_right(Player *player, RoomMatrix *matrix)
 	if (has_collided(player, matrix)) {
 		player->sprite->pos.x -= TILE_DIMENSION;
 	}
-	player_step(player, matrix);
+	player_step(player);
 }
 
 static
@@ -76,7 +79,7 @@ void move_up(Player *player, RoomMatrix *matrix)
 	if (has_collided(player, matrix)) {
 		player->sprite->pos.y += TILE_DIMENSION;
 	}
-	player_step(player, matrix);
+	player_step(player);
 }
 
 static
@@ -87,7 +90,7 @@ void move_down(Player *player, RoomMatrix *matrix)
 	if (has_collided(player, matrix)) {
 		player->sprite->pos.y -= TILE_DIMENSION;
 	}
-	player_step(player, matrix);
+	player_step(player);
 }
 
 static
@@ -127,14 +130,14 @@ player_load_texts(Player *p, SDL_Renderer *renderer)
 {
 	ActionText *t = actiontext_create();
 	actiontext_load_font(t, "assets/GUI/SDS_6x6.ttf", 14);
-	t->color = (SDL_Color) { 255, 100, 0 };
+	t->color = (SDL_Color) { 255, 100, 0, 255 };
 	actiontext_set_text(t, "HIT", renderer);
 	t->pos = p->sprite->pos;
 	p->hitText = t;
 
 	t = actiontext_create();
 	actiontext_load_font(t, "assets/GUI/SDS_6x6.ttf", 14);
-	t->color = (SDL_Color) { 255, 255, 0 };
+	t->color = (SDL_Color) { 255, 255, 0, 255 };
 	actiontext_set_text(t, "MISS", renderer);
 	t->pos = p->sprite->pos;
 	p->missText = t;
@@ -152,23 +155,23 @@ player_create(class_t class, SDL_Renderer *renderer)
 	char asset[100];
 	switch (class) {
 		case ENGINEER:
-			strcpy_s(asset, 100, "assets/Commissions/Engineer.png");
+			_strcpy(asset, 100, "assets/Commissions/Engineer.png");
 			player->stats = (Stats) ENGINEER_STATS;
 			break;
 		case MAGE:
-			strcpy_s(asset, 100, "assets/Commissions/Mage.png");
+			_strcpy(asset, 100, "assets/Commissions/Mage.png");
 			player->stats = (Stats) MAGE_STATS;
 			break;
 		case PALADIN:
-			strcpy_s(asset, 100, "assets/Commissions/Paladin.png");
+			_strcpy(asset, 100, "assets/Commissions/Paladin.png");
 			player->stats = (Stats) PALADIN_STATS;
 			break;
 		case ROGUE:
-			strcpy_s(asset, 100, "assets/Commissions/Rogue.png");
+			_strcpy(asset, 100, "assets/Commissions/Rogue.png");
 			player->stats = (Stats) ROGUE_STATS;
 			break;
 		case WARRIOR:
-			strcpy_s(asset, 100, "assets/Commissions/Warrior.png");
+			_strcpy(asset, 100, "assets/Commissions/Warrior.png");
 			player->stats = (Stats) WARRIOR_STATS;
 			break;
 	}

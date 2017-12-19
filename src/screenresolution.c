@@ -7,7 +7,7 @@
 
 #include "screenresolution.h"
 
-Dimension getScreenDimensions()
+Dimension getScreenDimensions(void)
 {
 #ifndef WINDOWS
 	Display *d = XOpenDisplay(NULL);

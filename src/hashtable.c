@@ -3,6 +3,7 @@
 #include <string.h>
 #include <limits.h>
 #include "hashtable.h"
+#include "defines.h"
 
 static void*
 ec_malloc(unsigned int size)
@@ -41,7 +42,7 @@ static unsigned int
 hash(Hashtable *table, const char *key)
 {
 	unsigned long int hashval = 0;
-	int i = 0;
+	unsigned int i = 0;
 
 	while (hashval < ULONG_MAX && i < strlen(key)) {
 		hashval = hashval << 8;
@@ -57,7 +58,7 @@ entry_create(const char *key, void *value)
 	Entry *entry;
 
 	entry = ec_malloc(sizeof(Entry));
-	entry->key = _strdup(key);
+	entry->key = strdup(key);
 	entry->value = value;
 	entry->next = NULL;
 

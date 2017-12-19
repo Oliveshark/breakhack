@@ -23,7 +23,7 @@ static RoomMatrix	*gRoomMatrix	= NULL;
 static Camera		gCamera;
 
 static
-bool initSDL()
+bool initSDL(void)
 {
 	int imgFlags = IMG_INIT_PNG;
 	Dimension dim = getScreenDimensions();
@@ -86,7 +86,7 @@ bool initSDL()
 }
 
 static
-bool initGame()
+bool initGame(void)
 {
 	gSpriteList = linkedlist_create();
 	gMap = map_lua_generator_run(gRenderer);
@@ -94,7 +94,7 @@ bool initGame()
 }
 
 static
-bool init()
+bool init(void)
 {
 	bool result = true;
 	result = result && initSDL();
@@ -109,13 +109,13 @@ bool init()
 }
 
 static
-void loadMedia()
+void loadMedia(void)
 {
 	gPlayer = player_create(ROGUE, gRenderer);
 }
 
 static
-bool handle_events()
+bool handle_events(void)
 {
 	static SDL_Event event;
 	bool quit = false;
@@ -135,7 +135,7 @@ bool handle_events()
 }
 
 static
-void run()
+void run(void)
 {
 	bool quit = false;
 	Timer* fpsTimer = timer_create();
@@ -175,7 +175,7 @@ void run()
 }
 
 static
-void close()
+void close(void)
 {
 	player_destroy(gPlayer);
 	map_destroy(gMap);
@@ -186,7 +186,7 @@ void close()
 	SDL_Quit();
 }
 
-int main(int argc, char** argv)
+int main(void)
 {
 	if (!init())
 		return 1;

@@ -37,7 +37,7 @@ position_equals(const Position *p1, const Position *p2)
 
 bool position_in_room(Position *pos, Position *roomPos)
 {
-	unsigned int room_px_width, room_px_height, room_x_px, room_y_px;
+	int room_px_width, room_px_height, room_x_px, room_y_px;
 
 	room_px_width = TILE_DIMENSION * MAP_ROOM_WIDTH;
 	room_px_height = TILE_DIMENSION * MAP_ROOM_HEIGHT;

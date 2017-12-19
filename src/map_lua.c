@@ -9,7 +9,7 @@
 #include "util.h"
 
 static
-lua_State* load_lua_state()
+lua_State* load_lua_state(void)
 {
 	lua_State *L = luaL_newstate();
 	luaL_openlibs(L);

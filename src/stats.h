@@ -6,8 +6,8 @@ typedef struct Stats_t {
 	int dmg;	/* Damage modifier */
 	int atk;	/* Attack rating */
 	int def;	/* Defence rating */
-	int speed;	/* Speed */
-	int lvl;	/* Level */
+	unsigned int speed;	/* Speed */
+	unsigned int lvl;	/* Level */
 } Stats;
 
 unsigned int

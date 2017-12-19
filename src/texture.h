@@ -13,7 +13,7 @@ typedef struct {
 	Dimension dim;
 } Texture;
 
-Texture* texture_create();
+Texture* texture_create(void);
 
 void texture_load_from_file(Texture*, const char *path, SDL_Renderer*);
 

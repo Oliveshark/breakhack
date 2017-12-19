@@ -5,27 +5,38 @@ SET(CMAKE_COLOR_MAKEFILE ON)
 project(breakhack C)
 
 include(FindLua)
-include(FindX11)
 include(cmake/FindSDL2.cmake)
 include(cmake/FindSDL2_image.cmake)
 include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindSDL2_ttf.cmake)
 
+configure_file(
+	"${PROJECT_SOURCE_DIR}/src/config.h.in"
+	"${PROJECT_BINARY_DIR}/config.h"
+	)
+
 if (NOT WIN32)
+	include(FindX11)
 	include(cmake/FindCheck.cmake)
 endif (NOT WIN32)
 
 include_directories(
+	${PROJECT_BINARY_DIR}
 	${LUA_INCLUDE_DIR}
 	${SDL2_INCLUDE_DIR}
 	${SDL2_IMAGE_INCLUDE_DIR}
 	${SDL2_MIXER_INCLUDE_DIR}
 	${SDL2_TTF_INCLUDE_DIR}
-	${X11_INCLUDE_DIR}
-	${CHECK_INCLUDE_DIR}
 	)
 
-add_definitions("-Wall")
+if (NOT WIN32)
+	include_directories(
+		${X11_INCLUDE_DIR}
+		${CHECK_INCLUDE_DIR}
+		)
+endif (NOT WIN32)
+
+add_definitions("-std=gnu11 -pedantic -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes")
 
 # PROGRAMS:
 add_executable(breakhack
@@ -55,8 +66,13 @@ target_link_libraries(breakhack
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_MIXER_LIBRARY}
 	${SDL2_TTF_LIBRARY}
-	${X11_LIBRARIES}
 	)
+
+if (NOT WIN32)
+	target_link_libraries(breakhack
+		${X11_LIBRARIES}
+		)
+endif (NOT WIN32)
 
 # TESTS:
 IF (CHECK_FOUND)

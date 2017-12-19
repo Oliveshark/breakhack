@@ -11,7 +11,7 @@ Position camera_to_camera_position(Camera *cam, Position *pos)
 
 void camera_follow_position(Camera *cam, Position *pos)
 {
-	unsigned int room_width, room_height;
+	int room_width, room_height;
 
 	room_width = MAP_ROOM_WIDTH * TILE_DIMENSION;
 	room_height = MAP_ROOM_HEIGHT * TILE_DIMENSION;

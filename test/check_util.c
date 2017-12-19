@@ -10,7 +10,7 @@ START_TEST(test_util_ec_malloc)
 }
 END_TEST
 
-Suite* t_suite_create()
+static Suite* t_suite_create(void)
 {
 	Suite *s;
 	TCase *tc_core;

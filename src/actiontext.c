@@ -9,7 +9,7 @@ actiontext_create()
 	t->texture = texture_create();
 	t->timer = timer_create();
 	t->active = false;
-	t->color = (SDL_Color) { 255, 255, 255 };
+	t->color = (SDL_Color) { 255, 255, 255, 255 };
 	return t;
 }
 
