@@ -4,19 +4,14 @@
 static
 Sprite* sprite_create_default(void)
 {
-	Position pos = { 0, 0 };
-
 	Sprite *s = ec_malloc(sizeof(Sprite));
-	*s = (Sprite) {
-		{ NULL, NULL },
-		(SDL_Rect) { 0, 0, 16, 16 },
-		false,
-		pos,
-		NULL,
-		0
-	};
-
+	s->textures[0] = NULL;
+	s->textures[1] = NULL;
+	s->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	s->destroyTextures = false;
+	s->pos = (Position) { 0, 0 };
 	s->renderTimer = timer_create();
+	s->texture_index = 0;
 
 	return s;
 }
