@@ -1,7 +1,7 @@
 #include <check.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "linkedlist.h"
+#include "../src/linkedlist.h"
 
 START_TEST(test_linkedlist_create)
 {

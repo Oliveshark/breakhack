@@ -3,9 +3,9 @@
 
 #include <SDL2/SDL.h>
 #include <stdbool.h>
-#include <linkedlist.h>
-#include <hashtable.h>
 
+#include "hashtable.h"
+#include "linkedlist.h"
 #include "sprite.h"
 #include "camera.h"
 #include "position.h"

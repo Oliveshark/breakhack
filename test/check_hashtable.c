@@ -1,6 +1,6 @@
 #include <check.h>
 #include <stdlib.h>
-#include "hashtable.h"
+#include "../src/hashtable.h"
 
 START_TEST(test_hashtable_create)
 {

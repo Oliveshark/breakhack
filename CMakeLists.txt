@@ -12,12 +12,7 @@ include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindSDL2_ttf.cmake)
 include(cmake/FindCheck.cmake)
 
-add_subdirectory(linkedlist)
-add_subdirectory(hashtable)
-
 include_directories(
-	linkedlist
-	hashtable
 	${LUA_INCLUDE_DIR}
 	${SDL2_INCLUDE_DIR}
 	${SDL2_IMAGE_INCLUDE_DIR}
@@ -47,11 +42,11 @@ add_executable(breakhack
 	src/stats
 	src/actiontext
 	src/random
+	src/linkedlist
+	src/hashtable
 	)
 
 target_link_libraries(breakhack
-	linkedlist
-	hashtable
 	${LUA_LIBRARY}
 	${SDL2_LIBRARY}
 	${SDL2_IMAGE_LIBRARY}
@@ -67,4 +62,12 @@ IF (CHECK_FOUND)
 	add_executable(test_util test/check_util src/util)
 	target_link_libraries(test_util ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_util test_util)
+
+	add_executable(test_linkedlist test/check_linkedlist src/linkedlist)
+	target_link_libraries(test_linkedlist ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	add_test(test_linkedlist test_linkedlist)
+
+	add_executable(test_hashtable test/check_hashtable src/hashtable)
+	target_link_libraries(test_hashtable ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	add_test(test_hashtable test_hashtable)
 ENDIF (CHECK_FOUND)
