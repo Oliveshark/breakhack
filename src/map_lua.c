@@ -62,8 +62,8 @@ int l_map_set_current_room(lua_State *L)
 	unsigned int room_x, room_y;
 
 	map = luaL_checkmap(L, 1);
-	room_x = luaL_checkinteger(L, 2);
-	room_y = luaL_checkinteger(L, 3);
+	room_x = (int) luaL_checkinteger(L, 2);
+	room_y = (int) luaL_checkinteger(L, 3);
 	
 	map->currentRoom = (Position) { room_x, room_y };
 
@@ -96,8 +96,8 @@ extract_tile_data(lua_State *L,
 	bool collider, lightsource;
 
 	map = luaL_checkmap(L, 1);
-	tile_x = luaL_checkinteger(L, 2);
-	tile_y = luaL_checkinteger(L, 3);
+	tile_x = (int) luaL_checkinteger(L, 2);
+	tile_y = (int) luaL_checkinteger(L, 3);
 
 	// Read the table
 	lua_settop(L, 4);
@@ -111,10 +111,10 @@ extract_tile_data(lua_State *L,
 	lua_getfield(L, 4, "isCollider");
 	lua_getfield(L, 4, "isLightSource");
 
-	t_index0 = luaL_checkinteger(L, -6);
-	t_index1 = luaL_checkinteger(L, -5);
-	tile_clip_x = luaL_checkinteger(L, -4);
-	tile_clip_y = luaL_checkinteger(L, -3);
+	t_index0 = (int) luaL_checkinteger(L, -6);
+	t_index1 = (int) luaL_checkinteger(L, -5);
+	tile_clip_x = (int) luaL_checkinteger(L, -4);
+	tile_clip_y = (int) luaL_checkinteger(L, -3);
 	collider = lua_toboolean(L, -2);
 	lightsource = lua_toboolean(L, -1);
 
@@ -156,8 +156,8 @@ l_add_monster(lua_State *L)
 
 	renderer = luaL_checksdlrenderer(L);
 	map = luaL_checkmap(L, 1);
-	x = luaL_checkinteger(L, 2);
-	y = luaL_checkinteger(L, 3);
+	x = (int) luaL_checkinteger(L, 2);
+	y = (int) luaL_checkinteger(L, 3);
 
 	// Read the table
 	lua_settop(L, 4);
@@ -172,10 +172,10 @@ l_add_monster(lua_State *L)
 
 	texture_path_1 = luaL_checkstring(L, -6);
 	texture_path_2 = luaL_checkstring(L, -5);
-	clip_x = luaL_checkinteger(L, -4);
-	clip_y = luaL_checkinteger(L, -3);
-	nstate = luaL_checkinteger(L, -2);
-	cstate = luaL_checkinteger(L, -1);
+	clip_x = (int) luaL_checkinteger(L, -4);
+	clip_y = (int) luaL_checkinteger(L, -3);
+	nstate = (int) luaL_checkinteger(L, -2);
+	cstate = (int) luaL_checkinteger(L, -1);
 
 	texture1 = map_add_monster_texture(map, texture_path_1, renderer);
 	texture2 = map_add_monster_texture(map, texture_path_2, renderer);

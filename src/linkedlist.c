@@ -23,7 +23,7 @@ LinkedList* linkedlist_node_create(void)
 	return newList;
 }
 
-LinkedList* linkedlist_create()
+LinkedList* linkedlist_create(void)
 {
 	return NULL;
 }

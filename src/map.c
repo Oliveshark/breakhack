@@ -199,7 +199,7 @@ void map_render(Map *map, Camera *cam)
 	}
 
 	monsterItem = map->monsters;
-	while (monsterItem) {
+	while (monsterItem != NULL) {
 		Monster *monster = monsterItem->data;
 		monsterItem = monsterItem->next;
 		monster_render(monster, cam);

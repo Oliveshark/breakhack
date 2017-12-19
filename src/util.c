@@ -9,7 +9,7 @@
 #include "util.h"
 
 void
-_strcpy(char *restrict dest, size_t destsz, char *restrict src)
+m_strcpy(char *dest, size_t destsz, char *src)
 {
 #ifndef _WIN32
 	UNUSED(destsz);
@@ -20,9 +20,9 @@ _strcpy(char *restrict dest, size_t destsz, char *restrict src)
 }
 
 void
-_strncat(char *restrict dest,
+m_strncat(char *dest,
 	 size_t destsz,
-	 char *restrict src,
+	 char *src,
 	 size_t srcsz)
 {
 #ifndef _WIN32
@@ -38,8 +38,8 @@ void fatal(char *message)
 {
 	char error_message[100];
 
-	_strcpy(error_message, 100, "[!!] Fatal Error ");
-	_strncat(error_message, 100, message, 83);
+	m_strcpy(error_message, 100, "[!!] Fatal Error ");
+	m_strncat(error_message, 100, message, 83);
 	perror(error_message);
 	exit(-1);
 }

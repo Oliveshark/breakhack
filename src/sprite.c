@@ -10,7 +10,8 @@ Sprite* sprite_create_default(void)
 	*s = (Sprite) {
 		{ NULL, NULL },
 		(SDL_Rect) { 0, 0, 16, 16 },
-		false, pos,
+		false,
+		pos,
 		NULL,
 		0
 	};

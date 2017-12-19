@@ -8,7 +8,7 @@ get_random(unsigned int max)
 {
 	static bool seeded = false;
 	if (!seeded) {
-		srand(time(NULL));
+		srand((unsigned int) time(NULL));
 		seeded = true;
 	}
 

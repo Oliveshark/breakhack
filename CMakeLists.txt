@@ -36,7 +36,9 @@ if (NOT WIN32)
 		)
 endif (NOT WIN32)
 
-add_definitions("-std=gnu11 -pedantic -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes")
+if (NOT WIN32)
+	add_definitions("-std=gnu11 -pedantic -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes")
+endif (NOT WIN32)
 
 # PROGRAMS:
 add_executable(breakhack

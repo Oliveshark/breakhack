@@ -2,6 +2,7 @@
 #define	ACTIONTEXT_H_
 
 #include <SDL2/SDL.h>
+#include <stdbool.h>
 
 #include "position.h"
 #include "texture.h"

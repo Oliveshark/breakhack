@@ -155,23 +155,23 @@ player_create(class_t class, SDL_Renderer *renderer)
 	char asset[100];
 	switch (class) {
 		case ENGINEER:
-			_strcpy(asset, 100, "assets/Commissions/Engineer.png");
+			m_strcpy(asset, 100, "assets/Commissions/Engineer.png");
 			player->stats = (Stats) ENGINEER_STATS;
 			break;
 		case MAGE:
-			_strcpy(asset, 100, "assets/Commissions/Mage.png");
+			m_strcpy(asset, 100, "assets/Commissions/Mage.png");
 			player->stats = (Stats) MAGE_STATS;
 			break;
 		case PALADIN:
-			_strcpy(asset, 100, "assets/Commissions/Paladin.png");
+			m_strcpy(asset, 100, "assets/Commissions/Paladin.png");
 			player->stats = (Stats) PALADIN_STATS;
 			break;
 		case ROGUE:
-			_strcpy(asset, 100, "assets/Commissions/Rogue.png");
+			m_strcpy(asset, 100, "assets/Commissions/Rogue.png");
 			player->stats = (Stats) ROGUE_STATS;
 			break;
 		case WARRIOR:
-			_strcpy(asset, 100, "assets/Commissions/Warrior.png");
+			m_strcpy(asset, 100, "assets/Commissions/Warrior.png");
 			player->stats = (Stats) WARRIOR_STATS;
 			break;
 	}

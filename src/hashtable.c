@@ -94,7 +94,7 @@ ht_set(Hashtable *table, const char *key, void *val)
 		/* New entry */
 		newEntry = entry_create(key, val);
 
-		if (next == table->entries[hashkey] && last == NULL) {
+		if (next == table->entries[hashkey]) {
 			table->entries[hashkey] = newEntry;
 			newEntry->next = next;
 		} else if(next == NULL) {

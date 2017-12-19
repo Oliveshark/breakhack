@@ -1,24 +1,24 @@
 #include "defines.h"
 
-#ifndef WINDOWS
+#ifndef _WIN32
 #include <X11/Xlib.h>
-#endif
+#endif // _WIN32
 #include <stdlib.h>
 
 #include "screenresolution.h"
 
 Dimension getScreenDimensions(void)
 {
-#ifndef WINDOWS
+#ifndef _WIN32
 	Display *d = XOpenDisplay(NULL);
 	Screen *s = DefaultScreenOfDisplay(d);
 	Dimension dim = (Dimension) { s->width, s->height };
 
 	free(d);
 	free(s);
-#else
+#else // _WIN32
 	Dimension dim = (Dimension) { 1920, 1080 };
-#endif
+#endif // _WIN32
 
 	return dim;
 }
