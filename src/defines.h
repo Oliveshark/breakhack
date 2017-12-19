@@ -1,6 +1,8 @@
 #ifndef DEFINES_H_
 #define	DEFINES_H_
 
+#define WINDOWS 0
+
 /* Room/Map dimensions */
 #define MAP_ROOM_WIDTH		16
 #define MAP_ROOM_HEIGHT		12

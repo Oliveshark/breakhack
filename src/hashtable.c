@@ -57,7 +57,7 @@ entry_create(const char *key, void *value)
 	Entry *entry;
 
 	entry = ec_malloc(sizeof(Entry));
-	entry->key = strdup(key);
+	entry->key = _strdup(key);
 	entry->value = value;
 	entry->next = NULL;
 
@@ -68,9 +68,9 @@ void
 ht_set(Hashtable *table, const char *key, void *val)
 {
 	int hashkey = 0;
-	Entry *newEntry;
-	Entry *next;
-	Entry *last;
+	Entry *newEntry = NULL;
+	Entry *next = NULL;
+	Entry *last = NULL;
 
 	hashkey = hash(table, key);
 
@@ -93,7 +93,7 @@ ht_set(Hashtable *table, const char *key, void *val)
 		/* New entry */
 		newEntry = entry_create(key, val);
 
-		if (next == table->entries[hashkey]) {
+		if (next == table->entries[hashkey] && last == NULL) {
 			table->entries[hashkey] = newEntry;
 			newEntry->next = next;
 		} else if(next == NULL) {

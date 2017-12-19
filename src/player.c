@@ -1,14 +1,13 @@
 #include <string.h>
+#include <stdio.h>
 #include "player.h"
 #include "monster.h"
 
-static Stats classStats[] = {
-	(Stats) { 11, 5, 7, 2, 1, 1 }, /* ENGINEER */
-	(Stats) { 11, 5, 7, 2, 1, 1 }, /* MAGE */
-	(Stats) { 11, 5, 7, 2, 1, 1 }, /* PALADIN */
-	(Stats) { 11, 5, 7, 2, 2, 1 }, /* ROGUE */
-	(Stats) { 11, 5, 7, 2, 1, 1 }, /* WARRIOR */
-};
+#define ENGINEER_STATS	{ 11, 5, 7, 2, 1, 1 }
+#define MAGE_STATS		{ 11, 5, 7, 2, 1, 1 }
+#define PALADIN_STATS	{ 11, 5, 7, 2, 1, 1 }
+#define ROGUE_STATS		{ 11, 5, 7, 2, 2, 1 }
+#define WARRIOR_STATS	{ 11, 5, 7, 2, 1, 1 }
 
 static bool 
 has_collided(Player *player, RoomMatrix *matrix)
@@ -153,24 +152,24 @@ player_create(class_t class, SDL_Renderer *renderer)
 	char asset[100];
 	switch (class) {
 		case ENGINEER:
-			strcpy(asset, "assets/Commissions/Engineer.png");
-			player->stats = classStats[ENGINEER];
+			strcpy_s(asset, 100, "assets/Commissions/Engineer.png");
+			player->stats = (Stats) ENGINEER_STATS;
 			break;
 		case MAGE:
-			strcpy(asset, "assets/Commissions/Mage.png");
-			player->stats = classStats[MAGE];
+			strcpy_s(asset, 100, "assets/Commissions/Mage.png");
+			player->stats = (Stats) MAGE_STATS;
 			break;
 		case PALADIN:
-			strcpy(asset, "assets/Commissions/Paladin.png");
-			player->stats = classStats[PALADIN];
+			strcpy_s(asset, 100, "assets/Commissions/Paladin.png");
+			player->stats = (Stats) PALADIN_STATS;
 			break;
 		case ROGUE:
-			strcpy(asset, "assets/Commissions/Rogue.png");
-			player->stats = classStats[ROGUE];
+			strcpy_s(asset, 100, "assets/Commissions/Rogue.png");
+			player->stats = (Stats) ROGUE_STATS;
 			break;
 		case WARRIOR:
-			strcpy(asset, "assets/Commissions/Warrior.png");
-			player->stats = classStats[WARRIOR];
+			strcpy_s(asset, 100, "assets/Commissions/Warrior.png");
+			player->stats = (Stats) WARRIOR_STATS;
 			break;
 	}
 

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "defines.h"
 #include "roommatrix.h"
 #include "util.h"
 #include "map.h"
@@ -61,6 +62,7 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 	}
 }
 
+#ifndef WINDOWS
 static int
 min(int a, int b)
 {
@@ -72,6 +74,7 @@ max(int a, int b)
 {
 	return a > b ? a : b;
 }
+#endif
 
 void
 roommatrix_update_with_player(RoomMatrix *rm, Player *p)

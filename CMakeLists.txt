@@ -10,7 +10,10 @@ include(cmake/FindSDL2.cmake)
 include(cmake/FindSDL2_image.cmake)
 include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindSDL2_ttf.cmake)
-include(cmake/FindCheck.cmake)
+
+if (NOT WIN32)
+	include(cmake/FindCheck.cmake)
+endif (NOT WIN32)
 
 include_directories(
 	${LUA_INCLUDE_DIR}

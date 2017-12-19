@@ -1,4 +1,6 @@
 #include <SDL2/SDL_image.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "texture.h"
 #include "util.h"
 
