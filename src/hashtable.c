@@ -70,7 +70,7 @@ ht_set(Hashtable *table, const char *key, void *val)
 {
 	int hashkey = 0;
 	Entry *newEntry = NULL;
-	Entry *next = NULL;
+	Entry *next;
 	Entry *last = NULL;
 
 	hashkey = hash(table, key);
@@ -85,6 +85,9 @@ ht_set(Hashtable *table, const char *key, void *val)
 		last = next;
 		next = next->next;
 	}
+
+	if (last == NULL)
+		last = table->entries[hashkey];
 
 	if (next && next->key && strcmp(key, next->key) == 0) {
 		/* Collision */
