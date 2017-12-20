@@ -119,7 +119,7 @@ ht_get(Hashtable *table, const char *key)
 
 	entry = table->entries[hashkey];
 
-	while (entry && entry->key && strcmp(entry->key, key) > 0) {
+	while (entry && entry->key && strcmp(entry->key, key) < 0) {
 		entry = entry->next;
 	}
 

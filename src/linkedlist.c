@@ -3,10 +3,10 @@
 #include "linkedlist.h"
 
 static
-void *linkedlist_malloc(unsigned int size)
+LinkedList *linkedlist_malloc(void)
 {
-	void *ptr;
-	ptr = malloc(size);
+	LinkedList *ptr;
+	ptr = malloc(sizeof(LinkedList));
 	if (ptr == NULL) {
 		perror("[!!] Fatal error in linkedlist_malloc() on memory allocation");
 		exit(-1);
@@ -17,7 +17,7 @@ void *linkedlist_malloc(unsigned int size)
 static
 LinkedList* linkedlist_node_create(void)
 {
-	LinkedList *newList = linkedlist_malloc(sizeof(LinkedList));
+	LinkedList *newList = linkedlist_malloc();
 	newList->next = NULL;
 	newList->data = NULL;
 	return newList;

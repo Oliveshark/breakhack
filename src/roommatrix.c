@@ -142,7 +142,9 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			light = max(0, 230 - matrix->spaces[i][j].light);
+			light = 245 - matrix->spaces[i][j].light;
+			if (light < 0)
+				light = 0;
 			SDL_SetRenderDrawColor(cam->renderer,
 					       0, 0, 0, light);
 			SDL_Rect box = (SDL_Rect) {

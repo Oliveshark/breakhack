@@ -32,7 +32,7 @@ bool initSDL(void)
 
 	if (dim.height > 768) {
 		printf("[**] Hi resolution screen detected (%u x %u)\n", dim.width, dim.height);
-		scale = ((double) dim.height)/768;
+		scale = ((double) dim.height)/1080;
 		printf("[**] Scaling by %f\n", scale);
 	}
 
@@ -44,8 +44,8 @@ bool initSDL(void)
 	gWindow = SDL_CreateWindow("Breakhack",
 				   SDL_WINDOWPOS_UNDEFINED,
 				   SDL_WINDOWPOS_UNDEFINED, 
-				   SCREEN_WIDTH * scale,
-				   SCREEN_HEIGHT * scale,
+				   (int)(SCREEN_WIDTH * scale),
+				   (int)(SCREEN_HEIGHT * scale),
 				   SDL_WINDOW_SHOWN);
 	if (gWindow == NULL)
 	{
@@ -182,6 +182,7 @@ void close(void)
 	roommatrix_destroy(gRoomMatrix);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
+	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }
