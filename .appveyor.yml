@@ -44,7 +44,7 @@ before_build:
     %DEPENDS% copy SDL2_ttf-2.0.14\%ARCH%\lib\*.a %PREFIX%\lib > nul
     %DEPENDS% copy SDL2_ttf-2.0.14\%ARCH%\bin\*.dll %PREFIX%\lib > nul
 
-    # Lua
+  # Lua
   - |-
     %DEPENDS% appveyor DownloadFile https://sourceforge.net/projects/luabinaries/files/5.3.4/Windows%20Libraries/Static/lua-5.3.4_Win64_vc14_lib.zip/download?use_mirror=netix
     %DEPENDS% 7z x lua-5.3.4_Win64_vc14_lib.zip > nul
