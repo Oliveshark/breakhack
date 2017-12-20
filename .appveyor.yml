@@ -46,8 +46,8 @@ before_build:
 
   # Lua
   - |-
-    %DEPENDS% appveyor DownloadFile https://sourceforge.net/projects/luabinaries/files/5.3.4/Windows Libraries/Static/lua-5.3.4_Win64_vc14_lib.zip/download?use_mirror=netix
-    %DEPENDS% 7z x lua-5.3.4_Win64_vc14_lib.zip > nul
+    %DEPENDS% appveyor DownloadFile https://sourceforge.net/projects/luabinaries/files/5.3.4/Windows%20Libraries/Static/lua-5.3.4_Win32_vc14_lib.zip/download
+    %DEPENDS% 7z x lua-5.3.4_Win32_vc14_lib.zip > nul
     %DEPENDS% copy include\* %PREFIX%\include > nul
     %DEPENDS% copy lua53.lib %PREFIX%\lib > nul
 
