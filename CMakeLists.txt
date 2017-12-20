@@ -7,7 +7,6 @@ project(breakhack C)
 include(FindLua)
 include(cmake/FindSDL2.cmake)
 include(cmake/FindSDL2_image.cmake)
-include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindSDL2_ttf.cmake)
 
 configure_file(
@@ -25,7 +24,6 @@ include_directories(
 	${LUA_INCLUDE_DIR}
 	${SDL2_INCLUDE_DIR}
 	${SDL2_IMAGE_INCLUDE_DIR}
-	${SDL2_MIXER_INCLUDE_DIR}
 	${SDL2_TTF_INCLUDE_DIR}
 	)
 
@@ -66,7 +64,6 @@ target_link_libraries(breakhack
 	${LUA_LIBRARY}
 	${SDL2_LIBRARY}
 	${SDL2_IMAGE_LIBRARY}
-	${SDL2_MIXER_LIBRARY}
 	${SDL2_TTF_LIBRARY}
 	)
 
