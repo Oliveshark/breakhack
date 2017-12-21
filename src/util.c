@@ -2,9 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef __MINGW32__
-#include <string_s.h>
-#endif // __MINGW32__
+
 #ifndef _WIN32
 #include <unistd.h>
 #endif // _WIN32
@@ -14,12 +12,12 @@
 void
 m_strcpy(char *dest, size_t destsz, char *src)
 {
-#ifndef _WIN32
+#ifndef _MSC_VER
 	UNUSED(destsz);
 	strcpy(dest, src);
-#else
+#else // _MSC_VER
 	strcpy_s(dest, destsz, src);
-#endif // _WIN32
+#endif // _MSC_VER
 }
 
 void
@@ -28,13 +26,13 @@ m_strncat(char *dest,
 	 char *src,
 	 size_t srcsz)
 {
-#ifndef _WIN32
+#ifndef _MSC_VER
 	UNUSED(destsz);
 	UNUSED(srcsz);
 	strncat(dest, src, srcsz);
-#else
+#else // _MSC_VER
 	strncat_s(dest, destsz, src, srcsz);
-#endif // _WIN32
+#endif // _MSC_VER
 }
 
 void fatal(char *message)
