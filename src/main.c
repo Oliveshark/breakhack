@@ -187,8 +187,11 @@ void close(void)
 	SDL_Quit();
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
+	UNUSED(argc);
+	UNUSED(argv);
+
 	if (!init())
 		return 1;
 
