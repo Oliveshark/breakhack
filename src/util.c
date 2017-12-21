@@ -1,10 +1,13 @@
 #include "defines.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#ifdef __MINGW32__
+#include <string_s.h>
+#endif // __MINGW32__
 #ifndef _WIN32
 #include <unistd.h>
 #endif // _WIN32
-#include <string.h>
 
 #include "util.h"
 

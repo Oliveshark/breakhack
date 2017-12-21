@@ -44,6 +44,8 @@ hash(Hashtable *table, const char *key)
 	unsigned long int hashval = 0;
 	unsigned int i = 0;
 
+	// TODO(Linus): This isn't very good,
+	// bad distribution on similar strings
 	while (hashval < ULONG_MAX && i < strlen(key)) {
 		hashval = hashval << 8;
 		hashval += key[i++];

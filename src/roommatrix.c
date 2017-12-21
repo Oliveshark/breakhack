@@ -62,6 +62,8 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 	}
 }
 
+// TODO(Linus): These should probably be macros
+#undef min
 #ifndef min
 static int
 min(int a, int b)
@@ -70,6 +72,7 @@ min(int a, int b)
 }
 #endif // min
 
+#undef max
 #ifndef max
 static int
 max(int a, int b)
