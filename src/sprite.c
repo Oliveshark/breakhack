@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "sprite.h"
 #include "util.h"
 
