@@ -62,19 +62,21 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 	}
 }
 
-#ifndef _WIN32
+#ifndef min
 static int
 min(int a, int b)
 {
 	return a > b ? b : a;
 }
+#endif // min
 
+#ifndef max
 static int
 max(int a, int b)
 {
 	return a > b ? a : b;
 }
-#endif // _WIN32
+#endif // max
 
 void
 roommatrix_update_with_player(RoomMatrix *rm, Player *p)
