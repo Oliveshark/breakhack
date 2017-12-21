@@ -18,6 +18,9 @@ typedef struct Player_t {
 	unsigned int xp;
 	unsigned int total_steps;
 	unsigned int steps;
+	unsigned int hits;
+	unsigned int kills;
+	unsigned int misses;
 	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 

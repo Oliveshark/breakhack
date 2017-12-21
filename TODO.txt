@@ -8,8 +8,8 @@ x Move "clip" from texture to sprite
 x Hitting enemies
 x Nicer enemy hits (Text textures, healthbars?)
 	- This could need some love later on.
-	- Add hits to stats
-	- Player hits
+	x Add hits to stats
+	x Player hits
 x Moving enemies
 	x Stupid roaming enemies
 	x Smart agressive enemies
@@ -20,6 +20,8 @@ x Moving enemies
 o XP
 	- Some xp amount logic
 	- Level threshholds
+- Statistics
+	- More stuff to count
 - gui
 - Items
 - More gui

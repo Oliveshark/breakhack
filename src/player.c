@@ -31,8 +31,14 @@ has_collided(Player *player, RoomMatrix *matrix)
 					       &space->monster->stats);
 		monster_hit(space->monster, hit);
 
+		if (hit > 0)
+			player->hits += 1;
+		else
+			player->misses += 1;
+
 		if (space->monster->stats.hp <= 0) {
 			// TODO(Linus): This needs some love later on.
+			player->kills += 1;
 			player->xp += 10;
 		}
 	}
@@ -148,9 +154,12 @@ player_create(class_t class, SDL_Renderer *renderer)
 {
 	Player *player = malloc(sizeof(Player));
 	player->sprite = sprite_create();
-	player->total_steps = 0;
-	player->steps = 0;
-	player->xp = 0;
+	player->total_steps	= 0;
+	player->steps		= 0;
+	player->xp		= 0;
+	player->hits		= 0;
+	player->kills		= 0;
+	player->misses		= 0;
 
 	char asset[100];
 	switch (class) {
@@ -216,10 +225,13 @@ player_print(Player *p)
 
 	printf("\n");
 	printf("--------=== <[ Player Stats ]> ===--------\n");
-	printf("HP: %d\n", p->stats.hp);
-	printf("Level: %u   XP: %u\n", p->stats.lvl, p->xp);
-	printf("Pos: %dx%d  RoomPos: %dx%d\n", pos.x, pos.y, roomPos.x, roomPos.y);
+	printf("HP:    %d\n", p->stats.hp);
+	printf("Level: %u\tXP:\t%u\n", p->stats.lvl, p->xp);
+	printf("Hits:  %u\tMisses:\t%u\n", p->hits, p->misses);
+	printf("Kills: %u\n", p->kills);
 	printf("Steps: %u\n", p->total_steps);
+	printf("Pos:   %dx%d\tRoomPos: %dx%d\n", pos.x, pos.y,
+	       roomPos.x, roomPos.y);
 	printf("------------------------------------------\n");
 }
 
