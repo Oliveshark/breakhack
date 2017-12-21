@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "map.h"
 #include "map_lua.h"
 #include "util.h"

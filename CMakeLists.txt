@@ -9,15 +9,15 @@ include(cmake/FindSDL2.cmake)
 include(cmake/FindSDL2_image.cmake)
 include(cmake/FindSDL2_ttf.cmake)
 
-configure_file(
-	"${PROJECT_SOURCE_DIR}/src/config.h.in"
-	"${PROJECT_BINARY_DIR}/config.h"
-	)
-
 if (NOT WIN32)
 	include(FindX11)
 	include(cmake/FindCheck.cmake)
 endif (NOT WIN32)
+
+configure_file(
+	"${PROJECT_SOURCE_DIR}/src/config.h.in"
+	"${PROJECT_BINARY_DIR}/config.h"
+	)
 
 include_directories(
 	${PROJECT_BINARY_DIR}
@@ -74,7 +74,7 @@ if (NOT WIN32)
 endif (NOT WIN32)
 
 # TESTS:
-IF (CHECK_FOUND)
+IF (CHECK_FOUND AND NOT WIN32)
 	find_package(Threads REQUIRED)
 	enable_testing()
 	add_executable(test_util test/check_util src/util)
@@ -88,4 +88,4 @@ IF (CHECK_FOUND)
 	add_executable(test_hashtable test/check_hashtable src/hashtable)
 	target_link_libraries(test_hashtable ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_hashtable test_hashtable)
-ENDIF (CHECK_FOUND)
+ENDIF (CHECK_FOUND AND NOT WIN32)
