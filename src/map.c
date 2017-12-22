@@ -43,7 +43,17 @@ Map* map_create()
 void map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
 {
 	const Position *cr = &map->currentRoom;
-	MapTile **oldTile = &map->rooms[cr->x][cr->y]->tiles[tile_pos->x][tile_pos->y];
+	Room *room = map->rooms[cr->x][cr->y];
+	MapTile **oldTile = &room->tiles[tile_pos->x][tile_pos->y];
+
+	// Clear possible decoration
+	if (tile->levelExit && room->tiles[tile_pos->x][tile_pos->y]) {
+		MapTile **decoration = &room->tiles[tile_pos->x][tile_pos->y];
+		free(*decoration);
+		*decoration = NULL;
+	}
+
+	// Clear possible tile
 	if (*oldTile != NULL) {
 		free(*oldTile);
 		*oldTile = NULL;

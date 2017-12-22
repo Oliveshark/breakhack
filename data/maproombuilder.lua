@@ -28,6 +28,8 @@ local wall = {
 	horizontal = nil
 }
 
+local special = { level_exit = nil }
+
 local floorDecor = { }
 local lightDecor = { }
 
@@ -101,14 +103,20 @@ local function load_decor_textures()
 	lightDecor.candle2 = { td0, td1, 32, 8 * 16, true, true }
 end
 
+local function load_special_tiles()
+	tt = add_texture(map, "assets/Objects/Tile.png")
+	special.level_exit = { tt, -1, 16, 16, false, true, true }
+end
+
 local function repack(data)
 	return {
 		textureIndex0	= data[1],
-		textureIndex1	= data[2],
+		textureIndex1	= data[2] or -1,
 		tileClipX		= data[3],
 		tileClipY		= data[4],
 		isCollider		= data[5] or false,
 		isLightSource	= data[6] or false,
+		isLevelExit		= data[7] or false,
 	}
 end
 
@@ -206,6 +214,12 @@ local function add_exit(map, direction)
 		add_tile(map, 8, 11, repack(floor.singleright))
 		add_tile(map, 9, 11, repack(wall.topleft))
 	end
+end
+
+local function add_level_exit(map)
+	x = random(14)
+	y = random(10)
+	add_tile(map, x, y, repack(special.level_exit));
 end
 
 local function build_vert_center_coridoor(map, offset)
@@ -328,6 +342,9 @@ function module.build_square_room(map, room)
 	for exit=1, #room.exits do
 		add_exit(map, room.exits[exit]);
 	end
+	if room.goal then
+		add_level_exit(map);
+	end
 end
 
 function module.load_textures(map)
@@ -360,6 +377,7 @@ function module.load_textures(map)
 	wall.horizontal		= { t_wall, -1, xo + 16, yo +  0, true }
 
 	load_decor_textures()
+	load_special_tiles()
 end
 
 return module

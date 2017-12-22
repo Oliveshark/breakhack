@@ -12,6 +12,7 @@
 #include "map_lua.h"
 #include "timer.h"
 #include "roommatrix.h"
+#include "gamestate.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
@@ -19,7 +20,7 @@ static Player		*gPlayer	= NULL;
 static LinkedList	*gSpriteList	= NULL;
 static Map		*gMap		= NULL;
 static RoomMatrix	*gRoomMatrix	= NULL;
-
+static GameState	gameState;
 static Camera		gCamera;
 
 static
@@ -30,7 +31,7 @@ bool initSDL(void)
 	//Dimension dim = (Dimension) { 1920, 1080 };
 	double scale = 1.0;
 
-	if (dim.height > 768) {
+	if (dim.height > 1080) {
 		printf("[**] Hi resolution screen detected (%u x %u)\n", dim.width, dim.height);
 		scale = ((double) dim.height)/1080;
 		printf("[**] Scaling by %f\n", scale);
@@ -41,6 +42,19 @@ bool initSDL(void)
 		printf("[!!] Could not initiate SDL2: %s\n", SDL_GetError());
 		return false;
 	}
+
+	if ( (IMG_Init(imgFlags) & imgFlags) == 0 ) {
+		printf("[!!] Unable to initiate img loading: %s\n",
+		       IMG_GetError());
+		return false;
+	}
+
+	if ( TTF_Init() == -1 ) {
+		printf("[!!] Unable to initiate ttf library: %s\n",
+		       TTF_GetError());
+		return false;
+	}
+
 	gWindow = SDL_CreateWindow("Breakhack",
 				   SDL_WINDOWPOS_UNDEFINED,
 				   SDL_WINDOWPOS_UNDEFINED, 
@@ -69,18 +83,6 @@ bool initSDL(void)
 		       SDL_GetError());
 		return false;
 	}
-
-	if ( (IMG_Init(imgFlags) & imgFlags) == 0 ) {
-		printf("[!!] Unable to initiate img loading: %s\n",
-		       IMG_GetError());
-		return false;
-	}
-
-	if ( TTF_Init() == -1 ) {
-		printf("[!!] Unable to initiate ttf library: %s\n",
-		       TTF_GetError());
-		return false;
-	}
 		
 	return true;
 }
@@ -104,6 +106,8 @@ bool init(void)
 		gCamera.renderer = gRenderer;
 		gRoomMatrix = roommatrix_create();
 	}
+
+	gameState = PLAYING;
 
 	return result;
 }
@@ -132,6 +136,26 @@ bool handle_events(void)
 		}
 	}
 	return quit;
+}
+
+static void
+check_next_level(void)
+{
+	Room *room = gMap->rooms[gMap->currentRoom.x][gMap->currentRoom.y];
+	Position pos = position_to_matrix_coords(&gPlayer->sprite->pos);
+
+	MapTile *tile = room->tiles[pos.x][pos.y];
+	if (!tile) {
+		printf("[!!] Looks like we are out of place\n");
+		return;
+	}
+	if (tile->levelExit) {
+		printf("[**] Building new map\n");
+		map_destroy(gMap);
+		gMap = map_lua_generator_run(gRenderer);
+		gPlayer->sprite->pos = (Position) {
+			TILE_DIMENSION, TILE_DIMENSION };
+	}
 }
 
 static
@@ -164,6 +188,8 @@ void run(void)
 		roommatrix_render_lightmap(gRoomMatrix, &gCamera);
 
 		SDL_RenderPresent(gRenderer);
+
+		check_next_level();
 
 		int ticks = timer_get_ticks(fpsTimer);
 		if (ticks < 1000/60)

@@ -7,7 +7,6 @@ x Add enemies (generated through lua)
 x Move "clip" from texture to sprite
 x Hitting enemies
 x Nicer enemy hits (Text textures, healthbars?)
-	- This could need some love later on.
 	x Add hits to stats
 	x Player hits
 x Moving enemies
@@ -16,14 +15,15 @@ x Moving enemies
 	x Fleeing enemies
 	x Add hooks to lua
 	x Add movement depending on state (aggro, scared, passive)
-- Lower dungeon levels
+x Lower dungeon levels
+- GUI (lua generated)
+- Items (lua generated?)
+- More GUI
 o XP
 	- Some xp amount logic
 	- Level threshholds
+- Menus
 - Statistics
 	- More stuff to count
-- gui
-- Items
-- More gui
 
 Legend: ( '-' = future) ( 'x' = completed ) ( 'o' = begun )

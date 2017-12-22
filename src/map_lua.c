@@ -94,7 +94,7 @@ extract_tile_data(lua_State *L,
 	Map *map;
 	int tile_x, tile_y;
 	int t_index0, t_index1, tile_clip_x, tile_clip_y;
-	bool collider, lightsource;
+	bool collider, lightsource, levelExit;
 
 	map = luaL_checkmap(L, 1);
 	tile_x = (int) luaL_checkinteger(L, 2);
@@ -111,13 +111,15 @@ extract_tile_data(lua_State *L,
 	lua_getfield(L, 4, "tileClipY");
 	lua_getfield(L, 4, "isCollider");
 	lua_getfield(L, 4, "isLightSource");
+	lua_getfield(L, 4, "isLevelExit");
 
-	t_index0 = (int) luaL_checkinteger(L, -6);
-	t_index1 = (int) luaL_checkinteger(L, -5);
-	tile_clip_x = (int) luaL_checkinteger(L, -4);
-	tile_clip_y = (int) luaL_checkinteger(L, -3);
-	collider = lua_toboolean(L, -2);
-	lightsource = lua_toboolean(L, -1);
+	t_index0 = (int) luaL_checkinteger(L, -7);
+	t_index1 = (int) luaL_checkinteger(L, -6);
+	tile_clip_x = (int) luaL_checkinteger(L, -5);
+	tile_clip_y = (int) luaL_checkinteger(L, -4);
+	collider = lua_toboolean(L, -3);
+	lightsource = lua_toboolean(L, -2);
+	levelExit = lua_toboolean(L, -1);
 
 	// Clear the stack
 	lua_pop(L, 6);
@@ -126,7 +128,12 @@ extract_tile_data(lua_State *L,
 	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
 
 	MapTile *tile = malloc(sizeof(MapTile));
-	*tile = (MapTile) { t_index0, t_index1, clip, collider, lightsource };
+	*tile = (MapTile) { t_index0,
+		t_index1,
+		clip, collider,
+		lightsource,
+		levelExit
+	};
 
 	f_add_tile(map, &tilePos, tile);
 }

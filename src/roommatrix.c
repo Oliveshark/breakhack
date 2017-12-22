@@ -27,18 +27,17 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
+			RoomSpace *space = &rm->spaces[i][j];
 			if (r->tiles[i][j]) {
-				rm->spaces[i][j].occupied =
+				space->occupied =
 					r->tiles[i][j]->collider;
-
-				rm->spaces[i][j].lightsource =
+				space->lightsource =
 					r->tiles[i][j]->lightsource;
 			}
 			if (r->decorations[i][j]) {
-				rm->spaces[i][j].occupied |=
+				space->occupied |=
 					r->decorations[i][j]->collider;
-
-				rm->spaces[i][j].lightsource |=
+				space->lightsource |=
 					r->decorations[i][j]->lightsource;
 			}
 		}
