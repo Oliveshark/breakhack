@@ -3,7 +3,7 @@ x Implement simple box collisions
 x Add enemies (generated through lua)
 	x Monster object created
 	x Lua bindings for creation
-	x Making some better generation and randomeness
+	x Making some better geneation and randomeness
 x Move "clip" from texture to sprite
 x Hitting enemies
 x Nicer enemy hits (Text textures, healthbars?)
@@ -26,5 +26,6 @@ o XP
 - Menus
 - Statistics
 	- More stuff to count
+- A different license perhaps?
 
 Legend: ( '-' = future) ( 'x' = completed ) ( 'o' = begun )
