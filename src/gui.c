@@ -24,7 +24,6 @@ clear_sprite_list(LinkedList *list)
 void
 gui_set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 {
-	Sprite *sprite;
 	Texture *texture;
 	int i;
 
@@ -38,7 +37,7 @@ gui_set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 	texture = gui_add_texture(gui, "assets/GUI/GUI0.png", renderer);
 
 	for (i = 0; i < max/3; ++i) {
-		sprite = sprite_create();
+		Sprite *sprite = sprite_create();
 		sprite->fixed = true;
 		sprite->clip = (SDL_Rect) { 0, 16, 16, 16 };
 		sprite->pos = (Position) { 16 + i*16, 16 };
