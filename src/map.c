@@ -25,7 +25,7 @@ Map* map_create()
 
 	Map *map = ec_malloc(sizeof(Map));
 	map->textures = linkedlist_create();
-	map->monsterTextures = ht_create(100);
+	map->monsterTextures = ht_create(30);
 	map->monsters = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
 	map->renderTimer = timer_create();

@@ -13,6 +13,7 @@
 #include "timer.h"
 #include "roommatrix.h"
 #include "gamestate.h"
+#include "gui.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
@@ -20,7 +21,8 @@ static Player		*gPlayer	= NULL;
 static LinkedList	*gSpriteList	= NULL;
 static Map		*gMap		= NULL;
 static RoomMatrix	*gRoomMatrix	= NULL;
-static GameState	gameState;
+static Gui		*gGui		= NULL;
+static GameState	gGameState;
 static Camera		gCamera;
 
 static
@@ -105,9 +107,10 @@ bool init(void)
 		gCamera.pos = (Position) { 0, 0 };
 		gCamera.renderer = gRenderer;
 		gRoomMatrix = roommatrix_create();
+		gGui = gui_create();
 	}
 
-	gameState = PLAYING;
+	gGameState = PLAYING;
 
 	return result;
 }
@@ -127,7 +130,7 @@ bool handle_events(void)
 	while (SDL_PollEvent(&event) != 0) {
 		if (event.type == SDL_QUIT) {
 			quit = true;
-		} else {
+		} else if (gGameState == PLAYING) {
 			gPlayer->handle_event(gPlayer,
 					      gRoomMatrix,
 					      &event);
@@ -158,6 +161,35 @@ check_next_level(void)
 	}
 }
 
+static void
+run_game(void)
+{
+	map_clear_dead_monsters(gMap);
+	roommatrix_populate_from_map(gRoomMatrix, gMap);
+	roommatrix_add_lightsource(gRoomMatrix,
+				   &gPlayer->sprite->pos);
+	roommatrix_build_lightmap(gRoomMatrix);
+
+	gui_set_max_health(gGui, gPlayer->stats.maxhp, gRenderer);
+	gui_set_current_health(gGui, gPlayer->stats.hp);
+	if (gPlayer->steps == gPlayer->stats.speed) {
+		player_reset_steps(gPlayer);
+		roommatrix_update_with_player(gRoomMatrix, gPlayer);
+		map_move_monsters(gMap, gRoomMatrix);
+	}
+
+	SDL_RenderClear(gRenderer);
+
+	map_render(gMap, &gCamera);
+	player_render(gPlayer, &gCamera);
+	roommatrix_render_lightmap(gRoomMatrix, &gCamera);
+	gui_render(gGui, &gCamera);
+
+	SDL_RenderPresent(gRenderer);
+
+	check_next_level();
+}
+
 static
 void run(void)
 {
@@ -169,27 +201,24 @@ void run(void)
 		timer_start(fpsTimer);
 
 		quit = handle_events();
-		map_clear_dead_monsters(gMap);
-		roommatrix_populate_from_map(gRoomMatrix, gMap);
-		roommatrix_add_lightsource(gRoomMatrix,
-					   &gPlayer->sprite->pos);
-		roommatrix_build_lightmap(gRoomMatrix);
 
-		if (gPlayer->steps == gPlayer->stats.speed) {
-			player_reset_steps(gPlayer);
-			roommatrix_update_with_player(gRoomMatrix, gPlayer);
-			map_move_monsters(gMap, gRoomMatrix);
+		switch (gGameState) {
+			case PLAYING:
+				run_game();
+				break;
+			case MENU:
+				fprintf(stderr, "[!!] MENU not implemented\n");
+				break;
+			case IN_GAME_MENU:
+				fprintf(stderr,
+					"[!!] IN_GAME_MENU not implemented\n");
+				break;
+			case GAME_OVER:
+				fprintf(stderr, "[!!] GAME_OVER not implemented\n");
+				break;
+			default:
+				break;
 		}
-
-		SDL_RenderClear(gRenderer);
-
-		map_render(gMap, &gCamera);
-		player_render(gPlayer, &gCamera);
-		roommatrix_render_lightmap(gRoomMatrix, &gCamera);
-
-		SDL_RenderPresent(gRenderer);
-
-		check_next_level();
 
 		int ticks = timer_get_ticks(fpsTimer);
 		if (ticks < 1000/60)
@@ -206,6 +235,8 @@ void close(void)
 	player_destroy(gPlayer);
 	map_destroy(gMap);
 	roommatrix_destroy(gRoomMatrix);
+	gui_destroy(gGui);
+	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
 	TTF_Quit();

@@ -16,6 +16,7 @@ typedef struct Sprite_t {
 	Position pos;
 	Timer *renderTimer;
 	unsigned int texture_index;
+	bool fixed;
 } Sprite;
 
 Sprite* sprite_create(void);

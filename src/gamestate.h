@@ -4,7 +4,8 @@
 typedef enum GameState_t {
 	MENU,
 	PLAYING,
-	NEXT_LEVEL
+	IN_GAME_MENU,
+	GAME_OVER
 } GameState;
 
 #endif // GAMESTATE_H_

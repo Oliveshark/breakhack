@@ -191,7 +191,7 @@ l_add_monster(lua_State *L)
 	texture1->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
 	texture2->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
 
-	lua_pop(L, 4);
+	lua_pop(L, 6);
 
 	monster = monster_create(renderer);
 	monster->sprite->clip = (SDL_Rect) { clip_x, clip_y, 16, 16 };
@@ -212,12 +212,13 @@ Map* map_lua_generator_run(SDL_Renderer *renderer)
 	int status, result;
 	char file[] = "data/mapgen.lua";
 
-	printf("[**] Running lua script: %s\n", file);
+	printf("[**] Running lua map script: %s\n", file);
 
 	lua_State *L = load_lua_state();
 	status = luaL_loadfile(L, file);
 	if (status) {
-		fprintf(stderr, "[!!] Couldn't load file: %s\n", lua_tostring(L, -1));
+		fprintf(stderr, "[!!] Couldn't load file: %s\n",
+			lua_tostring(L, -1));
 		exit(-1);
 	}
 

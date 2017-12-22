@@ -13,6 +13,7 @@ Sprite* sprite_create_default(void)
 	s->pos = (Position) { 0, 0 };
 	s->renderTimer = timer_create();
 	s->texture_index = 0;
+	s->fixed = false;
 
 	return s;
 }
@@ -65,7 +66,12 @@ void sprite_render(Sprite *s, Camera *cam)
 		}
 	}
 
-	Position cameraPos = camera_to_camera_position(cam, &s->pos);
+	Position cameraPos;
+	if (!s->fixed)
+		cameraPos = camera_to_camera_position(cam, &s->pos);
+	else
+		cameraPos = s->pos;
+
 	texture_render_clip(s->textures[s->texture_index],
 			    &cameraPos,
 			    &s->clip,

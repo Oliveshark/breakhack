@@ -58,6 +58,7 @@ add_executable(breakhack
 	src/random
 	src/linkedlist
 	src/hashtable
+	src/gui
 	)
 
 target_link_libraries(breakhack

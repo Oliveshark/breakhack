@@ -30,7 +30,7 @@ monster_create(SDL_Renderer *renderer)
 	Monster *m = ec_malloc(sizeof(Monster));
 	m->sprite = sprite_create();
 	m->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	m->stats = (Stats) { 11, 1, 0, 0, 1, 1 };
+	m->stats = (Stats) { 12, 12, 1, 0, 0, 1, 1 };
 	m->state.normal = PASSIVE;
 	m->state.challenge = AGRESSIVE;
 	m->state.current = m->state.normal;

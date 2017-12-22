@@ -16,7 +16,8 @@ x Moving enemies
 	x Add hooks to lua
 	x Add movement depending on state (aggro, scared, passive)
 x Lower dungeon levels
-- GUI (lua generated)
+o GUI
+- Player death
 - Items (lua generated?)
 - More GUI
 o XP
