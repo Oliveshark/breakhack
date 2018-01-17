@@ -46,81 +46,81 @@ local state = {
 local enemies = {
 
 	-- PESTS
-	{ texturePaths.pest0, texturePaths.pest1,   0, 0 },
-	{ texturePaths.pest0, texturePaths.pest1,  16, 0 },
-	{ texturePaths.pest0, texturePaths.pest1,  32, 0 },
-	{ texturePaths.pest0, texturePaths.pest1,  48, 0 },
-	{ texturePaths.pest0, texturePaths.pest1,  64, 0 },
-	{ texturePaths.pest0, texturePaths.pest1,  96, 0 },
-	{ texturePaths.pest0, texturePaths.pest1, 112, 0 },
+	{ texturePaths.pest0, texturePaths.pest1,   0, 0, "Beetle" },
+	{ texturePaths.pest0, texturePaths.pest1,  16, 0, "Beetle" },
+	{ texturePaths.pest0, texturePaths.pest1,  32, 0, "Beetle" },
+	{ texturePaths.pest0, texturePaths.pest1,  48, 0, "Beetle" },
+	{ texturePaths.pest0, texturePaths.pest1,  64, 0, "Large Grub" },
+	{ texturePaths.pest0, texturePaths.pest1,  80, 0, "Small Grub" },
+	{ texturePaths.pest0, texturePaths.pest1,  96, 0, "Slim Worm" },
+	{ texturePaths.pest0, texturePaths.pest1, 112, 0, "Fat Worm" },
 
-	{ texturePaths.pest0, texturePaths.pest1,  0, 16 },
-	{ texturePaths.pest0, texturePaths.pest1, 16, 16 },
-	{ texturePaths.pest0, texturePaths.pest1, 32, 16 },
-	{ texturePaths.pest0, texturePaths.pest1, 48, 16 },
-	{ texturePaths.pest0, texturePaths.pest1, 64, 16 },
-	{ texturePaths.pest0, texturePaths.pest1, 80, 16 },
+	--{ texturePaths.pest0, texturePaths.pest1,  0, 16, "Female Dragonfly" },
+	{ texturePaths.pest0, texturePaths.pest1, 16, 16, "Fly" },
+	{ texturePaths.pest0, texturePaths.pest1, 32, 16, "Larva" },
+	{ texturePaths.pest0, texturePaths.pest1, 48, 16, "Moth" },
+	--{ texturePaths.pest0, texturePaths.pest1, 64, 16 },
+	{ texturePaths.pest0, texturePaths.pest1, 80, 16, "Gnat" },
 
-	{ texturePaths.pest0, texturePaths.pest1,  0, 32 },
-	{ texturePaths.pest0, texturePaths.pest1, 16, 32 },
-	{ texturePaths.pest0, texturePaths.pest1, 32, 32 },
-	{ texturePaths.pest0, texturePaths.pest1, 48, 32 },
-	{ texturePaths.pest0, texturePaths.pest1, 64, 32 },
-	{ texturePaths.pest0, texturePaths.pest1, 80, 32 },
+	{ texturePaths.pest0, texturePaths.pest1,  0, 32, "Small Spider" },
+	{ texturePaths.pest0, texturePaths.pest1, 16, 32, "Medium Spider" },
+	{ texturePaths.pest0, texturePaths.pest1, 32, 32, "Large Spider" },
+	{ texturePaths.pest0, texturePaths.pest1, 48, 32, "Small Scorpion" },
+	{ texturePaths.pest0, texturePaths.pest1, 64, 32, "Medium Scorpion" },
+	{ texturePaths.pest0, texturePaths.pest1, 80, 32, "Large Scorpion" },
 
-	{ texturePaths.pest0, texturePaths.pest1,  0, 48 },
-	{ texturePaths.pest0, texturePaths.pest1, 16, 48 },
+	{ texturePaths.pest0, texturePaths.pest1,  0, 48, "Slug" },
+	{ texturePaths.pest0, texturePaths.pest1, 16, 48, "Large Slug" },
 	--{ texturePaths.pest0, texturePaths.pest1, 32, 48 },
-	{ texturePaths.pest0, texturePaths.pest1, 48, 48 },
-	{ texturePaths.pest0, texturePaths.pest1, 64, 48 },
+	{ texturePaths.pest0, texturePaths.pest1, 48, 48, "Red Slug" },
+	{ texturePaths.pest0, texturePaths.pest1, 64, 48, "Large Red Slug" },
 
-	{ texturePaths.pest0, texturePaths.pest1,  0, 64 },
-	{ texturePaths.pest0, texturePaths.pest1, 16, 64 },
-	{ texturePaths.pest0, texturePaths.pest1, 32, 64 },
-	{ texturePaths.pest0, texturePaths.pest1, 48, 64 },
+	{ texturePaths.pest0, texturePaths.pest1,  0, 64, "Giant Brown Ant" },
+	{ texturePaths.pest0, texturePaths.pest1, 16, 64, "Giant Black Ant" },
+	{ texturePaths.pest0, texturePaths.pest1, 32, 64, "Giant Gold Ant" },
+	{ texturePaths.pest0, texturePaths.pest1, 48, 64, "Giant Silver Ant" },
 
-	{ texturePaths.pest0, texturePaths.pest1,  0, 80 },
-	{ texturePaths.pest0, texturePaths.pest1, 16, 80 },
-	{ texturePaths.pest0, texturePaths.pest1, 32, 80 },
-	{ texturePaths.pest0, texturePaths.pest1, 48, 80 },
+	--{ texturePaths.pest0, texturePaths.pest1,  0, 80 },
+	--{ texturePaths.pest0, texturePaths.pest1, 16, 80 },
+	--{ texturePaths.pest0, texturePaths.pest1, 32, 80 },
+	--{ texturePaths.pest0, texturePaths.pest1, 48, 80 },
 
-	{ texturePaths.pest0, texturePaths.pest1,  0, 96 },
-	{ texturePaths.pest0, texturePaths.pest1, 16, 96 },
-	{ texturePaths.pest0, texturePaths.pest1, 32, 96 },
+	--{ texturePaths.pest0, texturePaths.pest1,  0, 96 },
+	--{ texturePaths.pest0, texturePaths.pest1, 16, 96 },
+	--{ texturePaths.pest0, texturePaths.pest1, 32, 96 },
 
-	{ texturePaths.pest0, texturePaths.pest1,  0, 112 },
-	{ texturePaths.pest0, texturePaths.pest1, 16, 112 },
-	{ texturePaths.pest0, texturePaths.pest1, 32, 112 },
-	{ texturePaths.pest0, texturePaths.pest1, 48, 112 },
+	--{ texturePaths.pest0, texturePaths.pest1,  0, 112 },
+	--{ texturePaths.pest0, texturePaths.pest1, 16, 112 },
+	--{ texturePaths.pest0, texturePaths.pest1, 32, 112 },
+	--{ texturePaths.pest0, texturePaths.pest1, 48, 112 },
 
 	-- UNDEAD
-	{ texturePaths.undead0, texturePaths.undead1,   0,  0, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  16,  0, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  32,  0, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  48,  0, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  64,  0, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  80,  0, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  96,  0, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1, 112,  0, state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,   0,  0, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  16,  0, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  32,  0, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  48,  0, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  64,  0, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  80,  0, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  96,  0, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1, 112,  0, "", state.passive, state.agressive };
 
-	{ texturePaths.undead0, texturePaths.undead1,   0, 16, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  16, 16, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  32, 16, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  48, 16, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  64, 16, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  80, 16, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  96, 16, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1, 112, 16, state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,   0, 16, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  16, 16, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  32, 16, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  48, 16, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  64, 16, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  80, 16, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  96, 16, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1, 112, 16, "", state.passive, state.agressive };
 
-	{ texturePaths.undead0, texturePaths.undead1,   0, 32, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  16, 32, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  32, 32, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  48, 32, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  64, 32, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  80, 32, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1,  96, 32, state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1, 112, 32,
-	state.passive, state.scared };
+	{ texturePaths.undead0, texturePaths.undead1,   0, 32, "Skeleton", state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  16, 32, "Umber Skeleton", state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  32, 32, "Caustic Skeleton", state.passive, state.agressive };
+	{ texturePaths.undead0, texturePaths.undead1,  48, 32, "Black Skeleton", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  64, 32, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  80, 32, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,  96, 32, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1, 112, 32, "", state.passive, state.scared };
 }
 
 local function repack(data)
@@ -129,8 +129,9 @@ local function repack(data)
 		texturePath2 	= data[2],
 		clipX			= data[3],
 		clipY			= data[4],
-		nstate			= data[5] or state.passive,
-		cstate			= data[6] or state.scared
+		label			= data[5] or "",
+		nstate			= data[6] or state.passive,
+		cstate			= data[7] or state.scared,
 	}
 end
 

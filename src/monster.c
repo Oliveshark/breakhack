@@ -34,6 +34,7 @@ monster_create(SDL_Renderer *renderer)
 	m->state.normal = PASSIVE;
 	m->state.challenge = AGRESSIVE;
 	m->state.current = m->state.normal;
+	m->label = NULL;
 
 	monster_load_texts(m, renderer);
 
@@ -210,6 +211,9 @@ monster_move(Monster *m, RoomMatrix *rm)
 	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = true;
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = m;
+
+	if (m->label)
+		printf("Monster '%s' moved.\n", m->label);
 }
 
 void
@@ -240,6 +244,8 @@ void
 monster_destroy(Monster *m)
 {
 	sprite_destroy(m->sprite);
+	if (m->label)
+		free(m->label);
 	if (m->hitText)
 		actiontext_destroy(m->hitText);
 	if (m->missText)

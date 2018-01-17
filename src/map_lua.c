@@ -158,7 +158,8 @@ l_add_monster(lua_State *L)
 	Monster *monster;
 	Map *map;
 	int x, y, clip_x, clip_y, nstate, cstate;
-	const char *texture_path_1, *texture_path_2;
+	const char *texture_path_1, *texture_path_2, *tmp_label;
+	char *label;
 	Texture *texture1, *texture2;
 	SDL_Renderer *renderer;
 
@@ -171,6 +172,7 @@ l_add_monster(lua_State *L)
 	lua_settop(L, 4);
 	luaL_checktype(L, 4, LUA_TTABLE);
 
+	lua_getfield(L, 4, "label");
 	lua_getfield(L, 4, "texturePath1");
 	lua_getfield(L, 4, "texturePath2");
 	lua_getfield(L, 4, "clipX");
@@ -178,6 +180,7 @@ l_add_monster(lua_State *L)
 	lua_getfield(L, 4, "nstate");
 	lua_getfield(L, 4, "cstate");
 
+	tmp_label = luaL_checkstring(L, -7);
 	texture_path_1 = luaL_checkstring(L, -6);
 	texture_path_2 = luaL_checkstring(L, -5);
 	clip_x = (int) luaL_checkinteger(L, -4);
@@ -187,6 +190,8 @@ l_add_monster(lua_State *L)
 
 	texture1 = map_add_monster_texture(map, texture_path_1, renderer);
 	texture2 = map_add_monster_texture(map, texture_path_2, renderer);
+
+	label = strdup(tmp_label);
 
 	texture1->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
 	texture2->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
@@ -201,6 +206,8 @@ l_add_monster(lua_State *L)
 	monster->state.normal = nstate;
 	monster->state.challenge = cstate;
 	monster->state.current = nstate;
+	if (strlen(label))
+		monster->label = label;
 
 	map_add_monster(map, monster);
 

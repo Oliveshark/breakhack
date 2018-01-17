@@ -15,6 +15,7 @@ typedef struct {
 } State;
 
 typedef struct Monster_t {
+	char *label;
 	Sprite *sprite;
 	ActionText *hitText;
 	ActionText *missText;
