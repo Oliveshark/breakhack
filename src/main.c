@@ -24,6 +24,7 @@ static RoomMatrix	*gRoomMatrix	= NULL;
 static Gui		*gGui		= NULL;
 static GameState	gGameState;
 static Camera		gCamera;
+static unsigned int	cLevel		= 1;
 
 static
 bool initSDL(void)
@@ -93,7 +94,7 @@ static
 bool initGame(void)
 {
 	gSpriteList = linkedlist_create();
-	gMap = map_lua_generator_run(gRenderer);
+	gMap = map_lua_generator_run(cLevel, gRenderer);
 	return gSpriteList == NULL;
 }
 
@@ -155,7 +156,7 @@ check_next_level(void)
 	if (tile->levelExit) {
 		printf("[**] Building new map\n");
 		map_destroy(gMap);
-		gMap = map_lua_generator_run(gRenderer);
+		gMap = map_lua_generator_run(++cLevel, gRenderer);
 		gPlayer->sprite->pos = (Position) {
 			TILE_DIMENSION, TILE_DIMENSION };
 	}

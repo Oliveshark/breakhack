@@ -40,7 +40,6 @@ typedef struct Map_t {
 
 Map* map_create(void);
 
-
 int map_add_texture(Map*, const char *path, SDL_Renderer*);
 
 void map_add_tile(Map *map, Position *tile_pos, MapTile*);

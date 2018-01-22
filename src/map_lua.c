@@ -214,7 +214,7 @@ l_add_monster(lua_State *L)
 	return 0;
 }
 
-Map* map_lua_generator_run(SDL_Renderer *renderer)
+Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
 {
 	int status, result;
 	char file[] = "data/mapgen.lua";
@@ -250,6 +250,9 @@ Map* map_lua_generator_run(SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_add_monster);
 	lua_setglobal(L, "add_monster");
+
+	lua_pushinteger(L, level);
+	lua_setglobal(L, "CURRENT_LEVEL");
 
 	result = lua_pcall(L, 0, LUA_MULTRET, 0);
 	if (result) {
