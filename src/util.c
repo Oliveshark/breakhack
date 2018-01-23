@@ -52,7 +52,8 @@ m_sprintf(char * dest, size_t destsz, const char * format, ...)
 	va_end(args);
 }
 
-void debug(const char *fmt, ...)
+void
+debug(const char *fmt, ...)
 {
 	va_list args;
 	printf("[--] ");
@@ -62,7 +63,8 @@ void debug(const char *fmt, ...)
 	printf("\n");
 }
 
-void info(const char * fmt, ...)
+void
+info(const char * fmt, ...)
 {
 	va_list args;
 	printf("[**] ");
@@ -72,7 +74,8 @@ void info(const char * fmt, ...)
 	printf("\n");
 }
 
-void error(const char *fmt, ...)
+void
+error(const char *fmt, ...)
 {
 	va_list args;
 	fprintf(stderr, "[!*] Error ");
@@ -82,7 +85,8 @@ void error(const char *fmt, ...)
 	fprintf(stderr, "\n");
 }
 
-void fatal(const char *fmt, ...)
+void
+fatal(const char *fmt, ...)
 {
 	va_list args;
 	fprintf(stderr, "[!!] Fatal Error ");
@@ -93,7 +97,8 @@ void fatal(const char *fmt, ...)
 	exit(-1);
 }
 
-void *ec_malloc(unsigned int size)
+void
+*ec_malloc(unsigned int size)
 {
 	void *ptr;
 	ptr = malloc(size);

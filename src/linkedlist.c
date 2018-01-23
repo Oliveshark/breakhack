@@ -1,23 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linkedlist.h"
-
-static
-LinkedList *linkedlist_malloc(void)
-{
-	LinkedList *ptr;
-	ptr = malloc(sizeof(LinkedList));
-	if (ptr == NULL) {
-		perror("[!!] Fatal error in linkedlist_malloc() on memory allocation");
-		exit(-1);
-	}
-	return ptr;
-}
+#include "util.h"
 
 static
 LinkedList* linkedlist_node_create(void)
 {
-	LinkedList *newList = linkedlist_malloc();
+	LinkedList *newList = ec_malloc(sizeof(LinkedList));
 	newList->next = NULL;
 	newList->data = NULL;
 	return newList;

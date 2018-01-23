@@ -6,18 +6,6 @@
 #include "defines.h"
 #include "util.h"
 
-static void*
-ec_malloc(unsigned int size)
-{
-	void *ptr = malloc(size);
-	if (ptr == NULL) {
-		fatal("Failed to allocate hashtable");
-	}
-
-	return ptr;
-}
-
-
 Hashtable*
 ht_create(unsigned int size)
 {
