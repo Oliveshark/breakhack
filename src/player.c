@@ -39,7 +39,7 @@ has_collided(Player *player, RoomMatrix *matrix)
 
 		if (hit > 0) {
 			char *msg = ec_malloc(200 * sizeof(char));
-			sprintf(msg, "You hit '%s' for %d damage",
+			sprintf(msg, "You hit '%s' for %u damage",
 				space->monster->label, hit);
 			gui_log(msg);
 			free(msg);

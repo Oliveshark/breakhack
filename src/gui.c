@@ -213,7 +213,6 @@ gui_render_log(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 {
 	static SDL_Color color = { 255, 255, 255, 255 };
 
-	Texture *t;
 	unsigned int i;
 	unsigned int render_count;
 	Position p;
@@ -224,6 +223,7 @@ gui_render_log(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 	gui_render_frame(gui, width/16, height/16, cam);
 
 	for (i = 0; i < render_count; ++i) {
+		Texture *t;
 		p.y = 16 + ((LOG_FONT_SIZE+1) * i);
 		t = gui->log_lines[i];
 		texture_load_from_text(t, log_data.log[i], color, cam->renderer);

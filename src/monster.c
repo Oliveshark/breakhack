@@ -69,7 +69,7 @@ has_collided(Monster *monster, RoomMatrix *matrix)
 		player_hit(space->player, dmg);
 
 		if (dmg > 0)
-			sprintf(msg, "Monster '%s' hit you for %d damage",
+			sprintf(msg, "Monster '%s' hit you for %u damage",
 				monster->label, dmg);
 		else
 			sprintf(msg, "Monster '%s' missed you", monster->label);
