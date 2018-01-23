@@ -24,7 +24,7 @@ texture_load_from_file(Texture *texture,
 
 	if (surface == NULL)
 	{
-		printf("[!!] Failed to load texture (%s): %s\n",
+		error("Failed to load texture (%s): %s",
 		       path, IMG_GetError());
 		return;
 	}
@@ -40,7 +40,7 @@ texture_load_from_file(Texture *texture,
 							surface);
 	if (texture->texture == NULL)
 	{
-		printf("[!!] Failed to create texture (%s): %s\n",
+		error("Failed to create texture (%s): %s",
 		       path,
 		       SDL_GetError());
 	}
@@ -55,7 +55,7 @@ texture_load_font(Texture *t, const char *path, unsigned int size)
 		TTF_CloseFont(t->font);
 	t->font = TTF_OpenFont(path, size);
 	if (t->font == NULL) {
-		fprintf(stderr, "[!!] Failed to load font %s: %s\n",
+		error("Failed to load font %s: %s",
 			path,
 			TTF_GetError());
 		return;
@@ -71,7 +71,7 @@ texture_load_from_text(Texture *t,
 	SDL_Surface *surface = TTF_RenderText_Solid( t->font, text, c );
 	if (surface == NULL)
 	{
-		printf("[!!] Unable to create texture from rendered text: %s\n",
+		error("Unable to create texture from rendered text: %s",
 		       IMG_GetError());
 		return;
 	}
@@ -83,7 +83,7 @@ texture_load_from_text(Texture *t,
 
 	t->texture = SDL_CreateTextureFromSurface( renderer, surface );
 	if (t->texture == NULL) {
-		printf("[!!] Failed to create texture from text: %s\n",
+		error("Failed to create texture from text: %s",
 		       SDL_GetError());
 		return;
 	}

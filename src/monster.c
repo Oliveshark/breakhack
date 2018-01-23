@@ -63,19 +63,15 @@ has_collided(Monster *monster, RoomMatrix *matrix)
 	RoomSpace *space = &matrix->spaces[roomPos.x][roomPos.y];
 
 	if (space->player) {
-		char *msg = ec_malloc(200 * sizeof(char));
 		unsigned int dmg = stats_fight(&monster->stats,
 					       &space->player->stats);
+
 		player_hit(space->player, dmg);
 
 		if (dmg > 0)
-			m_sprintf(msg, 200, "Monster '%s' hit you for %u damage",
-				monster->label, dmg);
+			gui_log("Monster '%s' hit you for %u damage", monster->label, dmg);
 		else
-			m_sprintf(msg, 200, "Monster '%s' missed you", monster->label);
-
-		gui_log(msg);
-		free(msg);
+			gui_log("Monster '%s' missed you", monster->label);
 	}
 
 	return space->occupied;

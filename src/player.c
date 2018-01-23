@@ -37,29 +37,17 @@ has_collided(Player *player, RoomMatrix *matrix)
 		else
 			player->misses += 1;
 
-		char *msg = ec_malloc(200 * sizeof(char));
-		if (hit > 0) {
-			printf("Dmg: %u, Label: %s\n", hit, space->monster->label);
-			m_sprintf(msg, 200, "You hit '%s' for %u damage",
-				space->monster->label, hit);
-			gui_log(msg);
-		} else {
-			m_sprintf(msg, 200, "You missed '%s'",
-				space->monster->label);
-			gui_log(msg);
-		}
-		free(msg);
+		if (hit > 0)
+			gui_log("You hit '%s' for %u damage", space->monster->label, hit);
+		else
+			gui_log("You missed '%s'", space->monster->label);
 
 		if (space->monster->stats.hp <= 0) {
 			// TODO(Linus): This needs some love later on.
 			player->kills += 1;
 			player->xp += 10;
 
-			char *msg = ec_malloc(200 * sizeof(char));
-			m_sprintf(msg, 200, "You killed '%s' and gained %d xp",
-				space->monster->label, 10);
-			gui_log(msg);
-			free(msg);
+			gui_log("You killed '%s' and gained %d xp", space->monster->label, 10);
 		}
 	}
 
@@ -243,16 +231,16 @@ player_print(Player *p)
 	Position roomPos = position_to_matrix_coords(&p->sprite->pos);
 	Position pos = p->sprite->pos;
 
-	printf("\n");
-	printf("--------=== <[ Player Stats ]> ===--------\n");
-	printf("HP:    %d\n", p->stats.hp);
-	printf("Level: %u\tXP:\t%u\n", p->stats.lvl, p->xp);
-	printf("Hits:  %u\tMisses:\t%u\n", p->hits, p->misses);
-	printf("Kills: %u\n", p->kills);
-	printf("Steps: %u\n", p->total_steps);
-	printf("Pos:   %dx%d\tRoomPos: %dx%d\n", pos.x, pos.y,
+	debug("\n");
+	debug("--------=== <[ Player Stats ]> ===--------");
+	debug("HP:    %d", p->stats.hp);
+	debug("Level: %u\tXP:\t%u", p->stats.lvl, p->xp);
+	debug("Hits:  %u\tMisses:\t%u", p->hits, p->misses);
+	debug("Kills: %u", p->kills);
+	debug("Steps: %u", p->total_steps);
+	debug("Pos:   %dx%d\tRoomPos: %dx%d", pos.x, pos.y,
 	       roomPos.x, roomPos.y);
-	printf("------------------------------------------\n");
+	debug("------------------------------------------");
 }
 
 void

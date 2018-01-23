@@ -220,14 +220,12 @@ Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
 	int status, result;
 	char file[] = "data/mapgen.lua";
 
-	printf("[**] Running lua map script: %s\n", file);
+	info("Running lua map script: %s", file);
 
 	lua_State *L = load_lua_state();
 	status = luaL_loadfile(L, file);
 	if (status) {
-		fprintf(stderr, "[!!] Couldn't load file: %s\n",
-			lua_tostring(L, -1));
-		exit(-1);
+		fatal("Couldn't load file: %s\n", lua_tostring(L, -1));
 	}
 
 	// Present stuff to lua
@@ -257,9 +255,7 @@ Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
 
 	result = lua_pcall(L, 0, LUA_MULTRET, 0);
 	if (result) {
-		fprintf(stderr, "[!!] Failed to run script: %s\n",
-			lua_tostring(L, -1));
-		exit(-1);
+		fatal("Failed to run script: %s\n", lua_tostring(L, -1));
 	}
 
 	lua_getglobal(L, "map");
@@ -267,7 +263,7 @@ Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
 
 	lua_close(L);
 
-	printf("[**] Done\n");
+	info("Done");
 
 	return map;
 }

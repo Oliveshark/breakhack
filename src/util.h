@@ -2,7 +2,16 @@
 #define	UTIL_H_
 
 void
-fatal(char *message);
+fatal(const char *fmt, ...);
+
+void
+error(const char *fmt, ...);
+
+void
+debug(const char *fmt, ...);
+
+void
+info(const char *fmt, ...);
 
 void *
 ec_malloc(unsigned int size);

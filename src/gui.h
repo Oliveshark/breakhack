@@ -28,7 +28,7 @@ void gui_render_panel(Gui*, unsigned int width, unsigned int height, Camera*);
 
 void gui_render_log(Gui*, unsigned int width, unsigned int height, Camera*);
 
-void gui_log(char *message);
+void gui_log(const char *fmt, ...);
 
 void gui_destroy(Gui*);
 

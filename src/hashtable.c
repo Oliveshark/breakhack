@@ -4,14 +4,14 @@
 #include <limits.h>
 #include "hashtable.h"
 #include "defines.h"
+#include "util.h"
 
 static void*
 ec_malloc(unsigned int size)
 {
 	void *ptr = malloc(size);
 	if (ptr == NULL) {
-		fprintf(stderr, "[!!] Failed to allocate hashtable\n");
-		exit(-1);
+		fatal("Failed to allocate hashtable");
 	}
 
 	return ptr;

@@ -52,13 +52,44 @@ m_sprintf(char * dest, size_t destsz, const char * format, ...)
 	va_end(args);
 }
 
-void fatal(char *message)
+void debug(const char *fmt, ...)
 {
-	char error_message[100];
+	va_list args;
+	printf("[--] ");
+	va_start(args, fmt);
+	vprintf(fmt, args);
+	va_end(args);
+	printf("\n");
+}
 
-	m_strcpy(error_message, 100, "[!!] Fatal Error ");
-	m_strncat(error_message, 100, message, 83);
-	perror(error_message);
+void info(const char * fmt, ...)
+{
+	va_list args;
+	printf("[**] ");
+	va_start(args, fmt);
+	vprintf(fmt, args);
+	va_end(args);
+	printf("\n");
+}
+
+void error(const char *fmt, ...)
+{
+	va_list args;
+	fprintf(stderr, "[!*] Error ");
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
+	fprintf(stderr, "\n");
+}
+
+void fatal(const char *fmt, ...)
+{
+	va_list args;
+	fprintf(stderr, "[!!] Fatal Error ");
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
+	fprintf(stderr, "\n");
 	exit(-1);
 }
 

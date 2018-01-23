@@ -1,6 +1,8 @@
+#include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "gui.h"
 #include "util.h"
@@ -186,16 +188,21 @@ gui_render_panel(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 }
 
 void
-gui_log(char *message)
+gui_log(const char *fmt, ...)
 {
-	// TODO(Linus): This could take va_args, would be nicer
 	char *new_message;
 	unsigned int i;
 
-	assert(strlen(message) <= log_data.strlen);
-
 	new_message = ec_malloc(log_data.strlen * sizeof(char));
-	m_strcpy(new_message, log_data.strlen, message);
+
+	va_list args;
+	va_start(args, fmt);
+#ifndef _MSC_VER
+	vsprintf(new_message, fmt, args);
+#else // _MSC_VER
+	vsprintf_s(new_message, log_data.strlen, fmt, args);
+#endif // _MSC_VER
+	va_end(args);
 
 	log_data.count++;
 	if (log_data.count > log_data.len) {

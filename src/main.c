@@ -14,6 +14,7 @@
 #include "roommatrix.h"
 #include "gamestate.h"
 #include "gui.h"
+#include "util.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
@@ -38,25 +39,25 @@ bool initSDL(void)
 	//Dimension dim = (Dimension) { 1920, 1080 };
 
 	if (dim.height > 1080) {
-		printf("[**] Hi resolution screen detected (%u x %u)\n", dim.width, dim.height);
+		info("Hi resolution screen detected (%u x %u)\n", dim.width, dim.height);
 		renderScale = ((double) dim.height)/1080;
-		printf("[**] Scaling by %f\n", renderScale);
+		info("Scaling by %f\n", renderScale);
 	}
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		printf("[!!] Could not initiate SDL2: %s\n", SDL_GetError());
+		error("Could not initiate SDL2: %s\n", SDL_GetError());
 		return false;
 	}
 
 	if ( (IMG_Init(imgFlags) & imgFlags) == 0 ) {
-		printf("[!!] Unable to initiate img loading: %s\n",
+		error("Unable to initiate img loading: %s\n",
 		       IMG_GetError());
 		return false;
 	}
 
 	if ( TTF_Init() == -1 ) {
-		printf("[!!] Unable to initiate ttf library: %s\n",
+		error("Unable to initiate ttf library: %s\n",
 		       TTF_GetError());
 		return false;
 	}
@@ -69,23 +70,23 @@ bool initSDL(void)
 				   SDL_WINDOW_SHOWN);
 	if (gWindow == NULL)
 	{
-		printf("[!!] Unable to create window: %s\n", SDL_GetError());
+		error("Unable to create window: %s\n", SDL_GetError());
 		return false;
 	}
 
 	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 	if (gRenderer == NULL)
 	{
-		printf("[!!] Unable to create renderer: %s\n", SDL_GetError());
+		error("Unable to create renderer: %s\n", SDL_GetError());
 		return false;
 	}
 	if (SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND) < 0) {
-		printf("[!!] Unable to set blend mode: %s\n", SDL_GetError());
+		error("Unable to set blend mode: %s\n", SDL_GetError());
 		return false;
 	}
 	if (SDL_RenderSetLogicalSize(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT) < 0)
 	{
-		printf("[!!] Unable to initiate scaling: %s\n",
+		error("Unable to initiate scaling: %s\n",
 		       SDL_GetError());
 		return false;
 	}
@@ -167,11 +168,11 @@ check_next_level(void)
 
 	MapTile *tile = room->tiles[pos.x][pos.y];
 	if (!tile) {
-		printf("[!!] Looks like we are out of place\n");
+		error("Looks like we are out of place\n");
 		return;
 	}
 	if (tile->levelExit) {
-		printf("[**] Building new map\n");
+		info("Building new map\n");
 		map_destroy(gMap);
 		gMap = map_lua_generator_run(++cLevel, gRenderer);
 		gPlayer->sprite->pos = (Position) {
@@ -233,14 +234,13 @@ void run(void)
 				run_game();
 				break;
 			case MENU:
-				fprintf(stderr, "[!!] MENU not implemented\n");
+				error("MENU not implemented\n");
 				break;
 			case IN_GAME_MENU:
-				fprintf(stderr,
-					"[!!] IN_GAME_MENU not implemented\n");
+				error("IN_GAME_MENU not implemented\n");
 				break;
 			case GAME_OVER:
-				fprintf(stderr, "[!!] GAME_OVER not implemented\n");
+				error("GAME_OVER not implemented\n");
 				break;
 			default:
 				break;

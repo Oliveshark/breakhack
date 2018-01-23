@@ -5,6 +5,7 @@
 
 #include "stats.h"
 #include "random.h"
+#include "util.h"
 
 unsigned int
 stats_fight(Stats *attacker, Stats *defender)
@@ -19,9 +20,9 @@ stats_fight(Stats *attacker, Stats *defender)
 	defRoll = (get_random(19) + 1) + defender->def;
 	dmgRoll = 0;
 
-	printf("\n");
-	printf("-----------[ FIGHT ]---------\n");
-	printf("Attacking: %d   Defending: %d\n", atkRoll, defRoll);
+	debug("");
+	debug("-----------[ FIGHT ]---------");
+	debug("Attacking: %d   Defending: %d", atkRoll, defRoll);
 
 	if (atkRoll > defRoll) {
 		dmgRoll = (rand() % attacker->dmg) + 1;
@@ -30,8 +31,8 @@ stats_fight(Stats *attacker, Stats *defender)
 			defender->hp -= dmgRoll;
 	}
 
-	printf("Attacker hp: %d  Defender hp: %d\n", attacker->hp, defender->hp);
-	printf("-----------------------------\n");
+	debug("Attacker hp: %d  Defender hp: %d", attacker->hp, defender->hp);
+	debug("-----------------------------");
 
 	return dmgRoll;
 }
