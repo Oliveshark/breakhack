@@ -22,9 +22,13 @@ static LinkedList	*gSpriteList	= NULL;
 static Map		*gMap		= NULL;
 static RoomMatrix	*gRoomMatrix	= NULL;
 static Gui		*gGui		= NULL;
+static unsigned int	cLevel		= 1;
+static double		renderScale	= 1.0;
 static GameState	gGameState;
 static Camera		gCamera;
-static unsigned int	cLevel		= 1;
+static SDL_Rect		gameViewport;
+static SDL_Rect		bottomGuiViewport;
+static SDL_Rect		rightGuiViewport;
 
 static
 bool initSDL(void)
@@ -32,12 +36,11 @@ bool initSDL(void)
 	int imgFlags = IMG_INIT_PNG;
 	Dimension dim = getScreenDimensions();
 	//Dimension dim = (Dimension) { 1920, 1080 };
-	double scale = 1.0;
 
 	if (dim.height > 1080) {
 		printf("[**] Hi resolution screen detected (%u x %u)\n", dim.width, dim.height);
-		scale = ((double) dim.height)/1080;
-		printf("[**] Scaling by %f\n", scale);
+		renderScale = ((double) dim.height)/1080;
+		printf("[**] Scaling by %f\n", renderScale);
 	}
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -61,8 +64,8 @@ bool initSDL(void)
 	gWindow = SDL_CreateWindow("Breakhack",
 				   SDL_WINDOWPOS_UNDEFINED,
 				   SDL_WINDOWPOS_UNDEFINED, 
-				   (int)(SCREEN_WIDTH * scale),
-				   (int)(SCREEN_HEIGHT * scale),
+				   (int)(SCREEN_WIDTH * renderScale),
+				   (int)((SCREEN_HEIGHT * renderScale)),
 				   SDL_WINDOW_SHOWN);
 	if (gWindow == NULL)
 	{
@@ -90,10 +93,24 @@ bool initSDL(void)
 	return true;
 }
 
+static void
+initViewports(void)
+{
+	gameViewport = (SDL_Rect) { 0, 0,
+		GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
+
+	bottomGuiViewport = (SDL_Rect) { 0, GAME_VIEW_HEIGHT,
+		BOTTOM_GUI_WIDTH, BOTTOM_GUI_WIDTH };
+
+	rightGuiViewport = (SDL_Rect) { GAME_VIEW_WIDTH, 0,
+		RIGHT_GUI_WIDTH, RIGHT_GUI_HEIGHT };
+}
+
 static
 bool initGame(void)
 {
 	gSpriteList = linkedlist_create();
+	initViewports();
 	gMap = map_lua_generator_run(cLevel, gRenderer);
 	return gSpriteList == NULL;
 }
@@ -181,10 +198,18 @@ run_game(void)
 
 	SDL_RenderClear(gRenderer);
 
+	SDL_RenderSetViewport(gRenderer, &gameViewport);
 	map_render(gMap, &gCamera);
 	player_render(gPlayer, &gCamera);
 	roommatrix_render_lightmap(gRoomMatrix, &gCamera);
-	gui_render(gGui, &gCamera);
+
+	SDL_RenderSetViewport(gRenderer, &rightGuiViewport);
+	gui_render_panel(gGui, RIGHT_GUI_WIDTH,
+			 RIGHT_GUI_HEIGHT, &gCamera);
+
+	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
+	gui_render_log(gGui, BOTTOM_GUI_WIDTH,
+		       BOTTOM_GUI_HEIGHT, &gCamera);
 
 	SDL_RenderPresent(gRenderer);
 

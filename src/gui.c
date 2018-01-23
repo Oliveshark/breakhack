@@ -4,6 +4,35 @@
 #include "gui.h"
 #include "util.h"
 
+static SDL_Rect frame_top_left	= { 16, 160, 16, 16 };
+static SDL_Rect frame_top_right	= { 48, 160, 16, 16 };
+static SDL_Rect frame_bottom_left	= { 16, 192, 16, 16 };
+static SDL_Rect frame_bottom_right	= { 48, 192, 16, 16 };
+static SDL_Rect frame_top		= { 32, 160, 16, 16 };
+static SDL_Rect frame_bottom		= { 32, 192, 16, 16 };
+static SDL_Rect frame_center		= { 32, 176, 16, 16 };
+static SDL_Rect frame_left		= { 16, 176, 16, 16 };
+static SDL_Rect frame_right		= { 48, 176, 16, 16 };
+
+static char **gui_log;
+static unsigned int log_length = 50;
+
+static void
+gui_malloc_log(void)
+{
+	static bool log_allocated = false;
+	if (log_allocated)
+		return;
+
+	unsigned int i;
+
+	gui_log = ec_malloc(log_length * sizeof(char*));
+	for (i = 0; i < log_length; ++i)
+		gui_log[i] = ec_malloc(200 * sizeof(char));
+
+	log_allocated = true;
+}
+
 Gui*
 gui_create()
 {
@@ -11,6 +40,9 @@ gui_create()
 	gui->sprites = linkedlist_create();
 	gui->health = linkedlist_create();
 	gui->textures = ht_create(5);
+
+	gui_malloc_log();
+
 	return gui;
 }
 
@@ -86,9 +118,46 @@ gui_add_texture(Gui *gui, const char *path, SDL_Renderer *renderer)
 	return t;
 }
 
-void
-gui_render(Gui *gui, Camera *cam)
+static void
+gui_render_frame(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 {
+	Texture *texture = ht_get(gui->textures, "assets/GUI/GUI0.png");
+	Position pos = { 0, 0 };
+	unsigned int i, j;
+
+	for (i = 0; i < width; ++i) {
+		for (j = 0; j < height; ++j) {
+			pos.x = i * 16;
+			pos.y = j * 16;
+
+			if (i == 0 && j == 0) {
+				texture_render_clip(texture, &pos, &frame_top_left, cam);
+			} else if (i == (width - 1) && j == 0) {
+				texture_render_clip(texture, &pos, &frame_top_right, cam);
+			} else if (i == 0 && j == (height - 1)) {
+				texture_render_clip(texture, &pos, &frame_bottom_left, cam);
+			} else if (i == (width - 1) && j == (height - 1)) {
+				texture_render_clip(texture, &pos, &frame_bottom_right, cam);
+			} else if (i == 0) {
+				texture_render_clip(texture, &pos, &frame_left, cam);
+			} else if (i == (width - 1)) {
+				texture_render_clip(texture, &pos, &frame_right, cam);
+			} else if (j == 0) {
+				texture_render_clip(texture, &pos, &frame_top, cam);
+			} else if (j == (height - 1)) {
+				texture_render_clip(texture, &pos, &frame_bottom, cam);
+			} else {
+				texture_render_clip(texture, &pos, &frame_center, cam);
+			}
+		}
+	}
+}
+
+void
+gui_render_panel(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
+{
+	gui_render_frame(gui, width/16, height/16, cam);
+
 	LinkedList *item = gui->health;
 	while (item != NULL) {
 		Sprite *s = item->data;
@@ -105,12 +174,35 @@ gui_render(Gui *gui, Camera *cam)
 }
 
 void
+gui_render_log(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
+{
+	gui_render_frame(gui, width/16, height/16, cam);
+}
+
+static void
+destroy_log(void)
+{
+	if (gui_log == NULL)
+		return;
+
+	unsigned int i;
+	for (i = 0; i < log_length; ++i)
+		free(gui_log[i]);
+
+	free(gui_log);
+	gui_log = NULL;
+}
+
+void
 gui_destroy(Gui *gui)
 {
+	destroy_log();
+
 	while (gui->sprites != NULL)
 		sprite_destroy(linkedlist_pop(&gui->sprites));
 	while (gui->health != NULL)
 		sprite_destroy(linkedlist_pop(&gui->health));
+
 	ht_destroy_custom(gui->textures, (void (*)(void*)) &texture_destroy);
 	free(gui);
 }
