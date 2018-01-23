@@ -1,6 +1,9 @@
 #ifndef GUI_H_
 #define	GUI_H_
 
+#define LOG_LINES_COUNT	15
+#define LOG_FONT_SIZE	8
+
 #include "linkedlist.h"
 #include "hashtable.h"
 #include "sprite.h"
@@ -10,6 +13,7 @@ typedef struct {
 	LinkedList *sprites;
 	LinkedList *health;
 	Hashtable *textures;
+	Texture *log_lines[LOG_LINES_COUNT];
 } Gui;
 
 Gui* gui_create(void);
@@ -23,6 +27,8 @@ Texture* gui_add_texture(Gui*, const char *path, SDL_Renderer*);
 void gui_render_panel(Gui*, unsigned int width, unsigned int height, Camera*);
 
 void gui_render_log(Gui*, unsigned int width, unsigned int height, Camera*);
+
+void gui_log(char *message);
 
 void gui_destroy(Gui*);
 

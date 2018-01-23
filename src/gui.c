@@ -4,8 +4,10 @@
 #include "gui.h"
 #include "util.h"
 
-static SDL_Rect frame_top_left	= { 16, 160, 16, 16 };
-static SDL_Rect frame_top_right	= { 48, 160, 16, 16 };
+#define DEFAULT_LOG { NULL, 50, 0, 200 }
+
+static SDL_Rect frame_top_left		= { 16, 160, 16, 16 };
+static SDL_Rect frame_top_right		= { 48, 160, 16, 16 };
 static SDL_Rect frame_bottom_left	= { 16, 192, 16, 16 };
 static SDL_Rect frame_bottom_right	= { 48, 192, 16, 16 };
 static SDL_Rect frame_top		= { 32, 160, 16, 16 };
@@ -14,32 +16,42 @@ static SDL_Rect frame_center		= { 32, 176, 16, 16 };
 static SDL_Rect frame_left		= { 16, 176, 16, 16 };
 static SDL_Rect frame_right		= { 48, 176, 16, 16 };
 
-static char **gui_log;
-static unsigned int log_length = 50;
+static struct LogData_t {
+	char **log;
+	unsigned int len;
+	unsigned int count;
+	unsigned int strlen;
+} log_data = DEFAULT_LOG;
 
 static void
 gui_malloc_log(void)
 {
-	static bool log_allocated = false;
-	if (log_allocated)
+	if (log_data.log != NULL)
 		return;
 
 	unsigned int i;
 
-	gui_log = ec_malloc(log_length * sizeof(char*));
-	for (i = 0; i < log_length; ++i)
-		gui_log[i] = ec_malloc(200 * sizeof(char));
-
-	log_allocated = true;
+	log_data.log = ec_malloc(log_data.len * sizeof(char*));
+	for (i = 0; i < log_data.len; ++i)
+		log_data.log[i] = NULL;
 }
 
 Gui*
 gui_create()
 {
+	Texture *t;
+	unsigned int i;
+
 	Gui *gui = ec_malloc(sizeof(Gui));
 	gui->sprites = linkedlist_create();
 	gui->health = linkedlist_create();
 	gui->textures = ht_create(5);
+
+	for (i = 0; i < LOG_LINES_COUNT; ++i) {
+		t = texture_create();
+		texture_load_font(t, "assets/GUI/SDS_8x8.ttf", LOG_FONT_SIZE);
+		gui->log_lines[i] = t;
+	}
 
 	gui_malloc_log();
 
@@ -174,23 +186,63 @@ gui_render_panel(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 }
 
 void
+gui_log(char *message)
+{
+	char *new_message;
+	unsigned int i;
+
+	assert(strlen(message) <= log_data.strlen);
+
+	new_message = ec_malloc(log_data.strlen * sizeof(char));
+	m_strcpy(new_message, 200, message);
+
+	log_data.count++;
+	if (log_data.count > log_data.len) {
+		log_data.count = log_data.len;
+		free(log_data.log[log_data.count-1]);
+		log_data.log[log_data.count-1] = NULL;
+	}
+	for (i = log_data.count - 1; i > 0; --i) {
+		log_data.log[i] = log_data.log[i-1];
+	}
+	log_data.log[0] = new_message;
+}
+
+void
 gui_render_log(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 {
+	static SDL_Color color = { 255, 255, 255, 255 };
+
+	Texture *t;
+	unsigned int i;
+	unsigned int render_count;
+	Position p;
+	
+	render_count = LOG_LINES_COUNT > log_data.count ? log_data.count : LOG_LINES_COUNT;
+	p = (Position) { 16, 0 };
+
 	gui_render_frame(gui, width/16, height/16, cam);
+
+	for (i = 0; i < render_count; ++i) {
+		p.y = 16 + ((LOG_FONT_SIZE+1) * i);
+		t = gui->log_lines[i];
+		texture_load_from_text(t, log_data.log[i], color, cam->renderer);
+		texture_render(t, &p, cam);
+	}
 }
 
 static void
 destroy_log(void)
 {
-	if (gui_log == NULL)
+	if (log_data.log == NULL)
 		return;
 
 	unsigned int i;
-	for (i = 0; i < log_length; ++i)
-		free(gui_log[i]);
+	for (i = 0; i < log_data.count; ++i)
+		free(log_data.log[i]);
 
-	free(gui_log);
-	gui_log = NULL;
+	free(log_data.log);
+	log_data.log = NULL;
 }
 
 void

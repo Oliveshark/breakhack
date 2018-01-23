@@ -5,6 +5,7 @@
 #include "player.h"
 #include "monster.h"
 #include "random.h"
+#include "gui.h"
 
 static void
 monster_load_texts(Monster *m, SDL_Renderer *renderer)
@@ -62,9 +63,19 @@ has_collided(Monster *monster, RoomMatrix *matrix)
 	RoomSpace *space = &matrix->spaces[roomPos.x][roomPos.y];
 
 	if (space->player) {
+		char *msg = ec_malloc(200 * sizeof(char));
 		unsigned int dmg = stats_fight(&monster->stats,
 					       &space->player->stats);
 		player_hit(space->player, dmg);
+
+		if (dmg > 0)
+			sprintf(msg, "Monster '%s' hit you for %d damage",
+				monster->label, dmg);
+		else
+			sprintf(msg, "Monster '%s' missed you", monster->label);
+
+		gui_log(msg);
+		free(msg);
 	}
 
 	return space->occupied;
@@ -211,9 +222,6 @@ monster_move(Monster *m, RoomMatrix *rm)
 	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = true;
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = m;
-
-	if (m->label)
-		printf("Monster '%s' moved.\n", m->label);
 }
 
 void

@@ -5,6 +5,7 @@
 #include "player.h"
 #include "monster.h"
 #include "util.h"
+#include "gui.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
@@ -36,10 +37,24 @@ has_collided(Player *player, RoomMatrix *matrix)
 		else
 			player->misses += 1;
 
+		if (hit > 0) {
+			char *msg = ec_malloc(200 * sizeof(char));
+			sprintf(msg, "You hit '%s' for %d damage",
+				space->monster->label, hit);
+			gui_log(msg);
+			free(msg);
+		}
+
 		if (space->monster->stats.hp <= 0) {
 			// TODO(Linus): This needs some love later on.
 			player->kills += 1;
 			player->xp += 10;
+
+			char *msg = ec_malloc(200 * sizeof(char));
+			sprintf(msg, "You killed '%s' and gained %d xp",
+				space->monster->label, 10);
+			gui_log(msg);
+			free(msg);
 		}
 	}
 
