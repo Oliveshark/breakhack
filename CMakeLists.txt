@@ -82,11 +82,11 @@ IF (CHECK_FOUND AND NOT WIN32)
 	target_link_libraries(test_util ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_util test_util)
 
-	add_executable(test_linkedlist test/check_linkedlist src/linkedlist)
+	add_executable(test_linkedlist test/check_linkedlist src/linkedlist src/linkedlist)
 	target_link_libraries(test_linkedlist ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_linkedlist test_linkedlist)
 
-	add_executable(test_hashtable test/check_hashtable src/hashtable)
+	add_executable(test_hashtable test/check_hashtable src/hashtable src/linkedlist)
 	target_link_libraries(test_hashtable ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_hashtable test_hashtable)
 ENDIF (CHECK_FOUND AND NOT WIN32)
