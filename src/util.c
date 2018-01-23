@@ -1,7 +1,9 @@
-#include "defines.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
+
+#include "defines.h"
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -33,6 +35,21 @@ m_strncat(char *dest,
 #else // _MSC_VER
 	strncat_s(dest, destsz, src, srcsz);
 #endif // _MSC_VER
+}
+
+void
+m_sprintf(char * dest, size_t destsz, const char * format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+#ifndef _MSC_VER
+	UNUSED(destsz);
+	vsprintf(dest, format, args);
+#else // _MSC_VER
+	vsprintf_s(dest, destsz, format, args);
+#endif // _MSC_VER
+	va_end(args);
 }
 
 void fatal(char *message)

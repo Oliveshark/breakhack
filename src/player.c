@@ -37,13 +37,18 @@ has_collided(Player *player, RoomMatrix *matrix)
 		else
 			player->misses += 1;
 
+		char *msg = ec_malloc(200 * sizeof(char));
 		if (hit > 0) {
-			char *msg = ec_malloc(200 * sizeof(char));
-			sprintf(msg, "You hit '%s' for %u damage",
+			printf("Dmg: %u, Label: %s\n", hit, space->monster->label);
+			m_sprintf(msg, 200, "You hit '%s' for %u damage",
 				space->monster->label, hit);
 			gui_log(msg);
-			free(msg);
+		} else {
+			m_sprintf(msg, 200, "You missed '%s'",
+				space->monster->label);
+			gui_log(msg);
 		}
+		free(msg);
 
 		if (space->monster->stats.hp <= 0) {
 			// TODO(Linus): This needs some love later on.
@@ -51,7 +56,7 @@ has_collided(Player *player, RoomMatrix *matrix)
 			player->xp += 10;
 
 			char *msg = ec_malloc(200 * sizeof(char));
-			sprintf(msg, "You killed '%s' and gained %d xp",
+			m_sprintf(msg, 200, "You killed '%s' and gained %d xp",
 				space->monster->label, 10);
 			gui_log(msg);
 			free(msg);
