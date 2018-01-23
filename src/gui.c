@@ -93,7 +93,6 @@ gui_set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 void
 gui_set_current_health(Gui *gui, int current)
 {
-	Sprite *sprite;
 	int partial = current % 3;
 	int full = (current - partial)/3;
 	int count = 0;
@@ -103,7 +102,7 @@ gui_set_current_health(Gui *gui, int current)
 
 	LinkedList *item = gui->health;
 	while (item != NULL) {
-		sprite = (Sprite*) item->data;
+		Sprite *sprite = (Sprite*) item->data;
 		if (count < full) {
 			sprite->clip.x = 0;
 		} else if (count == full) {
