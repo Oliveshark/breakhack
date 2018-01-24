@@ -127,7 +127,14 @@ timestamp(char *tstamp, size_t sz)
 	struct tm *tm_info;
 
 	time(&cTime);
+#ifndef _MSC_VER
 	tm_info = localtime(&cTime);
+#else // _MSC_VER
+	tm_info = ec_malloc(sizeof(struct tm));
+	localtime_s(tm_info, &cTime);
+#endif // _MSC_VER
 
 	strftime(tstamp, sz, "%H:%M:%S", tm_info);
+
+	free(tm_info);
 }

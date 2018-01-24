@@ -190,7 +190,7 @@ gui_render_panel(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 void
 gui_log(const char *fmt, ...)
 {
-	char buffer[log_data.strlen];
+	char buffer[200];
 	char *new_message;
 	unsigned int i;
 	char tstamp[10];
@@ -200,7 +200,7 @@ gui_log(const char *fmt, ...)
 #ifndef _MSC_VER
 	vsprintf(buffer, fmt, args);
 #else // _MSC_VER
-	vsprintf_s(buffer, log_data.strlen, fmt, args);
+	vsprintf_s(buffer, 200, fmt, args);
 #endif // _MSC_VER
 	va_end(args);
 
