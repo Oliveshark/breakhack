@@ -2,6 +2,9 @@
 #include "map.h"
 #include "map_lua.h"
 #include "util.h"
+#include "item.h"
+#include "item_builder.h"
+#include "gui.h"
 
 static
 Room* create_room(void)
@@ -27,6 +30,7 @@ Map* map_create()
 	map->textures = linkedlist_create();
 	map->monsterTextures = ht_create(30);
 	map->monsters = linkedlist_create();
+	map->items = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
 	map->renderTimer = timer_create();
 	map->level = 1;
@@ -102,7 +106,43 @@ map_clear_dead_monsters(Map *map)
 			else
 				last->next = current->next;
 
-			monster_destroy(current->data);
+			// TODO(Linus): We should really move this code somewhere else, perhaps to monster.c?
+			// Create a health drop
+			Monster *monster = current->data;
+			Item *item = item_builder_build_item(HEALTH);
+			item->sprite->pos = monster->sprite->pos;
+			linkedlist_append(&map->items, item);
+			gui_log("%s dropped a health potion", monster->label);
+
+			monster_destroy(monster);
+			current->data = NULL;
+			next = current->next;
+			current->next = NULL;
+			linkedlist_destroy(&current);
+			current = next;
+			continue;
+		}
+		last = current;
+		current = current->next;
+	}
+}
+
+void
+map_clear_collected_items(Map *map)
+{
+	LinkedList *last, *current, *next;
+
+	last = NULL;
+	current = map->items;
+
+	while (current != NULL) {
+		if (((Item*) current->data)->collected) {
+			if (last == NULL)
+				map->items = current->next;
+			else
+				last->next = current->next;
+
+			item_destroy(current->data);
 			current->data = NULL;
 			next = current->next;
 			current->next = NULL;
@@ -182,6 +222,7 @@ void map_render(Map *map, Camera *cam)
 {
 	unsigned int i, j;
 	LinkedList *monsterItem;
+	LinkedList *items;
 	Room *room;
 
 	if (!timer_started(map->renderTimer)) {
@@ -214,6 +255,13 @@ void map_render(Map *map, Camera *cam)
 		Monster *monster = monsterItem->data;
 		monsterItem = monsterItem->next;
 		monster_render(monster, cam);
+	}
+
+	items = map->items;
+	while (items != NULL) {
+		Item *item = items->data;
+		items = items->next;
+		item_render(item, cam);
 	}
 }
 
@@ -269,12 +317,16 @@ void map_destroy(Map *map)
 			map_room_destroy(map->rooms[i][j]);
 		}
 	}
-	while (map->textures != NULL) {
+
+	while (map->textures != NULL)
 		texture_destroy(linkedlist_pop(&map->textures));
-	}
-	while (map->monsters != NULL) {
+
+	while (map->monsters != NULL)
 		monster_destroy(linkedlist_pop(&map->monsters));
-	}
+
+	while (map->items != NULL)
+		item_destroy(linkedlist_pop(&map->items));
+
 	ht_destroy_custom(map->monsterTextures, (void (*)(void*)) texture_destroy);
 	timer_destroy(map->renderTimer);
 	free(map);

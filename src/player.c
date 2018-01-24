@@ -6,6 +6,7 @@
 #include "monster.h"
 #include "util.h"
 #include "gui.h"
+#include "item.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
@@ -51,6 +52,12 @@ has_collided(Player *player, RoomMatrix *matrix)
 		}
 	} else if (collided) {
 		gui_log("Ouch! There is something in the way");
+	}
+
+	if (space->item != NULL) {
+		if (space->item->effect)
+			space->item->effect(space->item, player);
+		space->item->collected = true;
 	}
 
 	return collided;

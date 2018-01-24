@@ -4,6 +4,7 @@
 #include "util.h"
 #include "map.h"
 #include "player.h"
+#include "item.h"
 
 RoomMatrix* roommatrix_create()
 {
@@ -15,10 +16,12 @@ RoomMatrix* roommatrix_create()
 void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 {
 	int i, j;
-	Position monster_matrix_pos;
+	Position position;
 	Room *r;
 	Monster *monster;
 	LinkedList *monsterItem;
+	Item *item;
+	LinkedList *items;
 
 	roommatrix_reset(rm);
 
@@ -51,13 +54,25 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 		if (!position_in_room(&monster->sprite->pos, &m->currentRoom))
 			continue;
 
-		monster_matrix_pos =
+		position =
 			position_to_matrix_coords(&monster->sprite->pos);
 
-		rm->spaces[monster_matrix_pos.x][monster_matrix_pos.y]
+		rm->spaces[position.x][position.y]
 			.occupied = true;
-		rm->spaces[monster_matrix_pos.x][monster_matrix_pos.y]
+		rm->spaces[position.x][position.y]
 			.monster = monster;
+	}
+
+	items = m->items;
+	while (items) {
+		item = items->data;
+		items = items->next;
+
+		if (!position_in_room(&item->sprite->pos, &m->currentRoom))
+			continue;
+
+		position = position_to_matrix_coords(&item->sprite->pos);
+		rm->spaces[position.x][position.y].item = item;
 	}
 }
 
@@ -172,6 +187,7 @@ void roommatrix_reset(RoomMatrix *m)
 			m->spaces[i][j].lightsource = false;
 			m->spaces[i][j].light = 0;
 			m->spaces[i][j].monster = NULL;
+			m->spaces[i][j].item = NULL;
 			m->spaces[i][j].player = NULL;
 		}
 	}

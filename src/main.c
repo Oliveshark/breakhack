@@ -15,6 +15,7 @@
 #include "gamestate.h"
 #include "gui.h"
 #include "util.h"
+#include "item_builder.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
@@ -36,7 +37,6 @@ bool initSDL(void)
 {
 	int imgFlags = IMG_INIT_PNG;
 	Dimension dim = getScreenDimensions();
-	//Dimension dim = (Dimension) { 1920, 1080 };
 
 	if (dim.height > 1080) {
 		info("Hi resolution screen detected (%u x %u)", dim.width, dim.height);
@@ -131,6 +131,7 @@ bool init(void)
 		gCamera.renderer = gRenderer;
 		gRoomMatrix = roommatrix_create();
 		gGui = gui_create();
+		item_builder_init(gRenderer);
 	}
 
 	gGameState = PLAYING;
@@ -188,6 +189,7 @@ static void
 run_game(void)
 {
 	map_clear_dead_monsters(gMap);
+	map_clear_collected_items(gMap);
 	roommatrix_populate_from_map(gRoomMatrix, gMap);
 	roommatrix_add_lightsource(gRoomMatrix,
 				   &gPlayer->sprite->pos);
@@ -266,6 +268,7 @@ void close(void)
 	map_destroy(gMap);
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
+	item_builder_close();
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;

@@ -33,6 +33,7 @@ typedef struct Map_t {
 	LinkedList *textures;
 	Hashtable *monsterTextures;
 	LinkedList *monsters;
+	LinkedList *items;
 	Position currentRoom;
 	Timer *renderTimer;
 	int level;
@@ -53,6 +54,8 @@ void map_add_monster(Map*, Monster*);
 void map_move_monsters(Map*, RoomMatrix*);
 
 void map_clear_dead_monsters(Map*);
+
+void map_clear_collected_items(Map*);
 
 void map_render(Map*, Camera*);
 
