@@ -38,6 +38,8 @@ load_texture(const char *path)
 static void
 add_health(Item *item, Player *player)
 {
+	UNUSED(item);
+
 	int original_hp = player->stats.hp;
 	player->stats.hp += 2;
 	if (player->stats.hp > player->stats.maxhp)
