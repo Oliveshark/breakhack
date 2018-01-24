@@ -25,4 +25,7 @@ m_strncat(char *dest, size_t destsz, char *src, size_t srcsz);
 void
 m_sprintf(char *dest, size_t destsz, const char *format, ...);
 
+void
+timestamp(char *tstamp, size_t sz);
+
 #endif // UTIL_H_

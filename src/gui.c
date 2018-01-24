@@ -190,19 +190,24 @@ gui_render_panel(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 void
 gui_log(const char *fmt, ...)
 {
+	char buffer[log_data.strlen];
 	char *new_message;
 	unsigned int i;
-
-	new_message = ec_malloc(log_data.strlen * sizeof(char));
+	char tstamp[10];
 
 	va_list args;
 	va_start(args, fmt);
 #ifndef _MSC_VER
-	vsprintf(new_message, fmt, args);
+	vsprintf(buffer, fmt, args);
 #else // _MSC_VER
-	vsprintf_s(new_message, log_data.strlen, fmt, args);
+	vsprintf_s(buffer, log_data.strlen, fmt, args);
 #endif // _MSC_VER
 	va_end(args);
+
+	new_message = ec_malloc(log_data.strlen * sizeof(char));
+
+	timestamp(tstamp, 10);
+	m_sprintf(new_message, log_data.strlen, "%s > %s", tstamp, buffer);
 
 	log_data.count++;
 	if (log_data.count > log_data.len) {

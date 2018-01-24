@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <time.h>
 
 #include "defines.h"
 
@@ -56,7 +57,10 @@ void
 debug(const char *fmt, ...)
 {
 	va_list args;
-	printf("[--] ");
+	char tstamp[10];
+
+	timestamp(tstamp, 10);
+	printf("[%s][--] ", tstamp);
 	va_start(args, fmt);
 	vprintf(fmt, args);
 	va_end(args);
@@ -67,7 +71,10 @@ void
 info(const char * fmt, ...)
 {
 	va_list args;
-	printf("[**] ");
+	char tstamp[10];
+
+	timestamp(tstamp, 10);
+	printf("[%s][**] ", tstamp);
 	va_start(args, fmt);
 	vprintf(fmt, args);
 	va_end(args);
@@ -78,7 +85,10 @@ void
 error(const char *fmt, ...)
 {
 	va_list args;
-	fprintf(stderr, "[!*] Error ");
+	char tstamp[10];
+
+	timestamp(tstamp, 10);
+	fprintf(stderr, "[%s][!*] ", tstamp);
 	va_start(args, fmt);
 	vfprintf(stderr, fmt, args);
 	va_end(args);
@@ -89,7 +99,10 @@ void
 fatal(const char *fmt, ...)
 {
 	va_list args;
-	fprintf(stderr, "[!!] Fatal Error ");
+	char tstamp[10];
+
+	timestamp(tstamp, 10);
+	fprintf(stderr, "[%s][!!] ", tstamp);
 	va_start(args, fmt);
 	vfprintf(stderr, fmt, args);
 	va_end(args);
@@ -105,4 +118,16 @@ void
 	if (ptr == NULL)
 		fatal("in ec_malloc() on memory allocation");
 	return ptr;
+}
+
+void
+timestamp(char *tstamp, size_t sz)
+{
+	time_t cTime;
+	struct tm *tm_info;
+
+	time(&cTime);
+	tm_info = localtime(&cTime);
+
+	strftime(tstamp, sz, "%H:%M:%S", tm_info);
 }
