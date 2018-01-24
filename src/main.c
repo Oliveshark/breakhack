@@ -40,8 +40,7 @@ bool initSDL(void)
 
 	if (dim.height > 1080) {
 		info("Hi resolution screen detected (%u x %u)", dim.width, dim.height);
-		//renderScale = ((double) dim.height)/1080;
-		renderScale = 4;
+		renderScale = ((double) dim.height)/1080;
 		info("Scaling by %f", renderScale);
 	}
 
