@@ -39,25 +39,26 @@ bool initSDL(void)
 	//Dimension dim = (Dimension) { 1920, 1080 };
 
 	if (dim.height > 1080) {
-		info("Hi resolution screen detected (%u x %u)\n", dim.width, dim.height);
-		renderScale = ((double) dim.height)/1080;
-		info("Scaling by %f\n", renderScale);
+		info("Hi resolution screen detected (%u x %u)", dim.width, dim.height);
+		//renderScale = ((double) dim.height)/1080;
+		renderScale = 4;
+		info("Scaling by %f", renderScale);
 	}
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		error("Could not initiate SDL2: %s\n", SDL_GetError());
+		error("Could not initiate SDL2: %s", SDL_GetError());
 		return false;
 	}
 
 	if ( (IMG_Init(imgFlags) & imgFlags) == 0 ) {
-		error("Unable to initiate img loading: %s\n",
+		error("Unable to initiate img loading: %s",
 		       IMG_GetError());
 		return false;
 	}
 
 	if ( TTF_Init() == -1 ) {
-		error("Unable to initiate ttf library: %s\n",
+		error("Unable to initiate ttf library: %s",
 		       TTF_GetError());
 		return false;
 	}
@@ -66,27 +67,27 @@ bool initSDL(void)
 				   SDL_WINDOWPOS_UNDEFINED,
 				   SDL_WINDOWPOS_UNDEFINED, 
 				   (int)(SCREEN_WIDTH * renderScale),
-				   (int)((SCREEN_HEIGHT * renderScale)),
+				   (int)(SCREEN_HEIGHT * renderScale),
 				   SDL_WINDOW_SHOWN);
 	if (gWindow == NULL)
 	{
-		error("Unable to create window: %s\n", SDL_GetError());
+		error("Unable to create window: %s", SDL_GetError());
 		return false;
 	}
 
 	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 	if (gRenderer == NULL)
 	{
-		error("Unable to create renderer: %s\n", SDL_GetError());
+		error("Unable to create renderer: %s", SDL_GetError());
 		return false;
 	}
 	if (SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND) < 0) {
-		error("Unable to set blend mode: %s\n", SDL_GetError());
+		error("Unable to set blend mode: %s", SDL_GetError());
 		return false;
 	}
 	if (SDL_RenderSetLogicalSize(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT) < 0)
 	{
-		error("Unable to initiate scaling: %s\n",
+		error("Unable to initiate scaling: %s",
 		       SDL_GetError());
 		return false;
 	}
@@ -168,11 +169,11 @@ check_next_level(void)
 
 	MapTile *tile = room->tiles[pos.x][pos.y];
 	if (!tile) {
-		error("Looks like we are out of place\n");
+		error("Looks like we are out of place");
 		return;
 	}
 	if (tile->levelExit) {
-		info("Building new map\n");
+		info("Building new map");
 		map_destroy(gMap);
 		gMap = map_lua_generator_run(++cLevel, gRenderer);
 		gPlayer->sprite->pos = (Position) {
@@ -234,13 +235,13 @@ void run(void)
 				run_game();
 				break;
 			case MENU:
-				error("MENU not implemented\n");
+				error("MENU not implemented");
 				break;
 			case IN_GAME_MENU:
-				error("IN_GAME_MENU not implemented\n");
+				error("IN_GAME_MENU not implemented");
 				break;
 			case GAME_OVER:
-				error("GAME_OVER not implemented\n");
+				error("GAME_OVER not implemented");
 				break;
 			default:
 				break;

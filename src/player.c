@@ -49,6 +49,8 @@ has_collided(Player *player, RoomMatrix *matrix)
 
 			gui_log("You killed '%s' and gained %d xp", space->monster->label, 10);
 		}
+	} else if (collided) {
+		gui_log("Ouch! There is something in the way");
 	}
 
 	return collided;
