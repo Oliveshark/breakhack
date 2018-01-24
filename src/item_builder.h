@@ -20,6 +20,6 @@ Item *
 item_builder_build_item(ItemKey key);
 
 void
-item_builder_close();
+item_builder_close(void);
 
 #endif // ITEMBUILDER_H_

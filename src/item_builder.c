@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <stdlib.h>
 
 #include "item_builder.h"
 #include "texture.h"
@@ -16,7 +17,7 @@ item_builder_init(SDL_Renderer *renderer)
 }
 
 static void
-check_builder()
+check_builder(void)
 {
 	if (!builder)
 		fatal("item_builder_init() not run");
@@ -46,7 +47,7 @@ add_health(Item *item, Player *player)
 }
 
 static Item *
-create_health()
+create_health(void)
 {
 	Texture *t;
 	Item *item;
@@ -70,7 +71,7 @@ item_builder_build_item(ItemKey key)
 	Item *item = NULL;
 	switch (key) {
 	case HEALTH:
-		item = create_health(builder);
+		item = create_health();
 		break;
 	default:
 		fatal("in item_builder_build() : Unhandled item key %d", key);
@@ -81,7 +82,7 @@ item_builder_build_item(ItemKey key)
 }
 
 void
-item_builder_close()
+item_builder_close(void)
 {
 	ht_destroy_custom(builder->textures, (void (*)(void*)) &texture_destroy);
 	free(builder);
