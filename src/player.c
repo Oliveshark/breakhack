@@ -10,9 +10,9 @@
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
-#define PALADIN_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
-#define ROGUE_STATS	{ 12, 12, 5, 7, 2, 2, 1 }
-#define WARRIOR_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
+#define PALADIN_STATS	{ 12, 12, 8, 9, 2, 1, 1 }
+#define ROGUE_STATS	{ 12, 12, 5, 7, 3, 2, 1 }
+#define WARRIOR_STATS	{ 12, 12, 8, 9, 2, 1, 1 }
 
 static bool 
 has_collided(Player *player, RoomMatrix *matrix)

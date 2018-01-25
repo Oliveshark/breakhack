@@ -142,7 +142,7 @@ bool init(void)
 static
 void loadMedia(void)
 {
-	gPlayer = player_create(ROGUE, gRenderer);
+	gPlayer = player_create(PALADIN, gRenderer);
 }
 
 static
@@ -228,6 +228,8 @@ void run(void)
 {
 	bool quit = false;
 	Timer* fpsTimer = timer_create();
+
+	gui_log("The Dungeon Crawl begins!");
 
 	while (!quit)
 	{
