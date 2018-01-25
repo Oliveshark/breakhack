@@ -10,7 +10,18 @@ typedef struct {
 } ItemBuilder;
 
 typedef enum {
-	HEALTH
+	COPPER,
+	SILVER,
+	GOLD,
+	PLATINUM,
+	TREASURE_COUNT
+} Treasure;
+
+typedef enum {
+	TREASURE,
+	FLESH,
+	HEALTH,
+	ITEM_COUNT
 } ItemKey;
 
 void

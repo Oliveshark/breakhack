@@ -16,6 +16,7 @@ typedef struct {
 
 typedef struct Monster_t {
 	char *label;
+	char *lclabel;
 	Sprite *sprite;
 	ActionText *hitText;
 	ActionText *missText;
@@ -32,6 +33,8 @@ void monster_move(Monster*, RoomMatrix*);
 void monster_render(Monster*, Camera*);
 
 void monster_hit(Monster*, unsigned int dmg);
+
+Item *monster_drop_loot(Monster*);
 
 void monster_destroy(Monster*);
 

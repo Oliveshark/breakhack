@@ -207,8 +207,10 @@ l_add_monster(lua_State *L)
 	monster->state.normal = nstate;
 	monster->state.challenge = cstate;
 	monster->state.current = nstate;
-	if (strlen(label))
+	if (strlen(label)) {
 		monster->label = label;
+		monster->lclabel = to_lower(label);
+	}
 
 	map_add_monster(map, monster);
 

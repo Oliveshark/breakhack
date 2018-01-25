@@ -20,7 +20,8 @@ has_collided(Player *player, RoomMatrix *matrix)
 	bool collided = false;
 
 	Position roomCoord = position_to_room_coords(&player->sprite->pos);
-	if (roomCoord.x != matrix->roomPos.x || roomCoord.y != matrix->roomPos.y) {
+	if (roomCoord.x != matrix->roomPos.x
+	    || roomCoord.y != matrix->roomPos.y) {
 		return collided;
 	}
 
@@ -39,16 +40,18 @@ has_collided(Player *player, RoomMatrix *matrix)
 			player->misses += 1;
 
 		if (hit > 0)
-			gui_log("You hit '%s' for %u damage", space->monster->label, hit);
+			gui_log("You hit %s for %u damage",
+				space->monster->lclabel, hit);
 		else
-			gui_log("You missed '%s'", space->monster->label);
+			gui_log("You missed %s", space->monster->lclabel);
 
 		if (space->monster->stats.hp <= 0) {
 			// TODO(Linus): This needs some love later on.
 			player->kills += 1;
 			player->xp += 10;
 
-			gui_log("You killed '%s' and gained %d xp", space->monster->label, 10);
+			gui_log("You killed %s and gained %d xp",
+				space->monster->lclabel, 10);
 		}
 	} else if (collided) {
 		gui_log("Ouch! There is something in the way");
@@ -177,6 +180,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->hits		= 0;
 	player->kills		= 0;
 	player->misses		= 0;
+	player->gold		= 0;
 
 	char asset[100];
 	switch (class) {
@@ -244,6 +248,7 @@ player_print(Player *p)
 	debug("--------=== <[ Player Stats ]> ===--------");
 	debug("HP:    %d", p->stats.hp);
 	debug("Level: %u\tXP:\t%u", p->stats.lvl, p->xp);
+	debug("Gold: %.2f", p->gold);
 	debug("Hits:  %u\tMisses:\t%u", p->hits, p->misses);
 	debug("Kills: %u", p->kills);
 	debug("Steps: %u", p->total_steps);

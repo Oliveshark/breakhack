@@ -21,6 +21,7 @@ typedef struct Player_t {
 	unsigned int hits;
 	unsigned int kills;
 	unsigned int misses;
+	double gold;
 	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 

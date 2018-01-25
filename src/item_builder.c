@@ -36,48 +36,118 @@ load_texture(const char *path)
 }
 
 static void
-add_health(Item *item, Player *player)
+eat_flesh(Item *item, Player *player)
 {
-	UNUSED(item);
-
 	int original_hp = player->stats.hp;
-	player->stats.hp += 2;
+	player->stats.hp += item->value;
 	if (player->stats.hp > player->stats.maxhp)
 		player->stats.hp = player->stats.maxhp;
 
-	gui_log("You gained %d health", player->stats.hp - original_hp);
+	gui_log("You eat some foul meat and gain %d health", player->stats.hp - original_hp);
+}
+
+static void
+drink_health(Item *item, Player *player)
+{
+	int original_hp = player->stats.hp;
+	player->stats.hp += item->value;
+	if (player->stats.hp > player->stats.maxhp)
+		player->stats.hp = player->stats.maxhp;
+
+	gui_log("You drink a health potion and gain %d health", player->stats.hp - original_hp);
 }
 
 static Item *
-create_health(void)
+create_item(const char *path, SDL_Rect clip, void (*cb)(Item*, Player*))
 {
 	Texture *t;
 	Item *item;
 
 	item = item_create();
-	t = load_texture("assets/Items/Potion.png");
+	t = load_texture(path);
 
 	item->sprite = sprite_create();
 	sprite_set_texture(item->sprite, t, 0);
-	item->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	item->effect = &add_health;
+	item->sprite->clip = clip;
+	item->effect = cb;
 
+	return item;
+}
+
+static void
+pickup_gold(Item *item, Player *player)
+{
+	player->gold += item->value;
+	gui_log("You pick up %s", &item->label);
+}
+
+static Item *
+create_treasure(void)
+{
+	unsigned int value = rand() % TREASURE_COUNT;
+	double amt = (unsigned int) rand() % 40;
+	char label[50];
+
+	SDL_Rect clip = { 0, 0, 16, 16 };
+	switch (value) {
+		case COPPER:
+			m_sprintf(&label[0], 50, "%d copper", amt);
+			amt /= 100;
+			break;
+		case SILVER:
+			m_sprintf(&label[0], 50, "%d silver", amt);
+			clip.x = 48;
+			amt /= 10;
+			break;
+		case GOLD:
+			m_sprintf(&label[0], 50, "%d gold", amt);
+			clip.y = 16;
+			break;
+		case PLATINUM:
+			m_sprintf(&label[0], 50, "%d platinum", amt);
+			clip.x = 48;
+			clip.y = 16;
+			amt *= 10;
+			break;
+		default:
+			break;
+	}
+
+	if (amt > 15 && amt < 30)
+		clip.x += 16;
+	else if (amt <= 15)
+		clip.x += 32;
+
+	Item *item = create_item("assets/Items/Money.png", clip, &pickup_gold);
+	m_strcpy(item->label, 50, label);
+	item->value = amt;
 	return item;
 }
 
 Item *
 item_builder_build_item(ItemKey key)
 {
+	static const char *path_flesh	= "assets/Items/Flesh.png";
+	static const char *path_potion	= "assets/Items/Potion.png";
+
 	check_builder();
 
 	Item *item = NULL;
 	switch (key) {
-	case HEALTH:
-		item = create_health();
-		break;
-	default:
-		fatal("in item_builder_build() : Unhandled item key %d", key);
-		break;
+		case TREASURE:
+			item = create_treasure();
+			break;
+		case FLESH:
+			item = create_item(path_flesh, (SDL_Rect) { 0, 0, 16, 16 }, &eat_flesh);
+			item->value = 1;
+			break;
+		case HEALTH:
+			item = create_item(path_potion, (SDL_Rect) { 0, 0, 16, 16 }, &drink_health);
+			item->value = 1 + (rand() % 2);
+			break;
+		default:
+			fatal("in item_builder_build() : Unhandled item key %d", key);
+			break;
 	}
 
 	return item;

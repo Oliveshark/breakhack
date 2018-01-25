@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <time.h>
+#include <ctype.h>
 
 #include "defines.h"
 
@@ -139,4 +140,20 @@ timestamp(char *tstamp, size_t sz)
 #ifdef _MSC_VER
 	free(tm_info);
 #endif // _MSC_VER
+}
+
+char *
+to_lower(const char *str)
+{
+	char *lcstr;
+	unsigned int i;
+
+	lcstr = ec_malloc((strlen(str) + 1) * sizeof(char));
+
+	for (i = 0; i < strlen(str); ++i) {
+		lcstr[i] = tolower(str[i]);
+	}
+	lcstr[i] = '\0';
+
+	return lcstr;
 }

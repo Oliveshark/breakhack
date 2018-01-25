@@ -106,13 +106,12 @@ map_clear_dead_monsters(Map *map)
 			else
 				last->next = current->next;
 
-			// TODO(Linus): We should really move this code somewhere else, perhaps to monster.c?
-			// Create a health drop
 			Monster *monster = current->data;
-			Item *item = item_builder_build_item(HEALTH);
-			item->sprite->pos = monster->sprite->pos;
-			linkedlist_append(&map->items, item);
-			gui_log("%s dropped a health potion", monster->label);
+
+			// Loot drops
+			Item *item = monster_drop_loot(monster);
+			if (item)
+				linkedlist_append(&map->items, item);
 
 			monster_destroy(monster);
 			current->data = NULL;

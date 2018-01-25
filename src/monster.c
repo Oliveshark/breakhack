@@ -1,11 +1,14 @@
 #include <stdlib.h>
 #include <assert.h>
+
 #include "monster.h"
 #include "util.h"
 #include "player.h"
 #include "monster.h"
 #include "random.h"
 #include "gui.h"
+#include "item.h"
+#include "item_builder.h"
 
 static void
 monster_load_texts(Monster *m, SDL_Renderer *renderer)
@@ -36,6 +39,7 @@ monster_create(SDL_Renderer *renderer)
 	m->state.challenge = AGRESSIVE;
 	m->state.current = m->state.normal;
 	m->label = NULL;
+	m->lclabel = NULL;
 
 	monster_load_texts(m, renderer);
 
@@ -69,9 +73,9 @@ has_collided(Monster *monster, RoomMatrix *matrix)
 		player_hit(space->player, dmg);
 
 		if (dmg > 0)
-			gui_log("Monster '%s' hit you for %u damage", monster->label, dmg);
+			gui_log("%s hit you for %u damage", monster->label, dmg);
 		else
-			gui_log("Monster '%s' missed you", monster->label);
+			gui_log("%s missed you", monster->label);
 	}
 
 	return space->occupied;
@@ -234,6 +238,23 @@ monster_hit(Monster *monster, unsigned int dmg)
 	monster->state.current = monster->state.challenge;
 }
 
+Item *
+monster_drop_loot(Monster *monster)
+{
+	static unsigned int drop_chance = 3;
+	unsigned int drop;
+
+	if ((rand() % drop_chance) != 0)
+		return NULL;
+
+	drop = rand() % ITEM_COUNT;
+	Item *item = item_builder_build_item(drop);
+	item->sprite->pos = monster->sprite->pos;
+	gui_log("%s dropped something", monster->label);
+
+	return item;
+}
+
 void
 monster_render(Monster *m, Camera *cam)
 {
@@ -250,6 +271,8 @@ monster_destroy(Monster *m)
 	sprite_destroy(m->sprite);
 	if (m->label)
 		free(m->label);
+	if (m->lclabel)
+		free(m->lclabel);
 	if (m->hitText)
 		actiontext_destroy(m->hitText);
 	if (m->missText)

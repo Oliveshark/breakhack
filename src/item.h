@@ -11,6 +11,8 @@
 typedef struct Item_t {
 	Sprite *sprite;
 	bool collected;
+	char label[50];
+	double value;
 	void (*effect)(struct Item_t *, Player *);
 } Item;
 

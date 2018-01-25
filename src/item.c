@@ -8,6 +8,8 @@ item_create(void)
 	Item *item = ec_malloc(sizeof(Item));
 	item->sprite = NULL;
 	item->collected = false;
+	m_strcpy(item->label, 50, "");
+	item->value = 0.0;
 	item->effect = NULL;
 	return item;
 }

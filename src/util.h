@@ -28,4 +28,7 @@ m_sprintf(char *dest, size_t destsz, const char *format, ...);
 void
 timestamp(char *tstamp, size_t sz);
 
+char *
+to_lower(const char *str);
+
 #endif // UTIL_H_
