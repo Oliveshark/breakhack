@@ -190,7 +190,7 @@ gui_render_panel(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 void
 gui_log(const char *fmt, ...)
 {
-	char buffer[log_data.strlen];
+	char buffer[200];
 	char *new_message;
 	unsigned int i;
 	char tstamp[10];

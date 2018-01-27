@@ -39,7 +39,7 @@ static void
 eat_flesh(Item *item, Player *player)
 {
 	int original_hp = player->stats.hp;
-	player->stats.hp += item->value;
+	player->stats.hp += (int) item->value;
 	if (player->stats.hp > player->stats.maxhp)
 		player->stats.hp = player->stats.maxhp;
 
@@ -50,7 +50,7 @@ static void
 drink_health(Item *item, Player *player)
 {
 	int original_hp = player->stats.hp;
-	player->stats.hp += item->value;
+	player->stats.hp += (int) item->value;
 	if (player->stats.hp > player->stats.maxhp)
 		player->stats.hp = player->stats.maxhp;
 
@@ -91,20 +91,20 @@ create_treasure(void)
 	SDL_Rect clip = { 0, 0, 16, 16 };
 	switch (value) {
 		case COPPER:
-			m_sprintf(&label[0], 50, "%d copper", amt);
+			m_sprintf(&label[0], 50, "%.0f copper", amt);
 			amt /= 100;
 			break;
 		case SILVER:
-			m_sprintf(&label[0], 50, "%d silver", amt);
+			m_sprintf(&label[0], 50, "%.0f silver", amt);
 			clip.x = 48;
 			amt /= 10;
 			break;
 		case GOLD:
-			m_sprintf(&label[0], 50, "%d gold", amt);
+			m_sprintf(&label[0], 50, "%.0f gold", amt);
 			clip.y = 16;
 			break;
 		case PLATINUM:
-			m_sprintf(&label[0], 50, "%d platinum", amt);
+			m_sprintf(&label[0], 50, "%.0f platinum", amt);
 			clip.x = 48;
 			clip.y = 16;
 			amt *= 10;
