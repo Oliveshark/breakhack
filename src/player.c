@@ -57,10 +57,16 @@ has_collided(Player *player, RoomMatrix *matrix)
 		gui_log("Ouch! There is something in the way");
 	}
 
-	if (space->item != NULL) {
-		if (space->item->effect)
-			space->item->effect(space->item, player);
-		space->item->collected = true;
+	if (space->items != NULL) {
+		LinkedList *items = space->items;
+		Item *item;
+		while (items != NULL) {
+			item = items->data;
+			items = items->next;
+			if (item->effect)
+				item->effect(item, player);
+			item->collected = true;
+		}
 	}
 
 	return collided;

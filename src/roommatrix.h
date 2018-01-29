@@ -11,6 +11,7 @@ typedef struct Map_t Map;
 typedef struct Monster_t Monster;
 typedef struct Player_t Player;
 typedef struct Item_t Item;
+typedef struct Node LinkedList;
 
 typedef struct {
 	bool occupied;
@@ -18,7 +19,7 @@ typedef struct {
 	unsigned int light;
 	Monster *monster;
 	Player *player;
-	Item *item;
+	LinkedList *items;
 } RoomSpace;
 
 typedef struct {

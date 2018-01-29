@@ -34,7 +34,7 @@ void monster_render(Monster*, Camera*);
 
 void monster_hit(Monster*, unsigned int dmg);
 
-Item *monster_drop_loot(Monster*);
+void monster_drop_loot(Monster*, Map*);
 
 void monster_destroy(Monster*);
 

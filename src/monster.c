@@ -9,6 +9,7 @@
 #include "gui.h"
 #include "item.h"
 #include "item_builder.h"
+#include "map.h"
 
 static void
 monster_load_texts(Monster *m, SDL_Renderer *renderer)
@@ -238,21 +239,34 @@ monster_hit(Monster *monster, unsigned int dmg)
 	monster->state.current = monster->state.challenge;
 }
 
-Item *
-monster_drop_loot(Monster *monster)
+void
+monster_drop_loot(Monster *monster, Map *map)
 {
-	static unsigned int drop_chance = 3;
-	unsigned int drop;
+	static unsigned int item_drop_chance = 3;
+	static unsigned int treasure_drop_chance = 2;
+	bool dropped_something = false;
+	unsigned int item_drop;
+	Item *item;
 
-	if ((rand() % drop_chance) != 0)
-		return NULL;
+	// TODO(Linus):
+	// Perhaps store multidrops in an item containing items?
+	// A pouch or bag perhaps?
+	if ((rand() % treasure_drop_chance) == 0) {
+		item = item_builder_build_item(TREASURE);
+		item->sprite->pos = monster->sprite->pos;
+		dropped_something = true;
+		linkedlist_append(&map->items, item);
+	}
+	if ((rand() % item_drop_chance) == 0) {
+		item_drop = rand() % TREASURE;
+		item = item_builder_build_item(item_drop);
+		item->sprite->pos = monster->sprite->pos;
+		dropped_something = true;
+		linkedlist_append(&map->items, item);
+	}
 
-	drop = rand() % ITEM_COUNT;
-	Item *item = item_builder_build_item(drop);
-	item->sprite->pos = monster->sprite->pos;
-	gui_log("%s dropped something", monster->label);
-
-	return item;
+	if (dropped_something)
+		gui_log("%s dropped something", monster->label);
 }
 
 void

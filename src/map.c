@@ -109,9 +109,7 @@ map_clear_dead_monsters(Map *map)
 			Monster *monster = current->data;
 
 			// Loot drops
-			Item *item = monster_drop_loot(monster);
-			if (item)
-				linkedlist_append(&map->items, item);
+			monster_drop_loot(monster, map);
 
 			monster_destroy(monster);
 			current->data = NULL;

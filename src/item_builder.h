@@ -18,9 +18,9 @@ typedef enum {
 } Treasure;
 
 typedef enum {
-	TREASURE,
 	FLESH,
 	HEALTH,
+	TREASURE,
 	ITEM_COUNT
 } ItemKey;
 

@@ -72,7 +72,7 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 			continue;
 
 		position = position_to_matrix_coords(&item->sprite->pos);
-		rm->spaces[position.x][position.y].item = item;
+		linkedlist_push(&rm->spaces[position.x][position.y].items, item);
 	}
 }
 
@@ -187,7 +187,7 @@ void roommatrix_reset(RoomMatrix *m)
 			m->spaces[i][j].lightsource = false;
 			m->spaces[i][j].light = 0;
 			m->spaces[i][j].monster = NULL;
-			m->spaces[i][j].item = NULL;
+			m->spaces[i][j].items = NULL;
 			m->spaces[i][j].player = NULL;
 		}
 	}
