@@ -245,7 +245,6 @@ monster_drop_loot(Monster *monster, Map *map)
 	static unsigned int item_drop_chance = 3;
 	static unsigned int treasure_drop_chance = 2;
 	bool dropped_something = false;
-	unsigned int item_drop;
 	Item *item;
 
 	// TODO(Linus):
@@ -258,8 +257,7 @@ monster_drop_loot(Monster *monster, Map *map)
 		linkedlist_append(&map->items, item);
 	}
 	if ((rand() % item_drop_chance) == 0) {
-		item_drop = rand() % TREASURE;
-		item = item_builder_build_item(item_drop);
+		item = item_builder_build_item(rand() % TREASURE);
 		item->sprite->pos = monster->sprite->pos;
 		dropped_something = true;
 		linkedlist_append(&map->items, item);

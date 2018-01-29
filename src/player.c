@@ -59,9 +59,8 @@ has_collided(Player *player, RoomMatrix *matrix)
 
 	if (space->items != NULL) {
 		LinkedList *items = space->items;
-		Item *item;
 		while (items != NULL) {
-			item = items->data;
+			Item *item = items->data;
 			items = items->next;
 			if (item->effect)
 				item->effect(item, player);
