@@ -41,19 +41,11 @@ item_collected(Item *item, Player *player)
 void
 item_destroy(Item *item)
 {
-	LinkedList *items;
-
 	if (item->sprite)
 		sprite_destroy(item->sprite);
 
-	items = item->items;
-	while (items != NULL) {
-		Item *subitem = items->data;
-		items->data = NULL;
-		items = items->next;
-		item_destroy(subitem);
-	}
-	linkedlist_destroy(&items);
+	while (item->items != NULL)
+		item_destroy(linkedlist_pop(&item->items));
 
 	free(item);
 }

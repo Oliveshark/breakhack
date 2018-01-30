@@ -26,16 +26,25 @@ typedef struct Monster_t {
 
 Monster* monster_create(SDL_Renderer*);
 
-void monster_update_pos(Monster*, Position);
+void
+monster_update_pos(Monster*, Position);
 
-void monster_move(Monster*, RoomMatrix*);
+void
+monster_move(Monster*, RoomMatrix*);
 
-void monster_render(Monster*, Camera*);
+void
+monster_render(Monster*, Camera*);
 
-void monster_hit(Monster*, unsigned int dmg);
+void
+monster_hit(Monster*, unsigned int dmg);
 
-void monster_drop_loot(Monster*, Map*);
+void
+monster_update_stats_for_level(Monster*, unsigned int level);
 
-void monster_destroy(Monster*);
+void
+monster_drop_loot(Monster*, Map*);
+
+void
+monster_destroy(Monster*);
 
 #endif // MONSTER_H_

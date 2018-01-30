@@ -240,6 +240,17 @@ monster_hit(Monster *monster, unsigned int dmg)
 }
 
 void
+monster_update_stats_for_level(Monster *m, unsigned int level)
+{
+	m->stats.lvl = level;
+	m->stats.maxhp *= level;
+	m->stats.hp = m->stats.maxhp;
+	m->stats.dmg *= level;
+	m->stats.atk *= level;
+	m->stats.def *= level;
+}
+
+void
 monster_drop_loot(Monster *monster, Map *map)
 {
 	static unsigned int item_drop_chance = 3;
@@ -248,12 +259,12 @@ monster_drop_loot(Monster *monster, Map *map)
 	Item *items[2];
 	unsigned int item_count = 0;
 
-	if ((rand() % treasure_drop_chance) == 0 || true) {
+	if ((rand() % treasure_drop_chance) == 0) {
 		item = item_builder_build_item(TREASURE);
 		item->sprite->pos = monster->sprite->pos;
 		items[item_count++] = item;
 	}
-	if ((rand() % item_drop_chance) == 0 || true) {
+	if ((rand() % item_drop_chance) == 0) {
 		item = item_builder_build_item(rand() % TREASURE);
 		item->sprite->pos = monster->sprite->pos;
 		items[item_count++] = item;

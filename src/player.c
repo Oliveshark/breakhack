@@ -14,6 +14,26 @@
 #define ROGUE_STATS	{ 12, 12, 5, 7, 3, 2, 1 }
 #define WARRIOR_STATS	{ 12, 12, 8, 9, 2, 1, 1 }
 
+static void
+player_levelup(Player *player)
+{
+	player->stats.lvl += 1;
+	player->stats.maxhp += 3;
+	player->stats.dmg += 5;
+	player->stats.atk += 1;
+	player->stats.def += 1;
+}
+
+static void
+player_gain_xp(Player *player, unsigned int xp_gain)
+{
+	player->xp += xp_gain;
+	if (player->xp >= (player->stats.lvl * 50) + ((player->stats.lvl - 1) * 150)) {
+		player_levelup(player);
+		gui_log("You have reached level %u", player->stats.lvl);
+	}
+}
+
 static bool 
 has_collided(Player *player, RoomMatrix *matrix)
 {
@@ -46,12 +66,12 @@ has_collided(Player *player, RoomMatrix *matrix)
 			gui_log("You missed %s", space->monster->lclabel);
 
 		if (space->monster->stats.hp <= 0) {
-			// TODO(Linus): This needs some love later on.
+			unsigned int gained_xp = 5 * space->monster->stats.lvl;
 			player->kills += 1;
-			player->xp += 10;
 
 			gui_log("You killed %s and gained %d xp",
-				space->monster->lclabel, 10);
+				space->monster->lclabel, gained_xp);
+			player_gain_xp(player, gained_xp);
 		}
 	} else if (collided) {
 		gui_log("Ouch! There is something in the way");

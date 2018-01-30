@@ -155,6 +155,7 @@ map_clear_collected_items(Map *map)
 void
 map_add_monster(Map *map, Monster *m)
 {
+	monster_update_stats_for_level(m, map->level);
 	linkedlist_append(&map->monsters, m);
 }
 

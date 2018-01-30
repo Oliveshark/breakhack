@@ -165,6 +165,16 @@ bool handle_events(void)
 	return quit;
 }
 
+static bool
+check_if_dead(void)
+{
+	if (gPlayer->stats.hp <= 0) {
+		gui_log("The dungeon consumed you");
+		return true;
+	}
+	return false;
+}
+
 static void
 check_next_level(void)
 {
@@ -220,6 +230,9 @@ run_game(void)
 
 	SDL_RenderPresent(gRenderer);
 
+	if (check_if_dead())
+		gGameState = GAME_OVER;
+
 	check_next_level();
 }
 
@@ -242,13 +255,13 @@ void run(void)
 				run_game();
 				break;
 			case MENU:
-				error("MENU not implemented");
+				fatal("MENU not implemented");
 				break;
 			case IN_GAME_MENU:
-				error("IN_GAME_MENU not implemented");
+				fatal("IN_GAME_MENU not implemented");
 				break;
 			case GAME_OVER:
-				error("GAME_OVER not implemented");
+				fatal("GAME_OVER not implemented");
 				break;
 			default:
 				break;

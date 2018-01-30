@@ -116,7 +116,7 @@ end
 -- END FUNCTIONS
 
 -- BEGIN SCRIPT
-map = create_map() -- 'map' needs to be global
+map = create_map(CURRENT_LEVEL) -- 'map' needs to be global
 room_builder.load_textures(map)
 local map_matrix = generate_path()
 

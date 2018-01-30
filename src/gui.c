@@ -61,13 +61,6 @@ gui_create()
 	return gui;
 }
 
-static void
-clear_sprite_list(LinkedList *list)
-{
-	while (list != NULL)
-		sprite_destroy(linkedlist_pop(&list));
-}
-
 void
 gui_set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 {
@@ -79,7 +72,9 @@ gui_set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 	if (((unsigned int) max / 3) == (unsigned int) linkedlist_size(gui->health))
 		return;
 
-	clear_sprite_list(gui->health);
+	// Clear sprite list
+	while (gui->health != NULL)
+		sprite_destroy(linkedlist_pop(&gui->health));
 
 	texture = gui_add_texture(gui, "assets/GUI/GUI0.png", renderer);
 
@@ -87,7 +82,7 @@ gui_set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 		Sprite *sprite = sprite_create();
 		sprite->fixed = true;
 		sprite->clip = (SDL_Rect) { 0, 16, 16, 16 };
-		sprite->pos = (Position) { 16 + i*16, 16 };
+		sprite->pos = (Position) { 16 + (i%8)*16, 16 + ((i-(i%8))/8)*16 };
 		sprite_set_texture(sprite, texture, 0);
 		linkedlist_append(&gui->health, sprite);
 	}

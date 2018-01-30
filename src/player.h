@@ -25,14 +25,19 @@ typedef struct Player_t {
 	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 
-Player* player_create(class_t, SDL_Renderer*);
+Player*
+player_create(class_t, SDL_Renderer*);
 
-void player_hit(Player*, unsigned int dmg);
+void
+player_hit(Player*, unsigned int dmg);
 
-void player_reset_steps(Player*);
+void
+player_reset_steps(Player*);
 
-void player_render(Player*, Camera*);
+void
+player_render(Player*, Camera*);
 
-void player_destroy(Player*);
+void
+player_destroy(Player*);
 
 #endif // PLAYER_H_
