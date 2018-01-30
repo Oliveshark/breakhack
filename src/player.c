@@ -62,9 +62,7 @@ has_collided(Player *player, RoomMatrix *matrix)
 		while (items != NULL) {
 			Item *item = items->data;
 			items = items->next;
-			if (item->effect)
-				item->effect(item, player);
-			item->collected = true;
+			item_collected(item, player);
 		}
 	}
 

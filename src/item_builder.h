@@ -30,6 +30,9 @@ item_builder_init(SDL_Renderer *);
 Item *
 item_builder_build_item(ItemKey key);
 
+Item *
+item_builder_build_sack(void);
+
 void
 item_builder_close(void);
 

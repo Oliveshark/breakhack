@@ -244,27 +244,37 @@ monster_drop_loot(Monster *monster, Map *map)
 {
 	static unsigned int item_drop_chance = 3;
 	static unsigned int treasure_drop_chance = 2;
-	bool dropped_something = false;
 	Item *item;
+	Item *items[2];
+	unsigned int item_count = 0;
 
-	// TODO(Linus):
-	// Perhaps store multidrops in an item containing items?
-	// A pouch or bag perhaps?
-	if ((rand() % treasure_drop_chance) == 0) {
+	if ((rand() % treasure_drop_chance) == 0 || true) {
 		item = item_builder_build_item(TREASURE);
 		item->sprite->pos = monster->sprite->pos;
-		dropped_something = true;
-		linkedlist_append(&map->items, item);
+		items[item_count++] = item;
 	}
-	if ((rand() % item_drop_chance) == 0) {
+	if ((rand() % item_drop_chance) == 0 || true) {
 		item = item_builder_build_item(rand() % TREASURE);
 		item->sprite->pos = monster->sprite->pos;
-		dropped_something = true;
-		linkedlist_append(&map->items, item);
+		items[item_count++] = item;
 	}
 
-	if (dropped_something)
-		gui_log("%s dropped something", monster->label);
+	if (item_count == 0)
+		return;
+
+	gui_log("%s dropped something", monster->label);
+
+	if (item_count == 1) {
+		linkedlist_append(&map->items, items[0]);
+	} else {
+		Item *container = item_builder_build_sack();
+		container->sprite->pos = monster->sprite->pos;
+		unsigned int i;
+		for (i = 0; i < item_count; ++i) {
+			linkedlist_append(&container->items, items[i]);
+		}
+		linkedlist_append(&map->items, container);
+	}
 }
 
 void

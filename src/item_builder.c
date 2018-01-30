@@ -138,11 +138,15 @@ item_builder_build_item(ItemKey key)
 			item = create_treasure();
 			break;
 		case FLESH:
-			item = create_item(path_flesh, (SDL_Rect) { 0, 0, 16, 16 }, &eat_flesh);
+			item = create_item(path_flesh,
+					   (SDL_Rect) { 0, 0, 16, 16 },
+					   &eat_flesh);
 			item->value = 1;
 			break;
 		case HEALTH:
-			item = create_item(path_potion, (SDL_Rect) { 0, 0, 16, 16 }, &drink_health);
+			item = create_item(path_potion,
+					   (SDL_Rect) { 0, 0, 16, 16 },
+					   &drink_health);
 			item->value = 1 + (rand() % 2);
 			break;
 		default:
@@ -151,6 +155,14 @@ item_builder_build_item(ItemKey key)
 	}
 
 	return item;
+}
+
+Item *
+item_builder_build_sack(void)
+{
+	return create_item("assets/Items/Chest0.png",
+			   (SDL_Rect) { 0, 32, 16, 16 },
+			   NULL);
 }
 
 void
