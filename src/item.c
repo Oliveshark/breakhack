@@ -42,14 +42,13 @@ void
 item_destroy(Item *item)
 {
 	LinkedList *items;
-	Item *subitem;
 
 	if (item->sprite)
 		sprite_destroy(item->sprite);
 
 	items = item->items;
 	while (items != NULL) {
-		subitem = items->data;
+		Item *subitem = items->data;
 		items->data = NULL;
 		items = items->next;
 		item_destroy(subitem);
