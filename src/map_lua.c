@@ -22,7 +22,7 @@ static
 int l_create_map(lua_State *L)
 {
 	Map *map = map_create();
-	map->level = luaL_checkinteger(L, 1);
+	map->level = (int) luaL_checkinteger(L, 1);
 	lua_pushlightuserdata(L, map);
 	return 1;
 }

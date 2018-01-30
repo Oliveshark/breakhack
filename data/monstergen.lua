@@ -43,8 +43,7 @@ local state = {
 	scared = 2,
 }
 
-local enemies = {
-
+local pests = {
 	-- PESTS
 	{ texturePaths.pest0, texturePaths.pest1,   0, 0, "A Beetle" },
 	{ texturePaths.pest0, texturePaths.pest1,  16, 0, "A Beetle" },
@@ -93,7 +92,9 @@ local enemies = {
 	--{ texturePaths.pest0, texturePaths.pest1, 16, 112 },
 	--{ texturePaths.pest0, texturePaths.pest1, 32, 112 },
 	--{ texturePaths.pest0, texturePaths.pest1, 48, 112 },
+}
 
+local undead = {
 	-- UNDEAD
 	--{ texturePaths.undead0, texturePaths.undead1,   0,  0, "", state.passive, state.agressive };
 	--{ texturePaths.undead0, texturePaths.undead1,  16,  0, "", state.passive, state.agressive };
@@ -123,6 +124,24 @@ local enemies = {
 	--{ texturePaths.undead0, texturePaths.undead1, 112, 32, "", state.passive, state.scared };
 }
 
+local demon = {
+	{ texturePaths.demon0, texturePaths.demon1,   0,  0, "A Demon", state.agressive, state.agressive };
+	{ texturePaths.demon0, texturePaths.demon1,  16,  0, "A Demon", state.agressive, state.agressive };
+	{ texturePaths.demon0, texturePaths.demon1,  32,  0, "A Demon", state.agressive, state.agressive };
+	{ texturePaths.demon0, texturePaths.demon1,  48,  0, "A Demon", state.agressive, state.agressive };
+	{ texturePaths.demon0, texturePaths.demon1,  64,  0, "A Demon", state.agressive, state.agressive };
+	{ texturePaths.demon0, texturePaths.demon1,  80,  0, "A Demon", state.agressive, state.agressive };
+	{ texturePaths.demon0, texturePaths.demon1,  96,  0, "A Demon", state.agressive, state.agressive };
+	{ texturePaths.demon0, texturePaths.demon1, 112,  0, "A Demon", state.agressive, state.agressive };
+}
+
+local function concat(table1, table2)
+	for i=0,#table2 do
+		table1[#table1+1] = table2[i]
+	end
+	return table1
+end
+
 local function repack(data)
 	return {
 		texturePath1 	= data[1],
@@ -134,6 +153,25 @@ local function repack(data)
 		cstate			= data[7] or state.scared,
 	}
 end
+
+-- Begin script
+local enemies = {}
+print("Current level: " .. CURRENT_LEVEL)
+if(CURRENT_LEVEL > 0 and CURRENT_LEVEL < 10) then
+	if (CURRENT_LEVEL == 1) then
+		enemies = concat(enemies, pests)
+		enemies = concat(enemies, undead)
+	elseif (CURRENT_LEVEL > 2) then
+		enemies = {}
+		enemies = concat(enemies, undead)
+		enemies = concat(enemies, demon)
+	elseif (CURRENT_LEVEL > 1) then
+		enemies = {}
+		enemies = concat(enemies, undead)
+	end
+end
+
+print("Enemies: " .. #enemies)
 
 function module.add_monster_to_room(map, roomx, roomy)
 	local count = random(3)
