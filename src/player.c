@@ -24,11 +24,17 @@ player_levelup(Player *player)
 	player->stats.def += 1;
 }
 
+unsigned int
+next_level_threshold(unsigned int current_level)
+{
+	return (current_level * 50) + ((current_level > 0 ? current_level - 1 : 0) * 150);
+}
+
 static void
 player_gain_xp(Player *player, unsigned int xp_gain)
 {
 	player->xp += xp_gain;
-	if (player->xp >= (player->stats.lvl * 50) + ((player->stats.lvl - 1) * 150)) {
+	if (player->xp >= next_level_threshold(player->stats.lvl)) {
 		player_levelup(player);
 		gui_log("You have reached level %u", player->stats.lvl);
 	}
