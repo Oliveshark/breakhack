@@ -9,3 +9,7 @@ clean:
 test:
 	@make test -sC build
 .PHONY: test
+
+run: $(all)
+	@./build/breakhack
+.PHONY: run

@@ -260,12 +260,12 @@ monster_drop_loot(Monster *monster, Map *map)
 	unsigned int item_count = 0;
 
 	if ((rand() % treasure_drop_chance) == 0) {
-		item = item_builder_build_item(TREASURE);
+		item = item_builder_build_item(TREASURE, map->level);
 		item->sprite->pos = monster->sprite->pos;
 		items[item_count++] = item;
 	}
 	if ((rand() % item_drop_chance) == 0) {
-		item = item_builder_build_item(rand() % TREASURE);
+		item = item_builder_build_item(rand() % TREASURE, map->level);
 		item->sprite->pos = monster->sprite->pos;
 		items[item_count++] = item;
 	}

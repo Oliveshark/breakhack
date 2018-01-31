@@ -43,7 +43,8 @@ eat_flesh(Item *item, Player *player)
 	if (player->stats.hp > player->stats.maxhp)
 		player->stats.hp = player->stats.maxhp;
 
-	gui_log("You eat some foul meat and gain %d health", player->stats.hp - original_hp);
+	gui_log("You eat some foul meat and gain %d health",
+		player->stats.hp - original_hp);
 }
 
 static void
@@ -54,7 +55,8 @@ drink_health(Item *item, Player *player)
 	if (player->stats.hp > player->stats.maxhp)
 		player->stats.hp = player->stats.maxhp;
 
-	gui_log("You drink a health potion and gain %d health", player->stats.hp - original_hp);
+	gui_log("You drink a health potion and gain %d health",
+		player->stats.hp - original_hp);
 }
 
 static Item *
@@ -82,11 +84,22 @@ pickup_gold(Item *item, Player *player)
 }
 
 static Item *
-create_treasure(void)
+create_treasure(int current_level)
 {
-	unsigned int value = rand() % TREASURE_COUNT;
 	double amt = (unsigned int) rand() % 40;
 	char label[50];
+	unsigned int highest_treasure;
+	unsigned int value;
+
+	if (current_level > 15) {
+		highest_treasure = TREASURE_COUNT;
+	} else if (current_level > 5) {
+		highest_treasure = PLATINUM;
+	} else {
+		highest_treasure = GOLD;
+	}
+
+	value = rand() % highest_treasure;
 
 	SDL_Rect clip = { 0, 0, 16, 16 };
 	switch (value) {
@@ -125,7 +138,7 @@ create_treasure(void)
 }
 
 Item *
-item_builder_build_item(ItemKey key)
+item_builder_build_item(ItemKey key, int level)
 {
 	static const char *path_flesh	= "assets/Items/Flesh.png";
 	static const char *path_potion	= "assets/Items/Potion.png";
@@ -135,7 +148,7 @@ item_builder_build_item(ItemKey key)
 	Item *item = NULL;
 	switch (key) {
 		case TREASURE:
-			item = create_treasure();
+			item = create_treasure(level);
 			break;
 		case FLESH:
 			item = create_item(path_flesh,

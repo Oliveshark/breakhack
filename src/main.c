@@ -16,14 +16,15 @@
 #include "gui.h"
 #include "util.h"
 #include "item_builder.h"
+#include "pointer.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
 static Player		*gPlayer	= NULL;
-static LinkedList	*gSpriteList	= NULL;
 static Map		*gMap		= NULL;
 static RoomMatrix	*gRoomMatrix	= NULL;
 static Gui		*gGui		= NULL;
+static Pointer		*gPointer	= NULL;
 static unsigned int	cLevel		= 1;
 static double		renderScale	= 1.0;
 static GameState	gGameState;
@@ -114,10 +115,11 @@ initViewports(void)
 static
 bool initGame(void)
 {
-	gSpriteList = linkedlist_create();
 	initViewports();
 	gMap = map_lua_generator_run(cLevel, gRenderer);
-	return gSpriteList == NULL;
+	gPointer = pointer_create(gRenderer);
+
+	return true;
 }
 
 static
@@ -161,6 +163,7 @@ bool handle_events(void)
 			camera_follow_position(&gCamera, &gPlayer->sprite->pos);
 			map_set_current_room(gMap, &gPlayer->sprite->pos);
 		}
+		pointer_handle_event(gPointer, &event);
 	}
 	return quit;
 }
@@ -198,11 +201,13 @@ check_next_level(void)
 static void
 run_game(void)
 {
+	SDL_RenderSetViewport(gRenderer, NULL);
 	map_clear_dead_monsters(gMap);
 	map_clear_collected_items(gMap);
 	roommatrix_populate_from_map(gRoomMatrix, gMap);
 	roommatrix_add_lightsource(gRoomMatrix,
 				   &gPlayer->sprite->pos);
+
 	roommatrix_build_lightmap(gRoomMatrix);
 
 	gui_set_max_health(gGui, gPlayer->stats.maxhp, gRenderer);
@@ -227,6 +232,9 @@ run_game(void)
 	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
 	gui_render_log(gGui, BOTTOM_GUI_WIDTH,
 		       BOTTOM_GUI_HEIGHT, &gCamera);
+
+	SDL_RenderSetViewport(gRenderer, NULL);
+	pointer_render(gPointer, &gCamera);
 
 	SDL_RenderPresent(gRenderer);
 
@@ -283,6 +291,7 @@ void close(void)
 	map_destroy(gMap);
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
+	pointer_destroy(gPointer);
 	item_builder_close();
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);

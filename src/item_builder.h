@@ -28,7 +28,7 @@ void
 item_builder_init(SDL_Renderer *);
 
 Item *
-item_builder_build_item(ItemKey key);
+item_builder_build_item(ItemKey key, int level);
 
 Item *
 item_builder_build_sack(void);

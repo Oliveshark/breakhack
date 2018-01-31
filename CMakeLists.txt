@@ -61,6 +61,7 @@ add_executable(breakhack
 	src/gui
 	src/item
 	src/item_builder
+	src/pointer
 	)
 
 target_link_libraries(breakhack
