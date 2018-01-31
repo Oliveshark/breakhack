@@ -28,7 +28,7 @@ player_levelup(Player *player)
 		player->stats.maxhp = 72;
 }
 
-unsigned int
+static unsigned int
 next_level_threshold(unsigned int current_level)
 {
 	return (current_level * 50) + ((current_level > 0 ? current_level - 1 : 0) * 150);

@@ -214,11 +214,11 @@ run_game(void)
 
 	roommatrix_build_lightmap(gRoomMatrix);
 
-	if (player_max_hp != gPlayer->stats.maxhp) {
+	if (player_max_hp != (unsigned int) gPlayer->stats.maxhp) {
 		gui_set_max_health(gGui, gPlayer->stats.maxhp, gRenderer);
 		player_max_hp = gPlayer->stats.maxhp;
 	}
-	if (player_current_hp != gPlayer->stats.hp) {
+	if (player_current_hp != (unsigned int) gPlayer->stats.hp) {
 		gui_set_current_health(gGui, gPlayer->stats.hp);
 		player_current_hp = gPlayer->stats.hp;
 	}

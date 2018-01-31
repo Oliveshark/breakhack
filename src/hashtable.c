@@ -126,7 +126,7 @@ ht_destroy(Hashtable *table)
 }
 
 void
-ht_destroy_custom(Hashtable *table, void (*destroy_value)(void *value))
+ht_destroy_custom(Hashtable *table, void (*destroy_value)(void *))
 {
 	Entry *entry, *next;
 	unsigned int i;

@@ -156,7 +156,6 @@ end
 
 -- Begin script
 local enemies = {}
-print("Current level: " .. CURRENT_LEVEL)
 if(CURRENT_LEVEL > 0 and CURRENT_LEVEL < 10) then
 	if (CURRENT_LEVEL == 1) then
 		enemies = concat(enemies, pests)
@@ -170,8 +169,6 @@ if(CURRENT_LEVEL > 0 and CURRENT_LEVEL < 10) then
 		enemies = concat(enemies, undead)
 	end
 end
-
-print("Enemies: " .. #enemies)
 
 function module.add_monster_to_room(map, roomx, roomy)
 	local count = random(3)

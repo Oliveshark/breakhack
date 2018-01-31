@@ -8,7 +8,13 @@
 
 RoomMatrix* roommatrix_create()
 {
+	int i, j;
 	RoomMatrix *m = ec_malloc(sizeof(RoomMatrix));
+	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
+			m->spaces[i][j].items = NULL;
+		}
+	}
 	roommatrix_reset(m);
 	return m;
 }
@@ -179,16 +185,19 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 
 void roommatrix_reset(RoomMatrix *m)
 {
+	RoomSpace *space;
 	int i, j;
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			m->spaces[i][j].occupied = false;
-			m->spaces[i][j].lightsource = false;
-			m->spaces[i][j].light = 0;
-			m->spaces[i][j].monster = NULL;
-			m->spaces[i][j].items = NULL;
-			m->spaces[i][j].player = NULL;
+			space = &m->spaces[i][j];
+			space->occupied = false;
+			space->lightsource = false;
+			space->light = 0;
+			space->monster = NULL;
+			space->player = NULL;
+			while (space->items != NULL)
+				linkedlist_pop(&space->items);
 		}
 	}
 	m->roomPos = (Position) { 0, 0 };

@@ -367,6 +367,9 @@ gui_destroy(Gui *gui)
 	while (gui->xp_bar != NULL)
 		sprite_destroy(linkedlist_pop(&gui->xp_bar));
 
+	for (int i = 0; i < LOG_LINES_COUNT; ++i)
+		texture_destroy(gui->log_lines[i]);
+
 	ht_destroy_custom(gui->textures, (void (*)(void*)) &texture_destroy);
 	free(gui);
 }

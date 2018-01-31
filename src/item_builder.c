@@ -31,6 +31,7 @@ load_texture(const char *path)
 		t = texture_create();
 		texture_load_from_file(t, path, builder->renderer);
 		t->dim = (Dimension) { 32, 32 };
+		ht_set(builder->textures, path, t);
 	}
 	return t;
 }
@@ -181,6 +182,6 @@ item_builder_build_sack(void)
 void
 item_builder_close(void)
 {
-	ht_destroy_custom(builder->textures, (void (*)(void*)) &texture_destroy);
+	ht_destroy_custom(builder->textures, (void (*)(void*)) texture_destroy);
 	free(builder);
 }
