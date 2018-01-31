@@ -115,9 +115,7 @@ initViewports(void)
 static
 bool initGame(void)
 {
-	initViewports();
 	gMap = map_lua_generator_run(cLevel, gRenderer);
-	gPointer = pointer_create(gRenderer);
 
 	return true;
 }
@@ -129,11 +127,13 @@ bool init(void)
 	result = result && initSDL();
 	result = result && initGame();
 	if (result) {
+		initViewports();
 		gCamera.pos = (Position) { 0, 0 };
 		gCamera.renderer = gRenderer;
 		gRoomMatrix = roommatrix_create();
-		gGui = gui_create();
+		gGui = gui_create(gRenderer);
 		item_builder_init(gRenderer);
+		gPointer = pointer_create(gRenderer);
 	}
 
 	gGameState = PLAYING;
@@ -201,17 +201,31 @@ check_next_level(void)
 static void
 run_game(void)
 {
+	static unsigned int player_max_hp = 0;
+	static unsigned int player_current_hp = 0;
+	static unsigned int player_current_xp = 0;
+
 	SDL_RenderSetViewport(gRenderer, NULL);
 	map_clear_dead_monsters(gMap);
 	map_clear_collected_items(gMap);
 	roommatrix_populate_from_map(gRoomMatrix, gMap);
 	roommatrix_add_lightsource(gRoomMatrix,
-				   &gPlayer->sprite->pos);
+		&gPlayer->sprite->pos);
 
 	roommatrix_build_lightmap(gRoomMatrix);
 
-	gui_set_max_health(gGui, gPlayer->stats.maxhp, gRenderer);
-	gui_set_current_health(gGui, gPlayer->stats.hp);
+	if (player_max_hp != gPlayer->stats.maxhp) {
+		gui_set_max_health(gGui, gPlayer->stats.maxhp, gRenderer);
+		player_max_hp = gPlayer->stats.maxhp;
+	}
+	if (player_current_hp != gPlayer->stats.hp) {
+		gui_set_current_health(gGui, gPlayer->stats.hp);
+		player_current_hp = gPlayer->stats.hp;
+	}
+	if (player_current_xp != gPlayer->xp) {
+		gui_set_current_xp(gGui, player_get_xp_data(gPlayer));
+		player_current_xp = gPlayer->xp;
+	}
 	if (gPlayer->steps == gPlayer->stats.speed) {
 		player_reset_steps(gPlayer);
 		roommatrix_update_with_player(gRoomMatrix, gPlayer);

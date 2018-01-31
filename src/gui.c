@@ -8,6 +8,7 @@
 #include "util.h"
 
 #define DEFAULT_LOG { NULL, 50, 0, 200 }
+#define POS_Y_XPBAR	96
 
 static SDL_Rect frame_top_left		= { 16, 160, 16, 16 };
 static SDL_Rect frame_top_right		= { 48, 160, 16, 16 };
@@ -26,6 +27,19 @@ static struct LogData_t {
 	unsigned int strlen;
 } log_data = DEFAULT_LOG;
 
+static Texture*
+add_texture(Gui *gui, const char *path, SDL_Renderer *renderer)
+{
+	Texture *t = ht_get(gui->textures, path);
+	if (t == NULL) {
+		t = texture_create();
+		texture_load_from_file(t, path, renderer);
+		t->dim = (Dimension) { 16, 16 };
+		ht_set(gui->textures, path, t);
+	}
+	return t;
+}
+
 static void
 gui_malloc_log(void)
 {
@@ -39,8 +53,56 @@ gui_malloc_log(void)
 		log_data.log[i] = NULL;
 }
 
+static void
+init_sprites(Gui *gui, SDL_Renderer *renderer)
+{
+	Texture *t;
+	Sprite *s;
+	unsigned int i;
+
+	t = add_texture(gui, "assets/GUI/GUI0.png", renderer);
+
+	/*
+	 * Add XP bar decoration
+	 */
+
+	// Left end
+	s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->fixed = true;
+	s->clip = (SDL_Rect) { 6 * 16, 0, 16, 16 };
+	s->pos = (Position) { 16 , POS_Y_XPBAR };
+	linkedlist_append(&gui->sprites, s);
+
+	// Right end
+	s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->fixed = true;
+	s->clip = (SDL_Rect) { 8 * 16, 0, 16, 16 };
+	s->pos = (Position) { 16 + (16 * 7), POS_Y_XPBAR };
+	linkedlist_append(&gui->sprites, s);
+
+	for (i = 1; i < 7; ++i) {
+		s = sprite_create();
+		sprite_set_texture(s, t, 0);
+		s->fixed = true;
+		s->clip = (SDL_Rect) { 7 * 16, 0, 16, 16 };
+		s->pos = (Position) { 16 + (i * 16), POS_Y_XPBAR };
+		linkedlist_append(&gui->sprites, s);
+	}
+
+	for (i = 0; i < 8; ++i) {
+		s = sprite_create();
+		sprite_set_texture(s, t, 0);
+		s->fixed = true;
+		s->clip = (SDL_Rect) { 6 * 16, 4 * 16, 16, 16 };
+		s->pos = (Position) { 16 + (i * 16), POS_Y_XPBAR };
+		linkedlist_append(&gui->xp_bar, s);
+	}
+}
+
 Gui*
-gui_create()
+gui_create(SDL_Renderer *renderer)
 {
 	Texture *t;
 	unsigned int i;
@@ -48,6 +110,7 @@ gui_create()
 	Gui *gui = ec_malloc(sizeof(Gui));
 	gui->sprites = linkedlist_create();
 	gui->health = linkedlist_create();
+	gui->xp_bar = linkedlist_create();
 	gui->textures = ht_create(5);
 
 	for (i = 0; i < LOG_LINES_COUNT; ++i) {
@@ -57,6 +120,8 @@ gui_create()
 	}
 
 	gui_malloc_log();
+
+	init_sprites(gui, renderer);
 
 	return gui;
 }
@@ -76,7 +141,7 @@ gui_set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 	while (gui->health != NULL)
 		sprite_destroy(linkedlist_pop(&gui->health));
 
-	texture = gui_add_texture(gui, "assets/GUI/GUI0.png", renderer);
+	texture = add_texture(gui, "assets/GUI/GUI0.png", renderer);
 
 	for (i = 0; i < max/3; ++i) {
 		Sprite *sprite = sprite_create();
@@ -114,17 +179,48 @@ gui_set_current_health(Gui *gui, int current)
 	}
 }
 
-Texture*
-gui_add_texture(Gui *gui, const char *path, SDL_Renderer *renderer)
+void
+gui_set_current_xp(Gui *gui, ExperienceData data)
 {
-	Texture *t = ht_get(gui->textures, path);
-	if (t == NULL) {
-		t = texture_create();
-		texture_load_from_file(t, path, renderer);
-		t->dim = (Dimension) { 16, 16 };
-		ht_set(gui->textures, path, t);
+	static unsigned int last_level = 0;
+	unsigned int xp_from_levelup, xp_required_from_last_level;
+	float xp_step, xp_current_step;
+	unsigned int full_xp_blocks, partial_xp_block;
+	LinkedList *xp_bars;
+	unsigned int i;
+
+	xp_from_levelup = data.current - data.previousLevel;
+	xp_required_from_last_level = data.nextLevel - data.previousLevel;
+	xp_step = ((float) xp_required_from_last_level) / 32; // 4 * 8
+	xp_current_step = xp_from_levelup / xp_step;
+
+	partial_xp_block = ((unsigned int) xp_current_step) % 4;
+	full_xp_blocks = (unsigned int)((xp_current_step - partial_xp_block) / 4);
+
+	xp_bars = gui->xp_bar;
+	i = 0;
+	while (xp_bars != NULL) {
+		Sprite *s = xp_bars->data;
+		s->hidden = false;
+		xp_bars = xp_bars->next;
+
+		if (i < full_xp_blocks) {
+			s->clip.x = 6 * 16;
+		} else if (i == full_xp_blocks && partial_xp_block != 0) {
+			s->clip.x = (6 * 16) + (16 * (4 - partial_xp_block));
+		} else {
+			s->hidden = true;
+		}
+
+		++i;
 	}
-	return t;
+
+	if (last_level != data.level) {
+		// TODO(Linus): Update the indicators
+		last_level = data.level;
+	}
+
+
 }
 
 static void
@@ -168,6 +264,12 @@ gui_render_panel(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 	gui_render_frame(gui, width/16, height/16, cam);
 
 	LinkedList *item = gui->health;
+	while (item != NULL) {
+		Sprite *s = item->data;
+		sprite_render(s, cam);
+		item = item->next;
+	}
+	item = gui->xp_bar;
 	while (item != NULL) {
 		Sprite *s = item->data;
 		sprite_render(s, cam);
@@ -262,6 +364,8 @@ gui_destroy(Gui *gui)
 		sprite_destroy(linkedlist_pop(&gui->sprites));
 	while (gui->health != NULL)
 		sprite_destroy(linkedlist_pop(&gui->health));
+	while (gui->xp_bar != NULL)
+		sprite_destroy(linkedlist_pop(&gui->xp_bar));
 
 	ht_destroy_custom(gui->textures, (void (*)(void*)) &texture_destroy);
 	free(gui);

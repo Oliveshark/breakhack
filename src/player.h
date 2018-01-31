@@ -10,6 +10,14 @@
 enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR };
 typedef enum PlayerClass class_t;
 
+
+typedef struct ExperienceData_t {
+	unsigned int previousLevel;
+	unsigned int current;
+	unsigned int nextLevel;
+	unsigned int level;
+} ExperienceData;
+
 typedef struct Player_t {
 	Sprite *sprite;
 	ActionText *hitText;
@@ -27,6 +35,9 @@ typedef struct Player_t {
 
 Player*
 player_create(class_t, SDL_Renderer*);
+
+ExperienceData
+player_get_xp_data(Player*);
 
 void
 player_hit(Player*, unsigned int dmg);

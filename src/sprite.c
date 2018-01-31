@@ -14,6 +14,7 @@ Sprite* sprite_create_default(void)
 	s->renderTimer = timer_create();
 	s->texture_index = 0;
 	s->fixed = false;
+	s->hidden = false;
 
 	return s;
 }
@@ -55,6 +56,9 @@ sprite_set_texture(Sprite *s, Texture *t, int index)
 
 void sprite_render(Sprite *s, Camera *cam)
 {
+	if (s->hidden)
+		return;
+
 	if (s->textures[1]) {
 		if (!timer_started(s->renderTimer))
 			timer_start(s->renderTimer);

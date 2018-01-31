@@ -8,28 +8,41 @@
 #include "hashtable.h"
 #include "sprite.h"
 #include "camera.h"
+#include "player.h"
 
 typedef struct {
 	LinkedList *sprites;
 	LinkedList *health;
+	LinkedList *xp_bar;
 	Hashtable *textures;
 	Texture *log_lines[LOG_LINES_COUNT];
 } Gui;
 
-Gui* gui_create(void);
+Gui*
+gui_create(SDL_Renderer *renderer);
 
-void gui_set_max_health(Gui*, int max, SDL_Renderer*);
+void
+gui_set_max_health(Gui*, int max, SDL_Renderer*);
 
-void gui_set_current_health(Gui*, int current);
+void
+gui_set_current_health(Gui*, int current);
 
-Texture* gui_add_texture(Gui*, const char *path, SDL_Renderer*);
+void
+gui_set_current_xp(Gui*, ExperienceData);
 
-void gui_render_panel(Gui*, unsigned int width, unsigned int height, Camera*);
+void
+gui_set_xp_data(Gui*, ExperienceData);
 
-void gui_render_log(Gui*, unsigned int width, unsigned int height, Camera*);
+void
+gui_render_panel(Gui*, unsigned int width, unsigned int height, Camera*);
 
-void gui_log(const char *fmt, ...);
+void
+gui_render_log(Gui*, unsigned int width, unsigned int height, Camera*);
 
-void gui_destroy(Gui*);
+void
+gui_log(const char *fmt, ...);
+
+void
+gui_destroy(Gui*);
 
 #endif // GUI_H_

@@ -22,6 +22,10 @@ player_levelup(Player *player)
 	player->stats.dmg += 5;
 	player->stats.atk += 1;
 	player->stats.def += 1;
+
+	// Limit health to 3 rows of hearts
+	if (player->stats.maxhp > 72)
+		player->stats.maxhp = 72;
 }
 
 unsigned int
@@ -115,8 +119,8 @@ move_left(Player *player, RoomMatrix *matrix)
 	player_step(player);
 }
 
-static
-void move_right(Player *player, RoomMatrix *matrix)
+static void
+move_right(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 32;
 	player->sprite->pos.x += TILE_DIMENSION;
@@ -126,8 +130,8 @@ void move_right(Player *player, RoomMatrix *matrix)
 	player_step(player);
 }
 
-static
-void move_up(Player *player, RoomMatrix *matrix)
+static void
+move_up(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 48;
 	player->sprite->pos.y -= TILE_DIMENSION;
@@ -137,8 +141,8 @@ void move_up(Player *player, RoomMatrix *matrix)
 	player_step(player);
 }
 
-static
-void move_down(Player *player, RoomMatrix *matrix)
+static void
+move_down(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 0;
 	player->sprite->pos.y += TILE_DIMENSION;
@@ -148,8 +152,8 @@ void move_down(Player *player, RoomMatrix *matrix)
 	player_step(player);
 }
 
-static
-void handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
+static void
+handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 {
 	static unsigned int step = 1;
 
@@ -249,6 +253,16 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player_load_texts(player, renderer);
 
 	return player;
+}
+
+ExperienceData player_get_xp_data(Player *p)
+{
+	ExperienceData data;
+	data.previousLevel = next_level_threshold(p->stats.lvl - 1);
+	data.current = p->xp;
+	data.nextLevel = next_level_threshold(p->stats.lvl);
+	data.level = p->stats.lvl;
+	return data;
 }
 
 void
