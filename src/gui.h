@@ -3,6 +3,7 @@
 
 #define LOG_LINES_COUNT	15
 #define LOG_FONT_SIZE	8
+#define LABEL_FONT_SIZE	8
 
 #include "linkedlist.h"
 #include "hashtable.h"
@@ -10,11 +11,20 @@
 #include "camera.h"
 #include "player.h"
 
+typedef enum Label_e {
+	LEVEL_LABEL,
+	CURRENT_XP_LABEL,
+	GOLD_LABEL,
+	DUNGEON_LEVEL_LABEL,
+	LABEL_COUNT
+} LabelIndex;
+
 typedef struct {
 	LinkedList *sprites;
 	LinkedList *health;
 	LinkedList *xp_bar;
 	Hashtable *textures;
+	Sprite *labels[LABEL_COUNT];
 	Texture *log_lines[LOG_LINES_COUNT];
 } Gui;
 
@@ -28,10 +38,7 @@ void
 gui_set_current_health(Gui*, int current);
 
 void
-gui_set_current_xp(Gui*, ExperienceData);
-
-void
-gui_set_xp_data(Gui*, ExperienceData);
+gui_update_player_stats(Gui*, Player*, Map*, SDL_Renderer*);
 
 void
 gui_render_panel(Gui*, unsigned int width, unsigned int height, Camera*);

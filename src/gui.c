@@ -6,6 +6,7 @@
 
 #include "gui.h"
 #include "util.h"
+#include "map.h"
 
 #define DEFAULT_LOG { NULL, 50, 0, 200 }
 #define POS_Y_XPBAR	96
@@ -53,11 +54,31 @@ gui_malloc_log(void)
 		log_data.log[i] = NULL;
 }
 
+static Sprite*
+create_xp_sprite(Texture *t, SDL_Rect clip, Position pos)
+{
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->fixed = true;
+	s->clip = clip;
+	s->pos = pos;
+	return s;
+}
+
+static Sprite*
+create_label_sprite(Position pos)
+{
+	Sprite *s = sprite_create();
+	s->fixed = true;
+	s->pos = pos;
+	sprite_load_text_texture(s, "assets/GUI/SDS_8x8.ttf", 0, LABEL_FONT_SIZE);
+	return s;
+}
+
 static void
 init_sprites(Gui *gui, SDL_Renderer *renderer)
 {
 	Texture *t;
-	Sprite *s;
 	unsigned int i;
 
 	t = add_texture(gui, "assets/GUI/GUI0.png", renderer);
@@ -67,37 +88,33 @@ init_sprites(Gui *gui, SDL_Renderer *renderer)
 	 */
 
 	// Left end
-	s = sprite_create();
-	sprite_set_texture(s, t, 0);
-	s->fixed = true;
-	s->clip = (SDL_Rect) { 6 * 16, 0, 16, 16 };
-	s->pos = (Position) { 16 , POS_Y_XPBAR };
-	linkedlist_append(&gui->sprites, s);
+	linkedlist_append(&gui->sprites, create_xp_sprite(
+		t,
+		(SDL_Rect) { 6 * 16, 0, 16, 16 },
+		(Position) { 16, POS_Y_XPBAR }
+	));
 
 	// Right end
-	s = sprite_create();
-	sprite_set_texture(s, t, 0);
-	s->fixed = true;
-	s->clip = (SDL_Rect) { 8 * 16, 0, 16, 16 };
-	s->pos = (Position) { 16 + (16 * 7), POS_Y_XPBAR };
-	linkedlist_append(&gui->sprites, s);
+	linkedlist_append(&gui->sprites, create_xp_sprite(
+		t,
+		(SDL_Rect) { 8 * 16, 0, 16, 16 },
+		(Position) { 16 + (16 * 7), POS_Y_XPBAR }
+	));
 
 	for (i = 1; i < 7; ++i) {
-		s = sprite_create();
-		sprite_set_texture(s, t, 0);
-		s->fixed = true;
-		s->clip = (SDL_Rect) { 7 * 16, 0, 16, 16 };
-		s->pos = (Position) { 16 + (i * 16), POS_Y_XPBAR };
-		linkedlist_append(&gui->sprites, s);
+		linkedlist_append(&gui->sprites, create_xp_sprite(
+			t,
+			(SDL_Rect) { 7 * 16, 0, 16, 16 },
+			(Position) { 16 + (i * 16), POS_Y_XPBAR }
+		));
 	}
 
 	for (i = 0; i < 8; ++i) {
-		s = sprite_create();
-		sprite_set_texture(s, t, 0);
-		s->fixed = true;
-		s->clip = (SDL_Rect) { 6 * 16, 4 * 16, 16, 16 };
-		s->pos = (Position) { 16 + (i * 16), POS_Y_XPBAR };
-		linkedlist_append(&gui->xp_bar, s);
+		linkedlist_append(&gui->xp_bar, create_xp_sprite(
+			t,
+			(SDL_Rect) { 6 * 16, 4 * 16, 16, 16 },
+			(Position) { 16 + (i * 16), POS_Y_XPBAR }
+		));
 	}
 }
 
@@ -118,6 +135,11 @@ gui_create(SDL_Renderer *renderer)
 		texture_load_font(t, "assets/GUI/SDS_8x8.ttf", LOG_FONT_SIZE);
 		gui->log_lines[i] = t;
 	}
+
+	gui->labels[CURRENT_XP_LABEL] = create_label_sprite((Position) { 16, 116 });
+	gui->labels[LEVEL_LABEL] = create_label_sprite((Position) { 16, 128  });
+	gui->labels[DUNGEON_LEVEL_LABEL] = create_label_sprite((Position) { 16, 156  });
+	gui->labels[GOLD_LABEL] = create_label_sprite((Position) { 16, 142  });
 
 	gui_malloc_log();
 
@@ -180,47 +202,80 @@ gui_set_current_health(Gui *gui, int current)
 }
 
 void
-gui_set_current_xp(Gui *gui, ExperienceData data)
+gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *renderer)
 {
+	// TODO(Linus): Perhaps split this up a bit?
+	// some static functions maybe?
+
 	static unsigned int last_level = 0;
+	static int last_xp = -1;
+	static double last_gold = -1;
+	static unsigned int dungeon_level = 0;
+
+	static SDL_Color color = { 255, 255, 255, 255 };
+
 	unsigned int xp_from_levelup, xp_required_from_last_level;
 	float xp_step, xp_current_step;
 	unsigned int full_xp_blocks, partial_xp_block;
 	LinkedList *xp_bars;
 	unsigned int i;
+	char buffer[200];
 
-	xp_from_levelup = data.current - data.previousLevel;
-	xp_required_from_last_level = data.nextLevel - data.previousLevel;
-	xp_step = ((float) xp_required_from_last_level) / 32; // 4 * 8
-	xp_current_step = xp_from_levelup / xp_step;
+	ExperienceData data = player_get_xp_data(player);
 
-	partial_xp_block = ((unsigned int) xp_current_step) % 4;
-	full_xp_blocks = (unsigned int)((xp_current_step - partial_xp_block) / 4);
+	if (last_xp != data.current) {
+		xp_from_levelup = data.current - data.previousLevel;
+		xp_required_from_last_level = data.nextLevel - data.previousLevel;
+		xp_step = ((float)xp_required_from_last_level) / 32; // 4 * 8
+		xp_current_step = xp_from_levelup / xp_step;
 
-	xp_bars = gui->xp_bar;
-	i = 0;
-	while (xp_bars != NULL) {
-		Sprite *s = xp_bars->data;
-		s->hidden = false;
-		xp_bars = xp_bars->next;
+		partial_xp_block = ((unsigned int)xp_current_step) % 4;
+		full_xp_blocks = (unsigned int)((xp_current_step - partial_xp_block) / 4);
 
-		if (i < full_xp_blocks) {
-			s->clip.x = 6 * 16;
-		} else if (i == full_xp_blocks && partial_xp_block != 0) {
-			s->clip.x = (6 * 16) + (16 * (4 - partial_xp_block));
-		} else {
-			s->hidden = true;
+		xp_bars = gui->xp_bar;
+		i = 0;
+		while (xp_bars != NULL) {
+			Sprite *s = xp_bars->data;
+			s->hidden = false;
+			xp_bars = xp_bars->next;
+
+			if (i < full_xp_blocks) {
+				s->clip.x = 6 * 16;
+			}
+			else if (i == full_xp_blocks && partial_xp_block != 0) {
+				s->clip.x = (6 * 16) + (16 * (4 - partial_xp_block));
+			}
+			else {
+				s->hidden = true;
+			}
+
+			++i;
 		}
+	}
 
-		++i;
+	if (dungeon_level != map->level) {
+		m_sprintf(buffer, 200, "Dungeon level: %d", map->level);
+		texture_load_from_text(gui->labels[DUNGEON_LEVEL_LABEL]->textures[0], buffer, color, renderer);
+		dungeon_level = (unsigned int) map->level;
+	}
+
+	if (last_gold != player->gold) {
+		m_sprintf(buffer, 200, "Gold: %.2f", player->gold);
+		texture_load_from_text(gui->labels[GOLD_LABEL]->textures[0], buffer, color, renderer);
+		last_gold = player->gold;
+	}
+
+	if (last_xp != data.current) {
+		m_sprintf(buffer, 200, "XP: %u / %u", data.current, data.nextLevel);
+		texture_load_from_text(gui->labels[CURRENT_XP_LABEL]->textures[0], buffer, color, renderer);
+		last_xp = data.current;
 	}
 
 	if (last_level != data.level) {
-		// TODO(Linus): Update the indicators
+		m_sprintf(buffer, 200, "Level: %u", data.level);
+		texture_load_from_text(gui->labels[LEVEL_LABEL]->textures[0], buffer, color, renderer);
 		last_level = data.level;
 	}
-
-
 }
 
 static void
@@ -282,6 +337,8 @@ gui_render_panel(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 		item = item->next;
 	}
 
+	for (int i = 0; i < LABEL_COUNT; ++i)
+		sprite_render(gui->labels[i], cam);
 }
 
 void

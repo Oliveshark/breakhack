@@ -2,13 +2,13 @@
 #include "sprite.h"
 #include "util.h"
 
-static
-Sprite* sprite_create_default(void)
+static Sprite*
+sprite_create_default(void)
 {
 	Sprite *s = ec_malloc(sizeof(Sprite));
 	s->textures[0] = NULL;
 	s->textures[1] = NULL;
-	s->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	s->clip = (SDL_Rect) { 0, 0, 0, 0 };
 	s->destroyTextures = false;
 	s->pos = (Position) { 0, 0 };
 	s->renderTimer = timer_create();
@@ -19,7 +19,8 @@ Sprite* sprite_create_default(void)
 	return s;
 }
 
-Sprite* sprite_create()
+Sprite*
+sprite_create()
 {
 	return sprite_create_default();
 }
@@ -40,6 +41,21 @@ sprite_load_texture(Sprite *sprite,
 
 	sprite->textures[index] = texture_create();
 	texture_load_from_file(sprite->textures[index], path, renderer);
+	sprite->destroyTextures = true;
+}
+
+void sprite_load_text_texture(Sprite *sprite, char * path, int index, int size)
+{
+	if (index > 1)
+		fatal("in sprite_load_texture() index out of bounds");
+
+	if (sprite->destroyTextures && sprite->textures[index] != NULL) {
+		texture_destroy(sprite->textures[index]);
+		sprite->textures[index] = NULL;
+	}
+
+	sprite->textures[index] = texture_create();
+	texture_load_font(sprite->textures[index], path, size);
 	sprite->destroyTextures = true;
 }
 
@@ -76,10 +92,17 @@ void sprite_render(Sprite *s, Camera *cam)
 	else
 		cameraPos = s->pos;
 
-	texture_render_clip(s->textures[s->texture_index],
-			    &cameraPos,
-			    &s->clip,
-			    cam);
+	if (s->clip.w && s->clip.h) {
+		texture_render_clip(s->textures[s->texture_index],
+			&cameraPos,
+			&s->clip,
+			cam);
+	}
+	else {
+		texture_render(s->textures[s->texture_index],
+			&cameraPos,
+			cam);
+	}
 }
 
 void sprite_destroy(Sprite *sprite)

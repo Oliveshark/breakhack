@@ -24,6 +24,8 @@ Sprite* sprite_create(void);
 
 void sprite_load_texture(Sprite *, char *path, int index, SDL_Renderer *);
 
+void sprite_load_text_texture(Sprite *, char *path, int index, int size);
+
 void sprite_set_texture(Sprite *, Texture *, int index);
 
 void sprite_render(Sprite*, Camera*);
