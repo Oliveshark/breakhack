@@ -27,6 +27,14 @@ int l_create_map(lua_State *L)
 	return 1;
 }
 
+static int
+l_print_info(lua_State *L)
+{
+	const char *str = luaL_checkstring(L, 1);
+	info(str);
+	return 0;
+}
+
 static
 Map* luaL_checkmap(lua_State *L, int index)
 {
@@ -237,6 +245,9 @@ Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_create_map);
 	lua_setglobal(L, "create_map");
+
+	lua_pushcfunction(L, l_print_info);
+	lua_setglobal(L, "info");
 
 	lua_pushcfunction(L, l_add_tile);
 	lua_setglobal(L, "add_tile");

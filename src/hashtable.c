@@ -26,20 +26,17 @@ ht_create(unsigned int size)
 	return table;
 }
 
+/* D. J. Bernstein hash function */
 static unsigned int
 hash(Hashtable *table, const char *key)
 {
-	unsigned long int hashval = 0;
-	unsigned int i = 0;
+	unsigned int hash = 5381;
 
-	// TODO(Linus): This isn't very good,
-	// bad distribution on similar strings
-	while (hashval < ULONG_MAX && i < strlen(key)) {
-		hashval += key[i++];
-		hashval = hashval << 8;
+	while (*key) {
+		hash = 33 * hash ^ (unsigned char) *key++;
 	}
 
-	return hashval % table->size;
+	return hash % table->size;
 }
 
 static Entry*
