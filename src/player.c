@@ -26,6 +26,8 @@ player_levelup(Player *player)
 	// Limit health to 3 rows of hearts
 	if (player->stats.maxhp > 72)
 		player->stats.maxhp = 72;
+
+	player->stats.hp = player->stats.maxhp;
 }
 
 static unsigned int

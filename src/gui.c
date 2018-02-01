@@ -148,8 +148,8 @@ gui_create(SDL_Renderer *renderer)
 	return gui;
 }
 
-void
-gui_set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
+static void
+set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 {
 	Texture *texture;
 	int i;
@@ -175,8 +175,8 @@ gui_set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 	}
 }
 
-void
-gui_set_current_health(Gui *gui, int current)
+static void
+set_current_health(Gui *gui, int current)
 {
 	int partial = current % 3;
 	int full = (current - partial)/3;
@@ -211,6 +211,8 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 	static int last_xp = -1;
 	static double last_gold = -1;
 	static unsigned int dungeon_level = 0;
+	static int max_health = -1;
+	static int current_health = -1;
 
 	static SDL_Color color = { 255, 255, 255, 255 };
 
@@ -223,7 +225,16 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 
 	ExperienceData data = player_get_xp_data(player);
 
-	if (last_xp != data.current) {
+	if (max_health != player->stats.maxhp) {
+		max_health = player->stats.maxhp;
+		set_max_health(gui, max_health, renderer);
+	}
+	if (current_health != player->stats.hp) {
+		current_health = player->stats.hp;
+		set_current_health(gui, current_health);
+	}
+
+	if (last_xp != (int) data.current) {
 		xp_from_levelup = data.current - data.previousLevel;
 		xp_required_from_last_level = data.nextLevel - data.previousLevel;
 		xp_step = ((float)xp_required_from_last_level) / 32; // 4 * 8
@@ -253,7 +264,7 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 		}
 	}
 
-	if (dungeon_level != map->level) {
+	if (dungeon_level != (unsigned int) map->level) {
 		m_sprintf(buffer, 200, "Dungeon level: %d", map->level);
 		texture_load_from_text(gui->labels[DUNGEON_LEVEL_LABEL]->textures[0], buffer, color, renderer);
 		dungeon_level = (unsigned int) map->level;
@@ -265,7 +276,7 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 		last_gold = player->gold;
 	}
 
-	if (last_xp != data.current) {
+	if (last_xp != (int) data.current) {
 		m_sprintf(buffer, 200, "XP: %u / %u", data.current, data.nextLevel);
 		texture_load_from_text(gui->labels[CURRENT_XP_LABEL]->textures[0], buffer, color, renderer);
 		last_xp = data.current;

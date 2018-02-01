@@ -32,12 +32,6 @@ Gui*
 gui_create(SDL_Renderer *renderer);
 
 void
-gui_set_max_health(Gui*, int max, SDL_Renderer*);
-
-void
-gui_set_current_health(Gui*, int current);
-
-void
 gui_update_player_stats(Gui*, Player*, Map*, SDL_Renderer*);
 
 void

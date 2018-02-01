@@ -201,9 +201,6 @@ check_next_level(void)
 static void
 run_game(void)
 {
-	static unsigned int player_max_hp = 0;
-	static unsigned int player_current_hp = 0;
-
 	SDL_RenderSetViewport(gRenderer, NULL);
 	map_clear_dead_monsters(gMap);
 	map_clear_collected_items(gMap);
@@ -212,16 +209,8 @@ run_game(void)
 		&gPlayer->sprite->pos);
 
 	roommatrix_build_lightmap(gRoomMatrix);
-	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 
-	if (player_max_hp != (unsigned int) gPlayer->stats.maxhp) {
-		gui_set_max_health(gGui, gPlayer->stats.maxhp, gRenderer);
-		player_max_hp = gPlayer->stats.maxhp;
-	}
-	if (player_current_hp != (unsigned int) gPlayer->stats.hp) {
-		gui_set_current_health(gGui, gPlayer->stats.hp);
-		player_current_hp = gPlayer->stats.hp;
-	}
+	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 
 	if (gPlayer->steps >= gPlayer->stats.speed) {
 		player_reset_steps(gPlayer);
