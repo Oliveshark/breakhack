@@ -10,13 +10,18 @@
 typedef struct GuiButton_t {
 	SDL_Rect area;
 	bool hover;
+	void *usrdata;
+	void (*event)(void*);
 } GuiButton;
 
 GuiButton *
-gui_button_create(SDL_Rect);
+gui_button_create(SDL_Rect, void (*)(void*), void*);
 
 void
 gui_button_check_pointer(GuiButton*, Pointer*);
+
+void
+gui_button_handle_event(GuiButton*, SDL_Event*);
 
 void
 gui_button_destroy(GuiButton*);

@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include "pointer.h"
 #include "util.h"
@@ -25,6 +26,15 @@ pointer_handle_event(Pointer *p, SDL_Event *event)
 		p->sprite->pos.x = event->motion.x;
 		p->sprite->pos.y = event->motion.y;
 	}
+}
+
+void
+pointer_toggle_clickable_pointer(Pointer *p, bool clickable)
+{
+	if (clickable)
+		p->sprite->clip.x = 32;
+	else
+		p->sprite->clip.x = 0;
 }
 
 void

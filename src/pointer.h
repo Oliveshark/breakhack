@@ -16,6 +16,9 @@ void
 pointer_handle_event(Pointer*, SDL_Event *event);
 
 void
+pointer_toggle_clickable_pointer(Pointer *, bool clickable);
+
+void
 pointer_render(Pointer*, Camera*);
 
 void

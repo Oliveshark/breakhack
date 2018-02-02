@@ -26,7 +26,6 @@ static Map		*gMap		= NULL;
 static RoomMatrix	*gRoomMatrix	= NULL;
 static Gui		*gGui		= NULL;
 static Pointer		*gPointer	= NULL;
-static GuiButton	*gButton	= NULL;
 static unsigned int	cLevel		= 1;
 static double		renderScale	= 1.0;
 static GameState	gGameState;
@@ -136,7 +135,6 @@ bool init(void)
 		gGui = gui_create(gRenderer);
 		item_builder_init(gRenderer);
 		gPointer = pointer_create(gRenderer);
-		gButton = gui_button_create((SDL_Rect) { 100, 100, 100, 100 });
 	}
 
 	gGameState = PLAYING;
@@ -147,7 +145,7 @@ bool init(void)
 static
 void loadMedia(void)
 {
-	gPlayer = player_create(PALADIN, gRenderer);
+	gPlayer = player_create(WARRIOR, gRenderer);
 }
 
 static
@@ -168,8 +166,6 @@ bool handle_events(void)
 		}
 		pointer_handle_event(gPointer, &event);
 	}
-
-	gui_button_check_pointer(gButton, gPointer);
 
 	return quit;
 }
@@ -298,7 +294,6 @@ void close(void)
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
 	pointer_destroy(gPointer);
-	gui_button_destroy(gButton);
 	item_builder_close();
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
