@@ -51,7 +51,7 @@ eat_flesh(Item *item, Player *player)
 static void
 drink_health(Item *item, Player *player)
 {
-	player->potion_sips += item->value;
+	player->potion_sips += (int) item->value;
 
 	gui_log("You collect %u sips of health", (unsigned int) item->value);
 }
