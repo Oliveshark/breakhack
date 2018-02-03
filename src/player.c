@@ -7,6 +7,7 @@
 #include "util.h"
 #include "gui.h"
 #include "item.h"
+#include "particle_engine.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
@@ -309,6 +310,10 @@ player_hit(Player *p, unsigned int dmg)
 	if (dmg > 0) {
 		p->hitText->active = true;
 		p->missText->active = false;
+		Position pos = p->sprite->pos;
+		pos.x += 8;
+		pos.y += 8;
+		particle_engine_bloodspray(pos, (Dimension) { 8, 8 });
 	} else {
 		p->missText->active = true;
 		p->hitText->active = false;

@@ -18,6 +18,7 @@
 #include "item_builder.h"
 #include "pointer.h"
 #include "gui_button.h"
+#include "particle_engine.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
@@ -27,6 +28,7 @@ static RoomMatrix	*gRoomMatrix	= NULL;
 static Gui		*gGui		= NULL;
 static Pointer		*gPointer	= NULL;
 static unsigned int	cLevel		= 1;
+static float		deltaTime	= 1.0;
 static double		renderScale	= 1.0;
 static GameState	gGameState;
 static Camera		gCamera;
@@ -135,6 +137,7 @@ bool init(void)
 		gGui = gui_create(gRenderer);
 		item_builder_init(gRenderer);
 		gPointer = pointer_create(gRenderer);
+		particle_engine_init();
 	}
 
 	gGameState = PLAYING;
@@ -213,6 +216,7 @@ run_game(void)
 	roommatrix_build_lightmap(gRoomMatrix);
 
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
+	particle_engine_update(deltaTime);
 
 	if (gPlayer->steps >= gPlayer->stats.speed) {
 		player_reset_steps(gPlayer);
@@ -224,6 +228,7 @@ run_game(void)
 
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
 	map_render(gMap, &gCamera);
+	particle_engine_render(&gCamera);
 	player_render(gPlayer, &gCamera);
 	roommatrix_render_lightmap(gRoomMatrix, &gCamera);
 
@@ -249,6 +254,9 @@ run_game(void)
 static
 void run(void)
 {
+	static int oldTime = 0;
+	static int currentTime = 0;
+
 	bool quit = false;
 	Timer* fpsTimer = timer_create();
 
@@ -281,6 +289,14 @@ void run(void)
 		if (ticks < 1000/60)
 			SDL_Delay((1000/60) - ticks);
 		timer_stop(fpsTimer);
+
+		if (currentTime == 0)
+			currentTime = SDL_GetTicks();
+		else {
+			oldTime = currentTime;
+			currentTime = SDL_GetTicks();
+			deltaTime = (currentTime - oldTime) / 1000.0;
+		}
 	}
 
 	timer_destroy(fpsTimer);
@@ -295,6 +311,7 @@ void close(void)
 	gui_destroy(gGui);
 	pointer_destroy(gPointer);
 	item_builder_close();
+	particle_engine_close();
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;

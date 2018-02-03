@@ -43,7 +43,7 @@ if (NOT WIN32)
 		)
 endif (NOT WIN32)
 
-set(CMAKE_C_FLAGS_DEBUG "-DDEBUG")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
 # PROGRAMS:
 add_executable(breakhack
@@ -70,6 +70,7 @@ add_executable(breakhack
 	src/item_builder
 	src/pointer
 	src/gui_button
+	src/particle_engine
 	)
 
 target_link_libraries(breakhack

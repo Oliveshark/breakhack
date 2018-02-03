@@ -465,6 +465,9 @@ gui_destroy(Gui *gui)
 	for (int i = 0; i < LOG_LINES_COUNT; ++i)
 		texture_destroy(gui->log_lines[i]);
 
+	for (int i = 0; i < LABEL_COUNT; ++i)
+		sprite_destroy(gui->labels[i]);
+
 	ht_destroy_custom(gui->textures, (void (*)(void*)) &texture_destroy);
 	free(gui);
 }

@@ -10,6 +10,7 @@
 #include "item.h"
 #include "item_builder.h"
 #include "map.h"
+#include "particle_engine.h"
 
 static void
 monster_load_texts(Monster *m, SDL_Renderer *renderer)
@@ -231,6 +232,11 @@ monster_hit(Monster *monster, unsigned int dmg)
 	if (dmg > 0) {
 		monster->hitText->active = true;
 		monster->missText->active = false;
+		Position p = monster->sprite->pos;
+		p.x += 8;
+		p.y += 8;
+		Dimension d = { 8, 8 };
+		particle_engine_bloodspray(p, d);
 	} else {
 		monster->missText->active = true;
 		monster->hitText->active = false;
