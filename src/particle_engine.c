@@ -40,13 +40,14 @@ particle_engine_init(void)
 void
 particle_engine_bloodspray(Position pos, Dimension dim)
 {
-	int x, y, xv, yv, w, h, i;
-	unsigned int mt, lt;
-	Particle *p;
 
 	check_engine();
 
-	for (i = 0; i < 15; ++i) {
+	for (unsigned int i = 0; i < 15; ++i) {
+		int x, y, xv, yv, w, h;
+		unsigned int mt, lt;
+		Particle *p;
+
 		x = (rand() % dim.width) + pos.x;
 		y = (rand() % dim.height) + pos.y;
 
