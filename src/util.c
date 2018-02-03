@@ -57,6 +57,7 @@ m_sprintf(char * dest, size_t destsz, const char * format, ...)
 void
 debug(const char *fmt, ...)
 {
+#ifdef DEBUG
 	va_list args;
 	char tstamp[10];
 
@@ -66,6 +67,9 @@ debug(const char *fmt, ...)
 	vprintf(fmt, args);
 	va_end(args);
 	printf("\n");
+#else // DEBUG
+	UNUSED (fmt);
+#endif // DEBUG
 }
 
 void

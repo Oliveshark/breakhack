@@ -10,7 +10,6 @@
 enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR };
 typedef enum PlayerClass class_t;
 
-
 typedef struct ExperienceData_t {
 	unsigned int previousLevel;
 	unsigned int current;
@@ -30,6 +29,7 @@ typedef struct Player_t {
 	unsigned int kills;
 	unsigned int misses;
 	double gold;
+	unsigned int potion_sips;
 	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 

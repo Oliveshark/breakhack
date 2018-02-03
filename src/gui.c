@@ -9,7 +9,9 @@
 #include "map.h"
 
 #define DEFAULT_LOG { NULL, 50, 0, 200 }
-#define POS_Y_XPBAR	96
+
+#define POS_Y_COLLECTABLES 64
+#define POS_Y_XPBAR	112
 
 static SDL_Rect frame_top_left		= { 16, 160, 16, 16 };
 static SDL_Rect frame_top_right		= { 48, 160, 16, 16 };
@@ -116,6 +118,23 @@ init_sprites(Gui *gui, SDL_Renderer *renderer)
 			(Position) { 16 + (i * 16), POS_Y_XPBAR }
 		));
 	}
+
+	Sprite *s;
+	t = add_texture(gui, "assets/Items/Potion.png", renderer);
+	s = sprite_create();
+	s->fixed = true;
+	sprite_set_texture(s, t, 0);
+	s->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	s->pos = (Position) { 16, POS_Y_COLLECTABLES };
+	linkedlist_append(&gui->sprites, s);
+
+	t = add_texture(gui, "assets/Items/Money.png", renderer);
+	s = sprite_create();
+	s->fixed = true;
+	sprite_set_texture(s, t, 0);
+	s->clip = (SDL_Rect) { 16, 16, 16, 16 };
+	s->pos = (Position) { 16, POS_Y_COLLECTABLES + 16 };
+	linkedlist_append(&gui->sprites, s);
 }
 
 Gui*
@@ -136,10 +155,11 @@ gui_create(SDL_Renderer *renderer)
 		gui->log_lines[i] = t;
 	}
 
-	gui->labels[CURRENT_XP_LABEL] = create_label_sprite((Position) { 16, 116 });
-	gui->labels[LEVEL_LABEL] = create_label_sprite((Position) { 16, 128  });
-	gui->labels[DUNGEON_LEVEL_LABEL] = create_label_sprite((Position) { 16, 156  });
-	gui->labels[GOLD_LABEL] = create_label_sprite((Position) { 16, 142  });
+	gui->labels[CURRENT_XP_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 });
+	gui->labels[LEVEL_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 + 14  });
+	gui->labels[DUNGEON_LEVEL_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 + (2*14)  });
+	gui->labels[HEALTH_POTION_LABEL] = create_label_sprite((Position) { 32, POS_Y_COLLECTABLES + 5  });
+	gui->labels[GOLD_LABEL] = create_label_sprite((Position) { 32, POS_Y_COLLECTABLES + 16 + 5 });
 
 	gui_malloc_log();
 
@@ -213,6 +233,7 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 	static unsigned int dungeon_level = 0;
 	static int max_health = -1;
 	static int current_health = -1;
+	static int current_potion_sips = -1;
 
 	static SDL_Color color = { 255, 255, 255, 255 };
 
@@ -270,8 +291,14 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 		dungeon_level = (unsigned int) map->level;
 	}
 
+	if (current_potion_sips != (int) player->potion_sips) {
+		m_sprintf(buffer, 200, "x %u", (unsigned int) player->potion_sips);
+		texture_load_from_text(gui->labels[HEALTH_POTION_LABEL]->textures[0], buffer, color, renderer);
+		current_potion_sips = player->potion_sips;
+	}
+
 	if (last_gold != player->gold) {
-		m_sprintf(buffer, 200, "Gold: %.2f", player->gold);
+		m_sprintf(buffer, 200, "x %.2f", player->gold);
 		texture_load_from_text(gui->labels[GOLD_LABEL]->textures[0], buffer, color, renderer);
 		last_gold = player->gold;
 	}
@@ -402,7 +429,7 @@ gui_render_log(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 
 	for (i = 0; i < render_count; ++i) {
 		Texture *t;
-		p.y = 16 + ((LOG_FONT_SIZE+1) * i);
+		p.y = 16 + ((LOG_FONT_SIZE+5) * i);
 		t = gui->log_lines[i];
 		texture_load_from_text(t, log_data.log[i], color, cam->renderer);
 		texture_render(t, &p, cam);

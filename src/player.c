@@ -155,38 +155,73 @@ move_down(Player *player, RoomMatrix *matrix)
 }
 
 static void
-handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
+sip_health(Player *player)
+{
+	if (player->potion_sips > 0) {
+		--player->potion_sips;
+		++player->stats.hp;
+		gui_log("You take a sip of health potion");
+	} else {
+		gui_log("You have nothing to sip");
+	}
+}
+
+static void
+handle_movement_input(Player *player, RoomMatrix *matrix, Uint32 key)
 {
 	static unsigned int step = 1;
+	bool moved = false;
 
-	if (event->type == SDL_KEYDOWN) {
-		switch (event->key.keysym.sym) {
-			case SDLK_LEFT:
-			case SDLK_h:
-			case SDLK_a:
-				move_left(player, matrix);
-				break;
-			case SDLK_RIGHT:
-			case SDLK_l:
-			case SDLK_d:
-				move_right(player, matrix);
-				break;
-			case SDLK_UP:
-			case SDLK_k:
-			case SDLK_w:
-				move_up(player, matrix);
-				break;
-			case SDLK_DOWN:
-			case SDLK_j:
-			case SDLK_s:
-				move_down(player, matrix);
-				break;
-		}
+	switch (key) {
+		case SDLK_LEFT:
+		case SDLK_h:
+		case SDLK_a:
+			move_left(player, matrix);
+			moved = true;
+			break;
+		case SDLK_RIGHT:
+		case SDLK_l:
+		case SDLK_d:
+			move_right(player, matrix);
+			moved = true;
+			break;
+		case SDLK_UP:
+		case SDLK_k:
+		case SDLK_w:
+			move_up(player, matrix);
+			moved = true;
+			break;
+		case SDLK_DOWN:
+		case SDLK_j:
+		case SDLK_s:
+			move_down(player, matrix);
+			moved = true;
+			break;
+		default:
+			break;
+	}
+
+	if (moved) {
 		player->sprite->clip.x = 16*step;
-		if (step == 3)
-			step = 0;
-		else
-			++step;
+		++step;
+		step = step % 4;
+	}
+}
+
+static void
+handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
+{
+	if (event->type != SDL_KEYDOWN)
+		return;
+
+	bool shift = event->key.keysym.mod & (KMOD_RSHIFT | KMOD_LSHIFT);
+	Uint32 key = event->key.keysym.sym;
+
+	if (!shift)
+		handle_movement_input(player, matrix, key);
+
+	if (shift && key == SDLK_h) {
+		sip_health(player);
 	}
 }
 
@@ -220,6 +255,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->kills		= 0;
 	player->misses		= 0;
 	player->gold		= 0;
+	player->potion_sips	= 0;
 
 	char asset[100];
 	switch (class) {

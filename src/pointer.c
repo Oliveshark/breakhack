@@ -25,6 +25,7 @@ pointer_handle_event(Pointer *p, SDL_Event *event)
 	if (event->type == SDL_MOUSEMOTION) {
 		p->sprite->pos.x = event->motion.x;
 		p->sprite->pos.y = event->motion.y;
+		debug("Pointer pos: %dx%d", p->sprite->pos.x, p->sprite->pos.y);
 	}
 }
 

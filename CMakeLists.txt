@@ -43,6 +43,8 @@ if (NOT WIN32)
 		)
 endif (NOT WIN32)
 
+set(CMAKE_C_FLAGS_DEBUG "-DDEBUG")
+
 # PROGRAMS:
 add_executable(breakhack
 	src/main

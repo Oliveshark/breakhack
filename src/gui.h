@@ -1,7 +1,7 @@
 #ifndef GUI_H_
 #define	GUI_H_
 
-#define LOG_LINES_COUNT	15
+#define LOG_LINES_COUNT	10
 #define LOG_FONT_SIZE	8
 #define LABEL_FONT_SIZE	8
 
@@ -16,6 +16,7 @@ typedef enum Label_e {
 	CURRENT_XP_LABEL,
 	GOLD_LABEL,
 	DUNGEON_LEVEL_LABEL,
+	HEALTH_POTION_LABEL,
 	LABEL_COUNT
 } LabelIndex;
 

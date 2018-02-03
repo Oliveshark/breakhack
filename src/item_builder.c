@@ -51,13 +51,9 @@ eat_flesh(Item *item, Player *player)
 static void
 drink_health(Item *item, Player *player)
 {
-	int original_hp = player->stats.hp;
-	player->stats.hp += (int) item->value * player->stats.lvl;
-	if (player->stats.hp > player->stats.maxhp)
-		player->stats.hp = player->stats.maxhp;
+	player->potion_sips += item->value;
 
-	gui_log("You drink a health potion and gain %d health",
-		player->stats.hp - original_hp);
+	gui_log("You collect %u sips of health", (unsigned int) item->value);
 }
 
 static Item *
@@ -87,14 +83,16 @@ pickup_gold(Item *item, Player *player)
 static Item *
 create_treasure(int current_level)
 {
-	double amt = (unsigned int) rand() % 40;
+	double amt;
 	char label[50];
 	unsigned int highest_treasure;
 	unsigned int value;
 
-	if (current_level > 15) {
+	amt = (unsigned int) (rand() + (5*current_level)) % 40;
+
+	if (current_level > 9) {
 		highest_treasure = TREASURE_COUNT;
-	} else if (current_level > 5) {
+	} else if (current_level > 3) {
 		highest_treasure = PLATINUM;
 	} else {
 		highest_treasure = GOLD;
