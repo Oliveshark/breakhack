@@ -16,16 +16,18 @@ x Moving enemies
 	x Add hooks to lua
 	x Add movement depending on state (aggro, scared, passive)
 x Lower dungeon levels
-o GUI
-- Player death
-- Items (lua generated?)
-- More GUI
-o XP
-	- Some xp amount logic
-	- Level threshholds
+x GUI
+x Items
+x More GUI
+x XP
+	x Some xp amount logic
+	x Level threshholds
+x Statistics
+	x More stuff to count
+- Particle engine for blood splatter (keep it light!!!)
+- Prevent level exit from spawning on occupied spot
 - Menus
-- Statistics
-	- More stuff to count
+- Player death (graphic or text?)
 - A different license perhaps?
 
 Legend: ( '-' = future) ( 'x' = completed ) ( 'o' = begun )
