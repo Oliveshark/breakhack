@@ -120,10 +120,15 @@ local function repack(data)
 	}
 end
 
+local function check_add_decoration(map, x, y, data)
+	if tile_occupied(map, x, y) then return end
+	add_decoration(map, x, y, repack(data))
+end
+
 local function add_random_decor_to_room()
 	local decor_count = random(4) - 1
 	for i=1,decor_count do
-		add_decoration(map, random(11)+1, random(8)+1, repack(floorDecor[random(#floorDecor)]))
+		check_add_decoration(map, random(11)+1, random(8)+1, floorDecor[random(#floorDecor)])
 	end
 end
 
@@ -177,16 +182,16 @@ local function add_walls_to_room (map)
 	end
 
 	if random(2) == 1 then
-		add_decoration(map, 4, 3, repack(lightDecor.candle2))
+		check_add_decoration(map, 4, 3, lightDecor.candle2)
 	end
 	if random(2) == 1 then
-		add_decoration(map, 11, 3, repack(lightDecor.candle2))
+		check_add_decoration(map, 11, 3, lightDecor.candle2)
 	end
 	if random(2) == 1 then
-		add_decoration(map, 4, 9, repack(lightDecor.candle2))
+		check_add_decoration(map, 4, 9, lightDecor.candle2)
 	end
 	if random(2) == 1 then
-		add_decoration(map, 11, 9, repack(lightDecor.candle2))
+		check_add_decoration(map, 11, 9, lightDecor.candle2)
 	end
 end
 
@@ -230,10 +235,10 @@ local function build_vert_center_coridoor(map, offset)
 		add_tile(map, 9, offset+j, repack(wall.vertical));
 	end
 	if random(2) == 1 then
-		add_decoration(map, 6, offset + 2, repack(lightDecor.candle1))
+		check_add_decoration(map, 6, offset + 2, lightDecor.candle1)
 	end
 	if random(2) == 1 then 
-		add_decoration(map, 9, offset + 2, repack(lightDecor.candle1))
+		check_add_decoration(map, 9, offset + 2, lightDecor.candle1)
 	end
 end
 
@@ -245,10 +250,10 @@ local function build_horiz_center_coridoor(map, offset)
 		add_tile(map, offset+i, 7, repack(wall.horizontal));
 	end
 	if random(2) == 1 then
-		add_decoration(map, offset+3, 4, repack(lightDecor.candle1))
+		check_add_decoration(map, offset+3, 4, lightDecor.candle1)
 	end
 	if random(2) == 1 then 
-		add_decoration(map, offset+3, 7, repack(lightDecor.candle1))
+		check_add_decoration(map, offset+3, 7, lightDecor.candle1)
 	end
 end
 

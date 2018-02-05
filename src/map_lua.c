@@ -149,6 +149,28 @@ extract_tile_data(lua_State *L,
 }
 
 static
+int l_tile_occupied(lua_State *L)
+{
+	Map *map;
+	Room *room;
+	MapTile *tile;
+	Position *rPos;
+	int x, y;
+
+
+	map = luaL_checkmap(L, 1);
+	x = (int) luaL_checkinteger(L, 2);
+	y = (int) luaL_checkinteger(L, 3);
+
+	rPos = &map->currentRoom;
+	room = map->rooms[rPos->x][rPos->y];
+	tile = room->tiles[x][y];
+
+	lua_pushboolean(L, tile->collider || tile->levelExit);
+	return 1;
+}
+
+static
 int l_add_tile(lua_State *L)
 {
 	extract_tile_data(L, &map_add_tile);
@@ -263,6 +285,9 @@ Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_add_monster);
 	lua_setglobal(L, "add_monster");
+
+	lua_pushcfunction(L, l_tile_occupied);
+	lua_setglobal(L, "tile_occupied");
 
 	lua_pushinteger(L, level);
 	lua_setglobal(L, "CURRENT_LEVEL");

@@ -68,7 +68,7 @@ has_collided(Monster *monster, RoomMatrix *matrix)
 	Position roomPos = position_to_matrix_coords(&monster->sprite->pos);
 	RoomSpace *space = &matrix->spaces[roomPos.x][roomPos.y];
 
-	if (space->player) {
+	if (space->player && monster->state.current == AGRESSIVE) {
 		unsigned int dmg = stats_fight(&monster->stats,
 					       &space->player->stats);
 
