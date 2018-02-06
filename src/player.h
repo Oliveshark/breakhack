@@ -30,6 +30,7 @@ typedef struct Player_t {
 	unsigned int misses;
 	double gold;
 	unsigned int potion_sips;
+	class_t class;
 	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 

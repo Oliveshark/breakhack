@@ -257,6 +257,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->misses		= 0;
 	player->gold		= 0;
 	player->potion_sips	= 0;
+	player->class		= class;
 
 	char asset[100];
 	switch (class) {
@@ -288,7 +289,6 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->sprite->textures[0]->dim = (Dimension) {
 		TILE_DIMENSION, TILE_DIMENSION };
 	player->handle_event = &handle_player_input;
-
 	player_load_texts(player, renderer);
 
 	return player;

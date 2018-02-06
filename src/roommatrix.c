@@ -19,6 +19,20 @@ RoomMatrix* roommatrix_create()
 	return m;
 }
 
+void
+roommatrix_handle_event(RoomMatrix *matrix, SDL_Event *event)
+{
+	if (event->type != SDL_MOUSEMOTION)
+		return;
+
+	if (event->motion.x < GAME_VIEW_WIDTH
+	    && event->motion.y < GAME_VIEW_HEIGHT)
+	{
+		matrix->mousePos.x = event->motion.x;
+		matrix->mousePos.y = event->motion.y;
+	}
+}
+
 void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 {
 	int i, j;
@@ -161,6 +175,21 @@ roommatrix_build_lightmap(RoomMatrix *matrix)
 }
 
 void
+roommatrix_render_mouse_square(RoomMatrix *matrix, Camera *cam)
+{
+	Position mmc = position_to_matrix_coords(&matrix->mousePos);
+	SDL_Rect box = (SDL_Rect) {
+			mmc.x*TILE_DIMENSION,
+			mmc.y*TILE_DIMENSION,
+			TILE_DIMENSION,
+			TILE_DIMENSION
+	};
+
+	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 0, 90);
+	SDL_RenderFillRect(cam->renderer, &box);
+}
+
+void
 roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 {
 	int i, j, light;
@@ -170,14 +199,18 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 			light = 245 - matrix->spaces[i][j].light;
 			if (light < 0)
 				light = 0;
-			SDL_SetRenderDrawColor(cam->renderer,
-					       0, 0, 0, light);
+			else if (light > 245)
+				light = 245;
+
 			SDL_Rect box = (SDL_Rect) {
 				i*TILE_DIMENSION,
 				j*TILE_DIMENSION,
 				TILE_DIMENSION,
 				TILE_DIMENSION
 			};
+
+			SDL_SetRenderDrawColor(cam->renderer,
+					       0, 0, 0, light);
 			SDL_RenderFillRect(cam->renderer, &box);
 		}
 	}

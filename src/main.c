@@ -167,6 +167,7 @@ bool handle_events(void)
 			camera_follow_position(&gCamera, &gPlayer->sprite->pos);
 			map_set_current_room(gMap, &gPlayer->sprite->pos);
 		}
+		roommatrix_handle_event(gRoomMatrix, &event);
 		pointer_handle_event(gPointer, &event);
 	}
 
@@ -230,6 +231,9 @@ run_game(void)
 	map_render(gMap, &gCamera);
 	particle_engine_render(&gCamera);
 	player_render(gPlayer, &gCamera);
+
+	if (gPlayer->class == MAGE || gPlayer->class == PALADIN)
+		roommatrix_render_mouse_square(gRoomMatrix, &gCamera);
 	roommatrix_render_lightmap(gRoomMatrix, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &rightGuiViewport);

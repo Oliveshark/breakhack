@@ -26,9 +26,12 @@ typedef struct {
 	RoomSpace spaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	Position roomPos;
 	Position playerRoomPos;
+	Position mousePos;
 } RoomMatrix;
 
 RoomMatrix* roommatrix_create(void);
+
+void roommatrix_handle_event(RoomMatrix*, SDL_Event*);
 
 void roommatrix_populate_from_map(RoomMatrix*, Map*);
 
@@ -37,6 +40,8 @@ void roommatrix_update_with_player(RoomMatrix*, Player*);
 void roommatrix_add_lightsource(RoomMatrix*, Position*);
 
 void roommatrix_build_lightmap(RoomMatrix*);
+
+void roommatrix_render_mouse_square(RoomMatrix*, Camera*);
 
 void roommatrix_render_lightmap(RoomMatrix*, Camera*);
 
