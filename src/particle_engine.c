@@ -86,13 +86,12 @@ particle_engine_update(float deltaTime)
 {
 	check_engine();
 	LinkedList *current, *last;
-	Particle *particle;
 
 	current = engine->particles;
 	last = NULL;
 
 	while (current) {
-		particle = current->data;
+		Particle *particle = current->data;
 
 		if (particle->movetime)
 			particle->movetime--;

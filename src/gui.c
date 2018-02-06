@@ -221,6 +221,38 @@ set_current_health(Gui *gui, int current)
 	}
 }
 
+static void
+update_xp_bar(Gui *gui, ExperienceData *data)
+{
+	unsigned int xp_from_levelup = data->current - data->previousLevel;
+	unsigned int xp_required_from_last_level = data->nextLevel - data->previousLevel;
+	float xp_step = ((float)xp_required_from_last_level) / 32; // 4 * 8
+	float xp_current_step = xp_from_levelup / xp_step;
+
+	unsigned int partial_xp_block = ((unsigned int) xp_current_step) % 4;
+	unsigned int full_xp_blocks = (unsigned int) ((xp_current_step - partial_xp_block) / 4);
+
+	LinkedList *xp_bars = gui->xp_bar;
+	unsigned int i = 0;
+	while (xp_bars != NULL) {
+		Sprite *s = xp_bars->data;
+		s->hidden = false;
+		xp_bars = xp_bars->next;
+
+		if (i < full_xp_blocks) {
+			s->clip.x = 6 * 16;
+		}
+		else if (i == full_xp_blocks && partial_xp_block != 0) {
+			s->clip.x = (6 * 16) + (16 * (4 - partial_xp_block));
+		}
+		else {
+			s->hidden = true;
+		}
+
+		++i;
+	}
+}
+
 void
 gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *renderer)
 {
@@ -237,11 +269,6 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 
 	static SDL_Color color = { 255, 255, 255, 255 };
 
-	unsigned int xp_from_levelup, xp_required_from_last_level;
-	float xp_step, xp_current_step;
-	unsigned int full_xp_blocks, partial_xp_block;
-	LinkedList *xp_bars;
-	unsigned int i;
 	char buffer[200];
 
 	ExperienceData data = player_get_xp_data(player);
@@ -256,33 +283,7 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 	}
 
 	if (last_xp != (int) data.current) {
-		xp_from_levelup = data.current - data.previousLevel;
-		xp_required_from_last_level = data.nextLevel - data.previousLevel;
-		xp_step = ((float)xp_required_from_last_level) / 32; // 4 * 8
-		xp_current_step = xp_from_levelup / xp_step;
-
-		partial_xp_block = ((unsigned int)xp_current_step) % 4;
-		full_xp_blocks = (unsigned int)((xp_current_step - partial_xp_block) / 4);
-
-		xp_bars = gui->xp_bar;
-		i = 0;
-		while (xp_bars != NULL) {
-			Sprite *s = xp_bars->data;
-			s->hidden = false;
-			xp_bars = xp_bars->next;
-
-			if (i < full_xp_blocks) {
-				s->clip.x = 6 * 16;
-			}
-			else if (i == full_xp_blocks && partial_xp_block != 0) {
-				s->clip.x = (6 * 16) + (16 * (4 - partial_xp_block));
-			}
-			else {
-				s->hidden = true;
-			}
-
-			++i;
-		}
+		update_xp_bar(gui, &data);
 	}
 
 	if (dungeon_level != (unsigned int) map->level) {
