@@ -19,6 +19,7 @@
 #include "pointer.h"
 #include "gui_button.h"
 #include "particle_engine.h"
+#include "menu.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
@@ -30,6 +31,7 @@ static Pointer		*gPointer	= NULL;
 static unsigned int	cLevel		= 1;
 static float		deltaTime	= 1.0;
 static double		renderScale	= 1.0;
+static Menu		*mainMenu	= NULL;
 static GameState	gGameState;
 static Camera		gCamera;
 static SDL_Rect		gameViewport;
@@ -115,38 +117,86 @@ initViewports(void)
 		RIGHT_GUI_WIDTH, RIGHT_GUI_HEIGHT };
 }
 
-static
-bool initGame(void)
+static bool
+initGame(void)
 {
-	gMap = map_lua_generator_run(cLevel, gRenderer);
+	initViewports();
+	gCamera.renderer = gRenderer;
+	gRoomMatrix = roommatrix_create();
+	gGui = gui_create(gRenderer);
+	item_builder_init(gRenderer);
+	gPointer = pointer_create(gRenderer);
+	particle_engine_init();
 
 	return true;
 }
 
-static
-bool init(void)
+static void
+initMainMenu(void)
+{
+	static SDL_Color C_WHITE	= { 255, 255, 255, 0 };
+	static SDL_Color C_RED		= { 255, 0, 0, 0 };
+
+	struct MENU_ITEM {
+		char label[20];
+		void (*callback)(void);
+	};
+	struct MENU_ITEM menu_items[] = {
+		{ "PLAY", NULL },
+		{ "QUIT", NULL },
+	};
+
+	mainMenu = menu_create();
+
+	for (unsigned int i = 0; i < 2; ++i) {
+		Sprite *s1 = sprite_create();
+		sprite_load_text_texture(s1, "assets/GUI/SDS_8x8.ttf", 0, 14);
+		texture_load_from_text(s1->textures[0], menu_items[i].label,
+				       C_WHITE, gRenderer);
+		s1->pos = (Position) { 200, 100 + (i*50) };
+		s1->fixed = true;
+
+		Sprite *s2 = sprite_create();
+		sprite_load_text_texture(s2, "assets/GUI/SDS_8x8.ttf", 0, 14);
+		texture_load_from_text(s2->textures[0], menu_items[i].label,
+				       C_RED, gRenderer);
+		s2->pos = (Position) { 200, 100 + (i*50) };
+		s2->fixed = true;
+
+		menu_item_add(mainMenu, s1, s2);
+	}
+}
+
+static void
+resetGame(void)
+{
+	if (gMap)
+		map_destroy(gMap);
+
+	info("Building new map");
+	gMap = map_lua_generator_run(++cLevel, gRenderer);
+	gPlayer->sprite->pos = (Position) {
+		TILE_DIMENSION, TILE_DIMENSION };
+	gCamera.pos = (Position) { 0, 0 };
+}
+
+static bool
+init(void)
 {
 	bool result = true;
 	result = result && initSDL();
 	result = result && initGame();
-	if (result) {
-		initViewports();
-		gCamera.pos = (Position) { 0, 0 };
-		gCamera.renderer = gRenderer;
-		gRoomMatrix = roommatrix_create();
-		gGui = gui_create(gRenderer);
-		item_builder_init(gRenderer);
-		gPointer = pointer_create(gRenderer);
-		particle_engine_init();
-	}
+	initMainMenu();
 
-	gGameState = PLAYING;
+	gCamera.pos = (Position) { 0, 0 };
+
+	gGameState = MENU;
 
 	return result;
 }
 
-static
-void loadMedia(void)
+static void
+loadMedia(void)
 {
 	gPlayer = player_create(WARRIOR, gRenderer);
 }
@@ -166,8 +216,10 @@ bool handle_events(void)
 					      &event);
 			camera_follow_position(&gCamera, &gPlayer->sprite->pos);
 			map_set_current_room(gMap, &gPlayer->sprite->pos);
+			roommatrix_handle_event(gRoomMatrix, &event);
+		} else if (gGameState == MENU) {
+			menu_handle_event(mainMenu, &event);
 		}
-		roommatrix_handle_event(gRoomMatrix, &event);
 		pointer_handle_event(gPointer, &event);
 	}
 
@@ -196,11 +248,7 @@ check_next_level(void)
 		return;
 	}
 	if (tile->levelExit) {
-		info("Building new map");
-		map_destroy(gMap);
-		gMap = map_lua_generator_run(++cLevel, gRenderer);
-		gPlayer->sprite->pos = (Position) {
-			TILE_DIMENSION, TILE_DIMENSION };
+		resetGame();
 	}
 }
 
@@ -255,6 +303,16 @@ run_game(void)
 	check_next_level();
 }
 
+static void
+run_menu(void)
+{
+	SDL_RenderClear(gRenderer);
+	SDL_RenderSetViewport(gRenderer, NULL);
+	menu_render(mainMenu, &gCamera);
+	pointer_render(gPointer, &gCamera);
+	SDL_RenderPresent(gRenderer);
+}
+
 static
 void run(void)
 {
@@ -277,7 +335,7 @@ void run(void)
 				run_game();
 				break;
 			case MENU:
-				fatal("MENU not implemented");
+				run_menu();
 				break;
 			case IN_GAME_MENU:
 				fatal("IN_GAME_MENU not implemented");

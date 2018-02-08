@@ -107,16 +107,9 @@ texture_render(Texture *texture, Position *p, Camera *cam)
 		texture->dim.height
 	};
 
-	SDL_Rect clip = (SDL_Rect) {
-		0,
-		0,
-		texture->dim.width,
-		texture->dim.height
-	};
-
 	SDL_RenderCopy(cam->renderer,
 		       texture->texture,
-		       &clip,
+		       NULL,
 		       &draw_box);
 }
 

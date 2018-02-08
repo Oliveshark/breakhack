@@ -71,6 +71,7 @@ add_executable(breakhack
 	src/pointer
 	src/gui_button
 	src/particle_engine
+	src/menu
 	)
 
 target_link_libraries(breakhack
