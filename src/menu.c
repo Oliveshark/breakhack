@@ -10,7 +10,6 @@ typedef struct MenuItems_t {
 	Sprite *sprite;
 	Sprite *hsprite;
 	GuiButton *button;
-	bool selected;
 } MenuItem;
 
 Menu *
@@ -26,14 +25,54 @@ void
 menu_handle_event(Menu *m, SDL_Event *event)
 {
 	LinkedList *items;
+	bool reset_buttons = false;
+	bool trigger_button = false;
 
+	if (event->type == SDL_KEYDOWN) {
+		switch (event->key.keysym.sym) {
+			case SDLK_UP:
+				m->selected--;
+				reset_buttons = true;
+				break;
+			case SDLK_DOWN:
+				m->selected++;
+				reset_buttons = true;
+				break;
+			case SDLK_RETURN:
+				trigger_button = true;
+			default:
+				break;
+		}
+		m->selected = m->selected % linkedlist_size(m->items);
+	}
+
+	if (trigger_button) {
+		MenuItem *item = linkedlist_get(&m->items, m->selected);
+		if (item->button->event)
+			item->button->event(item->button->usrdata);
+		return;
+	}
+
+	int current_select = 0;
+	bool mouse_selection = false;
 	items = m->items;
 	while (items) {
 		MenuItem *item = items->data;
 		items = items->next;
+		if (reset_buttons)
+			item->button->hover = false;
+
 		gui_button_handle_event(item->button, event);
-		item->selected = item->button->hover;
+		if (item->button->hover) {
+			m->selected = current_select;
+			mouse_selection = true;
+		}
+
+		current_select++;
 	}
+
+	if (!mouse_selection)
+		((MenuItem*) linkedlist_get(&m->items, m->selected))->button->hover = true;
 }
 
 void
@@ -42,7 +81,6 @@ menu_item_add(Menu *m, Sprite *s1, Sprite *s2, void (*event)(void*))
 	MenuItem *item = ec_malloc(sizeof(MenuItem));
 	item->sprite = s1;
 	item->hsprite = s2;
-	item->selected = false;
 
 	SDL_Rect area = {
 		item->sprite->pos.x,
@@ -62,7 +100,7 @@ menu_render(Menu *m, Camera *cam)
 	while (items) {
 		MenuItem *item = items->data;
 		items = items->next;
-		if (item->selected)
+		if (item->button->hover)
 			sprite_render(item->hsprite, cam);
 		else
 			sprite_render(item->sprite, cam);

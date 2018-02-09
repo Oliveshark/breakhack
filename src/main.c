@@ -187,6 +187,8 @@ initMainMenu(void)
 static void
 resetGame(void)
 {
+	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+
 	if (gMap)
 		map_destroy(gMap);
 

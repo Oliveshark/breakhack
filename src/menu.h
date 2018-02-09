@@ -9,7 +9,7 @@
 
 typedef struct Menu_t {
 	LinkedList *items;
-	unsigned int selected;
+	int selected;
 } Menu;
 
 Menu *
