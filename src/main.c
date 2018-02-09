@@ -184,7 +184,7 @@ initMainMenu(void)
 		int hcenter;
 
 		Sprite *s1 = sprite_create();
-		sprite_load_text_texture(s1, "assets/GUI/SDS_8x8.ttf", 0, 20);
+		sprite_load_text_texture(s1, "assets/GUI/SDS_8x8.ttf", 0, 25);
 		texture_load_from_text(s1->textures[0], menu_items[i].label,
 				       C_DEFAULT, gRenderer);
 
@@ -193,7 +193,7 @@ initMainMenu(void)
 		s1->fixed = true;
 
 		Sprite *s2 = sprite_create();
-		sprite_load_text_texture(s2, "assets/GUI/SDS_8x8.ttf", 0, 20);
+		sprite_load_text_texture(s2, "assets/GUI/SDS_8x8.ttf", 0, 25);
 		texture_load_from_text(s2->textures[0], menu_items[i].label,
 				       C_HOVER, gRenderer);
 
@@ -208,6 +208,11 @@ static void
 resetGame(void)
 {
 	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+
+	if (mainMenu) {
+		menu_destroy(mainMenu);
+		mainMenu = NULL;
+	}
 
 	if (gMap)
 		map_destroy(gMap);

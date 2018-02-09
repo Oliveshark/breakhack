@@ -38,12 +38,15 @@ particle_engine_init(void)
 }
 
 void
-particle_engine_bloodspray(Position pos, Dimension dim)
+particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 {
 
 	check_engine();
 
-	for (unsigned int i = 0; i < 15; ++i) {
+	if (count > 100)
+		count = 100;
+
+	for (unsigned int i = 0; i < count; ++i) {
 		int x, y, xv, yv, w, h;
 		unsigned int mt, lt;
 		Particle *p;

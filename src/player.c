@@ -313,7 +313,7 @@ player_hit(Player *p, unsigned int dmg)
 		Position pos = p->sprite->pos;
 		pos.x += 8;
 		pos.y += 8;
-		particle_engine_bloodspray(pos, (Dimension) { 8, 8 });
+		particle_engine_bloodspray(pos, (Dimension) { 8, 8 }, dmg);
 	} else {
 		p->missText->active = true;
 		p->hitText->active = false;

@@ -10,7 +10,7 @@ void
 particle_engine_init(void);
 
 void
-particle_engine_bloodspray(Position, Dimension);
+particle_engine_bloodspray(Position, Dimension, unsigned int count);
 
 void
 particle_engine_update(float deltatime);

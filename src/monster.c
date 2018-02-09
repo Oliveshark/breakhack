@@ -236,7 +236,7 @@ monster_hit(Monster *monster, unsigned int dmg)
 		p.x += 8;
 		p.y += 8;
 		Dimension d = { 8, 8 };
-		particle_engine_bloodspray(p, d);
+		particle_engine_bloodspray(p, d, dmg);
 	} else {
 		monster->missText->active = true;
 		monster->hitText->active = false;
