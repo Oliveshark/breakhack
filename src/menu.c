@@ -24,26 +24,19 @@ menu_create(void)
 void
 menu_handle_event(Menu *m, SDL_Event *event)
 {
-	UNUSED(m);
 	LinkedList *items;
 
-	if (event->type != SDL_KEYDOWN && event->type != SDL_MOUSEMOTION) {
-		return;
-	}
-
 	items = m->items;
-	if (event->type == SDL_MOUSEMOTION) {
-		while (items) {
-			MenuItem *item = items->data;
-			items = items->next;
-			gui_button_handle_event(item->button, event);
-			item->selected = item->button->hover;
-		}
+	while (items) {
+		MenuItem *item = items->data;
+		items = items->next;
+		gui_button_handle_event(item->button, event);
+		item->selected = item->button->hover;
 	}
 }
 
 void
-menu_item_add(Menu *m, Sprite *s1, Sprite *s2)
+menu_item_add(Menu *m, Sprite *s1, Sprite *s2, void (*event)(void*))
 {
 	MenuItem *item = ec_malloc(sizeof(MenuItem));
 	item->sprite = s1;
@@ -56,7 +49,7 @@ menu_item_add(Menu *m, Sprite *s1, Sprite *s2)
 		item->sprite->textures[0]->dim.width,
 		item->sprite->textures[0]->dim.height
 	};
-	item->button = gui_button_create(area, NULL, NULL);
+	item->button = gui_button_create(area, event, NULL);
 	linkedlist_append(&m->items, item);
 }
 

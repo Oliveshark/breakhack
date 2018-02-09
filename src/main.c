@@ -38,6 +38,8 @@ static SDL_Rect		gameViewport;
 static SDL_Rect		bottomGuiViewport;
 static SDL_Rect		rightGuiViewport;
 
+static void resetGame(void);
+
 static
 bool initSDL(void)
 {
@@ -132,6 +134,21 @@ initGame(void)
 }
 
 static void
+startGame(void *unused)
+{
+	UNUSED(unused);
+	gGameState = PLAYING;
+	resetGame();
+}
+
+static void
+exitGame(void *unused)
+{
+	UNUSED(unused);
+	gGameState = QUIT;
+}
+
+static void
 initMainMenu(void)
 {
 	static SDL_Color C_WHITE	= { 255, 255, 255, 0 };
@@ -139,11 +156,11 @@ initMainMenu(void)
 
 	struct MENU_ITEM {
 		char label[20];
-		void (*callback)(void);
+		void (*callback)(void*);
 	};
 	struct MENU_ITEM menu_items[] = {
-		{ "PLAY", NULL },
-		{ "QUIT", NULL },
+		{ "PLAY", startGame },
+		{ "QUIT", exitGame },
 	};
 
 	mainMenu = menu_create();
@@ -163,7 +180,7 @@ initMainMenu(void)
 		s2->pos = (Position) { 200, 100 + (i*50) };
 		s2->fixed = true;
 
-		menu_item_add(mainMenu, s1, s2);
+		menu_item_add(mainMenu, s1, s2, menu_items[i].callback);
 	}
 }
 
@@ -343,6 +360,9 @@ void run(void)
 			case GAME_OVER:
 				fatal("GAME_OVER not implemented");
 				break;
+			case QUIT:
+				quit = true;
+				break;
 			default:
 				break;
 		}
@@ -374,6 +394,10 @@ void close(void)
 	pointer_destroy(gPointer);
 	item_builder_close();
 	particle_engine_close();
+
+	if (mainMenu)
+		menu_destroy(mainMenu);
+
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;

@@ -19,7 +19,7 @@ void
 menu_handle_event(Menu*, SDL_Event*);
 
 void
-menu_item_add(Menu*, Sprite*, Sprite*);
+menu_item_add(Menu*, Sprite*, Sprite*, void (*)(void*));
 
 void
 menu_render(Menu*, Camera*);
