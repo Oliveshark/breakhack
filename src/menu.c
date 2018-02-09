@@ -3,12 +3,13 @@
 #include "util.h"
 #include "sprite.h"
 #include "defines.h"
+#include "gui_button.h"
 
 typedef struct MenuItems_t {
 	Sprite *sprite;
 	Sprite *hsprite;
+	GuiButton *button;
 	bool selected;
-	void (*onClick)(void);
 } MenuItem;
 
 Menu *
@@ -23,11 +24,22 @@ menu_create(void)
 void
 menu_handle_event(Menu *m, SDL_Event *event)
 {
+	UNUSED(m);
+	LinkedList *items;
+
 	if (event->type != SDL_KEYDOWN && event->type != SDL_MOUSEMOTION) {
 		return;
 	}
-	error("Menu events need implementation still");
-	UNUSED(m);
+
+	items = m->items;
+	if (event->type == SDL_MOUSEMOTION) {
+		while (items) {
+			MenuItem *item = items->data;
+			items = items->next;
+			gui_button_handle_event(item->button, event);
+			item->selected = item->button->hover;
+		}
+	}
 }
 
 void
@@ -37,7 +49,14 @@ menu_item_add(Menu *m, Sprite *s1, Sprite *s2)
 	item->sprite = s1;
 	item->hsprite = s2;
 	item->selected = false;
-	item->onClick = NULL;
+
+	SDL_Rect area = {
+		item->sprite->pos.x,
+		item->sprite->pos.y,
+		item->sprite->textures[0]->dim.width,
+		item->sprite->textures[0]->dim.height
+	};
+	item->button = gui_button_create(area, NULL, NULL);
 	linkedlist_append(&m->items, item);
 }
 
@@ -48,7 +67,10 @@ menu_render(Menu *m, Camera *cam)
 
 	while (items) {
 		MenuItem *item = items->data;
-		sprite_render(item->sprite, cam);
+		if (item->selected)
+			sprite_render(item->hsprite, cam);
+		else
+			sprite_render(item->sprite, cam);
 		items = items->next;
 	}
 }
@@ -56,7 +78,11 @@ menu_render(Menu *m, Camera *cam)
 static void
 menu_item_destroy(MenuItem *item)
 {
-	sprite_destroy(item->sprite);
+	if (item->sprite)
+		sprite_destroy(item->sprite);
+	if (item->hsprite)
+		sprite_destroy(item->hsprite);
+	gui_button_destroy(item->button);
 	free(item);
 }
 
