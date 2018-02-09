@@ -302,6 +302,9 @@ Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
 
 	lua_close(L);
 
+	// Reset the map
+	map->currentRoom = (Position) { 0, 0 };
+
 	info("Done");
 
 	return map;

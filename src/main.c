@@ -151,8 +151,8 @@ exitGame(void *unused)
 static void
 initMainMenu(void)
 {
-	static SDL_Color C_WHITE	= { 255, 255, 255, 0 };
-	static SDL_Color C_RED		= { 255, 0, 0, 0 };
+	static SDL_Color C_DEFAULT	= { 255, 255, 0, 0 };
+	static SDL_Color C_HOVER	= { 255, 0, 0, 0 };
 
 	struct MENU_ITEM {
 		char label[20];
@@ -167,16 +167,16 @@ initMainMenu(void)
 
 	for (unsigned int i = 0; i < 2; ++i) {
 		Sprite *s1 = sprite_create();
-		sprite_load_text_texture(s1, "assets/GUI/SDS_8x8.ttf", 0, 14);
+		sprite_load_text_texture(s1, "assets/GUI/SDS_8x8.ttf", 0, 20);
 		texture_load_from_text(s1->textures[0], menu_items[i].label,
-				       C_WHITE, gRenderer);
+				       C_DEFAULT, gRenderer);
 		s1->pos = (Position) { 200, 100 + (i*50) };
 		s1->fixed = true;
 
 		Sprite *s2 = sprite_create();
-		sprite_load_text_texture(s2, "assets/GUI/SDS_8x8.ttf", 0, 14);
+		sprite_load_text_texture(s2, "assets/GUI/SDS_8x8.ttf", 0, 20);
 		texture_load_from_text(s2->textures[0], menu_items[i].label,
-				       C_RED, gRenderer);
+				       C_HOVER, gRenderer);
 		s2->pos = (Position) { 200, 100 + (i*50) };
 		s2->fixed = true;
 
@@ -191,10 +191,12 @@ resetGame(void)
 		map_destroy(gMap);
 
 	info("Building new map");
-	gMap = map_lua_generator_run(++cLevel, gRenderer);
+	gMap = map_lua_generator_run(cLevel, gRenderer);
 	gPlayer->sprite->pos = (Position) {
 		TILE_DIMENSION, TILE_DIMENSION };
-	gCamera.pos = (Position) { 0, 0 };
+
+	map_set_current_room(gMap, &gPlayer->sprite->pos);
+	camera_follow_position(&gCamera, &gPlayer->sprite->pos);
 }
 
 static bool
@@ -265,6 +267,7 @@ check_next_level(void)
 		return;
 	}
 	if (tile->levelExit) {
+		++cLevel;
 		resetGame();
 	}
 }
@@ -272,7 +275,6 @@ check_next_level(void)
 static void
 run_game(void)
 {
-	SDL_RenderSetViewport(gRenderer, NULL);
 	map_clear_dead_monsters(gMap);
 	map_clear_collected_items(gMap);
 	roommatrix_populate_from_map(gRoomMatrix, gMap);
@@ -290,6 +292,7 @@ run_game(void)
 		map_move_monsters(gMap, gRoomMatrix);
 	}
 
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
 
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
@@ -323,6 +326,7 @@ run_game(void)
 static void
 run_menu(void)
 {
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
 	SDL_RenderSetViewport(gRenderer, NULL);
 	menu_render(mainMenu, &gCamera);
@@ -387,16 +391,18 @@ void run(void)
 static
 void close(void)
 {
-	player_destroy(gPlayer);
-	map_destroy(gMap);
+	if (gPlayer)
+		player_destroy(gPlayer);
+	if (gMap)
+		map_destroy(gMap);
+	if (mainMenu)
+		menu_destroy(mainMenu);
+
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
 	pointer_destroy(gPointer);
 	item_builder_close();
 	particle_engine_close();
-
-	if (mainMenu)
-		menu_destroy(mainMenu);
 
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);

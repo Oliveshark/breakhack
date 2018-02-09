@@ -60,12 +60,13 @@ menu_render(Menu *m, Camera *cam)
 
 	while (items) {
 		MenuItem *item = items->data;
+		items = items->next;
 		if (item->selected)
 			sprite_render(item->hsprite, cam);
 		else
 			sprite_render(item->sprite, cam);
-		items = items->next;
 	}
+
 }
 
 static void
@@ -82,11 +83,9 @@ menu_item_destroy(MenuItem *item)
 void
 menu_destroy(Menu *m)
 {
-	LinkedList *items = m->items;
-	while (items) {
-		menu_item_destroy(items->data);
-		items = items->next;
-	}
+	while (m->items)
+		menu_item_destroy(linkedlist_pop(&m->items));
+
 	free(m);
 }
 
