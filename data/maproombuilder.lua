@@ -292,6 +292,13 @@ end
 
 local module = {}
 
+function module.add_full_lighting(map)
+		check_add_decoration(map, 4, 3, lightDecor.candle2)
+		check_add_decoration(map, 11, 3, lightDecor.candle2)
+		check_add_decoration(map, 4, 9, lightDecor.candle2)
+		check_add_decoration(map, 11, 9, lightDecor.candle2)
+end
+
 function module.build_coridoor_room(map, room)
 	local exits = {
 		up = false,

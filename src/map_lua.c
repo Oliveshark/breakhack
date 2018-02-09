@@ -248,10 +248,10 @@ l_add_monster(lua_State *L)
 	return 0;
 }
 
-Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
+static Map*
+generate_map(unsigned int level, char *file, SDL_Renderer *renderer)
 {
 	int status, result;
-	char file[] = "data/mapgen.lua";
 
 	info("Running lua map script: %s", file);
 
@@ -309,3 +309,17 @@ Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
 
 	return map;
 }
+
+Map* map_lua_generator_single_room__run(unsigned int level, SDL_Renderer *renderer)
+{
+	char file[] = "data/menumapgen.lua";
+	return generate_map(level, file, renderer);
+}
+
+Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
+{
+	char file[] = "data/mapgen.lua";
+	return generate_map(level, file, renderer);
+}
+
+

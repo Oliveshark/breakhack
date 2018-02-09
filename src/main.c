@@ -32,11 +32,13 @@ static unsigned int	cLevel		= 1;
 static float		deltaTime	= 1.0;
 static double		renderScale	= 1.0;
 static Menu		*mainMenu	= NULL;
+static Timer		*menuTimer	= NULL;
 static GameState	gGameState;
 static Camera		gCamera;
 static SDL_Rect		gameViewport;
 static SDL_Rect		bottomGuiViewport;
 static SDL_Rect		rightGuiViewport;
+static SDL_Rect		menuViewport;
 
 static void resetGame(void);
 
@@ -117,6 +119,13 @@ initViewports(void)
 
 	rightGuiViewport = (SDL_Rect) { GAME_VIEW_WIDTH, 0,
 		RIGHT_GUI_WIDTH, RIGHT_GUI_HEIGHT };
+
+	menuViewport = (SDL_Rect) {
+		(SCREEN_WIDTH - GAME_VIEW_WIDTH)/2,
+		(SCREEN_HEIGHT - GAME_VIEW_HEIGHT)/2,
+		GAME_VIEW_WIDTH,
+		GAME_VIEW_HEIGHT
+	};
 }
 
 static bool
@@ -129,6 +138,7 @@ initGame(void)
 	item_builder_init(gRenderer);
 	gPointer = pointer_create(gRenderer);
 	particle_engine_init();
+	menuTimer = timer_create();
 
 	return true;
 }
@@ -165,19 +175,29 @@ initMainMenu(void)
 
 	mainMenu = menu_create();
 
+	if (gMap)
+		map_destroy(gMap);
+
+	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
+
 	for (unsigned int i = 0; i < 2; ++i) {
+		int hcenter;
+
 		Sprite *s1 = sprite_create();
 		sprite_load_text_texture(s1, "assets/GUI/SDS_8x8.ttf", 0, 20);
 		texture_load_from_text(s1->textures[0], menu_items[i].label,
 				       C_DEFAULT, gRenderer);
-		s1->pos = (Position) { 200, 100 + (i*50) };
+
+		hcenter = (SCREEN_WIDTH/2) - (s1->textures[0]->dim.width/2);
+		s1->pos = (Position) { hcenter, 200 + (i*50) };
 		s1->fixed = true;
 
 		Sprite *s2 = sprite_create();
 		sprite_load_text_texture(s2, "assets/GUI/SDS_8x8.ttf", 0, 20);
 		texture_load_from_text(s2->textures[0], menu_items[i].label,
 				       C_HOVER, gRenderer);
-		s2->pos = (Position) { 200, 100 + (i*50) };
+
+		s2->pos = (Position) { hcenter, 200 + (i*50) };
 		s2->fixed = true;
 
 		menu_item_add(mainMenu, s1, s2, menu_items[i].callback);
@@ -328,11 +348,27 @@ run_game(void)
 static void
 run_menu(void)
 {
+	if (!timer_started(menuTimer))
+		timer_start(menuTimer);
+
+	roommatrix_populate_from_map(gRoomMatrix, gMap);
+	roommatrix_build_lightmap(gRoomMatrix);
+	if (timer_get_ticks(menuTimer) > 1000) {
+		timer_stop(menuTimer);
+		timer_start(menuTimer);
+		map_move_monsters(gMap, gRoomMatrix);
+	}
+
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
+	SDL_RenderSetViewport(gRenderer, &menuViewport);
+	map_render(gMap, &gCamera);
+	roommatrix_render_lightmap(gRoomMatrix, &gCamera);
+
 	SDL_RenderSetViewport(gRenderer, NULL);
 	menu_render(mainMenu, &gCamera);
 	pointer_render(gPointer, &gCamera);
+
 	SDL_RenderPresent(gRenderer);
 }
 
@@ -405,6 +441,7 @@ void close(void)
 	pointer_destroy(gPointer);
 	item_builder_close();
 	particle_engine_close();
+	timer_destroy(menuTimer);
 
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
