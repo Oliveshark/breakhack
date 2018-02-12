@@ -5,6 +5,7 @@
 #include "sprite.h"
 #include "defines.h"
 #include "gui_button.h"
+#include "keyboard.h"
 
 typedef struct MenuItems_t {
 	Sprite *sprite;
@@ -28,23 +29,16 @@ menu_handle_event(Menu *m, SDL_Event *event)
 	bool reset_buttons = false;
 	bool trigger_button = false;
 
-	if (event->type == SDL_KEYDOWN) {
-		switch (event->key.keysym.sym) {
-			case SDLK_UP:
-				m->selected--;
-				reset_buttons = true;
-				break;
-			case SDLK_DOWN:
-				m->selected++;
-				reset_buttons = true;
-				break;
-			case SDLK_RETURN:
-				trigger_button = true;
-			default:
-				break;
-		}
-		m->selected = m->selected % linkedlist_size(m->items);
+	if (keyboard_direction_press(UP, event)) {
+		m->selected--;
+		reset_buttons = true;
+	} else if (keyboard_direction_press(DOWN, event)) {
+		m->selected++;
+		reset_buttons = true;
+	} else if (keyboard_press(SDLK_RETURN, event)) {
+		trigger_button = true;
 	}
+	m->selected = m->selected % linkedlist_size(m->items);
 
 	if (trigger_button) {
 		MenuItem *item = linkedlist_get(&m->items, m->selected);

@@ -73,6 +73,7 @@ add_executable(breakhack
 	src/particle_engine
 	src/menu
 	src/collisions
+	src/keyboard
 	)
 
 target_link_libraries(breakhack

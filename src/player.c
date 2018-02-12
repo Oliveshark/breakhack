@@ -8,6 +8,7 @@
 #include "gui.h"
 #include "item.h"
 #include "particle_engine.h"
+#include "keyboard.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
@@ -168,38 +169,26 @@ sip_health(Player *player)
 }
 
 static void
-handle_movement_input(Player *player, RoomMatrix *matrix, Uint32 key)
+handle_movement_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 {
 	static unsigned int step = 1;
 	bool moved = false;
 
-	switch (key) {
-		case SDLK_LEFT:
-		case SDLK_h:
-		case SDLK_a:
-			move_left(player, matrix);
-			moved = true;
-			break;
-		case SDLK_RIGHT:
-		case SDLK_l:
-		case SDLK_d:
-			move_right(player, matrix);
-			moved = true;
-			break;
-		case SDLK_UP:
-		case SDLK_k:
-		case SDLK_w:
-			move_up(player, matrix);
-			moved = true;
-			break;
-		case SDLK_DOWN:
-		case SDLK_j:
-		case SDLK_s:
-			move_down(player, matrix);
-			moved = true;
-			break;
-		default:
-			break;
+	if (keyboard_direction_press(LEFT, event)) {
+		move_left(player, matrix);
+		moved = true;
+	}
+	if (keyboard_direction_press(RIGHT, event)) {
+		move_right(player, matrix);
+		moved = true;
+	}
+	if (keyboard_direction_press(UP, event)) {
+		move_up(player, matrix);
+		moved = true;
+	}
+	if (keyboard_direction_press(DOWN, event)) {
+		move_down(player, matrix);
+		moved = true;
 	}
 
 	if (moved) {
@@ -215,14 +204,10 @@ handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 	if (event->type != SDL_KEYDOWN)
 		return;
 
-	bool shift = event->key.keysym.mod & (KMOD_RSHIFT | KMOD_LSHIFT);
-	Uint32 key = event->key.keysym.sym;
-
-	if (!shift)
-		handle_movement_input(player, matrix, key);
-
-	if (shift && key == SDLK_h) {
+	if (keyboard_mod_press(SDLK_h, KMOD_SHIFT, event)) {
 		sip_health(player);
+	} else {
+		handle_movement_input(player, matrix, event);
 	}
 }
 
