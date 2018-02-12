@@ -153,8 +153,8 @@ set_light_for_tile(RoomMatrix *matrix, int x, int y)
 		for (j = y_min; j <= y_max; ++j) {
 			lightval = matrix->spaces[i][j].light;
 			distance_modifier = abs(x-i) == abs(y-j) ?
-				abs(x-i) + 1 : max(abs(x-i), abs(y-j));
-			lightval += 255 - (distance_modifier * 50);
+				min(abs(x-i) + 1, 5) : max(abs(x-i), abs(y-j));
+			lightval += (255 - (distance_modifier * 50));
 			lightval = min(255, lightval);
 			lightval = max(0, lightval);
 			matrix->spaces[i][j].light = lightval;
@@ -189,6 +189,21 @@ roommatrix_render_mouse_square(RoomMatrix *matrix, Camera *cam)
 	SDL_RenderFillRect(cam->renderer, &box);
 }
 
+#ifdef LIGHTMAPDEBUG
+static Texture *
+create_light_texture(int light, Camera *cam)
+{
+	static SDL_Color color = { 255, 255, 0, 0 };
+
+	char buffer[4];
+	Texture *t = texture_create();
+	texture_load_font(t, "assets/GUI/SDS_8x8.ttf", 8);
+	m_sprintf(buffer, 4, "%d", light);
+	texture_load_from_text(t, buffer, color, cam->renderer);
+	return t;
+}
+#endif // LIGHTMAPDEBUG
+
 void
 roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 {
@@ -196,11 +211,7 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			light = 245 - matrix->spaces[i][j].light;
-			if (light < 0)
-				light = 0;
-			else if (light > 245)
-				light = 245;
+			light = max(245 - matrix->spaces[i][j].light, 0);
 
 			SDL_Rect box = (SDL_Rect) {
 				i*TILE_DIMENSION,
@@ -212,6 +223,13 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 			SDL_SetRenderDrawColor(cam->renderer,
 					       0, 0, 0, light);
 			SDL_RenderFillRect(cam->renderer, &box);
+
+#ifdef LIGHTMAPDEBUG
+			Texture *t = create_light_texture(light, cam);
+			Position p = { box.x+3, box.y+3 };
+			texture_render(t, &p, cam);
+			texture_destroy(t);
+#endif // LIGHTMAPDEBUG
 		}
 	}
 }
