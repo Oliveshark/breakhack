@@ -158,6 +158,7 @@ static void
 startGame(void *unused)
 {
 	UNUSED(unused);
+	cLevel = 1;
 	gGameState = PLAYING;
 	resetGame();
 }
@@ -228,9 +229,6 @@ initInGameMenu(void)
 		{ "QUIT", exitGame },
 	};
 
-	if (inGameMenu)
-		menu_destroy(inGameMenu);
-
 	createMenu(&inGameMenu, menu_items, 3);
 }
 
@@ -260,12 +258,12 @@ resetGame(void)
 		mainMenu = NULL;
 	}
 
-	initInGameMenu();
+	if (!inGameMenu)
+		initInGameMenu();
 
 	if (gMap)
 		map_destroy(gMap);
 
-	cLevel = 1;
 	info("Building new map");
 	gMap = map_lua_generator_run(cLevel, gRenderer);
 	gPlayer->sprite->pos = (Position) {
@@ -296,8 +294,20 @@ loadMedia(void)
 	gPlayer = player_create(WARRIOR, gRenderer);
 }
 
-static
-bool handle_events(void)
+static bool
+handle_main_events(SDL_Event *event)
+{
+	if (gGameState == PLAYING || gGameState == IN_GAME_MENU) {
+		if (keyboard_press(SDLK_ESCAPE, event)) {
+			toggleInGameMenu(NULL);
+			return true;
+		}
+	}
+	return false;
+}
+
+static bool
+handle_events(void)
 {
 	static SDL_Event event;
 	bool quit = false;
@@ -305,9 +315,13 @@ bool handle_events(void)
 	while (SDL_PollEvent(&event) != 0) {
 		if (event.type == SDL_QUIT) {
 			quit = true;
-		} else if (keyboard_press(SDLK_ESCAPE, &event)) {
-			toggleInGameMenu(NULL);
-		} else if (gGameState == PLAYING) {
+			continue;
+		}
+
+		if (handle_main_events(&event))
+			continue;
+
+		if (gGameState == PLAYING) {
 			gPlayer->handle_event(gPlayer,
 					      gRoomMatrix,
 					      &event);

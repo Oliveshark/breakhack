@@ -125,6 +125,12 @@ local function check_add_decoration(map, x, y, data)
 	add_decoration(map, x, y, repack(data))
 end
 
+local function check_add_tile(map, x, y, data)
+	if tile_occupied(map, x, y) then return false end
+	add_tile(map, x, y, repack(data))
+	return true
+end
+
 local function add_random_decor_to_room()
 	local decor_count = random(4) - 1
 	for i=1,decor_count do
@@ -222,9 +228,12 @@ local function add_exit(map, direction)
 end
 
 local function add_level_exit(map)
-	x = random(14)
-	y = random(10)
-	add_tile(map, x, y, repack(special.level_exit));
+	success = false
+	while not success do
+		x = random(14)
+		y = random(10)
+		success = check_add_tile(map, x, y, special.level_exit);
+	end
 end
 
 local function build_vert_center_coridoor(map, offset)
@@ -235,10 +244,10 @@ local function build_vert_center_coridoor(map, offset)
 		add_tile(map, 9, offset+j, repack(wall.vertical));
 	end
 	if random(2) == 1 then
-		check_add_decoration(map, 6, offset + 2, lightDecor.candle1)
+		add_decoration(map, 6, offset + 2, repack(lightDecor.candle1))
 	end
 	if random(2) == 1 then 
-		check_add_decoration(map, 9, offset + 2, lightDecor.candle1)
+		add_decoration(map, 9, offset + 2, repack(lightDecor.candle1))
 	end
 end
 
