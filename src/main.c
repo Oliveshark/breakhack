@@ -20,6 +20,7 @@
 #include "gui_button.h"
 #include "particle_engine.h"
 #include "menu.h"
+#include "keyboard.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
@@ -32,6 +33,7 @@ static unsigned int	cLevel		= 1;
 static float		deltaTime	= 1.0;
 static double		renderScale	= 1.0;
 static Menu		*mainMenu	= NULL;
+static Menu		*inGameMenu	= NULL;
 static Timer		*menuTimer	= NULL;
 static GameState	gGameState;
 static Camera		gCamera;
@@ -40,7 +42,16 @@ static SDL_Rect		bottomGuiViewport;
 static SDL_Rect		rightGuiViewport;
 static SDL_Rect		menuViewport;
 
+static SDL_Color C_MENU_DEFAULT	= { 255, 255, 0, 0 };
+static SDL_Color C_MENU_HOVER	= { 255, 0, 0, 0 };
+
+struct MENU_ITEM {
+	char label[20];
+	void (*callback)(void*);
+};
+
 static void resetGame(void);
+static void initMainMenu(void);
 
 static
 bool initSDL(void)
@@ -159,34 +170,38 @@ exitGame(void *unused)
 }
 
 static void
-initMainMenu(void)
+toggleInGameMenu(void *unused)
 {
-	static SDL_Color C_DEFAULT	= { 255, 255, 0, 0 };
-	static SDL_Color C_HOVER	= { 255, 0, 0, 0 };
+	UNUSED(unused);
+	if (gGameState == PLAYING)
+		gGameState = IN_GAME_MENU;
+	else
+		gGameState = PLAYING;
+}
 
-	struct MENU_ITEM {
-		char label[20];
-		void (*callback)(void*);
-	};
-	struct MENU_ITEM menu_items[] = {
-		{ "PLAY", startGame },
-		{ "QUIT", exitGame },
-	};
+static void
+goToMainMenu(void *unused)
+{
+	UNUSED(unused);
+	gGameState = MENU;
+	menu_destroy(inGameMenu);
+	inGameMenu = NULL;
+	initMainMenu();
+}
 
-	mainMenu = menu_create();
+static void
+createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
+{
+	if (*menu == NULL)
+		*menu = menu_create();
 
-	if (gMap)
-		map_destroy(gMap);
-
-	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
-
-	for (unsigned int i = 0; i < 2; ++i) {
+	for (unsigned int i = 0; i < size; ++i) {
 		int hcenter;
 
 		Sprite *s1 = sprite_create();
 		sprite_load_text_texture(s1, "assets/GUI/SDS_8x8.ttf", 0, 25);
 		texture_load_from_text(s1->textures[0], menu_items[i].label,
-				       C_DEFAULT, gRenderer);
+				       C_MENU_DEFAULT, gRenderer);
 
 		hcenter = (SCREEN_WIDTH/2) - (s1->textures[0]->dim.width/2);
 		s1->pos = (Position) { hcenter, 200 + (i*50) };
@@ -195,13 +210,44 @@ initMainMenu(void)
 		Sprite *s2 = sprite_create();
 		sprite_load_text_texture(s2, "assets/GUI/SDS_8x8.ttf", 0, 25);
 		texture_load_from_text(s2->textures[0], menu_items[i].label,
-				       C_HOVER, gRenderer);
+				       C_MENU_HOVER, gRenderer);
 
 		s2->pos = (Position) { hcenter, 200 + (i*50) };
 		s2->fixed = true;
 
-		menu_item_add(mainMenu, s1, s2, menu_items[i].callback);
+		menu_item_add(*menu, s1, s2, menu_items[i].callback);
 	}
+}
+
+static void
+initInGameMenu(void)
+{
+	struct MENU_ITEM menu_items[] = {
+		{ "RESUME", toggleInGameMenu },
+		{ "MAIN MENU", goToMainMenu },
+		{ "QUIT", exitGame },
+	};
+
+	if (inGameMenu)
+		menu_destroy(inGameMenu);
+
+	createMenu(&inGameMenu, menu_items, 3);
+}
+
+static void
+initMainMenu(void)
+{
+	struct MENU_ITEM menu_items[] = {
+		{ "PLAY", startGame },
+		{ "QUIT", exitGame },
+	};
+
+	if (gMap)
+		map_destroy(gMap);
+
+	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
+
+	createMenu(&mainMenu, menu_items, 2);
 }
 
 static void
@@ -214,9 +260,12 @@ resetGame(void)
 		mainMenu = NULL;
 	}
 
+	initInGameMenu();
+
 	if (gMap)
 		map_destroy(gMap);
 
+	cLevel = 1;
 	info("Building new map");
 	gMap = map_lua_generator_run(cLevel, gRenderer);
 	gPlayer->sprite->pos = (Position) {
@@ -256,6 +305,8 @@ bool handle_events(void)
 	while (SDL_PollEvent(&event) != 0) {
 		if (event.type == SDL_QUIT) {
 			quit = true;
+		} else if (keyboard_press(SDLK_ESCAPE, &event)) {
+			toggleInGameMenu(NULL);
 		} else if (gGameState == PLAYING) {
 			gPlayer->handle_event(gPlayer,
 					      gRoomMatrix,
@@ -265,6 +316,8 @@ bool handle_events(void)
 			roommatrix_handle_event(gRoomMatrix, &event);
 		} else if (gGameState == MENU) {
 			menu_handle_event(mainMenu, &event);
+		} else if (gGameState == IN_GAME_MENU) {
+			menu_handle_event(inGameMenu, &event);
 		}
 		pointer_handle_event(gPointer, &event);
 	}
@@ -340,6 +393,12 @@ run_game(void)
 		       BOTTOM_GUI_HEIGHT, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, NULL);
+	if (gGameState == IN_GAME_MENU) {
+		SDL_Rect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);
+		SDL_RenderFillRect(gRenderer, &dimmer);
+		menu_render(inGameMenu, &gCamera);
+	}
 	pointer_render(gPointer, &gCamera);
 
 	SDL_RenderPresent(gRenderer);
@@ -396,13 +455,11 @@ void run(void)
 
 		switch (gGameState) {
 			case PLAYING:
+			case IN_GAME_MENU:
 				run_game();
 				break;
 			case MENU:
 				run_menu();
-				break;
-			case IN_GAME_MENU:
-				fatal("IN_GAME_MENU not implemented");
 				break;
 			case GAME_OVER:
 				fatal("GAME_OVER not implemented");
@@ -440,6 +497,8 @@ void close(void)
 		map_destroy(gMap);
 	if (mainMenu)
 		menu_destroy(mainMenu);
+	if (inGameMenu)
+		menu_destroy(inGameMenu);
 
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
