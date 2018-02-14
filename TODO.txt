@@ -29,7 +29,7 @@ x Prevent level exit from spawning on occupied spot
 x Menus
 	x Main menu
 	x In game menu
-- Player death (GAME_OVER state) (graphic or text?)
+x Player death (GAME_OVER state) (graphic or text?)
 - Sound?
 - Make things less difficult and more interesting
 	- Interesting items
