@@ -29,7 +29,8 @@ gui_button_handle_event(GuiButton *button, SDL_Event *event)
 		if (event->button.button != SDL_BUTTON_LEFT)
 			return;
 
-		if (button->hover && button->event)
+		Position p = { event->button.x, event->button.y };
+		if (position_in_rect(&p, &button->area) && button->event)
 			button->event(button->usrdata);
 
 	} else if (event->type == SDL_MOUSEMOTION) {

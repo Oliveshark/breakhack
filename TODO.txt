@@ -31,7 +31,7 @@ x Menus
 	x In game menu
 x Player death (GAME_OVER state) (graphic or text?)
 o Sound?
-- Fix crash when clicking menu items with pointer
+x Fix crash when clicking menu items with pointer
 - Make things less difficult and more interesting
 	- Interesting items
 - A different license perhaps?

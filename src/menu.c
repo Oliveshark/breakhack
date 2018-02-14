@@ -23,54 +23,84 @@ menu_create(void)
 	return menu;
 }
 
-void
-menu_handle_event(Menu *m, SDL_Event *event)
+static void
+handle_keyboard_event(Menu *m, SDL_Event *event)
 {
-	LinkedList *items;
-	bool reset_buttons = false;
-	bool trigger_button = false;
+	int lastSelect = -1;
 
 	if (keyboard_direction_press(UP, event)) {
+		lastSelect = m->selected;
 		m->selected--;
-		reset_buttons = true;
 	} else if (keyboard_direction_press(DOWN, event)) {
+		lastSelect = m->selected;
 		m->selected++;
-		reset_buttons = true;
 	} else if (keyboard_press(SDLK_RETURN, event)) {
-		trigger_button = true;
-	}
-	m->selected = m->selected % linkedlist_size(m->items);
-
-	if (trigger_button) {
 		MenuItem *item = linkedlist_get(&m->items, m->selected);
 		if (item->button->event)
 			item->button->event(item->button->usrdata);
 		return;
+	} else {
+		return;
 	}
+	m->selected = m->selected % linkedlist_size(m->items);
 
-	if (reset_buttons)
+	if (lastSelect != -1)
 		mixer_play_effect(CLICK);
 
-	int current_select = 0;
-	bool mouse_selection = false;
-	items = m->items;
-	while (items) {
-		MenuItem *item = items->data;
-		items = items->next;
-		if (reset_buttons)
-			item->button->hover = false;
+	((MenuItem*) linkedlist_get(&m->items, lastSelect))->button->hover = false;
+	((MenuItem*) linkedlist_get(&m->items, m->selected))->button->hover = true;
+}
 
+static void
+handle_mouse_motion_event(Menu *m, SDL_Event *event)
+{
+	LinkedList *items;
+	MenuItem *item;
+	int current_select;
+	bool activeItemFound = false;
+
+	items = m->items;
+	current_select = 0;
+	while (items) {
+		item = items->data;
+		items = items->next;
+
+		item->button->hover = false;
 		gui_button_handle_event(item->button, event);
 		if (item->button->hover) {
-			m->selected = current_select;
-			mouse_selection = true;
+			if (current_select != m->selected) {
+				mixer_play_effect(CLICK);
+				m->selected = current_select;
+			}
+			activeItemFound = true;
 		}
-
 		current_select++;
 	}
 
-	if (!mouse_selection)
+	if (!activeItemFound)
 		((MenuItem*) linkedlist_get(&m->items, m->selected))->button->hover = true;
+}
+
+static void
+handle_mouse_button_event(Menu *m, SDL_Event *event)
+{
+	/* NOTE: In some cases the button/item is destroyed by the click action
+	 * make sure you don't 'use' items after a click event has fired. It
+	 * might break. */
+
+	MenuItem *item = linkedlist_get(&m->items, m->selected);
+	gui_button_handle_event(item->button, event);
+}
+
+void
+menu_handle_event(Menu *m, SDL_Event *event)
+{
+	if (event->type == SDL_KEYDOWN)
+		handle_keyboard_event(m, event);
+	else if (event->type == SDL_MOUSEMOTION)
+		handle_mouse_motion_event(m, event);
+	else if (event->type == SDL_MOUSEBUTTONDOWN)
+		handle_mouse_button_event(m, event);
 }
 
 void
@@ -87,6 +117,8 @@ menu_item_add(Menu *m, Sprite *s1, Sprite *s2, void (*event)(void*))
 		item->sprite->textures[0]->dim.height
 	};
 	item->button = gui_button_create(area, event, NULL);
+	if (linkedlist_size(m->items) == 0)
+		item->button->hover = true;
 	linkedlist_append(&m->items, item);
 }
 
