@@ -35,5 +35,8 @@ x Fix crash when clicking menu items with pointer
 - Make things less difficult and more interesting
 	- Interesting items
 - A different license perhaps?
+- Credit screen showing music and graphics guys:
+	- Music: http://soundimage.org/ (Eric Matyas)
+	- Graphics: (see README)
 
 Legend: ( '-' = future) ( 'x' = completed ) ( 'o' = begun )

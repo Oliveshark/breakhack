@@ -10,7 +10,7 @@ load_effect(char *path)
 {
 	Mix_Chunk *effect = Mix_LoadWAV(path);
 	if (effect == NULL)
-		fatal("Failed to load effect: %s", path);
+		fatal("Failed to load effect: %s", Mix_GetError());
 	return effect;
 }
 
@@ -24,9 +24,12 @@ void
 mixer_init(void)
 {
 	if (Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) == -1) {
-		fatal("Failed to load SDL2_mixer");
+		fatal("Failed to load sound: %s", Mix_GetError());
 	}
 	load_effects();
+	music = Mix_LoadMUS("assets/Sounds/Music/fantasy-forest-battle.ogg");
+	if (music == NULL)
+		fatal("Failed to load music: %s", Mix_GetError());
 }
 
 void
@@ -34,6 +37,23 @@ mixer_play_effect(Fx fx)
 {
 	if (Mix_PlayChannel( -1, effects[fx], 0) == -1)
 		error("Unable to play sound: %u", (unsigned int) fx);
+}
+
+void
+mixer_play_music(void)
+{
+	if (Mix_PlayingMusic())
+		return;
+
+	if (Mix_PlayMusic(music, -1) == -1)
+		fatal("Failed to play music");
+}
+
+void
+mixer_stop_music(void)
+{
+	if (Mix_PlayingMusic())
+		Mix_HaltMusic();
 }
 
 void

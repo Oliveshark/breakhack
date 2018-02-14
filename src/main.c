@@ -167,6 +167,7 @@ startGame(void *unused)
 	if (gPlayer)
 		player_destroy(gPlayer);
 	gPlayer = player_create(WARRIOR, gRenderer);
+	mixer_stop_music();
 	resetGame();
 }
 
@@ -258,6 +259,7 @@ initMainMenu(void)
 	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
 
 	createMenu(&mainMenu, menu_items, 2);
+	mixer_play_music();
 }
 
 static void
