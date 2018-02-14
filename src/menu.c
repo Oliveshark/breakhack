@@ -6,6 +6,7 @@
 #include "defines.h"
 #include "gui_button.h"
 #include "keyboard.h"
+#include "mixer.h"
 
 typedef struct MenuItems_t {
 	Sprite *sprite;
@@ -46,6 +47,9 @@ menu_handle_event(Menu *m, SDL_Event *event)
 			item->button->event(item->button->usrdata);
 		return;
 	}
+
+	if (reset_buttons)
+		mixer_play_effect(CLICK);
 
 	int current_select = 0;
 	bool mouse_selection = false;

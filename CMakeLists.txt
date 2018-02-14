@@ -8,6 +8,7 @@ include(FindLua)
 include(cmake/FindSDL2.cmake)
 include(cmake/FindSDL2_image.cmake)
 include(cmake/FindSDL2_ttf.cmake)
+include(cmake/FindSDL2_mixer.cmake)
 
 if (NOT WIN32)
 	include(FindX11)
@@ -25,6 +26,7 @@ include_directories(
 	${SDL2_INCLUDE_DIR}
 	${SDL2_IMAGE_INCLUDE_DIR}
 	${SDL2_TTF_INCLUDE_DIR}
+	${SDL2_MIXER_INCLUDE_DIR}
 	)
 
 if (NOT WIN32)
@@ -74,6 +76,7 @@ add_executable(breakhack
 	src/menu
 	src/collisions
 	src/keyboard
+	src/mixer
 	)
 
 target_link_libraries(breakhack
@@ -81,6 +84,7 @@ target_link_libraries(breakhack
 	${SDL2_LIBRARY}
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_TTF_LIBRARY}
+	${SDL2_MIXER_LIBRARY}
 	)
 
 if (NOT WIN32)

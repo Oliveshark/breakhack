@@ -21,6 +21,7 @@
 #include "particle_engine.h"
 #include "menu.h"
 #include "keyboard.h"
+#include "mixer.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
@@ -70,7 +71,7 @@ bool initSDL(void)
 		info("Scaling by %f", renderScale);
 	}
 
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 	{
 		error("Could not initiate SDL2: %s", SDL_GetError());
 		return false;
@@ -87,6 +88,8 @@ bool initSDL(void)
 		       TTF_GetError());
 		return false;
 	}
+
+	mixer_init();
 
 	gWindow = SDL_CreateWindow("Breakhack",
 				   SDL_WINDOWPOS_UNDEFINED,
@@ -541,6 +544,7 @@ void close(void)
 	particle_engine_close();
 	timer_destroy(menuTimer);
 
+	mixer_close();
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
