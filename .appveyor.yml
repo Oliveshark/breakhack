@@ -54,14 +54,15 @@ before_build:
     %DEPENDS% copy SDL2_mixer-2.0.2\%ARCH%\bin\*.dll %PREFIX%\lib > nul
 
   # Lua
+  - |-
   - ps: |
       If (!(Test-Path -Path "c:\usr\lib\liblua53.a")) {
-          (New-Object Net.WebClient).DownloadFile("https://sourceforge.net/projects/luabinaries/files/5.3.4/Windows%20Libraries/Static/lua-5.3.4_Win32_mingw4_lib.zip/download", "c:\lua-5.3.4_Win32_mingw4_lib.zip")
+          (New-Object Net.WebClient).DownloadFile("https://sourceforge.net/projects/luabinaries/files/5.3.4/Windows%20Libraries/Static/lua-5.3.4_Win32_mingw4_lib.zip/download", "c:\lua\lua-5.3.4_Win32_mingw4_lib.zip")
       }
   - |-
-    %DEPENDS% 7z x c:\lua-5.3.4_Win32_mingw4_lib.zip > nul
-    %DEPENDS% copy c:\include\*.h %PREFIX%\include > nul
-    %DEPENDS% copy c:\liblua53.a %PREFIX%\lib > nul
+    %DEPENDS% 7z x "c:\lua\lua-5.3.4_Win32_mingw4_lib.zip" -o"c:\lua" > nul
+    %DEPENDS% copy c:\lua\include\*.h %PREFIX%\include > nul
+    %DEPENDS% copy c:\lua\liblua53.a %PREFIX%\lib > nul
 
 build_script:
   - |-
