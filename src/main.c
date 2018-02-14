@@ -52,6 +52,7 @@ struct MENU_ITEM {
 
 static void resetGame(void);
 static void initMainMenu(void);
+static bool is_player_dead(void);
 
 static
 bool initSDL(void)
@@ -160,6 +161,9 @@ startGame(void *unused)
 	UNUSED(unused);
 	cLevel = 1;
 	gGameState = PLAYING;
+	if (gPlayer)
+		player_destroy(gPlayer);
+	gPlayer = player_create(WARRIOR, gRenderer);
 	resetGame();
 }
 
@@ -174,8 +178,10 @@ static void
 toggleInGameMenu(void *unused)
 {
 	UNUSED(unused);
-	if (gGameState == PLAYING)
+	if (gGameState == PLAYING || gGameState == GAME_OVER)
 		gGameState = IN_GAME_MENU;
+	else if (is_player_dead())
+		gGameState = GAME_OVER;
 	else
 		gGameState = PLAYING;
 }
@@ -188,6 +194,9 @@ goToMainMenu(void *unused)
 	menu_destroy(inGameMenu);
 	inGameMenu = NULL;
 	initMainMenu();
+	Position p = { 0, 0 };
+	map_set_current_room(gMap, &p);
+	camera_follow_position(&gCamera, &p);
 }
 
 static void
@@ -264,8 +273,11 @@ resetGame(void)
 	if (gMap)
 		map_destroy(gMap);
 
+	particle_engine_clear();
+
 	info("Building new map");
 	gMap = map_lua_generator_run(cLevel, gRenderer);
+
 	gPlayer->sprite->pos = (Position) {
 		TILE_DIMENSION, TILE_DIMENSION };
 
@@ -297,7 +309,10 @@ loadMedia(void)
 static bool
 handle_main_events(SDL_Event *event)
 {
-	if (gGameState == PLAYING || gGameState == IN_GAME_MENU) {
+	if (gGameState == PLAYING
+	    || gGameState == IN_GAME_MENU
+	    || gGameState == GAME_OVER)
+	{
 		if (keyboard_press(SDLK_ESCAPE, event)) {
 			toggleInGameMenu(NULL);
 			return true;
@@ -340,10 +355,9 @@ handle_events(void)
 }
 
 static bool
-check_if_dead(void)
+is_player_dead(void)
 {
 	if (gPlayer->stats.hp <= 0) {
-		gui_log("The dungeon consumed you");
 		return true;
 	}
 	return false;
@@ -392,10 +406,13 @@ run_game(void)
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
 	map_render(gMap, &gCamera);
 	particle_engine_render(&gCamera);
-	player_render(gPlayer, &gCamera);
+
+	if (!is_player_dead())
+		player_render(gPlayer, &gCamera);
 
 	if (gPlayer->class == MAGE || gPlayer->class == PALADIN)
 		roommatrix_render_mouse_square(gRoomMatrix, &gCamera);
+
 	roommatrix_render_lightmap(gRoomMatrix, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &rightGuiViewport);
@@ -413,12 +430,17 @@ run_game(void)
 		SDL_RenderFillRect(gRenderer, &dimmer);
 		menu_render(inGameMenu, &gCamera);
 	}
+	if (gGameState == GAME_OVER) {
+		// TODO(Linus): Render game over?
+	}
 	pointer_render(gPointer, &gCamera);
 
 	SDL_RenderPresent(gRenderer);
 
-	if (check_if_dead())
+	if (gGameState == PLAYING && is_player_dead()) {
+		gui_log("The dungeon consumed you");
 		gGameState = GAME_OVER;
+	}
 
 	check_next_level();
 }
@@ -470,13 +492,11 @@ void run(void)
 		switch (gGameState) {
 			case PLAYING:
 			case IN_GAME_MENU:
+			case GAME_OVER:
 				run_game();
 				break;
 			case MENU:
 				run_menu();
-				break;
-			case GAME_OVER:
-				fatal("GAME_OVER not implemented");
 				break;
 			case QUIT:
 				quit = true;

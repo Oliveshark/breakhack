@@ -35,7 +35,15 @@ player_levelup(Player *player)
 static unsigned int
 next_level_threshold(unsigned int current_level)
 {
-	return (current_level * 50) + ((current_level > 0 ? current_level - 1 : 0) * 150);
+	unsigned int last_level = 0;
+	unsigned int padding = 0;
+
+	if (current_level > 0) {
+		last_level = next_level_threshold(current_level - 1);
+		padding = (current_level - 1) * 150;
+	}
+
+	return last_level + (current_level * 50) + padding;
 }
 
 static void
@@ -190,6 +198,15 @@ handle_movement_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 		move_down(player, matrix);
 		moved = true;
 	}
+#ifdef DEBUG
+	if (keyboard_mod_press(SDLK_SPACE, KMOD_CTRL, event)) {
+		Position pos = player->sprite->pos;
+		pos.x += 8;
+		pos.y += 8;
+		particle_engine_bloodspray(pos, (Dimension) { 8, 8 }, 200);
+		player->stats.hp = 0;
+	}
+#endif // DEBUG
 
 	if (moved) {
 		player->sprite->clip.x = 16*step;
@@ -292,6 +309,9 @@ ExperienceData player_get_xp_data(Player *p)
 void
 player_hit(Player *p, unsigned int dmg)
 {
+	if (p->stats.hp <= 0) {
+		dmg = 200;
+	}
 	if (dmg > 0) {
 		p->hitText->active = true;
 		p->missText->active = false;

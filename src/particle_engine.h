@@ -19,6 +19,9 @@ void
 particle_engine_render(Camera*);
 
 void
+particle_engine_clear(void);
+
+void
 particle_engine_close(void);
 
 #endif // PARTICLE_ENGINE_H_

@@ -40,7 +40,6 @@ particle_engine_init(void)
 void
 particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 {
-
 	check_engine();
 
 	if (count > 100)
@@ -143,6 +142,14 @@ particle_engine_render(Camera *cam)
 		render_particle(particles->data, cam);
 		particles = particles->next;
 	}
+}
+
+void
+particle_engine_clear(void)
+{
+	check_engine();
+	while (engine->particles)
+		free(linkedlist_pop(&engine->particles));
 }
 
 void
