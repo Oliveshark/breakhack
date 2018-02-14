@@ -56,12 +56,12 @@ before_build:
   # Lua
   - ps: |
       If (!(Test-Path -Path "c:\usr\lib\liblua53.a")) {
-          (New-Object Net.WebClient).DownloadFile("https://sourceforge.net/projects/luabinaries/files/5.3.4/Windows%20Libraries/Static/lua-5.3.4_Win32_mingw4_lib.zip/download", "lua-5.3.4_Win32_mingw4_lib.zip")
+          (New-Object Net.WebClient).DownloadFile("https://sourceforge.net/projects/luabinaries/files/5.3.4/Windows%20Libraries/Static/lua-5.3.4_Win32_mingw4_lib.zip/download", "c:\lua-5.3.4_Win32_mingw4_lib.zip")
       }
   - |-
-    %DEPENDS% 7z x lua-5.3.4_Win32_mingw4_lib.zip > nul
-    %DEPENDS% copy include\*.h %PREFIX%\include > nul
-    %DEPENDS% copy liblua53.a %PREFIX%\lib > nul
+    %DEPENDS% 7z x c:\lua-5.3.4_Win32_mingw4_lib.zip > nul
+    %DEPENDS% copy c:\include\*.h %PREFIX%\include > nul
+    %DEPENDS% copy c:\liblua53.a %PREFIX%\lib > nul
 
 build_script:
   - |-
