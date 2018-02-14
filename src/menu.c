@@ -55,14 +55,13 @@ static void
 handle_mouse_motion_event(Menu *m, SDL_Event *event)
 {
 	LinkedList *items;
-	MenuItem *item;
 	int current_select;
 	bool activeItemFound = false;
 
 	items = m->items;
 	current_select = 0;
 	while (items) {
-		item = items->data;
+		MenuItem *item = items->data;
 		items = items->next;
 
 		item->button->hover = false;
