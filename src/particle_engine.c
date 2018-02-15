@@ -4,6 +4,7 @@
 #include "util.h"
 #include "defines.h"
 #include "vector2d.h"
+#include "random.h"
 
 typedef struct Particle_t {
 	Position pos;
@@ -50,17 +51,17 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 		unsigned int mt, lt;
 		Particle *p;
 
-		x = (rand() % dim.width) + pos.x;
-		y = (rand() % dim.height) + pos.y;
+		x = get_random(dim.width) + pos.x;
+		y = get_random(dim.height) + pos.y;
 
-		xv = (rand() % 200) - 100;
-		yv = (rand() % 200) - 100;
+		xv = get_random(200) - 100;
+		yv = get_random(200) - 100;
 
-		mt = (rand() % 10) + 10;
-		lt = (rand() % 120) + 60;
+		mt = get_random(10) + 10;
+		lt = get_random(120) + 60;
 
-		w = (rand() % 3) + 2;
-		h = (rand() % 3) + 2;
+		w = get_random(3) + 2;
+		h = get_random(3) + 2;
 
 		p = ec_malloc(sizeof(Particle));
 		p->pos = (Position) { x, y };

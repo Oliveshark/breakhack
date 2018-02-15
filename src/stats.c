@@ -25,10 +25,10 @@ stats_fight(Stats *attacker, Stats *defender)
 	debug("Attacking: %d   Defending: %d", atkRoll, defRoll);
 
 	if (atkRoll > defRoll) {
-		dmgRoll = (rand() % attacker->dmg) + 1;
-		defender->hp -= dmgRoll;
+		dmgRoll = get_random(attacker->dmg - 1) + 1;
 		if (critical)
-			defender->hp -= dmgRoll;
+			dmgRoll = dmgRoll * 2;
+		defender->hp -= dmgRoll;
 	}
 
 	debug("Attacker hp: %d  Defender hp: %d", attacker->hp, defender->hp);

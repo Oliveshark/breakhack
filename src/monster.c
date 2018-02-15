@@ -259,19 +259,19 @@ monster_update_stats_for_level(Monster *m, unsigned int level)
 void
 monster_drop_loot(Monster *monster, Map *map)
 {
-	static unsigned int item_drop_chance = 3;
-	static unsigned int treasure_drop_chance = 2;
+	static unsigned int item_drop_chance = 1;
+	static unsigned int treasure_drop_chance = 1;
 	Item *item;
 	Item *items[2];
 	unsigned int item_count = 0;
 
-	if ((rand() % treasure_drop_chance) == 0) {
+	if (get_random(treasure_drop_chance) == 0) {
 		item = item_builder_build_item(TREASURE, map->level);
 		item->sprite->pos = monster->sprite->pos;
 		items[item_count++] = item;
 	}
-	if ((rand() % item_drop_chance) == 0) {
-		item = item_builder_build_item(rand() % TREASURE, map->level);
+	if (get_random(item_drop_chance) == 0) {
+		item = item_builder_build_item(get_random(TREASURE - 1), map->level);
 		item->sprite->pos = monster->sprite->pos;
 		items[item_count++] = item;
 	}

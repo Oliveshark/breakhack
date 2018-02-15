@@ -6,6 +6,7 @@
 #include "util.h"
 #include "gui.h"
 #include "mixer.h"
+#include "random.h"
 
 static ItemBuilder *builder = NULL;
 
@@ -92,7 +93,7 @@ create_treasure(int current_level)
 	unsigned int highest_treasure;
 	unsigned int value;
 
-	amt = (unsigned int) (rand() + (5*current_level)) % 40;
+	amt = (unsigned int) get_random(5*current_level) % 40;
 
 	if (current_level > 9) {
 		highest_treasure = TREASURE_COUNT;
@@ -102,7 +103,7 @@ create_treasure(int current_level)
 		highest_treasure = GOLD;
 	}
 
-	value = rand() % highest_treasure;
+	value = get_random(highest_treasure);
 
 	SDL_Rect clip = { 0, 0, 16, 16 };
 	switch (value) {
@@ -157,13 +158,13 @@ item_builder_build_item(ItemKey key, int level)
 			item = create_item(path_flesh,
 					   (SDL_Rect) { 0, 0, 16, 16 },
 					   &eat_flesh);
-			item->value = 1;
+			item->value = get_random(level);
 			break;
 		case HEALTH:
 			item = create_item(path_potion,
 					   (SDL_Rect) { 0, 0, 16, 16 },
 					   &drink_health);
-			item->value = 1 + (rand() % 2);
+			item->value = 1 + get_random(level*2);
 			break;
 		default:
 			fatal("in item_builder_build() : Unhandled item key %d", key);

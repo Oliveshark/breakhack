@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -22,6 +23,7 @@
 #include "menu.h"
 #include "keyboard.h"
 #include "mixer.h"
+#include "random.h"
 
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
@@ -167,7 +169,7 @@ startGame(void *unused)
 	if (gPlayer)
 		player_destroy(gPlayer);
 	gPlayer = player_create(WARRIOR, gRenderer);
-	mixer_play_music(GAME_MUSIC0 + (rand() % 3));
+	mixer_play_music(GAME_MUSIC0 + get_random(2));
 	resetGame();
 }
 
@@ -381,7 +383,7 @@ check_next_level(void)
 	}
 	if (tile->levelExit) {
 		mixer_play_effect(NEXT_LEVEL);
-		mixer_play_music(GAME_MUSIC0 + (rand() % 3));
+		mixer_play_music(GAME_MUSIC0 + get_random(2));
 		++cLevel;
 		resetGame();
 	}

@@ -10,6 +10,7 @@
 #include "particle_engine.h"
 #include "keyboard.h"
 #include "mixer.h"
+#include "random.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
@@ -78,7 +79,7 @@ has_collided(Player *player, RoomMatrix *matrix)
 		unsigned int hit = stats_fight(&player->stats,
 					       &space->monster->stats);
 
-		mixer_play_effect(SWING0 + (rand() % 3));
+		mixer_play_effect(SWING0 + get_random(2));
 
 		monster_hit(space->monster, hit);
 
@@ -180,7 +181,7 @@ sip_health(Player *player)
 	if (player->potion_sips > 0) {
 		--player->potion_sips;
 		++player->stats.hp;
-		mixer_play_effect(BUBBLE0 + (rand() % 3));
+		mixer_play_effect(BUBBLE0 + get_random(2));
 		gui_log("You take a sip of health potion");
 	} else {
 		gui_log("You have nothing to sip");
