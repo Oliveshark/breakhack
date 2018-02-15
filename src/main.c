@@ -167,7 +167,7 @@ startGame(void *unused)
 	if (gPlayer)
 		player_destroy(gPlayer);
 	gPlayer = player_create(WARRIOR, gRenderer);
-	mixer_stop_music();
+	mixer_play_music(GAME_MUSIC0 + (rand() % 3));
 	resetGame();
 }
 
@@ -259,7 +259,7 @@ initMainMenu(void)
 	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
 
 	createMenu(&mainMenu, menu_items, 2);
-	mixer_play_music();
+	mixer_play_music(MENU_MUSIC);
 }
 
 static void
@@ -380,6 +380,8 @@ check_next_level(void)
 		return;
 	}
 	if (tile->levelExit) {
+		mixer_play_effect(NEXT_LEVEL);
+		mixer_play_music(GAME_MUSIC0 + (rand() % 3));
 		++cLevel;
 		resetGame();
 	}
@@ -444,6 +446,7 @@ run_game(void)
 
 	if (gGameState == PLAYING && is_player_dead()) {
 		gui_log("The dungeon consumed you");
+		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
 	}
 

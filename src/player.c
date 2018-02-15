@@ -9,6 +9,7 @@
 #include "item.h"
 #include "particle_engine.h"
 #include "keyboard.h"
+#include "mixer.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
@@ -19,6 +20,8 @@
 static void
 player_levelup(Player *player)
 {
+	mixer_play_effect(LEVEL_UP);
+
 	player->stats.lvl += 1;
 	player->stats.maxhp += 3;
 	player->stats.dmg += 5;
@@ -74,12 +77,17 @@ has_collided(Player *player, RoomMatrix *matrix)
 	if (space->monster != NULL) {
 		unsigned int hit = stats_fight(&player->stats,
 					       &space->monster->stats);
+
+		mixer_play_effect(SWING0 + (rand() % 3));
+
 		monster_hit(space->monster, hit);
 
-		if (hit > 0)
+		if (hit > 0) {
 			player->hits += 1;
-		else
+			mixer_play_effect(SWORD_HIT);
+		} else {
 			player->misses += 1;
+		}
 
 		if (hit > 0)
 			gui_log("You hit %s for %u damage",
@@ -91,11 +99,13 @@ has_collided(Player *player, RoomMatrix *matrix)
 			unsigned int gained_xp = 5 * space->monster->stats.lvl;
 			player->kills += 1;
 
+			mixer_play_effect(DEATH);
 			gui_log("You killed %s and gained %d xp",
 				space->monster->lclabel, gained_xp);
 			player_gain_xp(player, gained_xp);
 		}
 	} else if (collided) {
+		mixer_play_effect(BONK);
 		gui_log("Ouch! There is something in the way");
 	}
 
@@ -170,6 +180,7 @@ sip_health(Player *player)
 	if (player->potion_sips > 0) {
 		--player->potion_sips;
 		++player->stats.hp;
+		mixer_play_effect(BUBBLE0 + (rand() % 3));
 		gui_log("You take a sip of health potion");
 	} else {
 		gui_log("You have nothing to sip");

@@ -2,8 +2,27 @@
 #include "mixer.h"
 #include "util.h"
 
-static Mix_Music *music = NULL;
+static Mix_Music *music[LAST_MUSIC];
 static Mix_Chunk *effects[LAST_EFFECT];
+
+static Mix_Music*
+load_song(char *path)
+{
+	Mix_Music *m = Mix_LoadMUS(path);
+	if (m == NULL)
+		fatal("Failed to load music: %s", Mix_GetError());
+	return m;
+}
+
+static void
+load_music(void)
+{
+	music[GAME_MUSIC0] = load_song("assets/Sounds/Music/fantasy-game-background-looping.ogg");
+	music[GAME_MUSIC1] = load_song("assets/Sounds/Music/bog-creatures-on-the-move-looping.ogg");
+	music[GAME_MUSIC2] = load_song("assets/Sounds/Music/fantascape-looping.ogg");
+
+	music[MENU_MUSIC] = load_song("assets/Sounds/Music/fantasy-forest-battle.ogg");
+}
 
 static Mix_Chunk*
 load_effect(char *path)
@@ -18,6 +37,21 @@ static void
 load_effects(void)
 {
 	effects[CLICK] = load_effect("assets/Sounds/FX/click.wav");
+	effects[SWING0] = load_effect("assets/Sounds/FX/swing.wav");
+	effects[SWING1] = load_effect("assets/Sounds/FX/swing2.wav");
+	effects[SWING2] = load_effect("assets/Sounds/FX/swing3.wav");
+	effects[SWORD_HIT] = load_effect("assets/Sounds/FX/sword_hit.wav");
+	effects[BONK] = load_effect("assets/Sounds/FX/bonk.wav");
+	effects[DEATH] = load_effect("assets/Sounds/FX/death.wav");
+	effects[COIN] = load_effect("assets/Sounds/FX/coin.wav");
+	effects[BOTTLE] = load_effect("assets/Sounds/FX/bottle.wav");
+	effects[BUBBLE0] = load_effect("assets/Sounds/FX/bubble.wav");
+	effects[BUBBLE1] = load_effect("assets/Sounds/FX/bubble2.wav");
+	effects[BUBBLE2] = load_effect("assets/Sounds/FX/bubble3.wav");
+	effects[EAT] = load_effect("assets/Sounds/FX/eat.wav");
+	effects[LEVEL_UP] = load_effect("assets/Sounds/FX/level_up.wav");
+	effects[NEXT_LEVEL] = load_effect("assets/Sounds/FX/next_level.wav");
+	effects[SPLAT] = load_effect("assets/Sounds/FX/splat.wav");
 }
 
 void
@@ -27,9 +61,7 @@ mixer_init(void)
 		fatal("Failed to load sound: %s", Mix_GetError());
 	}
 	load_effects();
-	music = Mix_LoadMUS("assets/Sounds/Music/fantasy-forest-battle.ogg");
-	if (music == NULL)
-		fatal("Failed to load music: %s", Mix_GetError());
+	load_music();
 }
 
 void
@@ -40,12 +72,12 @@ mixer_play_effect(Fx fx)
 }
 
 void
-mixer_play_music(void)
+mixer_play_music(Music mus)
 {
 	if (Mix_PlayingMusic())
-		return;
+		mixer_stop_music();
 
-	if (Mix_PlayMusic(music, -1) == -1)
+	if (Mix_PlayMusic(music[mus], -1) == -1)
 		fatal("Failed to play music");
 }
 
@@ -59,10 +91,9 @@ mixer_stop_music(void)
 void
 mixer_close(void)
 {
-	for (size_t i = 0; i < LAST_EFFECT; ++i) {
+	for (size_t i = 0; i < LAST_EFFECT; ++i)
 		Mix_FreeChunk(effects[i]);
-	}
-	if (music)
-		Mix_FreeMusic(music);
+	for (size_t i = 0; i < LAST_MUSIC; ++i)
+		Mix_FreeMusic(music[i]);
 	Mix_CloseAudio();
 }

@@ -5,6 +5,7 @@
 #include "texture.h"
 #include "util.h"
 #include "gui.h"
+#include "mixer.h"
 
 static ItemBuilder *builder = NULL;
 
@@ -44,6 +45,7 @@ eat_flesh(Item *item, Player *player)
 	if (player->stats.hp > player->stats.maxhp)
 		player->stats.hp = player->stats.maxhp;
 
+	mixer_play_effect(EAT);
 	gui_log("You eat some foul meat and gain %d health",
 		player->stats.hp - original_hp);
 }
@@ -53,6 +55,7 @@ drink_health(Item *item, Player *player)
 {
 	player->potion_sips += (int) item->value;
 
+	mixer_play_effect(BOTTLE);
 	gui_log("You collect %u sips of health", (unsigned int) item->value);
 }
 
@@ -77,6 +80,7 @@ static void
 pickup_gold(Item *item, Player *player)
 {
 	player->gold += item->value;
+	mixer_play_effect(COIN);
 	gui_log("You pick up %s", &item->label);
 }
 

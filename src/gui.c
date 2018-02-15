@@ -198,12 +198,12 @@ set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 static void
 set_current_health(Gui *gui, int current)
 {
+	if (current < 0)
+		current = 0;
+
 	int partial = current % 3;
 	int full = (current - partial)/3;
 	int count = 0;
-
-	if (current < 0)
-		current = 0;
 
 	LinkedList *item = gui->health;
 	while (item != NULL) {
