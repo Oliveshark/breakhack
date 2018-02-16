@@ -24,7 +24,6 @@ typedef struct MapTile_t {
 
 typedef struct Room_t {
 	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
-	MapTile* secondary_tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 } Room;
 

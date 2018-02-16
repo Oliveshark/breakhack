@@ -121,12 +121,17 @@ local function repack(data)
 end
 
 local function check_add_decoration(map, x, y, data)
-	if tile_occupied(map, x, y) then return end
+	if tile_occupied(map, x, y) then
+		return false
+	end
 	add_decoration(map, x, y, repack(data))
+	return true
 end
 
 local function check_add_tile(map, x, y, data)
-	if tile_occupied(map, x, y) then return false end
+	if tile_occupied(map, x, y) then
+		return false
+	end
 	add_tile(map, x, y, repack(data))
 	return true
 end
@@ -232,7 +237,7 @@ local function add_level_exit(map)
 	while not success do
 		x = random(14)
 		y = random(10)
-		success = check_add_tile(map, x, y, special.level_exit);
+		success = check_add_tile(map, x, y, special.level_exit)
 	end
 end
 

@@ -153,10 +153,13 @@ int l_tile_occupied(lua_State *L)
 {
 	Map *map;
 	Room *room;
-	MapTile *tile;
+	MapTile *tile, *decor;
 	Position *rPos;
 	int x, y;
+	bool response = false;
 
+	tile = NULL;
+	decor = NULL;
 
 	map = luaL_checkmap(L, 1);
 	x = (int) luaL_checkinteger(L, 2);
@@ -164,9 +167,14 @@ int l_tile_occupied(lua_State *L)
 
 	rPos = &map->currentRoom;
 	room = map->rooms[rPos->x][rPos->y];
-	tile = room->tiles[x][y];
 
-	lua_pushboolean(L, tile->collider || tile->levelExit);
+	tile = room->tiles[x][y];
+	decor = room->decorations[x][y];
+
+	response = response || (tile && (tile->collider || tile->levelExit));
+	response = response || (decor && (decor->collider || decor->levelExit));
+
+	lua_pushboolean(L, response);
 	return 1;
 }
 
