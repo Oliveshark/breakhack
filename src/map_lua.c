@@ -158,9 +158,6 @@ int l_tile_occupied(lua_State *L)
 	int x, y;
 	bool response = false;
 
-	tile = NULL;
-	decor = NULL;
-
 	map = luaL_checkmap(L, 1);
 	x = (int) luaL_checkinteger(L, 2);
 	y = (int) luaL_checkinteger(L, 3);
