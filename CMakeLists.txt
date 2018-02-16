@@ -9,6 +9,7 @@ include(cmake/FindSDL2.cmake)
 include(cmake/FindSDL2_image.cmake)
 include(cmake/FindSDL2_ttf.cmake)
 include(cmake/FindSDL2_mixer.cmake)
+include(cmake/FindCCache.cmake)
 
 if (NOT WIN32)
 	include(FindX11)
