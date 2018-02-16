@@ -28,6 +28,9 @@ typedef enum Fx_t {
 	LEVEL_UP,
 	NEXT_LEVEL,
 	SPLAT,
+	PLAYER_HIT0,
+	PLAYER_HIT1,
+	PLAYER_HIT2,
 	LAST_EFFECT
 } Fx;
 

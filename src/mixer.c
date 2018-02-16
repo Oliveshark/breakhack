@@ -52,6 +52,9 @@ load_effects(void)
 	effects[LEVEL_UP] = load_effect("assets/Sounds/FX/level_up.wav");
 	effects[NEXT_LEVEL] = load_effect("assets/Sounds/FX/next_level.wav");
 	effects[SPLAT] = load_effect("assets/Sounds/FX/splat.wav");
+	effects[PLAYER_HIT0] = load_effect("assets/Sounds/FX/fistpunch_vocal_01.wav");
+	effects[PLAYER_HIT1] = load_effect("assets/Sounds/FX/fistpunch_vocal_02.wav");
+	effects[PLAYER_HIT2] = load_effect("assets/Sounds/FX/fistpunch_vocal_03.wav");
 }
 
 void

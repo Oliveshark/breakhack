@@ -331,6 +331,7 @@ player_hit(Player *p, unsigned int dmg)
 		pos.x += 8;
 		pos.y += 8;
 		particle_engine_bloodspray(pos, (Dimension) { 8, 8 }, dmg);
+		mixer_play_effect(PLAYER_HIT0 + get_random(2));
 	} else {
 		p->missText->active = true;
 		p->hitText->active = false;
