@@ -40,6 +40,7 @@ typedef struct Monster_t {
 	ActionText *missText;
 	Stats stats;
 	State state;
+	unsigned int steps;
 } Monster;
 
 Monster* monster_create(SDL_Renderer*);
@@ -47,7 +48,7 @@ Monster* monster_create(SDL_Renderer*);
 void
 monster_update_pos(Monster*, Position);
 
-void
+bool
 monster_move(Monster*, RoomMatrix*);
 
 void

@@ -60,6 +60,7 @@ monster_create(SDL_Renderer *renderer)
 	m->state.current = m->state.normal;
 	m->label = NULL;
 	m->lclabel = NULL;
+	m->steps = 0;
 
 	monster_load_texts(m, renderer);
 
@@ -216,7 +217,7 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 	}
 }
 
-void
+bool
 monster_move(Monster *m, RoomMatrix *rm)
 {
 	Position monsterRoomPos;
@@ -242,6 +243,13 @@ monster_move(Monster *m, RoomMatrix *rm)
 	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = true;
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = m;
+
+	m->steps++;
+	if (m->steps >= m->stats.speed) {
+		m->steps = 0;
+		return true;
+	}
+	return false;
 }
 
 void

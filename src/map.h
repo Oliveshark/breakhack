@@ -53,31 +53,44 @@ typedef struct Map_t {
 	LinkedList *items;
 	Position currentRoom;
 	Timer *renderTimer;
+	Timer *monsterMoveTimer;
 	int level;
 } Map;
 
-Map* map_create(void);
+Map*
+map_create(void);
 
-int map_add_texture(Map*, const char *path, SDL_Renderer*);
+int
+map_add_texture(Map*, const char *path, SDL_Renderer*);
 
-void map_add_tile(Map *map, Position *tile_pos, MapTile*);
+void
+map_add_tile(Map *map, Position *tile_pos, MapTile*);
 
-void map_add_decoration(Map *map, Position *tile_pos, MapTile*);
+void
+map_add_decoration(Map *map, Position *tile_pos, MapTile*);
 
-Texture* map_add_monster_texture(Map*, const char *path, SDL_Renderer*);
+Texture*
+map_add_monster_texture(Map*, const char *path, SDL_Renderer*);
 
-void map_add_monster(Map*, Monster*);
+void
+map_add_monster(Map*, Monster*);
 
-void map_move_monsters(Map*, RoomMatrix*);
+bool
+map_move_monsters(Map*, RoomMatrix*);
 
-void map_clear_dead_monsters(Map*);
+void
+map_clear_dead_monsters(Map*);
 
-void map_clear_collected_items(Map*);
+void
+map_clear_collected_items(Map*);
 
-void map_render(Map*, Camera*);
+void
+map_render(Map*, Camera*);
 
-void map_set_current_room(Map*, Position*);
+void
+map_set_current_room(Map*, Position*);
 
-void map_destroy(Map*);
+void
+map_destroy(Map*);
 
 #endif // MAP_H_

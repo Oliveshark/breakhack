@@ -51,6 +51,7 @@ Map* map_create()
 	map->items = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
 	map->renderTimer = timer_create();
+	map->monsterMoveTimer = timer_create();
 	map->level = 1;
 	
 	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {
@@ -177,17 +178,30 @@ map_add_monster(Map *map, Monster *m)
 	linkedlist_append(&map->monsters, m);
 }
 
-void
+bool
 map_move_monsters(Map *map, RoomMatrix *rm)
 {
 	LinkedList *m = map->monsters;
+	bool allDone = true;
+
+	if (timer_started(map->monsterMoveTimer)
+	    && timer_get_ticks(map->monsterMoveTimer) < 100)
+		return false;
+
 	while (m) {
 		Monster *monster = m->data;
 		m = m->next;
 		if (!position_in_room(&monster->sprite->pos, &map->currentRoom))
 			continue;
-		monster_move(monster, rm);
+		allDone = allDone && monster_move(monster, rm);
 	}
+
+	if (allDone)
+		timer_stop(map->monsterMoveTimer);
+	else
+		timer_start(map->monsterMoveTimer);
+
+	return allDone;
 }
 
 int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)

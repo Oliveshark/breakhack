@@ -43,6 +43,11 @@
 #include "mixer.h"
 #include "random.h"
 
+typedef enum Turn_t {
+	PLAYER,
+	MONSTER
+} Turn;
+
 static SDL_Window	*gWindow	= NULL;
 static SDL_Renderer	*gRenderer	= NULL;
 static Player		*gPlayer	= NULL;
@@ -62,6 +67,7 @@ static SDL_Rect		gameViewport;
 static SDL_Rect		bottomGuiViewport;
 static SDL_Rect		rightGuiViewport;
 static SDL_Rect		menuViewport;
+static Turn		currentTurn	= PLAYER;
 
 static SDL_Color C_MENU_DEFAULT	= { 255, 255, 0, 0 };
 static SDL_Color C_MENU_HOVER	= { 255, 0, 0, 0 };
@@ -362,9 +368,10 @@ handle_events(void)
 			continue;
 
 		if (gGameState == PLAYING) {
-			gPlayer->handle_event(gPlayer,
-					      gRoomMatrix,
-					      &event);
+			if (currentTurn == PLAYER)
+				gPlayer->handle_event(gPlayer,
+						      gRoomMatrix,
+						      &event);
 			camera_follow_position(&gCamera, &gPlayer->sprite->pos);
 			map_set_current_room(gMap, &gPlayer->sprite->pos);
 			roommatrix_handle_event(gRoomMatrix, &event);
@@ -421,10 +428,16 @@ run_game(void)
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 	particle_engine_update(deltaTime);
 
-	if (gPlayer->steps >= gPlayer->stats.speed) {
-		player_reset_steps(gPlayer);
-		roommatrix_update_with_player(gRoomMatrix, gPlayer);
-		map_move_monsters(gMap, gRoomMatrix);
+	roommatrix_update_with_player(gRoomMatrix, gPlayer);
+	if (currentTurn == PLAYER) {
+		if (gPlayer->steps >= gPlayer->stats.speed) {
+			currentTurn = MONSTER;
+			player_reset_steps(gPlayer);
+		}
+	}
+	if (currentTurn == MONSTER) {
+		if (map_move_monsters(gMap, gRoomMatrix))
+			currentTurn = PLAYER;
 	}
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
