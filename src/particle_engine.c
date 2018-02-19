@@ -17,6 +17,7 @@
  */
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include "particle_engine.h"
 #include "linkedlist.h"
 #include "util.h"
@@ -93,6 +94,61 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 }
 
 static void
+create_explosion(Position pos, Dimension dim, size_t c_count, ...)
+{
+	SDL_Color *colors = ec_malloc(c_count * sizeof(SDL_Color));
+
+	va_list(args);
+	va_start(args, c_count);
+	for (size_t i = 0; i < c_count; ++i) {
+		colors[i] = va_arg(args, SDL_Color);
+	}
+	va_end(args);
+
+	for (unsigned int i = 0; i < 150; ++i) {
+		int x, y, xv, yv;
+		unsigned int lt;
+		Particle *p;
+
+		x = get_random(dim.width) + pos.x;
+		y = get_random(dim.height) + pos.y;
+
+		xv = get_random(600) - 300;
+		yv = get_random(600) - 300;
+
+		lt = get_random(10);
+
+		p = ec_malloc(sizeof(Particle));
+		p->pos = (Position) { x, y };
+		p->velocity = (Vector2d) { xv, yv };
+		p->movetime = lt;
+		p->lifetime = lt;
+		p->dim = (Dimension) { 2, 2 };
+		p->color = colors[get_random(c_count-1)];
+		linkedlist_append(&engine->particles, p);
+	}
+}
+
+void
+particle_engine_fire_explosion(Position pos, Dimension dim)
+{
+	static SDL_Color red = { 255, 0, 0, 255 };
+	static SDL_Color yellow = { 255, 255, 0, 255 };
+
+	check_engine();
+	create_explosion(pos, dim, 3, yellow, yellow, red);
+}
+
+void
+particle_engine_eldritch_explosion(Position pos, Dimension dim)
+{
+	static SDL_Color green = { 0, 255, 0, 255 };
+
+	check_engine();
+	create_explosion(pos, dim, 1, green);
+}
+
+static void
 move_particle(Particle *particle, float deltaTime)
 {
 	if (!particle->movetime)
@@ -145,8 +201,8 @@ render_particle(Particle *p, Camera *cam)
 	SDL_Rect box = { pos.x, pos.y, p->dim.width, p->dim.height };
 	SDL_SetRenderDrawColor(cam->renderer,
 			       p->color.r,
-			       p->color.b,
 			       p->color.g,
+			       p->color.b,
 			       p->color.a);
 	SDL_RenderFillRect(cam->renderer, &box);
 }

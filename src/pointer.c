@@ -47,6 +47,12 @@ pointer_handle_event(Pointer *p, SDL_Event *event)
 		p->sprite->pos.y = event->motion.y - 6;
 		//debug("Pointer pos: %dx%d", p->sprite->pos.x, p->sprite->pos.y);
 	}
+#ifdef DEBUG
+	if (event->type == SDL_MOUSEBUTTONDOWN) {
+		Dimension dim = { 10, 10 };
+		particle_engine_eldritch_explosion(p->sprite->pos, dim);
+	}
+#endif // DEBUG
 }
 
 void

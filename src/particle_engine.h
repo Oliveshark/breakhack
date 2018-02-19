@@ -31,6 +31,12 @@ void
 particle_engine_bloodspray(Position, Dimension, unsigned int count);
 
 void
+particle_engine_fire_explosion(Position, Dimension);
+
+void
+particle_engine_eldritch_explosion(Position, Dimension);
+
+void
 particle_engine_update(float deltatime);
 
 void
