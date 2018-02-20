@@ -170,8 +170,6 @@ extract_tile_data(lua_State *L,
 static Stats
 lua_checkstats(lua_State *L, int index)
 {
-	debug("Reading stats: %d", index);
-
 	// Confirm table
 	luaL_checktype(L, index, LUA_TTABLE);
 
@@ -180,7 +178,6 @@ lua_checkstats(lua_State *L, int index)
 	// Stack: -1 => table
 
 	int tableIndex = lua_gettop(L);
-	debug("Table index: %d", tableIndex);
 
 	lua_getfield(L, tableIndex, "hp");
 	lua_getfield(L, tableIndex, "dmg");
