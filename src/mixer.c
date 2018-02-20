@@ -23,6 +23,9 @@
 static Mix_Music *music[LAST_MUSIC];
 static Mix_Chunk *effects[LAST_EFFECT];
 
+static bool sound_enabled = true;
+static bool music_enabled = true;
+
 static Mix_Music*
 load_song(char *path)
 {
@@ -85,9 +88,32 @@ mixer_init(void)
 	load_music();
 }
 
+bool
+mixer_toggle_sound(void)
+{
+	sound_enabled = !sound_enabled;
+	return sound_enabled;
+}
+
+bool
+mixer_toggle_music(void)
+{
+	music_enabled = !music_enabled;
+
+	if (Mix_PlayingMusic() && !music_enabled)
+		Mix_PauseMusic();
+	else if (Mix_PausedMusic())
+		Mix_ResumeMusic();
+
+	return music_enabled;
+}
+
 void
 mixer_play_effect(Fx fx)
 {
+	if (!sound_enabled)
+		return;
+
 	if (Mix_PlayChannel( -1, effects[fx], 0) == -1)
 		error("Unable to play sound: %u", (unsigned int) fx);
 }
@@ -95,6 +121,9 @@ mixer_play_effect(Fx fx)
 void
 mixer_play_music(Music mus)
 {
+	if (!music_enabled)
+		return;
+
 	if (Mix_PlayingMusic())
 		mixer_stop_music();
 

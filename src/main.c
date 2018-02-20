@@ -348,6 +348,22 @@ handle_main_events(SDL_Event *event)
 			toggleInGameMenu(NULL);
 			return true;
 		}
+
+		if (keyboard_mod_press(SDLK_m, KMOD_CTRL, event)) {
+			if (mixer_toggle_music())
+				gui_log("Music enabled");
+			else
+				gui_log("Music disabled");
+			return true;
+		}
+
+		if (keyboard_mod_press(SDLK_s, KMOD_CTRL, event)) {
+			if (mixer_toggle_sound())
+				gui_log("Sound enabled");
+			else
+				gui_log("Sound disabled");
+			return true;
+		}
 	}
 	return false;
 }

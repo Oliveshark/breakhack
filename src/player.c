@@ -372,9 +372,6 @@ player_print(Player *p)
 
 	debug("\n");
 	debug("--------=== <[ Player Stats ]> ===--------");
-	debug("HP:    %d", p->stats.hp);
-	debug("Level: %u\tXP:\t%u", p->stats.lvl, p->xp);
-	debug("Gold: %.2f", p->gold);
 	debug("Hits:  %u\tMisses:\t%u", p->hits, p->misses);
 	debug("Kills: %u", p->kills);
 	debug("Steps: %u", p->total_steps);

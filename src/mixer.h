@@ -55,6 +55,12 @@ typedef enum Fx_t {
 void
 mixer_init(void);
 
+bool
+mixer_toggle_sound(void);
+
+bool
+mixer_toggle_music(void);
+
 void
 mixer_play_effect(Fx fx);
 
