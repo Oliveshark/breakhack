@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "gui.h"
 #include "stats.h"
 #include "random.h"
 #include "util.h"
@@ -42,10 +43,17 @@ stats_fight(Stats *attacker, Stats *defender)
 	debug("-----------[ FIGHT ]---------");
 	debug("Attacking: %d   Defending: %d", atkRoll, defRoll);
 
-	if (atkRoll > defRoll) {
-		dmgRoll = get_random(attacker->dmg - 1) + 1;
-		if (critical)
+	if (atkRoll >= defRoll) {
+		if (attacker->dmg > 0)
+			dmgRoll = get_random(attacker->dmg) + 1;
+		else
+			dmgRoll = get_random(attacker->dmg - 1) + 1;
+
+		if (critical) {
 			dmgRoll = dmgRoll * 2;
+			gui_log("You have scored a critical hit");
+		}
+
 		defender->hp -= dmgRoll;
 	}
 

@@ -27,6 +27,7 @@
 
 #include "map_lua.h"
 #include "util.h"
+#include "stats.h"
 
 static
 lua_State* load_lua_state(void)
@@ -150,7 +151,7 @@ extract_tile_data(lua_State *L,
 	levelExit = lua_toboolean(L, -1);
 
 	// Clear the stack
-	lua_pop(L, 6);
+	lua_pop(L, 7);
 
 	Position tilePos = (Position) { tile_x, tile_y };
 	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
@@ -164,6 +165,40 @@ extract_tile_data(lua_State *L,
 	};
 
 	f_add_tile(map, &tilePos, tile);
+}
+
+static Stats
+lua_checkstats(lua_State *L, int index)
+{
+	debug("Reading stats: %d", index);
+
+	// Confirm table
+	luaL_checktype(L, index, LUA_TTABLE);
+
+	// Push to top of stack
+	lua_pushvalue(L, index);
+	// Stack: -1 => table
+
+	int tableIndex = lua_gettop(L);
+	debug("Table index: %d", tableIndex);
+
+	lua_getfield(L, tableIndex, "hp");
+	lua_getfield(L, tableIndex, "dmg");
+	lua_getfield(L, tableIndex, "atk");
+	lua_getfield(L, tableIndex, "def");
+	lua_getfield(L, tableIndex, "speed");
+
+	int hp = luaL_checkinteger(L, -5);
+	int dmg = luaL_checkinteger(L, -4);
+	int atk = luaL_checkinteger(L, -3);
+	int def = luaL_checkinteger(L, -2);
+	int speed = luaL_checkinteger(L, -1);
+
+	// Reset the stack
+	lua_pop(L, 6);
+
+	Stats stats = { hp, hp, dmg, atk, def, speed, 1 };
+	return stats;
 }
 
 static
@@ -217,6 +252,7 @@ l_add_monster(lua_State *L)
 	char *label;
 	Texture *texture1, *texture2;
 	SDL_Renderer *renderer;
+	Stats stats;
 
 	renderer = luaL_checksdlrenderer(L);
 	map = luaL_checkmap(L, 1);
@@ -230,14 +266,16 @@ l_add_monster(lua_State *L)
 	lua_getfield(L, 4, "label");
 	lua_getfield(L, 4, "texturePath1");
 	lua_getfield(L, 4, "texturePath2");
+	lua_getfield(L, 4, "stats");
 	lua_getfield(L, 4, "clipX");
 	lua_getfield(L, 4, "clipY");
 	lua_getfield(L, 4, "nstate");
 	lua_getfield(L, 4, "cstate");
 
-	tmp_label = luaL_checkstring(L, -7);
-	texture_path_1 = luaL_checkstring(L, -6);
-	texture_path_2 = luaL_checkstring(L, -5);
+	tmp_label = luaL_checkstring(L, -8);
+	texture_path_1 = luaL_checkstring(L, -7);
+	texture_path_2 = luaL_checkstring(L, -6);
+	stats = lua_checkstats(L, -5);
 	clip_x = (int) luaL_checkinteger(L, -4);
 	clip_y = (int) luaL_checkinteger(L, -3);
 	nstate = (int) luaL_checkinteger(L, -2);
@@ -251,7 +289,7 @@ l_add_monster(lua_State *L)
 	texture1->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
 	texture2->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
 
-	lua_pop(L, 6);
+	lua_pop(L, 8);
 
 	monster = monster_create(renderer);
 	monster->sprite->clip = (SDL_Rect) { clip_x, clip_y, 16, 16 };
@@ -265,6 +303,8 @@ l_add_monster(lua_State *L)
 		monster->label = label;
 		monster->lclabel = to_lower(label);
 	}
+
+	monster->stats = stats;
 
 	map_add_monster(map, monster);
 

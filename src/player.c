@@ -30,11 +30,11 @@
 #include "mixer.h"
 #include "random.h"
 
-#define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
-#define MAGE_STATS	{ 12, 12, 5, 7, 2, 1, 1 }
-#define PALADIN_STATS	{ 12, 12, 8, 9, 2, 1, 1 }
-#define ROGUE_STATS	{ 12, 12, 5, 7, 3, 2, 1 }
-#define WARRIOR_STATS	{ 12, 12, 8, 9, 2, 1, 1 }
+#define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1 }
+#define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1 }
+#define PALADIN_STATS	{ 12, 12, 8, 9, 3, 1, 1 }
+#define ROGUE_STATS	{ 12, 12, 5, 7, 1, 2, 1 }
+#define WARRIOR_STATS	{ 12, 12, 8, 9, 3, 1, 1 }
 
 static void
 player_levelup(Player *player)
@@ -42,10 +42,9 @@ player_levelup(Player *player)
 	mixer_play_effect(LEVEL_UP);
 
 	player->stats.lvl += 1;
-	player->stats.maxhp += 3;
+	player->stats.maxhp += 9;
 	player->stats.dmg += 5;
 	player->stats.atk += 1;
-	player->stats.def += 1;
 
 	// Limit health to 3 rows of hearts
 	if (player->stats.maxhp > 72)
