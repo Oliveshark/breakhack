@@ -19,7 +19,7 @@
 #ifndef GUI_BUTTON_H_
 #define	GUI_BUTTON_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "pointer.h"
 #include "sprite.h"
 #include "linkedlist.h"

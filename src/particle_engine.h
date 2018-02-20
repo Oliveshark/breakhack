@@ -19,7 +19,7 @@
 #ifndef PARTICLE_ENGINE_H_
 #define	PARTICLE_ENGINE_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "position.h"
 #include "dimension.h"
 #include "camera.h"

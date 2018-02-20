@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <SDL2/SDL_mixer.h>
+#include <SDL_mixer.h>
 #include "mixer.h"
 #include "util.h"
 

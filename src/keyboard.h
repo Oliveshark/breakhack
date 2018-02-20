@@ -19,7 +19,7 @@
 #ifndef KEYBOARD_H_
 #define	KEYBOARD_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <stdbool.h>
 
 typedef enum Direction_t {

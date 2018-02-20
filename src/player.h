@@ -19,7 +19,7 @@
 #ifndef PLAYER_H_
 #define	PLAYER_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "sprite.h"
 #include "stats.h"
 #include "actiontext.h"

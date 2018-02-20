@@ -19,7 +19,7 @@
 #ifndef ACTIONTEXT_H_
 #define	ACTIONTEXT_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <stdbool.h>
 
 #include "position.h"

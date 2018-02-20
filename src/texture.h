@@ -19,8 +19,8 @@
 #ifndef TEXTURE_H_
 #define	TEXTURE_H_
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
 #include "dimension.h"
 #include "position.h"
 #include "camera.h"

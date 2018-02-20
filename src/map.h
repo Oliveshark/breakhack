@@ -19,7 +19,7 @@
 #ifndef MAP_H_
 #define	MAP_H_
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <stdbool.h>
 
 #include "hashtable.h"
