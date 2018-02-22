@@ -1,5 +1,6 @@
 /build/
 /tags
+/assets.pack
 /.vs/
 *.swp
 *~

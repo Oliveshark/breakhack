@@ -136,3 +136,16 @@ IF (CHECK_FOUND AND NOT WIN32)
 	target_link_libraries(test_hashtable ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_hashtable test_hashtable)
 ENDIF (CHECK_FOUND AND NOT WIN32)
+
+if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
+	add_custom_target(assets_pack ALL
+		COMMAND ${CMAKE_COMMAND} -E tar "-cf" "../assets.pack" "--format=zip" --
+			"${CMAKE_CURRENT_SOURCE_DIR}/assets/Characters"
+			"${CMAKE_CURRENT_SOURCE_DIR}/assets/Commissions"
+			"${CMAKE_CURRENT_SOURCE_DIR}/assets/GUI"
+			"${CMAKE_CURRENT_SOURCE_DIR}/assets/Items"
+			"${CMAKE_CURRENT_SOURCE_DIR}/assets/Objects"
+			"${CMAKE_CURRENT_SOURCE_DIR}/assets/Sounds"
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets
+		)
+endif (NOT CMAKE_BUILD_TYPE MATCHES Debug)
