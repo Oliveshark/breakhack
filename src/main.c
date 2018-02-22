@@ -613,7 +613,7 @@ int main(int argc, char *argv[])
 	UNUSED(argc);
 
 	PHYSFS_init(argv[0]);
-	PHYSFS_addToSearchPath("assets", 0);
+	PHYSFS_mount("assets", NULL, 0);
 
 	if (!init())
 		return 1;

@@ -5,13 +5,12 @@ SET(CMAKE_COLOR_MAKEFILE ON)
 project(breakhack C)
 
 include(FindLua)
+include(FindPhysFS)
 include(cmake/FindSDL2.cmake)
 include(cmake/FindSDL2_image.cmake)
 include(cmake/FindSDL2_ttf.cmake)
 include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindCCache.cmake)
-
-add_subdirectory(physfs-3.0.1)
 
 if (NOT WIN32)
 	include(FindX11)
@@ -23,8 +22,18 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
 
+if (NOT PHYSFS_FOUND)
+	add_subdirectory(physfs-3.0.1)
+	include_directories(
+		physfs-3.0.1
+		)
+else (NOT PHYSFS_FOUND)
+	include_directories(
+		${PHYSFS_INCLUDE_DIR}
+		)
+endif (NOT PHYSFS_FOUND)
+
 include_directories(
-	physfs-3.0.1/src
 	${PROJECT_BINARY_DIR}
 	${LUA_INCLUDE_DIR}
 	${SDL2_INCLUDE_DIR}
@@ -87,13 +96,22 @@ add_executable(breakhack
 	)
 
 target_link_libraries(breakhack
-	physfs
 	${LUA_LIBRARY}
 	${SDL2_LIBRARY}
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}
 	)
+
+if (NOT PHYSFS_FOUND)
+	target_link_libraries(breakhack
+		physfs
+		)
+else (NOT PHYSFS_FOUND)
+	target_link_libraries(breakhack
+		${PHYSFS_LIBRARY}
+		)
+endif (NOT PHYSFS_FOUND)
 
 if (NOT WIN32)
 	target_link_libraries(breakhack
