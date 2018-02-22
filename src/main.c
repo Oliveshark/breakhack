@@ -65,6 +65,7 @@ static Timer		*menuTimer	= NULL;
 static GameState	gGameState;
 static Camera		gCamera;
 static SDL_Rect		gameViewport;
+static SDL_Rect		skillBarViewport;
 static SDL_Rect		bottomGuiViewport;
 static SDL_Rect		rightGuiViewport;
 static SDL_Rect		menuViewport;
@@ -156,7 +157,10 @@ initViewports(void)
 	gameViewport = (SDL_Rect) { 0, 0,
 		GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
 
-	bottomGuiViewport = (SDL_Rect) { 0, GAME_VIEW_HEIGHT,
+	skillBarViewport = (SDL_Rect) { 0, GAME_VIEW_HEIGHT,
+		SKILL_BAR_WIDTH, SKILL_BAR_HEIGHT };
+
+	bottomGuiViewport = (SDL_Rect) { 0, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT,
 		BOTTOM_GUI_WIDTH, BOTTOM_GUI_WIDTH };
 
 	rightGuiViewport = (SDL_Rect) { GAME_VIEW_WIDTH, 0,
@@ -475,6 +479,8 @@ run_game(void)
 	SDL_RenderSetViewport(gRenderer, &rightGuiViewport);
 	gui_render_panel(gGui, RIGHT_GUI_WIDTH,
 			 RIGHT_GUI_HEIGHT, &gCamera);
+
+	SDL_RenderSetViewport(gRenderer, &skillBarViewport);
 
 	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
 	gui_render_log(gGui, BOTTOM_GUI_WIDTH,
