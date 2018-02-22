@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <physfs.h>
 
 #include "linkedlist.h"
 #include "player.h"
@@ -239,7 +240,7 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 		unsigned int hcenter;
 
 		Sprite *s1 = sprite_create();
-		sprite_load_text_texture(s1, "assets/GUI/SDS_8x8.ttf", 0, 25);
+		sprite_load_text_texture(s1, "GUI/SDS_8x8.ttf", 0, 25);
 		texture_load_from_text(s1->textures[0], menu_items[i].label,
 				       C_MENU_DEFAULT, gRenderer);
 
@@ -248,7 +249,7 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 		s1->fixed = true;
 
 		Sprite *s2 = sprite_create();
-		sprite_load_text_texture(s2, "assets/GUI/SDS_8x8.ttf", 0, 25);
+		sprite_load_text_texture(s2, "GUI/SDS_8x8.ttf", 0, 25);
 		texture_load_from_text(s2->textures[0], menu_items[i].label,
 				       C_MENU_HOVER, gRenderer);
 
@@ -610,7 +611,9 @@ void close(void)
 int main(int argc, char *argv[])
 {
 	UNUSED(argc);
-	UNUSED(argv);
+
+	PHYSFS_init(argv[0]);
+	PHYSFS_addToSearchPath("assets", 0);
 
 	if (!init())
 		return 1;
@@ -618,6 +621,7 @@ int main(int argc, char *argv[])
 	loadMedia();
 	run();
 	close();
+	PHYSFS_deinit();
 
 	return 0;
 }

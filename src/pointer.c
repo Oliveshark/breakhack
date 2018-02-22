@@ -29,7 +29,7 @@ pointer_create(SDL_Renderer *renderer)
 
 	Pointer *p = ec_malloc(sizeof(Pointer));
 	p->sprite = sprite_create();
-	sprite_load_texture(p->sprite, "assets/Items/MedWep.png", 0, renderer);
+	sprite_load_texture(p->sprite, "Items/MedWep.png", 0, renderer);
 	p->sprite->fixed = true;
 	p->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
 	p->sprite->textures[0]->dim = (Dimension) {

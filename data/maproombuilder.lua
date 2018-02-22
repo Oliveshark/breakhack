@@ -34,8 +34,8 @@ local floorDecor = { }
 local lightDecor = { }
 
 local function load_decor_textures()
-	td0 = add_texture(map, "assets/Objects/Decor0.png")
-	td1 = add_texture(map, "assets/Objects/Decor1.png")
+	td0 = add_texture(map, "Objects/Decor0.png")
+	td1 = add_texture(map, "Objects/Decor1.png")
 
 	-- Skulls
 	table.insert(floorDecor, { td0, td1,      0, 12 * 16, false, false })
@@ -104,7 +104,7 @@ local function load_decor_textures()
 end
 
 local function load_special_tiles()
-	tt = add_texture(map, "assets/Objects/Tile.png")
+	tt = add_texture(map, "Objects/Tile.png")
 	special.level_exit = { tt, -1, 16, 16, false, true, true }
 end
 
@@ -374,8 +374,8 @@ function module.build_square_room(map, room)
 end
 
 function module.load_textures(map)
-	t_floor = add_texture(map, "assets/Objects/Floor.png")
-	t_wall = add_texture(map, "assets/Objects/Wall.png")
+	t_floor = add_texture(map, "Objects/Floor.png")
+	t_wall = add_texture(map, "Objects/Wall.png")
 
 	math.randomseed(os.time())
 	local xo = (random(3) - 1) * 112

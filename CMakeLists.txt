@@ -11,6 +11,8 @@ include(cmake/FindSDL2_ttf.cmake)
 include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindCCache.cmake)
 
+add_subdirectory(physfs-3.0.1)
+
 if (NOT WIN32)
 	include(FindX11)
 	include(cmake/FindCheck.cmake)
@@ -22,6 +24,7 @@ configure_file(
 	)
 
 include_directories(
+	physfs-3.0.1/src
 	${PROJECT_BINARY_DIR}
 	${LUA_INCLUDE_DIR}
 	${SDL2_INCLUDE_DIR}
@@ -79,9 +82,12 @@ add_executable(breakhack
 	src/collisions
 	src/keyboard
 	src/mixer
+	src/io_util
+	src/physfsrwops
 	)
 
 target_link_libraries(breakhack
+	physfs
 	${LUA_LIBRARY}
 	${SDL2_LIBRARY}
 	${SDL2_IMAGE_LIBRARY}

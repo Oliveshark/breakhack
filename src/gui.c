@@ -91,7 +91,7 @@ create_label_sprite(Position pos)
 	Sprite *s = sprite_create();
 	s->fixed = true;
 	s->pos = pos;
-	sprite_load_text_texture(s, "assets/GUI/SDS_8x8.ttf", 0, LABEL_FONT_SIZE);
+	sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, LABEL_FONT_SIZE);
 	return s;
 }
 
@@ -101,7 +101,7 @@ init_sprites(Gui *gui, SDL_Renderer *renderer)
 	Texture *t;
 	unsigned int i;
 
-	t = add_texture(gui, "assets/GUI/GUI0.png", renderer);
+	t = add_texture(gui, "GUI/GUI0.png", renderer);
 
 	/*
 	 * Add XP bar decoration
@@ -138,7 +138,7 @@ init_sprites(Gui *gui, SDL_Renderer *renderer)
 	}
 
 	Sprite *s;
-	t = add_texture(gui, "assets/Items/Potion.png", renderer);
+	t = add_texture(gui, "Items/Potion.png", renderer);
 	s = sprite_create();
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
@@ -146,7 +146,7 @@ init_sprites(Gui *gui, SDL_Renderer *renderer)
 	s->pos = (Position) { 16, POS_Y_COLLECTABLES };
 	linkedlist_append(&gui->sprites, s);
 
-	t = add_texture(gui, "assets/Items/Money.png", renderer);
+	t = add_texture(gui, "Items/Money.png", renderer);
 	s = sprite_create();
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
@@ -169,7 +169,7 @@ gui_create(SDL_Renderer *renderer)
 
 	for (i = 0; i < LOG_LINES_COUNT; ++i) {
 		t = texture_create();
-		texture_load_font(t, "assets/GUI/SDS_8x8.ttf", LOG_FONT_SIZE);
+		texture_load_font(t, "GUI/SDS_8x8.ttf", LOG_FONT_SIZE);
 		gui->log_lines[i] = t;
 	}
 
@@ -201,7 +201,7 @@ set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 	while (gui->health != NULL)
 		sprite_destroy(linkedlist_pop(&gui->health));
 
-	texture = add_texture(gui, "assets/GUI/GUI0.png", renderer);
+	texture = add_texture(gui, "GUI/GUI0.png", renderer);
 
 	for (i = 0; i < max/3; ++i) {
 		Sprite *sprite = sprite_create();
@@ -339,7 +339,7 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 static void
 gui_render_frame(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 {
-	Texture *texture = ht_get(gui->textures, "assets/GUI/GUI0.png");
+	Texture *texture = ht_get(gui->textures, "GUI/GUI0.png");
 	Position pos = { 0, 0 };
 	unsigned int i, j;
 

@@ -261,14 +261,14 @@ static void
 player_load_texts(Player *p, SDL_Renderer *renderer)
 {
 	ActionText *t = actiontext_create();
-	actiontext_load_font(t, "assets/GUI/SDS_6x6.ttf", 14);
+	actiontext_load_font(t, "GUI/SDS_6x6.ttf", 14);
 	t->color = (SDL_Color) { 255, 100, 0, 255 };
 	actiontext_set_text(t, "HIT", renderer);
 	t->pos = p->sprite->pos;
 	p->hitText = t;
 
 	t = actiontext_create();
-	actiontext_load_font(t, "assets/GUI/SDS_6x6.ttf", 14);
+	actiontext_load_font(t, "GUI/SDS_6x6.ttf", 14);
 	t->color = (SDL_Color) { 255, 255, 0, 255 };
 	actiontext_set_text(t, "MISS", renderer);
 	t->pos = p->sprite->pos;
@@ -293,23 +293,23 @@ player_create(class_t class, SDL_Renderer *renderer)
 	char asset[100];
 	switch (class) {
 		case ENGINEER:
-			m_strcpy(asset, 100, "assets/Commissions/Engineer.png");
+			m_strcpy(asset, 100, "Commissions/Engineer.png");
 			player->stats = (Stats) ENGINEER_STATS;
 			break;
 		case MAGE:
-			m_strcpy(asset, 100, "assets/Commissions/Mage.png");
+			m_strcpy(asset, 100, "Commissions/Mage.png");
 			player->stats = (Stats) MAGE_STATS;
 			break;
 		case PALADIN:
-			m_strcpy(asset, 100, "assets/Commissions/Paladin.png");
+			m_strcpy(asset, 100, "Commissions/Paladin.png");
 			player->stats = (Stats) PALADIN_STATS;
 			break;
 		case ROGUE:
-			m_strcpy(asset, 100, "assets/Commissions/Rogue.png");
+			m_strcpy(asset, 100, "Commissions/Rogue.png");
 			player->stats = (Stats) ROGUE_STATS;
 			break;
 		case WARRIOR:
-			m_strcpy(asset, 100, "assets/Commissions/Warrior.png");
+			m_strcpy(asset, 100, "Commissions/Warrior.png");
 			player->stats = (Stats) WARRIOR_STATS;
 			break;
 	}

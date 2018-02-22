@@ -153,7 +153,7 @@ create_treasure(int current_level)
 	else if (amt <= 15)
 		clip.x += 32;
 
-	Item *item = create_item("assets/Items/Money.png", clip, &pickup_gold);
+	Item *item = create_item("Items/Money.png", clip, &pickup_gold);
 	m_strcpy(item->label, 50, label);
 	item->value = amt;
 	return item;
@@ -162,8 +162,8 @@ create_treasure(int current_level)
 Item *
 item_builder_build_item(ItemKey key, int level)
 {
-	static const char *path_flesh	= "assets/Items/Flesh.png";
-	static const char *path_potion	= "assets/Items/Potion.png";
+	static const char *path_flesh	= "Items/Flesh.png";
+	static const char *path_potion	= "Items/Potion.png";
 
 	check_builder();
 
@@ -195,7 +195,7 @@ item_builder_build_item(ItemKey key, int level)
 Item *
 item_builder_build_sack(void)
 {
-	return create_item("assets/Items/Chest0.png",
+	return create_item("Items/Chest0.png",
 			   (SDL_Rect) { 0, 32, 16, 16 },
 			   NULL);
 }

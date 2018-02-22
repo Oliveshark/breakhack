@@ -34,14 +34,14 @@ static void
 monster_load_texts(Monster *m, SDL_Renderer *renderer)
 {
 	ActionText *t = actiontext_create();
-	actiontext_load_font(t, "assets/GUI/SDS_6x6.ttf", 14);
+	actiontext_load_font(t, "GUI/SDS_6x6.ttf", 14);
 	t->color = (SDL_Color) { 255, 100, 0, 255 };
 	actiontext_set_text(t, "HIT", renderer);
 	t->pos = m->sprite->pos;
 	m->hitText = t;
 
 	t = actiontext_create();
-	actiontext_load_font(t, "assets/GUI/SDS_6x6.ttf", 14);
+	actiontext_load_font(t, "GUI/SDS_6x6.ttf", 14);
 	t->color = (SDL_Color) { 255, 255, 0, 255 };
 	actiontext_set_text(t, "MISS", renderer);
 	t->pos = m->sprite->pos;

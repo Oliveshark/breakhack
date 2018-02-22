@@ -18,9 +18,11 @@
 
 #include <SDL_image.h>
 #include <stdio.h>
+#include <physfs.h>
 #include <stdlib.h>
 #include "texture.h"
 #include "util.h"
+#include "io_util.h"
 
 Texture*
 texture_create(void)
@@ -38,7 +40,7 @@ texture_load_from_file(Texture *texture,
 		       const char *path,
 		       SDL_Renderer *renderer)
 {
-	SDL_Surface *surface = IMG_Load(path);
+	SDL_Surface *surface = IMG_Load_RW(io_load_rwops(path), true);
 
 	if (surface == NULL)
 	{
@@ -71,7 +73,9 @@ texture_load_font(Texture *t, const char *path, unsigned int size)
 {
 	if (t->font)
 		TTF_CloseFont(t->font);
-	t->font = TTF_OpenFont(path, size);
+
+	t->font = TTF_OpenFontRW(io_load_rwops(path), true, size);
+
 	if (t->font == NULL) {
 		error("Failed to load font %s: %s",
 			path,
