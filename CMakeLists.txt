@@ -25,7 +25,7 @@ configure_file(
 if (NOT PHYSFS_FOUND)
 	add_subdirectory(physfs-3.0.1)
 	include_directories(
-		physfs-3.0.1
+		physfs-3.0.1/src
 		)
 else (NOT PHYSFS_FOUND)
 	include_directories(
