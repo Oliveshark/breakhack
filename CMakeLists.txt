@@ -149,3 +149,50 @@ if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets
 		)
 endif (NOT CMAKE_BUILD_TYPE MATCHES Debug)
+
+if (WIN32)
+	set(DLL_FILES
+		${CMAKE_SOURCE_DIR}/bin/libFLAC-8.dll
+		${CMAKE_SOURCE_DIR}/bin/libfreetype-6.dll
+		${CMAKE_SOURCE_DIR}/bin/libmodplug-1.dll
+		${CMAKE_SOURCE_DIR}/bin/libmpg123-0.dll
+		${CMAKE_SOURCE_DIR}/bin/libogg-0.dll
+		${CMAKE_SOURCE_DIR}/bin/libpng16-16.dll
+		${CMAKE_SOURCE_DIR}/bin/libvorbis-0.dll
+		${CMAKE_SOURCE_DIR}/bin/libvorbisfile-3.dll
+		${CMAKE_SOURCE_DIR}/bin/physfs.dll
+		${CMAKE_SOURCE_DIR}/bin/SDL2.dll
+		${CMAKE_SOURCE_DIR}/bin/SDL2_image.dll
+		${CMAKE_SOURCE_DIR}/bin/SDL2_mixer.dll
+		${CMAKE_SOURCE_DIR}/bin/SDL2_ttf.dll
+		${CMAKE_SOURCE_DIR}/bin/zlib1.dll
+	)
+endif (WIN32)
+
+install(TARGETS breakhack
+	COMPONENT Release
+	RUNTIME DESTINATION bin
+)
+install(FILES assets.pack
+	COMPONENT Release
+	DESTINATION bin
+)
+install(DIRECTORY data
+	COMPONENT Release
+	DESTINATION bin
+)
+if (WIN32)
+	install(FILES ${DLL_FILES} DESTINATION bin)
+endif (WIN32)
+
+set(CPACK_INSTALL_CMAKE_PROJECTS ${PROJECT_BINARY_DIR} breakhack Release package)
+set(CPACK_PACKAGE_NAME "BreakHack")
+set(CPACK_PACKAGE_VENDOR "OliveShark")
+set(CPACK_PACKAGE_DIRECTORY "package")
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_PATCH "1")
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+set(CPACK_PACKAGE_CHECKSUM "MD5")
+set(CPACK_PACKAGE_EXECUTABLES breakhack)
+include(cpack)
