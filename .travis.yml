@@ -35,6 +35,7 @@ install:
 script:
     - mkdir build
     - cd build
+	- cmake --version
     - cmake ..
     - make
     - make test
