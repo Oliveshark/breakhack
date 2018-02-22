@@ -98,6 +98,7 @@ add_executable(breakhack
 target_link_libraries(breakhack
 	${LUA_LIBRARY}
 	${SDL2_LIBRARY}
+	${SDL2MAIN_LIBRARY}
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}
