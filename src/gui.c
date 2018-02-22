@@ -245,10 +245,11 @@ update_xp_bar(Gui *gui, ExperienceData *data)
 	unsigned int xp_from_levelup = data->current - data->previousLevel;
 	unsigned int xp_required_from_last_level = data->nextLevel - data->previousLevel;
 	float xp_step = ((float)xp_required_from_last_level) / 32; // 4 * 8
-	float xp_current_step = xp_from_levelup / xp_step;
+	float xp_current_step = (float) xp_from_levelup / xp_step;
 
 	unsigned int partial_xp_block = ((unsigned int) xp_current_step) % 4;
-	unsigned int full_xp_blocks = (unsigned int) ((xp_current_step - partial_xp_block) / 4);
+	unsigned int full_xp_blocks =
+		(unsigned int) ((xp_current_step - (float) partial_xp_block) / 4);
 
 	LinkedList *xp_bars = gui->xp_bar;
 	unsigned int i = 0;

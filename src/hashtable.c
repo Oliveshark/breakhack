@@ -35,7 +35,7 @@ ht_create(unsigned int size)
 
 	table = ec_malloc(sizeof(Hashtable));
 	table->size = size;
-	table->entries = ec_malloc(sizeof(Entry) * size);
+	table->entries = ec_malloc((unsigned int) sizeof(Entry) * size);
 
 	for (i = 0; i < size; ++i) {
 		table->entries[i] = NULL;
@@ -73,12 +73,12 @@ entry_create(const char *key, void *value)
 void
 ht_set(Hashtable *table, const char *key, void *val)
 {
-	int hashkey = 0;
+	unsigned int hashkey = 0;
 	Entry *newEntry = NULL;
 	Entry *next;
 	Entry *last = NULL;
 
-	hashkey = hash(table, key);
+	hashkey =  hash(table, key);
 
 	next = table->entries[hashkey];
 
@@ -117,7 +117,7 @@ ht_set(Hashtable *table, const char *key, void *val)
 void*
 ht_get(Hashtable *table, const char *key)
 {
-	int hashkey = 0;
+	unsigned int hashkey = 0;
 	Entry *entry;
 
 	hashkey = hash(table, key);

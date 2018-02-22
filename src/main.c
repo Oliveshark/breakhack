@@ -236,7 +236,7 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 		*menu = menu_create();
 
 	for (unsigned int i = 0; i < size; ++i) {
-		int hcenter;
+		unsigned int hcenter;
 
 		Sprite *s1 = sprite_create();
 		sprite_load_text_texture(s1, "assets/GUI/SDS_8x8.ttf", 0, 25);
@@ -244,7 +244,7 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 				       C_MENU_DEFAULT, gRenderer);
 
 		hcenter = (SCREEN_WIDTH/2) - (s1->textures[0]->dim.width/2);
-		s1->pos = (Position) { hcenter, 200 + (i*50) };
+		s1->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
 		s1->fixed = true;
 
 		Sprite *s2 = sprite_create();
@@ -252,7 +252,7 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 		texture_load_from_text(s2->textures[0], menu_items[i].label,
 				       C_MENU_HOVER, gRenderer);
 
-		s2->pos = (Position) { hcenter, 200 + (i*50) };
+		s2->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
 		s2->fixed = true;
 
 		menu_item_add(*menu, s1, s2, menu_items[i].callback);
@@ -562,7 +562,7 @@ void run(void)
 				break;
 		}
 
-		int ticks = timer_get_ticks(fpsTimer);
+		unsigned int ticks = timer_get_ticks(fpsTimer);
 		if (ticks < 1000/60)
 			SDL_Delay((1000/60) - ticks);
 		timer_stop(fpsTimer);
@@ -572,7 +572,7 @@ void run(void)
 		else {
 			oldTime = currentTime;
 			currentTime = SDL_GetTicks();
-			deltaTime = (currentTime - oldTime) / 1000.0;
+			deltaTime = (float) ((currentTime - oldTime) / 1000.0);
 		}
 	}
 

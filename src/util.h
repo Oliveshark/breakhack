@@ -32,7 +32,7 @@ void
 info(const char *fmt, ...);
 
 void *
-ec_malloc(unsigned int size);
+ec_malloc(unsigned long size);
 
 void
 m_strcpy(char *dest, size_t destsz, char *src);

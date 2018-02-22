@@ -134,7 +134,7 @@ fatal(const char *fmt, ...)
 }
 
 void
-*ec_malloc(unsigned int size)
+*ec_malloc(unsigned long size)
 {
 	void *ptr;
 	ptr = malloc(size);
@@ -170,10 +170,10 @@ to_lower(const char *str)
 	char *lcstr;
 	unsigned int i;
 
-	lcstr = ec_malloc((strlen(str) + 1) * sizeof(char));
+	lcstr = ec_malloc(((unsigned int) strlen(str) + 1) * sizeof(char));
 
 	for (i = 0; i < strlen(str); ++i) {
-		lcstr[i] = tolower(str[i]);
+		lcstr[i] = (char) tolower(str[i]);
 	}
 	lcstr[i] = '\0';
 

@@ -84,7 +84,7 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 
 		p = ec_malloc(sizeof(Particle));
 		p->pos = (Position) { x, y };
-		p->velocity = (Vector2d) { xv, yv };
+		p->velocity = (Vector2d) { (float) xv, (float) yv };
 		p->movetime = mt;
 		p->lifetime = lt;
 		p->dim = (Dimension) { w, h };
@@ -120,11 +120,11 @@ create_explosion(Position pos, Dimension dim, size_t c_count, ...)
 
 		p = ec_malloc(sizeof(Particle));
 		p->pos = (Position) { x, y };
-		p->velocity = (Vector2d) { xv, yv };
+		p->velocity = (Vector2d) { (float) xv, (float) yv };
 		p->movetime = lt;
 		p->lifetime = lt;
 		p->dim = (Dimension) { 2, 2 };
-		p->color = colors[get_random(c_count-1)];
+		p->color = colors[get_random((unsigned int) c_count-1)];
 		linkedlist_append(&engine->particles, p);
 	}
 }
@@ -154,8 +154,8 @@ move_particle(Particle *particle, float deltaTime)
 	if (!particle->movetime)
 		return;
 
-	particle->pos.x += particle->velocity.x * deltaTime;
-	particle->pos.y += particle->velocity.y * deltaTime;
+	particle->pos.x += (int) (particle->velocity.x * deltaTime);
+	particle->pos.y += (int) (particle->velocity.y * deltaTime);
 }
 
 void

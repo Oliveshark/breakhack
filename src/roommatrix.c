@@ -239,7 +239,7 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 			};
 
 			SDL_SetRenderDrawColor(cam->renderer,
-					       0, 0, 0, light);
+					       0, 0, 0, (Uint8) light);
 			SDL_RenderFillRect(cam->renderer, &box);
 
 #ifdef LIGHTMAPDEBUG

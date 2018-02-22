@@ -43,6 +43,7 @@ if (NOT WIN32)
 		-Wpointer-arith -Wcast-qual
 		-Wstrict-prototypes
 		-Wmissing-prototypes
+		-Wconversion -Wno-sign-conversion
 		)
 endif (NOT WIN32)
 

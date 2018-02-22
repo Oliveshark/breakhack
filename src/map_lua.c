@@ -185,11 +185,11 @@ lua_checkstats(lua_State *L, int index)
 	lua_getfield(L, tableIndex, "def");
 	lua_getfield(L, tableIndex, "speed");
 
-	int hp = luaL_checkinteger(L, -5);
-	int dmg = luaL_checkinteger(L, -4);
-	int atk = luaL_checkinteger(L, -3);
-	int def = luaL_checkinteger(L, -2);
-	int speed = luaL_checkinteger(L, -1);
+	int hp = (int) luaL_checkinteger(L, -5);
+	int dmg = (int) luaL_checkinteger(L, -4);
+	int atk = (int) luaL_checkinteger(L, -3);
+	int def = (int) luaL_checkinteger(L, -2);
+	int speed = (int) luaL_checkinteger(L, -1);
 
 	// Reset the stack
 	lua_pop(L, 6);
