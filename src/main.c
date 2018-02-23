@@ -399,6 +399,7 @@ handle_events(void)
 			camera_follow_position(&gCamera, &gPlayer->sprite->pos);
 			map_set_current_room(gMap, &gPlayer->sprite->pos);
 			roommatrix_handle_event(gRoomMatrix, &event);
+			skillbar_handle_event(gSkillBar, &event);
 		} else if (gGameState == MENU) {
 			menu_handle_event(mainMenu, &event);
 		} else if (gGameState == IN_GAME_MENU) {

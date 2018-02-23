@@ -19,14 +19,17 @@
 #ifndef SKILLBAR_H_
 #define	SKILLBAR_H_
 
-#include "SDL.h"
+#include <SDL.h>
 #include "hashtable.h"
 #include "linkedlist.h"
 #include "camera.h"
+#include "timer.h"
 
 typedef struct SkillBar_t {
 	Hashtable *textures;
 	LinkedList *sprites;
+	Timer *activationTimer;
+	unsigned int lastActivation;
 } SkillBar;
 
 SkillBar *
@@ -34,6 +37,9 @@ skillbar_create(SDL_Renderer*);
 
 void
 skillbar_render(SkillBar*, Camera*);
+
+void
+skillbar_handle_event(SkillBar*, SDL_Event*);
 
 void
 skillbar_destroy(SkillBar*);

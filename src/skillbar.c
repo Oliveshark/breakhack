@@ -21,6 +21,7 @@
 #include "texture.h"
 #include "util.h"
 #include "sprite.h"
+#include "keyboard.h"
 
 static void
 load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
@@ -37,6 +38,7 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 		char buffer[1];
 		Sprite *s = sprite_create();
 		s->pos = (Position) { i * 32 + 20, 20 };
+		s->fixed = true;
 		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8);
 		m_sprintf(buffer, 1, "%u", i+1);
 		texture_load_from_text(s->textures[0], buffer, c_yellow, renderer);
@@ -50,6 +52,8 @@ skillbar_create(SDL_Renderer *renderer)
 	SkillBar *bar = ec_malloc(sizeof(SkillBar));
 	bar->textures = ht_create(10);
 	bar->sprites = linkedlist_create();
+	bar->activationTimer = timer_create();
+	bar->lastActivation = 0;
 	load_texture(bar, "GUI/GUI0.png", renderer);
 	return bar;
 }
@@ -91,11 +95,51 @@ render_sprites(SkillBar *bar, Camera *cam)
 	}
 }
 
+static void
+render_activation_indicator(SkillBar *bar, Camera *cam)
+{
+	if (!timer_started(bar->activationTimer))
+		return;
+
+	unsigned int ticks = timer_get_ticks(bar->activationTimer);
+	if (ticks > 500) {
+		timer_stop(bar->activationTimer);
+		return;
+	}
+
+	SDL_Rect square = { (bar->lastActivation - 1) * 32, 0, 32, 32 };
+	unsigned int opacity = (unsigned int) ticks/2;
+	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 0, (Uint8)(255 - opacity));
+	SDL_RenderDrawRect(cam->renderer, &square);
+}
+
 void
 skillbar_render(SkillBar *bar, Camera *cam)
 {
 	render_frame(bar, cam);
 	render_sprites(bar, cam);
+	render_activation_indicator(bar, cam);
+}
+
+void
+skillbar_handle_event(SkillBar *bar, SDL_Event *event)
+{
+	if (event->type != SDL_KEYDOWN)
+		return;
+
+	if (keyboard_press(SDLK_1, event))
+		bar->lastActivation = 1;
+	else if (keyboard_press(SDLK_2, event))
+		bar->lastActivation = 2;
+	else if (keyboard_press(SDLK_3, event))
+		bar->lastActivation = 3;
+	else if (keyboard_press(SDLK_4, event))
+		bar->lastActivation = 4;
+	else
+		bar->lastActivation = 0;
+
+	if (bar->lastActivation > 0)
+		timer_start(bar->activationTimer);
 }
 
 void
