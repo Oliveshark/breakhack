@@ -16,43 +16,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXTURE_H_
-#define	TEXTURE_H_
+#include "texturecache.h"
+#include "hashtable.h"
+#include "util.h"
 
-#include <SDL.h>
-#include <SDL_ttf.h>
-#include "dimension.h"
-#include "position.h"
-#include "camera.h"
+static Hashtable *textures = NULL;
+static SDL_Renderer *renderer;
 
-typedef struct {
-	SDL_Texture *texture;
-	TTF_Font *font;
-	Dimension dim;
-} Texture;
+void
+texturecache_init(SDL_Renderer *rend)
+{
+	textures = ht_create(50);
+	renderer = rend;
+}
 
 Texture*
-texture_create(void);
+texturecache_add(const char *path)
+{
+	Texture *t = ht_get(textures, path);
+	if (!t) {
+		t = texture_create();
+		texture_load_from_file(t, path, renderer);
+		ht_set(textures, path, t);
+		debug("Cached texture: %s", path);
+	}
+
+	return t;
+}
+
+Texture*
+texturecache_get(const char *path)
+{
+	Texture *t = ht_get(textures, path);
+	if (!t)
+		fatal("Texture not loaded: %s", path);
+	return t;
+}
 
 void
-texture_load_from_file(Texture*, const char *path, SDL_Renderer*);
-
-void
-texture_load_font(Texture*, const char *path, unsigned int size);
-
-void
-texture_load_from_text(Texture*,
-					   const char *text,
-					   SDL_Color,
-					   SDL_Renderer*);
-
-void
-texture_render(Texture*, SDL_Rect*, Camera*);
-
-void
-texture_render_clip(Texture*, SDL_Rect*, SDL_Rect*, Camera*);
-
-void
-texture_destroy(Texture *texture);
-
-#endif // TEXTURE_H_
+texturecache_close(void)
+{
+	ht_destroy_custom(textures, (void(*)(void*)) texture_destroy);
+}

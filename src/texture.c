@@ -117,38 +117,24 @@ texture_load_from_text(Texture *t,
 }
 
 void 
-texture_render(Texture *texture, Position *p, Camera *cam)
+texture_render(Texture *texture, SDL_Rect *box, Camera *cam)
 {
 	if (!texture->texture)
 		return;
 
-	SDL_Rect draw_box = (SDL_Rect) {
-		p->x,
-		p->y,
-		texture->dim.width,
-		texture->dim.height
-	};
-
-	SDL_RenderCopy(cam->renderer,
-		       texture->texture,
-		       NULL,
-		       &draw_box);
+	texture_render_clip(texture, box, NULL, cam);
 }
 
 void 
-texture_render_clip(Texture *texture, Position *p, SDL_Rect *clip, Camera *cam)
+texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip, Camera *cam)
 {
-	SDL_Rect draw_box = (SDL_Rect) {
-		p->x,
-		p->y,
-		texture->dim.width,
-		texture->dim.height
-	};
+	if (!texture->texture)
+		return;
 
 	SDL_RenderCopy(cam->renderer,
 		       texture->texture,
 		       clip,
-		       &draw_box);
+		       box);
 }
 
 void texture_destroy(Texture *texture)

@@ -32,8 +32,7 @@ pointer_create(SDL_Renderer *renderer)
 	sprite_load_texture(p->sprite, "Items/MedWep.png", 0, renderer);
 	p->sprite->fixed = true;
 	p->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	p->sprite->textures[0]->dim = (Dimension) {
-		TILE_DIMENSION, TILE_DIMENSION };
+	p->sprite->dim = GAME_DIMENSION;
 
 	return p;
 }

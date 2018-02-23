@@ -24,7 +24,6 @@
 #define LABEL_FONT_SIZE	8
 
 #include "linkedlist.h"
-#include "hashtable.h"
 #include "sprite.h"
 #include "camera.h"
 #include "player.h"
@@ -42,7 +41,6 @@ typedef struct {
 	LinkedList *sprites;
 	LinkedList *health;
 	LinkedList *xp_bar;
-	Hashtable *textures;
 	Sprite *labels[LABEL_COUNT];
 	Texture *log_lines[LOG_LINES_COUNT];
 } Gui;

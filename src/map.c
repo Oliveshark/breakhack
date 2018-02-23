@@ -46,7 +46,6 @@ Map* map_create()
 
 	Map *map = ec_malloc(sizeof(Map));
 	map->textures = linkedlist_create();
-	map->monsterTextures = ht_create(30);
 	map->monsters = linkedlist_create();
 	map->items = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
@@ -93,21 +92,6 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 		*oldTile = NULL;
 	}
 	*oldTile = tile;
-}
-
-Texture*
-map_add_monster_texture(Map *map, const char *path, SDL_Renderer *renderer)
-{
-	Texture *t;
-
-	t = ht_get(map->monsterTextures, path);
-	if (!t) {
-		t = texture_create();
-		texture_load_from_file(t, path, renderer);
-		ht_set(map->monsterTextures, path, t);
-	}
-
-	return t;
 }
 
 void
@@ -357,7 +341,6 @@ void map_destroy(Map *map)
 	while (map->items != NULL)
 		item_destroy(linkedlist_pop(&map->items));
 
-	ht_destroy_custom(map->monsterTextures, (void (*)(void*)) texture_destroy);
 	timer_destroy(map->renderTimer);
 	free(map);
 }

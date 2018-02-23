@@ -25,6 +25,7 @@
 #include "gui.h"
 #include "mixer.h"
 #include "random.h"
+#include"texturecache.h"
 
 static ItemBuilder *builder = NULL;
 
@@ -32,7 +33,6 @@ void
 item_builder_init(SDL_Renderer *renderer)
 {
 	builder = ec_malloc(sizeof(ItemBuilder));
-	builder->textures = ht_create(20);
 	builder->renderer = renderer;
 }
 
@@ -41,19 +41,6 @@ check_builder(void)
 {
 	if (!builder)
 		fatal("item_builder_init() not run");
-}
-
-static Texture *
-load_texture(const char *path)
-{
-	Texture *t = ht_get(builder->textures, path);
-	if (!t) {
-		t = texture_create();
-		texture_load_from_file(t, path, builder->renderer);
-		t->dim = (Dimension) { 32, 32 };
-		ht_set(builder->textures, path, t);
-	}
-	return t;
 }
 
 static void
@@ -85,10 +72,11 @@ create_item(const char *path, SDL_Rect clip, void (*cb)(Item*, Player*))
 	Item *item;
 
 	item = item_create();
-	t = load_texture(path);
+	t = texturecache_add(path);
 
 	item->sprite = sprite_create();
 	sprite_set_texture(item->sprite, t, 0);
+	item->sprite->dim = GAME_DIMENSION;
 	item->sprite->clip = clip;
 	item->effect = cb;
 
@@ -203,6 +191,5 @@ item_builder_build_sack(void)
 void
 item_builder_close(void)
 {
-	ht_destroy_custom(builder->textures, (void (*)(void*)) texture_destroy);
 	free(builder);
 }

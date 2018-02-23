@@ -20,10 +20,8 @@
 #define ITEMBUILDER_H_
 
 #include "item.h"
-#include "hashtable.h"
 
 typedef struct {
-	Hashtable *textures;
 	SDL_Renderer *renderer;
 } ItemBuilder;
 

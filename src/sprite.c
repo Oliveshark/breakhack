@@ -29,6 +29,7 @@ sprite_create_default(void)
 	s->clip = (SDL_Rect) { 0, 0, 0, 0 };
 	s->destroyTextures = false;
 	s->pos = (Position) { 0, 0 };
+	s->dim = DEFAULT_DIMENSION;
 	s->renderTimer = timer_create();
 	s->texture_index = 0;
 	s->fixed = false;
@@ -39,7 +40,7 @@ sprite_create_default(void)
 }
 
 Sprite*
-sprite_create()
+sprite_create(void)
 {
 	return sprite_create_default();
 }
@@ -111,15 +112,19 @@ void sprite_render(Sprite *s, Camera *cam)
 	else
 		cameraPos = s->pos;
 
+	SDL_Rect box = {
+		cameraPos.x, cameraPos.y, s->dim.width, s->dim.height
+	};
+
 	if (s->clip.w && s->clip.h) {
 		texture_render_clip(s->textures[s->texture_index],
-			&cameraPos,
+			&box,
 			&s->clip,
 			cam);
 	}
 	else {
 		texture_render(s->textures[s->texture_index],
-			&cameraPos,
+			&box,
 			cam);
 	}
 }

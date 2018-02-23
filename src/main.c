@@ -44,6 +44,7 @@
 #include "mixer.h"
 #include "random.h"
 #include "skillbar.h"
+#include "texturecache.h"
 
 typedef enum Turn_t {
 	PLAYER,
@@ -180,6 +181,7 @@ static bool
 initGame(void)
 {
 	initViewports();
+	texturecache_init(gRenderer);
 	gCamera.renderer = gRenderer;
 	gRoomMatrix = roommatrix_create();
 	gGui = gui_create(gRenderer);
@@ -253,6 +255,7 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 
 		hcenter = (SCREEN_WIDTH/2) - (s1->textures[0]->dim.width/2);
 		s1->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
+		s1->dim = s1->textures[0]->dim;
 		s1->fixed = true;
 
 		Sprite *s2 = sprite_create();
@@ -261,6 +264,7 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 				       C_MENU_HOVER, gRenderer);
 
 		s2->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
+		s2->dim = s2->textures[0]->dim;
 		s2->fixed = true;
 
 		menu_item_add(*menu, s1, s2, menu_items[i].callback);
@@ -610,8 +614,9 @@ void close(void)
 	item_builder_close();
 	particle_engine_close();
 	timer_destroy(menuTimer);
-
 	mixer_close();
+	texturecache_close();
+
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;

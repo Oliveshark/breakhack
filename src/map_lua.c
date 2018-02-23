@@ -28,6 +28,8 @@
 #include "map_lua.h"
 #include "util.h"
 #include "stats.h"
+#include "io_util.h"
+#include "texturecache.h"
 
 static
 lua_State* load_lua_state(void)
@@ -278,13 +280,13 @@ l_add_monster(lua_State *L)
 	nstate = (int) luaL_checkinteger(L, -2);
 	cstate = (int) luaL_checkinteger(L, -1);
 
-	texture1 = map_add_monster_texture(map, texture_path_1, renderer);
-	texture2 = map_add_monster_texture(map, texture_path_2, renderer);
+	texture1 = texturecache_add(texture_path_1);
+	texture2 = texturecache_add(texture_path_2);
 
 	label = strdup(tmp_label);
 
-	texture1->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
-	texture2->dim = (Dimension) { TILE_DIMENSION, TILE_DIMENSION };
+	texture1->dim = GAME_DIMENSION;
+	texture2->dim = GAME_DIMENSION;
 
 	lua_pop(L, 8);
 

@@ -16,43 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TEXTURE_H_
-#define	TEXTURE_H_
+#ifndef TEXTURECACHE_H_
+#define TEXTURECACHE_H_
 
 #include <SDL.h>
-#include <SDL_ttf.h>
-#include "dimension.h"
-#include "position.h"
-#include "camera.h"
+#include "texture.h"
 
-typedef struct {
-	SDL_Texture *texture;
-	TTF_Font *font;
-	Dimension dim;
-} Texture;
+void
+texturecache_init(SDL_Renderer*);
 
 Texture*
-texture_create(void);
+texturecache_add(const char *path);
+
+Texture*
+texturecache_get(const char *path);
 
 void
-texture_load_from_file(Texture*, const char *path, SDL_Renderer*);
+texturecache_close(void);
 
-void
-texture_load_font(Texture*, const char *path, unsigned int size);
-
-void
-texture_load_from_text(Texture*,
-					   const char *text,
-					   SDL_Color,
-					   SDL_Renderer*);
-
-void
-texture_render(Texture*, SDL_Rect*, Camera*);
-
-void
-texture_render_clip(Texture*, SDL_Rect*, SDL_Rect*, Camera*);
-
-void
-texture_destroy(Texture *texture);
-
-#endif // TEXTURE_H_
+#endif // TEXTURECACHE_H_

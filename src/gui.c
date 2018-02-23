@@ -25,6 +25,7 @@
 #include "gui.h"
 #include "util.h"
 #include "map.h"
+#include "texturecache.h"
 
 #define DEFAULT_LOG { NULL, 50, 0, 200 }
 
@@ -35,11 +36,11 @@ static SDL_Rect frame_top_left		= { 16, 160, 16, 16 };
 static SDL_Rect frame_top_right		= { 48, 160, 16, 16 };
 static SDL_Rect frame_bottom_left	= { 16, 192, 16, 16 };
 static SDL_Rect frame_bottom_right	= { 48, 192, 16, 16 };
-static SDL_Rect frame_top		= { 32, 160, 16, 16 };
+static SDL_Rect frame_top			= { 32, 160, 16, 16 };
 static SDL_Rect frame_bottom		= { 32, 192, 16, 16 };
 static SDL_Rect frame_center		= { 32, 176, 16, 16 };
-static SDL_Rect frame_left		= { 16, 176, 16, 16 };
-static SDL_Rect frame_right		= { 48, 176, 16, 16 };
+static SDL_Rect frame_left			= { 16, 176, 16, 16 };
+static SDL_Rect frame_right			= { 48, 176, 16, 16 };
 
 static struct LogData_t {
 	char **log;
@@ -47,19 +48,6 @@ static struct LogData_t {
 	unsigned int count;
 	unsigned int strlen;
 } log_data = DEFAULT_LOG;
-
-static Texture*
-add_texture(Gui *gui, const char *path, SDL_Renderer *renderer)
-{
-	Texture *t = ht_get(gui->textures, path);
-	if (t == NULL) {
-		t = texture_create();
-		texture_load_from_file(t, path, renderer);
-		t->dim = (Dimension) { 16, 16 };
-		ht_set(gui->textures, path, t);
-	}
-	return t;
-}
 
 static void
 gui_malloc_log(void)
@@ -101,7 +89,7 @@ init_sprites(Gui *gui, SDL_Renderer *renderer)
 	Texture *t;
 	unsigned int i;
 
-	t = add_texture(gui, "GUI/GUI0.png", renderer);
+	t = texturecache_add("GUI/GUI0.png");
 
 	/*
 	 * Add XP bar decoration
@@ -138,7 +126,7 @@ init_sprites(Gui *gui, SDL_Renderer *renderer)
 	}
 
 	Sprite *s;
-	t = add_texture(gui, "Items/Potion.png", renderer);
+	t = texturecache_add("Items/Potion.png");
 	s = sprite_create();
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
@@ -146,7 +134,7 @@ init_sprites(Gui *gui, SDL_Renderer *renderer)
 	s->pos = (Position) { 16, POS_Y_COLLECTABLES };
 	linkedlist_append(&gui->sprites, s);
 
-	t = add_texture(gui, "Items/Money.png", renderer);
+	t = texturecache_add("Items/Money.png");
 	s = sprite_create();
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
@@ -165,7 +153,6 @@ gui_create(SDL_Renderer *renderer)
 	gui->sprites = linkedlist_create();
 	gui->health = linkedlist_create();
 	gui->xp_bar = linkedlist_create();
-	gui->textures = ht_create(5);
 
 	for (i = 0; i < LOG_LINES_COUNT; ++i) {
 		t = texture_create();
@@ -201,8 +188,8 @@ set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 	while (gui->health != NULL)
 		sprite_destroy(linkedlist_pop(&gui->health));
 
-	texture0 = add_texture(gui, "GUI/GUI0.png", renderer);
-	texture1 = add_texture(gui, "GUI/GUI1.png", renderer);
+	texture0 = texturecache_add("GUI/GUI0.png");
+	texture1 = texturecache_add("GUI/GUI1.png");
 
 	for (i = 0; i < max/3; ++i) {
 		Sprite *sprite = sprite_create();
@@ -313,30 +300,35 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 	if (dungeon_level != (unsigned int) map->level) {
 		m_sprintf(buffer, 200, "Dungeon level: %d", map->level);
 		texture_load_from_text(gui->labels[DUNGEON_LEVEL_LABEL]->textures[0], buffer, color, renderer);
+		gui->labels[DUNGEON_LEVEL_LABEL]->dim = gui->labels[DUNGEON_LEVEL_LABEL]->textures[0]->dim;
 		dungeon_level = (unsigned int) map->level;
 	}
 
 	if (current_potion_sips != (int) player->potion_sips) {
 		m_sprintf(buffer, 200, "x %u", (unsigned int) player->potion_sips);
 		texture_load_from_text(gui->labels[HEALTH_POTION_LABEL]->textures[0], buffer, color, renderer);
+		gui->labels[HEALTH_POTION_LABEL]->dim = gui->labels[HEALTH_POTION_LABEL]->textures[0]->dim;
 		current_potion_sips = player->potion_sips;
 	}
 
 	if (last_gold != player->gold) {
 		m_sprintf(buffer, 200, "x %.2f", player->gold);
 		texture_load_from_text(gui->labels[GOLD_LABEL]->textures[0], buffer, color, renderer);
+		gui->labels[GOLD_LABEL]->dim = gui->labels[GOLD_LABEL]->textures[0]->dim;
 		last_gold = player->gold;
 	}
 
 	if (last_xp != (int) data.current) {
 		m_sprintf(buffer, 200, "XP: %u / %u", data.current, data.nextLevel);
 		texture_load_from_text(gui->labels[CURRENT_XP_LABEL]->textures[0], buffer, color, renderer);
+		gui->labels[CURRENT_XP_LABEL]->dim = gui->labels[CURRENT_XP_LABEL]->textures[0]->dim;
 		last_xp = data.current;
 	}
 
 	if (last_level != data.level) {
 		m_sprintf(buffer, 200, "Level: %u", data.level);
 		texture_load_from_text(gui->labels[LEVEL_LABEL]->textures[0], buffer, color, renderer);
+		gui->labels[LEVEL_LABEL]->dim = gui->labels[LEVEL_LABEL]->textures[0]->dim;
 		last_level = data.level;
 	}
 }
@@ -344,33 +336,34 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 static void
 gui_render_frame(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 {
-	Texture *texture = ht_get(gui->textures, "GUI/GUI0.png");
-	Position pos = { 0, 0 };
+	Texture *texture = texturecache_get("GUI/GUI0.png");
 	unsigned int i, j;
+
+	SDL_Rect box = { 0, 0, 16, 16 };
 
 	for (i = 0; i < width; ++i) {
 		for (j = 0; j < height; ++j) {
-			pos.x = i * 16;
-			pos.y = j * 16;
+			box.x = i * 16;
+			box.y = j * 16;
 
 			if (i == 0 && j == 0) {
-				texture_render_clip(texture, &pos, &frame_top_left, cam);
+				texture_render_clip(texture, &box, &frame_top_left, cam);
 			} else if (i == (width - 1) && j == 0) {
-				texture_render_clip(texture, &pos, &frame_top_right, cam);
+				texture_render_clip(texture, &box, &frame_top_right, cam);
 			} else if (i == 0 && j == (height - 1)) {
-				texture_render_clip(texture, &pos, &frame_bottom_left, cam);
+				texture_render_clip(texture, &box, &frame_bottom_left, cam);
 			} else if (i == (width - 1) && j == (height - 1)) {
-				texture_render_clip(texture, &pos, &frame_bottom_right, cam);
+				texture_render_clip(texture, &box, &frame_bottom_right, cam);
 			} else if (i == 0) {
-				texture_render_clip(texture, &pos, &frame_left, cam);
+				texture_render_clip(texture, &box, &frame_left, cam);
 			} else if (i == (width - 1)) {
-				texture_render_clip(texture, &pos, &frame_right, cam);
+				texture_render_clip(texture, &box, &frame_right, cam);
 			} else if (j == 0) {
-				texture_render_clip(texture, &pos, &frame_top, cam);
+				texture_render_clip(texture, &box, &frame_top, cam);
 			} else if (j == (height - 1)) {
-				texture_render_clip(texture, &pos, &frame_bottom, cam);
+				texture_render_clip(texture, &box, &frame_bottom, cam);
 			} else {
-				texture_render_clip(texture, &pos, &frame_center, cam);
+				texture_render_clip(texture, &box, &frame_center, cam);
 			}
 		}
 	}
@@ -445,19 +438,20 @@ gui_render_log(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 
 	unsigned int i;
 	unsigned int render_count;
-	Position p;
+	SDL_Rect box = { 16, 0, 16, 16 };
 	
 	render_count = LOG_LINES_COUNT > log_data.count ? log_data.count : LOG_LINES_COUNT;
-	p = (Position) { 16, 0 };
 
 	gui_render_frame(gui, width/16, height/16, cam);
 
 	for (i = 0; i < render_count; ++i) {
 		Texture *t;
-		p.y = 16 + ((LOG_FONT_SIZE+5) * i);
+		box.y = 16 + ((LOG_FONT_SIZE+5) * i);
 		t = gui->log_lines[i];
 		texture_load_from_text(t, log_data.log[i], color, cam->renderer);
-		texture_render(t, &p, cam);
+		box.w = t->dim.width;
+		box.h = t->dim.height;
+		texture_render(t, &box, cam);
 	}
 }
 
@@ -493,6 +487,5 @@ gui_destroy(Gui *gui)
 	for (int i = 0; i < LABEL_COUNT; ++i)
 		sprite_destroy(gui->labels[i]);
 
-	ht_destroy_custom(gui->textures, (void (*)(void*)) &texture_destroy);
 	free(gui);
 }

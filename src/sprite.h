@@ -32,6 +32,7 @@ typedef struct Sprite_t {
 	SDL_Rect clip;
 	bool destroyTextures;
 	Position pos;
+	Dimension dim;
 	Timer *renderTimer;
 	unsigned int texture_index;
 	bool fixed;

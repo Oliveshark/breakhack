@@ -22,22 +22,22 @@
 #include "util.h"
 #include "sprite.h"
 #include "keyboard.h"
+#include "texturecache.h"
 
 static void
 load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 {
 	static SDL_Color c_yellow = { 255, 255, 0, 255 };
 
-	Texture *t = texture_create();
-	texture_load_from_file(t, path, renderer);
+	Texture *t = texturecache_add(path);
 	t->dim.width = 16;
 	t->dim.height = 16;
-	ht_set(bar->textures, path, t);
 
 	for (unsigned int i = 0; i < 4; ++i) {
 		char buffer[4];
 		Sprite *s = sprite_create();
 		s->pos = (Position) { i * 32 + 20, 20 };
+		s->dim = (Dimension) { 8, 8 };
 		s->fixed = true;
 		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8);
 		m_sprintf(buffer, 4, "%u", i+1);
@@ -50,7 +50,6 @@ SkillBar *
 skillbar_create(SDL_Renderer *renderer)
 {
 	SkillBar *bar = ec_malloc(sizeof(SkillBar));
-	bar->textures = ht_create(10);
 	bar->sprites = linkedlist_create();
 	bar->activationTimer = timer_create();
 	bar->lastActivation = 0;
@@ -66,21 +65,21 @@ render_frame(SkillBar *bar, Camera *cam)
 	static SDL_Rect c_bottom_left	= { 1*16, 12*16, 16, 16 };
 	static SDL_Rect c_bottom_right	= { 3*16, 12*16, 16, 16 };
 
-	Texture *t = ht_get(bar->textures, "GUI/GUI0.png");
-	Position p = { 0, 0 };
+	Texture *t = texturecache_get("GUI/GUI0.png");
+	SDL_Rect box = { 0, 0, 16, 16 };
 
 	for (unsigned int i = 0; i < MAP_ROOM_WIDTH; ++i) {
-		p.x = i*32;
-		p.y = 0;
-		texture_render_clip(t, &p, &c_top_left, cam);
-		p.y = 16;
-		texture_render_clip(t, &p, &c_bottom_left, cam);
+		box.x = i*32;
+		box.y = 0;
+		texture_render_clip(t, &box, &c_top_left, cam);
+		box.y = 16;
+		texture_render_clip(t, &box, &c_bottom_left, cam);
 
-		p.x = i*32 + 16;
-		p.y = 0;
-		texture_render_clip(t, &p, &c_top_right, cam);
-		p.y = 16;
-		texture_render_clip(t, &p, &c_bottom_right, cam);
+		box.x = i*32 + 16;
+		box.y = 0;
+		texture_render_clip(t, &box, &c_top_right, cam);
+		box.y = 16;
+		texture_render_clip(t, &box, &c_bottom_right, cam);
 	}
 }
 
@@ -146,7 +145,6 @@ skillbar_handle_event(SkillBar *bar, SDL_Event *event)
 void
 skillbar_destroy(SkillBar *bar)
 {
-	ht_destroy_custom(bar->textures, (void (*)(void *)) texture_destroy);
 	while (bar->sprites)
 		sprite_destroy(linkedlist_pop(&bar->sprites));
 	free(bar);

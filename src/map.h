@@ -22,7 +22,6 @@
 #include <SDL.h>
 #include <stdbool.h>
 
-#include "hashtable.h"
 #include "linkedlist.h"
 #include "sprite.h"
 #include "camera.h"
@@ -48,7 +47,6 @@ typedef struct Room_t {
 typedef struct Map_t {
 	Room* rooms[MAP_H_ROOM_COUNT][MAP_V_ROOM_COUNT];
 	LinkedList *textures;
-	Hashtable *monsterTextures;
 	LinkedList *monsters;
 	LinkedList *items;
 	Position currentRoom;
@@ -68,9 +66,6 @@ map_add_tile(Map *map, Position *tile_pos, MapTile*);
 
 void
 map_add_decoration(Map *map, Position *tile_pos, MapTile*);
-
-Texture*
-map_add_monster_texture(Map*, const char *path, SDL_Renderer*);
 
 void
 map_add_monster(Map*, Monster*);

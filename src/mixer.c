@@ -21,8 +21,16 @@
 #include "util.h"
 #include "io_util.h"
 
-static Mix_Music *music[LAST_MUSIC];
 static Mix_Chunk *effects[LAST_EFFECT];
+static Mix_Music *current_song = NULL;
+static Music loaded_song = LAST_MUSIC;
+
+static char *music[LAST_MUSIC] = {
+	 "Sounds/Music/fantasy-game-background-looping.ogg",	  // GAME_MUSIC0
+	 "Sounds/Music/bog-creatures-on-the-move-looping.ogg",	  // GAME_MUSIC1
+	 "Sounds/Music/fantascape-looping.ogg",					  // GAME_MUSIC2
+	 "Sounds/Music/fantasy-forest-battle.ogg"				  // MENU_MUSIC
+};
 
 static bool sound_enabled = true;
 static bool music_enabled = true;
@@ -34,16 +42,6 @@ load_song(char *path)
 	if (m == NULL)
 		fatal("Failed to load music: %s", Mix_GetError());
 	return m;
-}
-
-static void
-load_music(void)
-{
-	music[GAME_MUSIC0] = load_song("Sounds/Music/fantasy-game-background-looping.ogg");
-	music[GAME_MUSIC1] = load_song("Sounds/Music/bog-creatures-on-the-move-looping.ogg");
-	music[GAME_MUSIC2] = load_song("Sounds/Music/fantascape-looping.ogg");
-
-	music[MENU_MUSIC] = load_song("Sounds/Music/fantasy-forest-battle.ogg");
 }
 
 static Mix_Chunk*
@@ -85,8 +83,8 @@ mixer_init(void)
 	if (Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) == -1) {
 		fatal("Failed to load sound: %s", Mix_GetError());
 	}
+
 	load_effects();
-	load_music();
 }
 
 bool
@@ -125,10 +123,17 @@ mixer_play_music(Music mus)
 	if (!music_enabled)
 		return;
 
+	if (mus != loaded_song) {
+		if (current_song)
+			Mix_FreeMusic(current_song);
+		current_song = load_song(music[mus]);
+		loaded_song = mus;
+	}
+
 	if (Mix_PlayingMusic())
 		mixer_stop_music();
 
-	if (Mix_PlayMusic(music[mus], -1) == -1)
+	if (Mix_PlayMusic(current_song, -1) == -1)
 		fatal("Failed to play music");
 }
 
@@ -144,7 +149,8 @@ mixer_close(void)
 {
 	for (size_t i = 0; i < LAST_EFFECT; ++i)
 		Mix_FreeChunk(effects[i]);
-	for (size_t i = 0; i < LAST_MUSIC; ++i)
-		Mix_FreeMusic(music[i]);
+	if (current_song)
+		Mix_FreeMusic(current_song);
+
 	Mix_CloseAudio();
 }

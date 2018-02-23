@@ -316,9 +316,8 @@ player_create(class_t class, SDL_Renderer *renderer)
 
 	sprite_load_texture(player->sprite, asset, 0, renderer);
 	player->sprite->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
+	player->sprite->dim = GAME_DIMENSION;
 	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	player->sprite->textures[0]->dim = (Dimension) {
-		TILE_DIMENSION, TILE_DIMENSION };
 	player->handle_event = &handle_player_input;
 	player_load_texts(player, renderer);
 

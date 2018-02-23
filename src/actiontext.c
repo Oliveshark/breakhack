@@ -54,8 +54,9 @@ actiontext_render(ActionText *t, Camera *cam)
 		timer_start(t->timer);
 
 	Position cameraPos = camera_to_camera_position(cam, &t->pos);
+	SDL_Rect box = { cameraPos.x, cameraPos.y, t->texture->dim.width, t->texture->dim.height };
 	if (timer_get_ticks(t->timer) < 300) {
-		texture_render(t->texture, &cameraPos, cam);
+		texture_render(t->texture, &box, cam);
 	} else {
 		timer_stop(t->timer);
 		t->active = false;

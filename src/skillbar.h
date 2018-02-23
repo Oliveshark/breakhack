@@ -20,13 +20,11 @@
 #define	SKILLBAR_H_
 
 #include <SDL.h>
-#include "hashtable.h"
 #include "linkedlist.h"
 #include "camera.h"
 #include "timer.h"
 
 typedef struct SkillBar_t {
-	Hashtable *textures;
 	LinkedList *sprites;
 	Timer *activationTimer;
 	unsigned int lastActivation;
