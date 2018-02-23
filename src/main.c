@@ -43,6 +43,7 @@
 #include "keyboard.h"
 #include "mixer.h"
 #include "random.h"
+#include "skillbar.h"
 
 typedef enum Turn_t {
 	PLAYER,
@@ -55,6 +56,7 @@ static Player		*gPlayer	= NULL;
 static Map		*gMap		= NULL;
 static RoomMatrix	*gRoomMatrix	= NULL;
 static Gui		*gGui		= NULL;
+static SkillBar		*gSkillBar	= NULL;
 static Pointer		*gPointer	= NULL;
 static unsigned int	cLevel		= 1;
 static float		deltaTime	= 1.0;
@@ -181,6 +183,7 @@ initGame(void)
 	gCamera.renderer = gRenderer;
 	gRoomMatrix = roommatrix_create();
 	gGui = gui_create(gRenderer);
+	gSkillBar = skillbar_create(gRenderer);
 	item_builder_init(gRenderer);
 	gPointer = pointer_create(gRenderer);
 	particle_engine_init();
@@ -481,6 +484,7 @@ run_game(void)
 			 RIGHT_GUI_HEIGHT, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &skillBarViewport);
+	skillbar_render(gSkillBar, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
 	gui_render_log(gGui, BOTTOM_GUI_WIDTH,
@@ -600,6 +604,7 @@ void close(void)
 
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
+	skillbar_destroy(gSkillBar);
 	pointer_destroy(gPointer);
 	item_builder_close();
 	particle_engine_close();

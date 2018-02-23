@@ -93,6 +93,7 @@ add_executable(breakhack
 	src/mixer
 	src/io_util
 	src/physfsrwops
+	src/skillbar
 	)
 
 target_link_libraries(breakhack

@@ -16,16 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "defines.h"
 #include "skillbar.h"
 #include "texture.h"
 #include "util.h"
+#include "sprite.h"
 
 static void
 load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 {
+	static SDL_Color c_yellow = { 255, 255, 0, 255 };
+
 	Texture *t = texture_create();
 	texture_load_from_file(t, path, renderer);
+	t->dim.width = 16;
+	t->dim.height = 16;
 	ht_set(bar->textures, path, t);
+
+	for (unsigned int i = 0; i < 4; ++i) {
+		char buffer[1];
+		Sprite *s = sprite_create();
+		s->pos = (Position) { i * 32 + 20, 20 };
+		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8);
+		m_sprintf(buffer, 1, "%u", i+1);
+		texture_load_from_text(s->textures[0], buffer, c_yellow, renderer);
+		linkedlist_append(&bar->sprites, s);
+	}
 }
 
 SkillBar *
@@ -33,19 +49,60 @@ skillbar_create(SDL_Renderer *renderer)
 {
 	SkillBar *bar = ec_malloc(sizeof(SkillBar));
 	bar->textures = ht_create(10);
+	bar->sprites = linkedlist_create();
 	load_texture(bar, "GUI/GUI0.png", renderer);
 	return bar;
 }
 
-void
-render(SkillBar *bar, Camera *cam)
+static void
+render_frame(SkillBar *bar, Camera *cam)
 {
-	// TODO: Implement
+	static SDL_Rect c_top_left	= { 1*16, 10*16, 16, 16 };
+	static SDL_Rect c_top_right	= { 3*16, 10*16, 16, 16 };
+	static SDL_Rect c_bottom_left	= { 1*16, 12*16, 16, 16 };
+	static SDL_Rect c_bottom_right	= { 3*16, 12*16, 16, 16 };
+
+	Texture *t = ht_get(bar->textures, "GUI/GUI0.png");
+	Position p = { 0, 0 };
+
+	for (unsigned int i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		p.x = i*32;
+		p.y = 0;
+		texture_render_clip(t, &p, &c_top_left, cam);
+		p.y = 16;
+		texture_render_clip(t, &p, &c_bottom_left, cam);
+
+		p.x = i*32 + 16;
+		p.y = 0;
+		texture_render_clip(t, &p, &c_top_right, cam);
+		p.y = 16;
+		texture_render_clip(t, &p, &c_bottom_right, cam);
+	}
+}
+
+static void
+render_sprites(SkillBar *bar, Camera *cam)
+{
+	LinkedList *sprites = bar->sprites;
+
+	while (sprites) {
+		sprite_render(sprites->data, cam);
+		sprites = sprites->next;
+	}
+}
+
+void
+skillbar_render(SkillBar *bar, Camera *cam)
+{
+	render_frame(bar, cam);
+	render_sprites(bar, cam);
 }
 
 void
 skillbar_destroy(SkillBar *bar)
 {
 	ht_destroy_custom(bar->textures, (void (*)(void *)) texture_destroy);
+	while (bar->sprites)
+		sprite_destroy(linkedlist_pop(&bar->sprites));
 	free(bar);
 }

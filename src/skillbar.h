@@ -21,17 +21,19 @@
 
 #include "SDL.h"
 #include "hashtable.h"
+#include "linkedlist.h"
 #include "camera.h"
 
 typedef struct SkillBar_t {
 	Hashtable *textures;
+	LinkedList *sprites;
 } SkillBar;
 
 SkillBar *
 skillbar_create(SDL_Renderer*);
 
 void
-render(SkillBar*, Camera*);
+skillbar_render(SkillBar*, Camera*);
 
 void
 skillbar_destroy(SkillBar*);
