@@ -28,7 +28,7 @@ io_load_lua_buffer(char **dest, unsigned long *len, const char *filepath)
 	PHYSFS_File *file = PHYSFS_openRead(filepath);
 	PHYSFS_sint64 size = (unsigned long) PHYSFS_fileLength(file);
 	char *buffer = ec_malloc(sizeof(char) * (unsigned long) size);
-	PHYSFS_read(file, buffer, 1, (PHYSFS_uint32) size);
+	PHYSFS_readBytes(file, buffer, (PHYSFS_uint32) size);
 	PHYSFS_close(file);
 
 	*len = (unsigned long) size;
