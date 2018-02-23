@@ -35,12 +35,12 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	ht_set(bar->textures, path, t);
 
 	for (unsigned int i = 0; i < 4; ++i) {
-		char buffer[1];
+		char buffer[4];
 		Sprite *s = sprite_create();
 		s->pos = (Position) { i * 32 + 20, 20 };
 		s->fixed = true;
 		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8);
-		m_sprintf(buffer, 1, "%u", i+1);
+		m_sprintf(buffer, 4, "%u", i+1);
 		texture_load_from_text(s->textures[0], buffer, c_yellow, renderer);
 		linkedlist_append(&bar->sprites, s);
 	}

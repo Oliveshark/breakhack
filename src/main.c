@@ -630,6 +630,7 @@ int main(int argc, char *argv[])
 #else
 	PHYSFS_mount("assets", NULL, 0);
 #endif // DEBUG
+	PHYSFS_mount("data", NULL, 0);
 
 	if (!init())
 		return 1;

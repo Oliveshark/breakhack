@@ -309,14 +309,20 @@ l_add_monster(lua_State *L)
 }
 
 static Map*
-generate_map(unsigned int level, char *file, SDL_Renderer *renderer)
+generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 {
 	int status, result;
 
 	info("Running lua map script: %s", file);
 
 	lua_State *L = load_lua_state();
-	status = luaL_loadfile(L, file);
+
+	char *buffer = NULL;
+	long unsigned int len;
+	io_load_lua_buffer(&buffer, &len, file);
+	status = luaL_loadbuffer(L, buffer, len, file);
+	free(buffer);
+
 	if (status) {
 		fatal("Couldn't load file: %s\n", lua_tostring(L, -1));
 	}
@@ -372,13 +378,13 @@ generate_map(unsigned int level, char *file, SDL_Renderer *renderer)
 
 Map* map_lua_generator_single_room__run(unsigned int level, SDL_Renderer *renderer)
 {
-	char file[] = "data/menumapgen.lua";
+	char file[] = "menumapgen.lua";
 	return generate_map(level, file, renderer);
 }
 
 Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
 {
-	char file[] = "data/mapgen.lua";
+	char file[] = "mapgen.lua";
 	return generate_map(level, file, renderer);
 }
 
