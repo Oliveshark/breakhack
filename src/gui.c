@@ -84,7 +84,7 @@ create_label_sprite(Position pos)
 }
 
 static void
-init_sprites(Gui *gui, SDL_Renderer *renderer)
+init_sprites(Gui *gui)
 {
 	Texture *t;
 	unsigned int i;
@@ -144,7 +144,7 @@ init_sprites(Gui *gui, SDL_Renderer *renderer)
 }
 
 Gui*
-gui_create(SDL_Renderer *renderer)
+gui_create(void)
 {
 	Texture *t;
 	unsigned int i;
@@ -168,13 +168,13 @@ gui_create(SDL_Renderer *renderer)
 
 	gui_malloc_log();
 
-	init_sprites(gui, renderer);
+	init_sprites(gui);
 
 	return gui;
 }
 
 static void
-set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
+set_max_health(Gui *gui, int max)
 {
 	Texture *texture0, *texture1;
 	int i;
@@ -286,7 +286,7 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 
 	if (max_health != player->stats.maxhp) {
 		max_health = player->stats.maxhp;
-		set_max_health(gui, max_health, renderer);
+		set_max_health(gui, max_health);
 	}
 	if (current_health != player->stats.hp) {
 		current_health = player->stats.hp;
@@ -334,7 +334,7 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 }
 
 static void
-gui_render_frame(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
+gui_render_frame(unsigned int width, unsigned int height, Camera *cam)
 {
 	Texture *texture = texturecache_get("GUI/GUI0.png");
 	unsigned int i, j;
@@ -372,7 +372,7 @@ gui_render_frame(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 void
 gui_render_panel(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 {
-	gui_render_frame(gui, width/16, height/16, cam);
+	gui_render_frame(width/16, height/16, cam);
 
 	LinkedList *item = gui->health;
 	while (item != NULL) {
@@ -442,7 +442,7 @@ gui_render_log(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 	
 	render_count = LOG_LINES_COUNT > log_data.count ? log_data.count : LOG_LINES_COUNT;
 
-	gui_render_frame(gui, width/16, height/16, cam);
+	gui_render_frame(width/16, height/16, cam);
 
 	for (i = 0; i < render_count; ++i) {
 		Texture *t;

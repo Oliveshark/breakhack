@@ -184,7 +184,7 @@ initGame(void)
 	texturecache_init(gRenderer);
 	gCamera.renderer = gRenderer;
 	gRoomMatrix = roommatrix_create();
-	gGui = gui_create(gRenderer);
+	gGui = gui_create();
 	gSkillBar = skillbar_create(gRenderer);
 	item_builder_init(gRenderer);
 	gPointer = pointer_create(gRenderer);

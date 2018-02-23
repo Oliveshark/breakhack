@@ -46,7 +46,7 @@ typedef struct {
 } Gui;
 
 Gui*
-gui_create(SDL_Renderer *renderer);
+gui_create(void);
 
 void
 gui_update_player_stats(Gui*, Player*, Map*, SDL_Renderer*);

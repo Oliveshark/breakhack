@@ -59,7 +59,7 @@ skillbar_create(SDL_Renderer *renderer)
 }
 
 static void
-render_frame(SkillBar *bar, Camera *cam)
+render_frame(Camera *cam)
 {
 	static SDL_Rect c_top_left	= { 1*16, 10*16, 16, 16 };
 	static SDL_Rect c_top_right	= { 3*16, 10*16, 16, 16 };
@@ -116,7 +116,7 @@ render_activation_indicator(SkillBar *bar, Camera *cam)
 void
 skillbar_render(SkillBar *bar, Camera *cam)
 {
-	render_frame(bar, cam);
+	render_frame(cam);
 	render_sprites(bar, cam);
 	render_activation_indicator(bar, cam);
 }
