@@ -189,7 +189,7 @@ gui_create(SDL_Renderer *renderer)
 static void
 set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 {
-	Texture *texture;
+	Texture *texture0, *texture1;
 	int i;
 
 	assert(max % 3 == 0);
@@ -201,14 +201,17 @@ set_max_health(Gui *gui, int max, SDL_Renderer *renderer)
 	while (gui->health != NULL)
 		sprite_destroy(linkedlist_pop(&gui->health));
 
-	texture = add_texture(gui, "GUI/GUI0.png", renderer);
+	texture0 = add_texture(gui, "GUI/GUI0.png", renderer);
+	texture1 = add_texture(gui, "GUI/GUI1.png", renderer);
 
 	for (i = 0; i < max/3; ++i) {
 		Sprite *sprite = sprite_create();
 		sprite->fixed = true;
+		sprite->animate = false;
 		sprite->clip = (SDL_Rect) { 0, 16, 16, 16 };
 		sprite->pos = (Position) { 16 + (i%8)*16, 16 + ((i-(i%8))/8)*16 };
-		sprite_set_texture(sprite, texture, 0);
+		sprite_set_texture(sprite, texture0, 0);
+		sprite_set_texture(sprite, texture1, 1);
 		linkedlist_append(&gui->health, sprite);
 	}
 }
@@ -233,6 +236,8 @@ set_current_health(Gui *gui, int current)
 		} else {
 			sprite->clip.x = 64;
 		}
+
+		sprite->animate = current < 9;
 
 		++count;
 		item = item->next;

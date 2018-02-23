@@ -32,6 +32,7 @@ sprite_create_default(void)
 	s->renderTimer = timer_create();
 	s->texture_index = 0;
 	s->fixed = false;
+	s->animate = true;
 	s->hidden = false;
 
 	return s;
@@ -93,7 +94,7 @@ void sprite_render(Sprite *s, Camera *cam)
 	if (s->hidden)
 		return;
 
-	if (s->textures[1]) {
+	if (s->textures[1] && s->animate) {
 		if (!timer_started(s->renderTimer))
 			timer_start(s->renderTimer);
 
