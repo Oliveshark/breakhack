@@ -127,19 +127,20 @@ skillbar_handle_event(SkillBar *bar, SDL_Event *event)
 	if (event->type != SDL_KEYDOWN)
 		return;
 
+	unsigned int key = 0;
 	if (keyboard_press(SDLK_1, event))
-		bar->lastActivation = 1;
+		key = 1;
 	else if (keyboard_press(SDLK_2, event))
-		bar->lastActivation = 2;
+		key = 2;
 	else if (keyboard_press(SDLK_3, event))
-		bar->lastActivation = 3;
+		key = 3;
 	else if (keyboard_press(SDLK_4, event))
-		bar->lastActivation = 4;
-	else
-		bar->lastActivation = 0;
+		key = 4;
 
-	if (bar->lastActivation > 0)
+	if (key != 0) {
+		bar->lastActivation = key;
 		timer_start(bar->activationTimer);
+	}
 }
 
 void
