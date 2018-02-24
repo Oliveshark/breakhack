@@ -111,7 +111,7 @@ create_treasure(int current_level)
 
 	value = get_random(highest_treasure);
 
-	SDL_Rect clip = { 0, 0, 16, 16 };
+	SDL_Rect clip = CLIP16(0, 0);
 	switch (value) {
 		case COPPER:
 			m_sprintf(&label[0], 50, "%.0f copper", amt);
@@ -162,13 +162,13 @@ item_builder_build_item(ItemKey key, int level)
 			break;
 		case FLESH:
 			item = create_item(path_flesh,
-					   (SDL_Rect) { get_random(7) * 16, get_random(1) * 16, 16, 16 },
+					   CLIP16(get_random(7) * 16, get_random(1) * 16),
 					   &eat_flesh);
 			item->value = 1 + get_random(level*2);
 			break;
 		case HEALTH:
 			item = create_item(path_potion,
-					   (SDL_Rect) { 0, 0, 16, 16 },
+					   CLIP16(0, 0),
 					   &drink_health);
 			item->value = 1 + get_random(level*2);
 			break;
@@ -184,7 +184,7 @@ Item *
 item_builder_build_sack(void)
 {
 	return create_item("Items/Chest0.png",
-			   (SDL_Rect) { 0, 32, 16, 16 },
+			   CLIP16(0, 32),
 			   NULL);
 }
 
