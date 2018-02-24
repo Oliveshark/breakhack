@@ -29,6 +29,7 @@
 #include "timer.h"
 #include "defines.h"
 #include "monster.h"
+#include "player.h"
 
 typedef struct MapTile_t {
 	int textureIndex0;
@@ -74,7 +75,7 @@ bool
 map_move_monsters(Map*, RoomMatrix*);
 
 void
-map_clear_dead_monsters(Map*);
+map_clear_dead_monsters(Map*, Player*);
 
 void
 map_clear_collected_items(Map*);

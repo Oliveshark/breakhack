@@ -446,7 +446,7 @@ check_next_level(void)
 static void
 run_game(void)
 {
-	map_clear_dead_monsters(gMap);
+	map_clear_dead_monsters(gMap, gPlayer);
 	map_clear_collected_items(gMap);
 	roommatrix_populate_from_map(gRoomMatrix, gMap);
 	roommatrix_add_lightsource(gRoomMatrix,

@@ -95,7 +95,7 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 }
 
 void
-map_clear_dead_monsters(Map *map)
+map_clear_dead_monsters(Map *map, Player *player)
 {
 	LinkedList *last, *current, *next;
 
@@ -112,7 +112,7 @@ map_clear_dead_monsters(Map *map)
 			Monster *monster = current->data;
 
 			// Loot drops
-			monster_drop_loot(monster, map);
+			monster_drop_loot(monster, map, player);
 
 			monster_destroy(monster);
 			current->data = NULL;

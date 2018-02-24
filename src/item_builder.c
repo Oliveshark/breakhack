@@ -158,13 +158,13 @@ item_builder_build_item(ItemKey key, int level)
 	Item *item = NULL;
 	switch (key) {
 		case TREASURE:
-			item = create_treasure(level);
+			item = create_treasure(level*2);
 			break;
 		case FLESH:
 			item = create_item(path_flesh,
-					   (SDL_Rect) { 0, 0, 16, 16 },
+					   (SDL_Rect) { get_random(7) * 16, get_random(1) * 16, 16, 16 },
 					   &eat_flesh);
-			item->value = get_random(level);
+			item->value = 1 + get_random(level*2);
 			break;
 		case HEALTH:
 			item = create_item(path_potion,

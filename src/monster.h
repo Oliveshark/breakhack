@@ -23,6 +23,7 @@
 #include "sprite.h"
 #include "stats.h"
 #include "actiontext.h"
+#include "player.h"
 
 typedef enum { PASSIVE, AGRESSIVE, SCARED } StateType;
 
@@ -61,7 +62,7 @@ void
 monster_update_stats_for_level(Monster*, unsigned int level);
 
 void
-monster_drop_loot(Monster*, Map*);
+monster_drop_loot(Monster*, Map*, Player*);
 
 void
 monster_destroy(Monster*);
