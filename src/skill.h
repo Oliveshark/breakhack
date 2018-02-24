@@ -16,37 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTIL_H_
-#define	UTIL_H_
+#ifndef SKILL_H_
+#define	SKILL_H_
+
+#include <stdbool.h>
+#include "player.h"
+#include "roommatrix.h"
+#include "sprite.h"
+
+enum SkillType {
+	FLURRY
+};
+
+typedef struct Skill_t {
+	char label[20];
+	Sprite *icon;
+	bool active;
+	void (*use)(struct Skill_t*, Player*, RoomMatrix*);
+} Skill;
+
+Skill*
+skill_create(enum SkillType);
 
 void
-fatal(const char *fmt, ...);
+skill_destroy(Skill*);
 
-void
-error(const char *fmt, ...);
-
-void
-debug(const char *fmt, ...);
-
-void
-info(const char *fmt, ...);
-
-void *
-ec_malloc(unsigned long size);
-
-void
-m_strcpy(char *dest, size_t destsz, const char *src);
-
-void
-m_strncat(char *dest, size_t destsz, char *src, size_t srcsz);
-
-void
-m_sprintf(char *dest, size_t destsz, const char *format, ...);
-
-void
-timestamp(char *tstamp, size_t sz);
-
-char *
-to_lower(const char *str);
-
-#endif // UTIL_H_
+#endif // SKILL_H_

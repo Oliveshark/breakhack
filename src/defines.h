@@ -47,8 +47,10 @@
 #define SCREEN_WIDTH		(GAME_VIEW_WIDTH + RIGHT_GUI_WIDTH)
 #define SCREEN_HEIGHT		(RIGHT_GUI_HEIGHT + BOTTOM_GUI_HEIGHT)
 
+/* Quality of life stuff */
 #define DEFAULT_DIMENSION	(Dimension) { 16, 16 }
 #define GAME_DIMENSION		(Dimension) { TILE_DIMENSION, TILE_DIMENSION }
+#define CLIP16(x, y)			(SDL_Rect) { x, y, 16, 16 }
 
 /* Windows and compile crap */
 #ifdef _WIN32

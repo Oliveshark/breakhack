@@ -95,6 +95,7 @@ add_executable(breakhack
 	src/physfsrwops
 	src/skillbar
 	src/texturecache
+	src/skill
 	)
 
 target_link_libraries(breakhack

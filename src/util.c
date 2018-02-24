@@ -32,7 +32,7 @@
 #include "util.h"
 
 void
-m_strcpy(char *dest, size_t destsz, char *src)
+m_strcpy(char *dest, size_t destsz, const char *src)
 {
 #ifndef _MSC_VER
 	UNUSED(destsz);
