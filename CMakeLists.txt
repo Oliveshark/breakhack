@@ -188,7 +188,9 @@ if (WIN32)
 		${CMAKE_SOURCE_DIR}/bin/SDL2_image.dll
 		${CMAKE_SOURCE_DIR}/bin/SDL2_mixer.dll
 		${CMAKE_SOURCE_DIR}/bin/SDL2_ttf.dll
+		${CMAKE_SOURCE_DIR}/bin/ucrtbased.dll
 		${CMAKE_SOURCE_DIR}/bin/zlib1.dll
+		${CMAKE_SOURCE_DIR}/bin/vcruntime140d.dll
 	)
 endif (WIN32)
 
