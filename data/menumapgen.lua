@@ -1,5 +1,5 @@
-local room_builder = require "data/maproombuilder"
-local monster_gen = require "data/monstergen"
+local room_builder = require "maproombuilder"
+local monster_gen = require "monstergen"
 
 map = create_map(CURRENT_LEVEL) -- 'map' needs to be global
 

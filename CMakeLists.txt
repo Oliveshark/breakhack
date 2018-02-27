@@ -123,6 +123,15 @@ if (NOT WIN32)
 		)
 endif (NOT WIN32)
 
+if (WIN32)
+	set_target_properties(breakhack PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
+	set_target_properties(breakhack PROPERTIES COMPILE_DEFINITIONS_DEBUG "_CONSOLE")
+	set_target_properties(breakhack PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:CONSOLE")
+	set_target_properties(breakhack PROPERTIES COMPILE_DEFINITIONS_RELWITHDEBINFO "_CONSOLE")
+	set_target_properties(breakhack PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
+	set_target_properties(breakhack PROPERTIES LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:WINDOWS")
+endif (WIN32)
+
 # TESTS:
 IF (CHECK_FOUND AND NOT WIN32)
 	find_package(Threads REQUIRED)
@@ -153,6 +162,17 @@ if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
 		)
 endif (NOT CMAKE_BUILD_TYPE MATCHES Debug)
 
+if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
+	add_custom_target(data_pack ALL
+		COMMAND ${CMAKE_COMMAND} -E tar "-cf" "../data.pack" "--format=zip" --
+			"mapgen.lua"
+			"maproombuilder.lua"
+			"menumapgen.lua"
+			"monstergen.lua"
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
+		)
+endif (NOT CMAKE_BUILD_TYPE MATCHES Debug)
+
 if (WIN32)
 	set(DLL_FILES
 		${CMAKE_SOURCE_DIR}/bin/libFLAC-8.dll
@@ -173,6 +193,22 @@ if (WIN32)
 endif (WIN32)
 
 include(InstallRequiredSystemLibraries)
+INSTALL(TARGETS breakhack
+	COMPONENT Release
+	RUNTIME DESTINATION .
+)
+INSTALL(FILES assets.pack data.pack
+	COMPONENT Release
+	DESTINATION .
+)
+if (WIN32)
+	INSTALL(FILES ${DLL_FILES}
+		COMPONENT Release
+		DESTINATION .
+	)
+endif (WIN32)
+
+set(CPACK_INSTALL_CMAKE_PROJECTS "${PROJECT_BINARY_DIR};breakhack;Release;.")
 set(CPACK_PACKAGE_NAME "BreakHack")
 set(CPACK_PACKAGE_VENDOR "OliveShark")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
@@ -184,26 +220,10 @@ set(CPACK_PACKAGE_VERSION_PATCH "1")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "BreakHack")
 set(CPACK_PACKAGE_FILE_NAME "breakhack-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 set(CPACK_PACKAGE_CHECKSUM "MD5")
-set(CPACK_INSTALL_CMAKE_PROJECTS ${PROJECT_BINARY_DIR} breakhack Release package)
+
 if(UNIX)
 	set(CPACK_STRIP_FILES breakhack)
 	set(CPACK_SOURCE_STRIP_FILES "")
 endif(UNIX)
-set(CPACK_PACKAGE_EXECUTABLES breakhack "BreakHack")
-include(CPack)
 
-INSTALL(TARGETS breakhack
-	COMPONENT Release
-	RUNTIME DESTINATION bin
-)
-INSTALL(FILES assets.pack
-	COMPONENT Release
-	DESTINATION bin
-)
-INSTALL(DIRECTORY data
-	COMPONENT Release
-	DESTINATION bin
-)
-if (WIN32)
-	INSTALL(FILES ${DLL_FILES} DESTINATION bin)
-endif (WIN32)
+include(CPack)

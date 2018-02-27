@@ -25,6 +25,8 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
+#include <physfs.h>
+
 #include "map_lua.h"
 #include "util.h"
 #include "stats.h"
@@ -52,7 +54,7 @@ static int
 l_print_info(lua_State *L)
 {
 	const char *str = luaL_checkstring(L, 1);
-	info(str);
+	debug(str);
 	return 0;
 }
 
@@ -173,7 +175,7 @@ static Stats
 lua_checkstats(lua_State *L, int index)
 {
 	// Confirm table
-	luaL_checktype(L, index, LUA_TTABLE);
+	lua_istable(L, index);
 
 	// Push to top of stack
 	lua_pushvalue(L, index);
@@ -310,12 +312,38 @@ l_add_monster(lua_State *L)
 	return 0;
 }
 
+static int
+l_load_script(lua_State *L)
+{
+	unsigned long size;
+	const char *name = luaL_checkstring(L, 1);
+	char *content;
+
+	char filename[20];
+
+	m_sprintf(filename, 20, "%s.lua", name);
+
+	if (!PHYSFS_exists(filename)) {
+		luaL_error(L, "Unable to locate module: %s\n", name);
+		return 1; // Unable to locate file
+	}
+	debug("Loading module: %s from %s", name, filename);
+
+	io_load_lua_buffer(&content, &size, filename);
+	if (luaL_loadbuffer(L, content, size, name) != 0) {
+		luaL_error(L, "Error loading module %s from file %s\n\t%s", lua_tostring(L, 1), filename, lua_tostring(L, -1));
+	}
+	free(content);
+
+	return 1;
+}
+
 static Map*
 generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 {
 	int status, result;
 
-	info("Running lua map script: %s", file);
+	debug("Running lua map script: %s", file);
 
 	lua_State *L = load_lua_state();
 
@@ -360,6 +388,13 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 	lua_pushinteger(L, level);
 	lua_setglobal(L, "CURRENT_LEVEL");
 
+	// Add custom searcher
+	lua_getglobal(L, "package");
+	lua_getfield(L, -1, "searchers");
+	lua_pushcfunction(L, l_load_script);
+	lua_rawseti(L, -2, 1);
+	lua_pop(L, 2);
+
 	result = lua_pcall(L, 0, LUA_MULTRET, 0);
 	if (result) {
 		fatal("Failed to run script: %s\n", lua_tostring(L, -1));
@@ -373,7 +408,7 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 	// Reset the map
 	map->currentRoom = (Position) { 0, 0 };
 
-	info("Done");
+	debug("Done");
 
 	return map;
 }

@@ -2,6 +2,7 @@
 /*.dll
 /tags
 /assets.pack
+/data.pack
 /.vs/
 *.swp
 *~

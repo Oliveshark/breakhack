@@ -632,10 +632,11 @@ int main(int argc, char *argv[])
 	PHYSFS_init(argv[0]);
 #ifndef DEBUG
 	PHYSFS_mount("assets.pack", NULL, 0);
+	PHYSFS_mount("data.pack", NULL, 0);
 #else
 	PHYSFS_mount("assets", NULL, 0);
-#endif // DEBUG
 	PHYSFS_mount("data", NULL, 0);
+#endif // DEBUG
 
 	if (!init())
 		return 1;

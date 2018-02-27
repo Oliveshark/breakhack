@@ -1,5 +1,5 @@
-local room_builder = require "data/maproombuilder"
-local monster_gen = require "data/monstergen"
+local room_builder = require "maproombuilder"
+local monster_gen = require "monstergen"
 
 -- Setting up some functions
 local time = os.time
