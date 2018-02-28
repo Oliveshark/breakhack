@@ -19,6 +19,7 @@
 #ifndef VECTOR2D_H_
 #define	VECTOR2D_H_
 
+#define VECTOR2D_NODIR	(Vector2d) {  0,  0 }
 #define VECTOR2D_RIGHT	(Vector2d) {  1,  0 }
 #define VECTOR2D_LEFT	(Vector2d) { -1,  0 }
 #define VECTOR2D_UP		(Vector2d) {  0, -1 }

@@ -94,7 +94,7 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 }
 
 static void
-create_explosion(Position pos, Dimension dim, size_t c_count, ...)
+create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 {
 	SDL_Color *colors = ec_malloc(c_count * sizeof(SDL_Color));
 

@@ -489,7 +489,7 @@ run_game(void)
 			 RIGHT_GUI_HEIGHT, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &skillBarViewport);
-	skillbar_render(gSkillBar, &gCamera);
+	skillbar_render(gSkillBar, gPlayer, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
 	gui_render_log(gGui, BOTTOM_GUI_WIDTH,

@@ -20,17 +20,20 @@
 #define	SKILL_H_
 
 #include <stdbool.h>
-#include "player.h"
 #include "roommatrix.h"
 #include "sprite.h"
 #include "vector2d.h"
 
+// Forward declaration
+struct Player_t;
+
 enum SkillType {
-	FLURRY
+	FLURRY,
+	SIP_HEALTH
 };
 
 typedef struct SkillData_t {
-	Player *player;
+	struct Player_t *player;
 	RoomMatrix *matrix;
 	Vector2d direction;
 } SkillData;
@@ -40,6 +43,8 @@ typedef struct Skill_t {
 	Sprite *icon;
 	unsigned int resetTime;
 	unsigned int resetCountdown;
+	bool actionRequired;
+	bool instantUse;
 	bool active;
 	bool (*use)(struct Skill_t*, SkillData*);
 } Skill;

@@ -23,6 +23,7 @@
 #include "linkedlist.h"
 #include "camera.h"
 #include "timer.h"
+#include "player.h"
 
 typedef struct SkillBar_t {
 	LinkedList *sprites;
@@ -34,7 +35,7 @@ SkillBar *
 skillbar_create(SDL_Renderer*);
 
 void
-skillbar_render(SkillBar*, Camera*);
+skillbar_render(SkillBar*, Player*, Camera*);
 
 void
 skillbar_handle_event(SkillBar*, SDL_Event*);

@@ -34,7 +34,7 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	t->dim.width = 16;
 	t->dim.height = 16;
 
-	for (unsigned int i = 0; i < 4; ++i) {
+	for (unsigned int i = 0; i < 5; ++i) {
 		char buffer[4];
 		Sprite *s = sprite_create();
 		s->pos = (Position) { i * 32 + 20, 20 };
@@ -113,11 +113,56 @@ render_activation_indicator(SkillBar *bar, Camera *cam)
 	SDL_RenderDrawRect(cam->renderer, &square);
 }
 
+static void
+render_skills(SkillBar *bar, Player *player, Camera *cam)
+{
+	static SDL_Rect activeSkillBox = { 0, 0, 32, 32 };
+
+	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (!player->skills[i])
+			continue;
+
+		Skill *skill = player->skills[i];
+		skill->icon->pos = (Position) { 8 + i * 32, 8 };
+		sprite_render(skill->icon, cam);
+
+		if (player->skills[i]->active) {
+			activeSkillBox.x = i * 32;
+			SDL_SetRenderDrawColor(cam->renderer, 0, 0, 255, 100);
+			SDL_RenderFillRect(cam->renderer, &activeSkillBox);
+		}
+		if (player->skills[i]->resetCountdown > 0) {
+			activeSkillBox.x = i * 32;
+			SDL_SetRenderDrawColor(cam->renderer, 255, 0, 0, 100);
+			SDL_RenderFillRect(cam->renderer, &activeSkillBox);
+		}
+	}
+}
+
+static void
+render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
+{
+	static SDL_Rect unavailableSkillBox = { 0, 0, 32, 32 };
+
+	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (!player->skills[i])
+			continue;
+
+		if (player->skills[i]->resetCountdown > 0) {
+			unavailableSkillBox.x = i * 32;
+			SDL_SetRenderDrawColor(cam->renderer, 255, 0, 0, 70);
+			SDL_RenderFillRect(cam->renderer, &unavailableSkillBox);
+		}
+	}
+}
+
 void
-skillbar_render(SkillBar *bar, Camera *cam)
+skillbar_render(SkillBar *bar, Player *player, Camera *cam)
 {
 	render_frame(cam);
+	render_skills(bar, player, cam);
 	render_sprites(bar, cam);
+	render_skill_unavailable(bar, player, cam);
 	render_activation_indicator(bar, cam);
 }
 
@@ -136,6 +181,8 @@ skillbar_handle_event(SkillBar *bar, SDL_Event *event)
 		key = 3;
 	else if (keyboard_press(SDLK_4, event))
 		key = 4;
+	else if (keyboard_press(SDLK_5, event))
+		key = 5;
 
 	if (key != 0) {
 		bar->lastActivation = key;

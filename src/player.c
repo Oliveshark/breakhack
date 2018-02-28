@@ -113,15 +113,8 @@ has_collided(Player *player, RoomMatrix *matrix)
 		else
 			gui_log("You missed %s", space->monster->lclabel);
 
-		if (space->monster->stats.hp <= 0) {
-			unsigned int gained_xp = 5 * space->monster->stats.lvl;
-			player->kills += 1;
+		player_monster_kill_check(player, space->monster);
 
-			mixer_play_effect(DEATH);
-			gui_log("You killed %s and gained %d xp",
-				space->monster->lclabel, gained_xp);
-			player_gain_xp(player, gained_xp);
-		}
 	} else if (collided) {
 		mixer_play_effect(BONK);
 		gui_log("Ouch! There is something in the way");
@@ -146,6 +139,11 @@ player_step(Player *p)
 	p->steps++;
 	p->missText->pos = p->sprite->pos;
 	p->hitText->pos = p->sprite->pos;
+
+	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (p->skills[i] != NULL && p->skills[i]->resetCountdown > 0)
+			p->skills[i]->resetCountdown--;
+	}
 }
 
 static void
@@ -192,8 +190,8 @@ move_down(Player *player, RoomMatrix *matrix)
 	player_step(player);
 }
 
-static void
-sip_health(Player *player)
+void
+player_sip_health(Player *player)
 {
 	if (player->potion_sips > 0) {
 		--player->potion_sips;
@@ -245,16 +243,91 @@ handle_movement_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 }
 
 static void
+check_skill_activation(Player *player, RoomMatrix *matrix, SDL_Event *event)
+{
+	// TODO(Linus): This could be "smarter"
+	unsigned int selected = 0;
+	if (keyboard_press(SDLK_1, event)) {
+		selected = 1;
+	}
+	else if (keyboard_press(SDLK_2, event)) {
+		selected = 2;
+	}
+	else if (keyboard_press(SDLK_3, event)) {
+		selected = 3;
+	}
+	else if (keyboard_press(SDLK_4, event)) {
+		selected = 4;
+	}
+	else if (keyboard_press(SDLK_5, event)) {
+		selected = 5;
+	}
+
+	if (selected == 0)
+		return;
+
+	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (!player->skills[i])
+			continue;
+
+		Skill *skill = player->skills[i];
+		skill->active = (selected - 1) == i && !skill->active && skill->resetCountdown == 0;
+		if (skill->active && skill->instantUse) {
+			SkillData skillData = { player, matrix, VECTOR2D_NODIR };
+			skill->active = false;
+			skill->use(skill, &skillData);
+			if (skill->actionRequired)
+				player_step(player);
+			skill->resetCountdown = skill->resetTime;
+		}
+	}
+}
+
+static bool
+check_skill_trigger(Player *player, RoomMatrix *matrix, SDL_Event *event)
+{
+	int activeSkill = -1;
+	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (player->skills[i] && player->skills[i]->active) {
+			activeSkill = i;
+			break;
+		}
+	}
+
+	if (activeSkill < 0)
+		return false;
+
+	Vector2d dir;
+	if (keyboard_direction_press(UP, event))
+		dir = VECTOR2D_UP;
+	else if (keyboard_direction_press(DOWN, event))
+		dir = VECTOR2D_DOWN;
+	else if (keyboard_direction_press(LEFT, event))
+		dir = VECTOR2D_LEFT;
+	else if (keyboard_direction_press(RIGHT, event))
+		dir = VECTOR2D_RIGHT;
+	else
+		return false;
+
+	SkillData skillData = { player, matrix, dir };
+	player->skills[activeSkill]->use(player->skills[activeSkill], &skillData);
+	player->skills[activeSkill]->active = false;
+	if (player->skills[activeSkill]->actionRequired)
+		player_step(player);
+	player->skills[activeSkill]->resetCountdown = player->skills[activeSkill]->resetTime;
+
+	return true;
+}
+
+static void
 handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 {
 	if (event->type != SDL_KEYDOWN)
 		return;
 
-	if (keyboard_mod_press(SDLK_h, KMOD_SHIFT, event)) {
-		sip_health(player);
-	} else {
+	check_skill_activation(player, matrix, event);
+	if (!check_skill_trigger(player, matrix, event))
 		handle_movement_input(player, matrix, event);
-	}
 }
 
 static void
@@ -282,13 +355,17 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->sprite = sprite_create();
 	player->total_steps	= 0;
 	player->steps		= 0;
-	player->xp		= 0;
+	player->xp			= 0;
 	player->hits		= 0;
 	player->kills		= 0;
 	player->misses		= 0;
 	player->gold		= 0;
 	player->potion_sips	= 0;
 	player->class		= class;
+
+	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		player->skills[i] = NULL;
+	}
 
 	char asset[100];
 	switch (class) {
@@ -311,8 +388,11 @@ player_create(class_t class, SDL_Renderer *renderer)
 		case WARRIOR:
 			m_strcpy(asset, 100, "Commissions/Warrior.png");
 			player->stats = (Stats) WARRIOR_STATS;
+			player->skills[0] = skill_create(FLURRY);
 			break;
 	}
+
+	player->skills[4] = skill_create(SIP_HEALTH);
 
 	sprite_load_texture(player->sprite, asset, 0, renderer);
 	player->sprite->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
@@ -332,6 +412,23 @@ ExperienceData player_get_xp_data(Player *p)
 	data.nextLevel = next_level_threshold(p->stats.lvl);
 	data.level = p->stats.lvl;
 	return data;
+}
+
+void
+player_monster_kill_check(Player *player, Monster *monster)
+{
+	if (!monster)
+		return;
+
+	if (monster->stats.hp <= 0) {
+		unsigned int gained_xp = 5 * monster->stats.lvl;
+		player->kills += 1;
+
+		mixer_play_effect(DEATH);
+		gui_log("You killed %s and gained %d xp",
+			monster->lclabel, gained_xp);
+		player_gain_xp(player, gained_xp);
+	}
 }
 
 void
@@ -392,6 +489,12 @@ player_destroy(Player *player)
 		sprite_destroy(player->sprite);
 	actiontext_destroy(player->hitText);
 	actiontext_destroy(player->missText);
+
+	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (player->skills[i])
+			skill_destroy(player->skills[i]);
+		player->skills[i] = NULL;
+	}
 
 	free(player);
 }

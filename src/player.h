@@ -24,6 +24,9 @@
 #include "stats.h"
 #include "actiontext.h"
 #include "camera.h"
+#include "skill.h"
+
+#define PLAYER_SKILL_COUNT 5
 
 enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR };
 typedef enum PlayerClass class_t;
@@ -49,6 +52,7 @@ typedef struct Player_t {
 	double gold;
 	unsigned int potion_sips;
 	class_t class;
+	Skill *skills[PLAYER_SKILL_COUNT];
 	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 
@@ -57,6 +61,12 @@ player_create(class_t, SDL_Renderer*);
 
 ExperienceData
 player_get_xp_data(Player*);
+
+void
+player_monster_kill_check(Player*, Monster*);
+
+void
+player_sip_health(Player*);
 
 void
 player_hit(Player*, unsigned int dmg);

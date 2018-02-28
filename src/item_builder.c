@@ -95,7 +95,7 @@ static Item *
 create_treasure(int current_level)
 {
 	double amt;
-	char label[50];
+	char label[50] = "";
 	unsigned int highest_treasure;
 	unsigned int value;
 
@@ -109,25 +109,25 @@ create_treasure(int current_level)
 		highest_treasure = GOLD;
 	}
 
-	value = get_random(highest_treasure);
+	value = get_random(highest_treasure) - 1;
 
 	SDL_Rect clip = CLIP16(0, 0);
 	switch (value) {
 		case COPPER:
-			m_sprintf(&label[0], 50, "%.0f copper", amt);
+			m_sprintf(label, 50, "%.0f copper", amt);
 			amt /= 100;
 			break;
 		case SILVER:
-			m_sprintf(&label[0], 50, "%.0f silver", amt);
+			m_sprintf(label, 50, "%.0f silver", amt);
 			clip.x = 48;
 			amt /= 10;
 			break;
 		case GOLD:
-			m_sprintf(&label[0], 50, "%.0f gold", amt);
+			m_sprintf(label, 50, "%.0f gold", amt);
 			clip.y = 16;
 			break;
 		case PLATINUM:
-			m_sprintf(&label[0], 50, "%.0f platinum", amt);
+			m_sprintf(label, 50, "%.0f platinum", amt);
 			clip.x = 48;
 			clip.y = 16;
 			amt *= 10;

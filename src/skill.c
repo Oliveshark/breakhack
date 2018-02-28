@@ -21,6 +21,13 @@
 #include "texturecache.h"
 #include "skill.h"
 #include "util.h"
+#include "player.h"
+#include "roommatrix.h"
+#include "stats.h"
+#include "monster.h"
+#include "mixer.h"
+#include "gui.h"
+#include "random.h"
 
 static Skill *
 create_default(const char *s_label, Sprite *s)
@@ -30,6 +37,9 @@ create_default(const char *s_label, Sprite *s)
 	skill->resetTime = 5;
 	skill->resetCountdown = 0;
 	skill->icon = s;
+	skill->actionRequired = true;
+	skill->instantUse = false;
+	skill->active = false;
 	skill->use = NULL;
 	return skill;
 }
@@ -37,9 +47,29 @@ create_default(const char *s_label, Sprite *s)
 static bool
 skill_use_flurry(Skill *skill, SkillData *data)
 {
-	Position pos = position_to_matrix_coords(&data->player->sprite->pos);
-	UNUSED(pos);
-	UNUSED(skill);
+	Position playerPos = position_to_matrix_coords(&data->player->sprite->pos);
+	Position targetPos = playerPos;
+	targetPos.x += (int) data->direction.x;
+	targetPos.y += (int) data->direction.y;
+
+	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
+	if (monster) {
+		gui_log("You attack %s with a flurry of strikes", monster->lclabel);
+		for (size_t i = 0; i < 3; ++i) {
+			unsigned int dmg = stats_fight(&data->player->stats, &monster->stats);
+			mixer_play_effect((SWING0 - 1) + get_random(3));
+			if (dmg > 0) {
+				gui_log("You hit for %u damage", dmg);
+				mixer_play_effect(SWORD_HIT);
+				monster_hit(monster, dmg);
+			}
+		}
+
+	} else {
+		gui_log("You swing at thin air with a flurry of strikes");
+	}
+	player_monster_kill_check(data->player, monster);
+
 	return true;
 }
 
@@ -57,12 +87,37 @@ create_flurry(void)
 	return skill;
 }
 
+static bool
+skill_sip_health(Skill *skill, SkillData *data)
+{
+	player_sip_health(data->player);
+	return true;
+}
+
+static Skill *
+create_sip_health()
+{
+	Texture *t = texturecache_add("Items/Potion.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = DEFAULT_DIMENSION;
+	s->clip = CLIP16(0, 0);
+	s->fixed = true;
+	Skill *skill = create_default("Sip health", s);
+	skill->instantUse = true;
+	skill->use = skill_sip_health;
+	skill->resetTime = 0;
+	return skill;
+}
+
 Skill*
 skill_create(enum SkillType t)
 {
 	switch (t) {
 		case FLURRY:
 			return create_flurry();
+		case SIP_HEALTH:
+			return create_sip_health();
 		default:
 			fatal("Unknown SkillType %u", (unsigned int) t);
 			return NULL;
