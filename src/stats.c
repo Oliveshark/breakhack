@@ -51,7 +51,7 @@ stats_fight(Stats *attacker, Stats *defender)
 
 		if (critical) {
 			dmgRoll = dmgRoll * 2;
-			gui_log("You have scored a critical hit");
+			gui_log("CRITICAL HIT!");
 		}
 
 		defender->hp -= dmgRoll;
