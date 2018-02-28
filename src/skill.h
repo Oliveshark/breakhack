@@ -23,16 +23,25 @@
 #include "player.h"
 #include "roommatrix.h"
 #include "sprite.h"
+#include "vector2d.h"
 
 enum SkillType {
 	FLURRY
 };
 
+typedef struct SkillData_t {
+	Player *player;
+	RoomMatrix *matrix;
+	Vector2d direction;
+} SkillData;
+
 typedef struct Skill_t {
 	char label[20];
 	Sprite *icon;
+	unsigned int resetTime;
+	unsigned int resetCountdown;
 	bool active;
-	void (*use)(struct Skill_t*, Player*, RoomMatrix*);
+	bool (*use)(struct Skill_t*, SkillData*);
 } Skill;
 
 Skill*

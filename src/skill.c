@@ -27,9 +27,20 @@ create_default(const char *s_label, Sprite *s)
 {
 	Skill *skill = ec_malloc(sizeof(Skill));
 	m_strcpy(skill->label, 20, s_label);
+	skill->resetTime = 5;
+	skill->resetCountdown = 0;
 	skill->icon = s;
 	skill->use = NULL;
 	return skill;
+}
+
+static bool
+skill_use_flurry(Skill *skill, SkillData *data)
+{
+	Position pos = position_to_matrix_coords(&data->player->sprite->pos);
+	UNUSED(pos);
+	UNUSED(skill);
+	return true;
 }
 
 static Skill *
@@ -42,6 +53,7 @@ create_flurry(void)
 	s->clip = CLIP16(0, 0);
 	s->fixed = true;
 	Skill *skill = create_default("Flurry", s);
+	skill->use = skill_use_flurry;
 	return skill;
 }
 
