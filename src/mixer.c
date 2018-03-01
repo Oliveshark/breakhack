@@ -28,8 +28,8 @@ static Music loaded_song = LAST_MUSIC;
 static char *music[LAST_MUSIC] = {
 	 "Sounds/Music/fantasy-game-background-looping.ogg",	  // GAME_MUSIC0
 	 "Sounds/Music/bog-creatures-on-the-move-looping.ogg",	  // GAME_MUSIC1
-	 "Sounds/Music/fantascape-looping.ogg",					  // GAME_MUSIC2
-	 "Sounds/Music/fantasy-forest-battle.ogg"				  // MENU_MUSIC
+	 "Sounds/Music/fantascape-looping.ogg",			  // GAME_MUSIC2
+	 "Sounds/Music/fantasy-forest-battle.ogg"		  // MENU_MUSIC
 };
 
 static bool sound_enabled = true;
@@ -60,7 +60,10 @@ load_effects(void)
 	effects[SWING0] = load_effect("Sounds/FX/swing.wav");
 	effects[SWING1] = load_effect("Sounds/FX/swing2.wav");
 	effects[SWING2] = load_effect("Sounds/FX/swing3.wav");
+	effects[TRIPPLE_SWING] = load_effect("Sounds/FX/tripple_swing.wav");
 	effects[SWORD_HIT] = load_effect("Sounds/FX/sword_hit.wav");
+	effects[DOUBLE_SWORD_HIT] = load_effect("Sounds/FX/double_sword_hit.wav");
+	effects[TRIPPLE_SWORD_HIT] = load_effect("Sounds/FX/tripple_sword_hit.wav");
 	effects[BONK] = load_effect("Sounds/FX/bonk.wav");
 	effects[DEATH] = load_effect("Sounds/FX/death.wav");
 	effects[COIN] = load_effect("Sounds/FX/coin.wav");

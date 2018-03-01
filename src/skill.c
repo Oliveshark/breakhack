@@ -55,16 +55,25 @@ skill_use_flurry(Skill *skill, SkillData *data)
 	targetPos.y += (int) data->direction.y;
 
 	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
+	mixer_play_effect(TRIPPLE_SWING);
 	if (monster) {
 		gui_log("You attack %s with a flurry of strikes", monster->lclabel);
+		unsigned int hitCount = 0;
 		for (size_t i = 0; i < 3; ++i) {
+			unsigned int originalHp = monster->stats.hp;
 			unsigned int dmg = stats_fight(&data->player->stats, &monster->stats);
-			mixer_play_effect((SWING0 - 1) + get_random(3));
-			if (dmg > 0) {
+			if (dmg > 0 && originalHp > 0) {
 				gui_log("You hit for %u damage", dmg);
-				mixer_play_effect(SWORD_HIT);
 				monster_hit(monster, dmg);
+				hitCount++;
 			}
+		}
+		if (hitCount == 1) {
+			mixer_play_effect(SWORD_HIT);
+		} else if (hitCount == 2) {
+			mixer_play_effect(DOUBLE_SWORD_HIT);
+		} else if (hitCount == 3) {
+			mixer_play_effect(TRIPPLE_SWORD_HIT);
 		}
 
 	} else {
