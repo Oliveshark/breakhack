@@ -243,6 +243,16 @@ handle_movement_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 }
 
 static void
+use_skill(Skill *skill, SkillData *skillData)
+{
+	skill->active = false;
+	skill->use(skill, skillData);
+	if (skill->actionRequired)
+		player_step(skillData->player);
+	skill->resetCountdown = skill->resetTime;
+}
+
+static void
 check_skill_activation(Player *player, RoomMatrix *matrix, SDL_Event *event)
 {
 	// TODO(Linus): This could be "smarter"
@@ -274,11 +284,7 @@ check_skill_activation(Player *player, RoomMatrix *matrix, SDL_Event *event)
 		skill->active = (selected - 1) == i && !skill->active && skill->resetCountdown == 0;
 		if (skill->active && skill->instantUse) {
 			SkillData skillData = { player, matrix, VECTOR2D_NODIR };
-			skill->active = false;
-			skill->use(skill, &skillData);
-			if (skill->actionRequired)
-				player_step(player);
-			skill->resetCountdown = skill->resetTime;
+			use_skill(skill, &skillData);
 		}
 	}
 }
@@ -310,11 +316,7 @@ check_skill_trigger(Player *player, RoomMatrix *matrix, SDL_Event *event)
 		return false;
 
 	SkillData skillData = { player, matrix, dir };
-	player->skills[activeSkill]->use(player->skills[activeSkill], &skillData);
-	player->skills[activeSkill]->active = false;
-	if (player->skills[activeSkill]->actionRequired)
-		player_step(player);
-	player->skills[activeSkill]->resetCountdown = player->skills[activeSkill]->resetTime;
+	use_skill(player->skills[activeSkill], &skillData);
 
 	return true;
 }
