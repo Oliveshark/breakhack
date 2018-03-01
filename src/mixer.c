@@ -60,6 +60,7 @@ load_effects(void)
 	effects[SWING0] = load_effect("Sounds/FX/swing.wav");
 	effects[SWING1] = load_effect("Sounds/FX/swing2.wav");
 	effects[SWING2] = load_effect("Sounds/FX/swing3.wav");
+	effects[SWOOSH] = load_effect("Sounds/FX/swoosh.wav");
 	effects[TRIPPLE_SWING] = load_effect("Sounds/FX/tripple_swing.wav");
 	effects[SWORD_HIT] = load_effect("Sounds/FX/sword_hit.wav");
 	effects[DOUBLE_SWORD_HIT] = load_effect("Sounds/FX/double_sword_hit.wav");

@@ -193,6 +193,7 @@ skill_charge(Skill *skill, SkillData *data)
 		speedLinePos = playerDestinationPos;
 
 	particle_engine_speed_lines(speedLinePos, particleArea, horizontal);
+	mixer_play_effect(SWOOSH);
 
 	if (matrix->spaces[destination.x][destination.y].monster) {
 		Monster *monster = matrix->spaces[destination.x][destination.y].monster;
