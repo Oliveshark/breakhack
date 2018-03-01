@@ -114,11 +114,11 @@ render_activation_indicator(SkillBar *bar, Camera *cam)
 }
 
 static void
-render_skills(SkillBar *bar, Player *player, Camera *cam)
+render_skills(Player *player, Camera *cam)
 {
 	static SDL_Rect activeSkillBox = { 0, 0, 32, 32 };
 
-	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (!player->skills[i])
 			continue;
 
@@ -140,11 +140,11 @@ render_skills(SkillBar *bar, Player *player, Camera *cam)
 }
 
 static void
-render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
+render_skill_unavailable(Player *player, Camera *cam)
 {
 	static SDL_Rect unavailableSkillBox = { 0, 0, 32, 32 };
 
-	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (!player->skills[i])
 			continue;
 
@@ -160,9 +160,9 @@ void
 skillbar_render(SkillBar *bar, Player *player, Camera *cam)
 {
 	render_frame(cam);
-	render_skills(bar, player, cam);
+	render_skills(player, cam);
 	render_sprites(bar, cam);
-	render_skill_unavailable(bar, player, cam);
+	render_skill_unavailable(player, cam);
 	render_activation_indicator(bar, cam);
 }
 

@@ -47,6 +47,8 @@ create_default(const char *s_label, Sprite *s)
 static bool
 skill_use_flurry(Skill *skill, SkillData *data)
 {
+	UNUSED (skill);
+
 	Position playerPos = position_to_matrix_coords(&data->player->sprite->pos);
 	Position targetPos = playerPos;
 	targetPos.x += (int) data->direction.x;
@@ -90,12 +92,13 @@ create_flurry(void)
 static bool
 skill_sip_health(Skill *skill, SkillData *data)
 {
+	UNUSED (skill);
 	player_sip_health(data->player);
 	return true;
 }
 
 static Skill *
-create_sip_health()
+create_sip_health(void)
 {
 	Texture *t = texturecache_add("Items/Potion.png");
 	Sprite *s = sprite_create();

@@ -287,7 +287,7 @@ static bool
 check_skill_trigger(Player *player, RoomMatrix *matrix, SDL_Event *event)
 {
 	int activeSkill = -1;
-	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (player->skills[i] && player->skills[i]->active) {
 			activeSkill = i;
 			break;
