@@ -24,7 +24,7 @@
 #include "player.h"
 #include "item.h"
 
-RoomMatrix* roommatrix_create()
+RoomMatrix* roommatrix_create(void)
 {
 	int i, j;
 	RoomMatrix *m = ec_malloc(sizeof(RoomMatrix));

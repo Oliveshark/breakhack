@@ -29,6 +29,19 @@
 #include "gui.h"
 #include "random.h"
 
+static void
+set_player_clip_for_direction(Player *player, Vector2d *direction)
+{
+	if (direction->y > 0) // Down
+		player->sprite->clip.y = 0;
+	else if (direction->y < 0)  // Up
+		player->sprite->clip.y = 48;
+	else if (direction->x < 0)  // Left
+		player->sprite->clip.y = 16;
+	else if (direction->x < 0)  // Right
+		player->sprite->clip.y = 32;
+}
+
 static Skill *
 create_default(const char *s_label, Sprite *s)
 {
@@ -54,6 +67,8 @@ skill_use_flurry(Skill *skill, SkillData *data)
 	targetPos.x += (int) data->direction.x;
 	targetPos.y += (int) data->direction.y;
 
+	set_player_clip_for_direction(data->player, &data->direction);
+
 	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
 	mixer_play_effect(TRIPPLE_SWING);
 	if (monster) {
@@ -75,6 +90,8 @@ skill_use_flurry(Skill *skill, SkillData *data)
 		} else if (hitCount == 3) {
 			mixer_play_effect(TRIPPLE_SWORD_HIT);
 		}
+
+		data->player->hits += hitCount;
 
 	} else {
 		gui_log("You swing at thin air with a flurry of strikes");
@@ -122,6 +139,63 @@ create_sip_health(void)
 	return skill;
 }
 
+static bool
+skill_charge(Skill *skill, SkillData *data)
+{
+	Player *player = data->player;
+	RoomMatrix *matrix = data->matrix;
+
+	Position playerPos = position_to_matrix_coords(&player->sprite->pos);
+	Position destination = playerPos;
+
+	unsigned int steps = 0;
+
+	// Find collider
+	do  {
+		destination.x += (int) data->direction.x;
+		destination.y += (int) data->direction.y;
+		steps++;
+	} while (!matrix->spaces[destination.x][destination.y].occupied
+		|| destination.x == MAP_ROOM_WIDTH || destination.x < 0
+		|| destination.y == MAP_ROOM_HEIGHT ||destination.y < 0);
+
+	// Move player
+	steps--;
+	player->sprite->pos.x += (steps * TILE_DIMENSION) * (int) data->direction.x;
+	player->sprite->pos.y += (steps * TILE_DIMENSION) * (int) data->direction.y;
+
+	set_player_clip_for_direction(data->player, &data->direction);
+
+	if (matrix->spaces[destination.x][destination.y].monster) {
+		Monster *monster = matrix->spaces[destination.x][destination.y].monster;
+		Stats tmpStats = player->stats;
+		tmpStats.dmg *= steps > 0 ? steps : 1;
+		mixer_play_effect(SWING0 + get_random(3) - 1);
+		unsigned int dmg = stats_fight(&tmpStats, &monster->stats);
+		if (dmg > 0) {
+			gui_log("You charged %s for %u damage", monster->lclabel, dmg);
+			monster_hit(monster, dmg);
+			mixer_play_effect(SWORD_HIT);
+		}
+	}
+
+	return true;
+}
+
+static Skill *
+create_charge(void)
+{
+	Texture *t = texturecache_add("Commissions/Warrior.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = DEFAULT_DIMENSION;
+	s->clip = CLIP16(48, 32);
+	s->fixed = true;
+	Skill *skill = create_default("Charge", s);
+	skill->use = skill_charge;
+	return skill;
+}
+
 Skill*
 skill_create(enum SkillType t)
 {
@@ -130,6 +204,8 @@ skill_create(enum SkillType t)
 			return create_flurry();
 		case SIP_HEALTH:
 			return create_sip_health();
+		case CHARGE:
+			return create_charge();
 		default:
 			fatal("Unknown SkillType %u", (unsigned int) t);
 			return NULL;

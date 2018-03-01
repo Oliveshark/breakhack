@@ -259,17 +259,13 @@ check_skill_activation(Player *player, RoomMatrix *matrix, SDL_Event *event)
 	unsigned int selected = 0;
 	if (keyboard_press(SDLK_1, event)) {
 		selected = 1;
-	}
-	else if (keyboard_press(SDLK_2, event)) {
+	} else if (keyboard_press(SDLK_2, event)) {
 		selected = 2;
-	}
-	else if (keyboard_press(SDLK_3, event)) {
+	} else if (keyboard_press(SDLK_3, event)) {
 		selected = 3;
-	}
-	else if (keyboard_press(SDLK_4, event)) {
+	} else if (keyboard_press(SDLK_4, event)) {
 		selected = 4;
-	}
-	else if (keyboard_press(SDLK_5, event)) {
+	} else if (keyboard_press(SDLK_5, event)) {
 		selected = 5;
 	}
 
@@ -391,6 +387,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 			m_strcpy(asset, 100, "Commissions/Warrior.png");
 			player->stats = (Stats) WARRIOR_STATS;
 			player->skills[0] = skill_create(FLURRY);
+			player->skills[1] = skill_create(CHARGE);
 			break;
 	}
 

@@ -29,6 +29,7 @@ struct Player_t;
 
 enum SkillType {
 	FLURRY,
+	CHARGE,
 	SIP_HEALTH
 };
 
