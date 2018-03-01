@@ -37,6 +37,9 @@ void
 particle_engine_eldritch_explosion(Position, Dimension);
 
 void
+particle_engine_speed_lines(Position, Dimension, bool horizontal);
+
+void
 particle_engine_update(float deltatime);
 
 void

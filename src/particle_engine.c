@@ -148,6 +148,35 @@ particle_engine_eldritch_explosion(Position pos, Dimension dim)
 	create_explosion(pos, dim, 1, green);
 }
 
+void
+particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
+{
+	static SDL_Color color = { 0, 0, 255, 200 };
+
+	for (unsigned int i = 0; i < 150; ++i) {
+		int x, y;
+		unsigned int lt;
+		Particle *p;
+
+		x = get_random(dim.width) + pos.x;
+		y = get_random(dim.height) + pos.y;
+
+		lt = get_random(10);
+
+		p = ec_malloc(sizeof(Particle));
+		p->pos = (Position) { x, y };
+		p->velocity = (Vector2d) { 0, 0 };
+		p->movetime = lt;
+		p->lifetime = lt;
+		if (horizontal)
+			p->dim = (Dimension) { 20, 1 };
+		else
+			p->dim = (Dimension) { 2, 20 };
+		p->color = color;
+		linkedlist_append(&engine->particles, p);
+	}
+}
+
 static void
 move_particle(Particle *particle, float deltaTime)
 {

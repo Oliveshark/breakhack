@@ -28,6 +28,7 @@
 #include "mixer.h"
 #include "gui.h"
 #include "random.h"
+#include "particle_engine.h"
 
 static void
 set_player_clip_for_direction(Player *player, Vector2d *direction)
@@ -38,7 +39,7 @@ set_player_clip_for_direction(Player *player, Vector2d *direction)
 		player->sprite->clip.y = 48;
 	else if (direction->x < 0)  // Left
 		player->sprite->clip.y = 16;
-	else if (direction->x < 0)  // Right
+	else if (direction->x > 0)  // Right
 		player->sprite->clip.y = 32;
 }
 
@@ -69,6 +70,10 @@ skill_use_flurry(Skill *skill, SkillData *data)
 
 	set_player_clip_for_direction(data->player, &data->direction);
 
+	if (!position_in_roommatrix(&targetPos)) {
+		return false;
+	}
+
 	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
 	mixer_play_effect(TRIPPLE_SWING);
 	if (monster) {
@@ -79,9 +84,9 @@ skill_use_flurry(Skill *skill, SkillData *data)
 			unsigned int dmg = stats_fight(&data->player->stats, &monster->stats);
 			if (dmg > 0 && originalHp > 0) {
 				gui_log("You hit for %u damage", dmg);
-				monster_hit(monster, dmg);
 				hitCount++;
 			}
+			monster_hit(monster, dmg);
 		}
 		if (hitCount == 1) {
 			mixer_play_effect(SWORD_HIT);
@@ -151,20 +156,43 @@ skill_charge(Skill *skill, SkillData *data)
 	unsigned int steps = 0;
 
 	// Find collider
-	do  {
+	destination.x += (int) data->direction.x;
+	destination.y += (int) data->direction.y;
+	while (position_in_roommatrix(&destination)
+		&& !matrix->spaces[destination.x][destination.y].occupied)
+	{
 		destination.x += (int) data->direction.x;
 		destination.y += (int) data->direction.y;
 		steps++;
-	} while (!matrix->spaces[destination.x][destination.y].occupied
-		|| destination.x == MAP_ROOM_WIDTH || destination.x < 0
-		|| destination.y == MAP_ROOM_HEIGHT ||destination.y < 0);
+	}
+
+	if (!position_in_roommatrix(&destination)) {
+		destination.x -= (int) data->direction.x;
+		destination.y -= (int) data->direction.y;
+	}
 
 	// Move player
-	steps--;
+	Position playerOriginPos = player->sprite->pos;
 	player->sprite->pos.x += (steps * TILE_DIMENSION) * (int) data->direction.x;
 	player->sprite->pos.y += (steps * TILE_DIMENSION) * (int) data->direction.y;
-
+	Position playerDestinationPos = player->sprite->pos;
 	set_player_clip_for_direction(data->player, &data->direction);
+
+	// Add motion particles
+	bool horizontal = data->direction.x != 0;
+	Dimension particleArea;
+	if (horizontal)
+		particleArea = (Dimension) { steps * TILE_DIMENSION, TILE_DIMENSION };
+	else
+		particleArea = (Dimension) { TILE_DIMENSION, steps * TILE_DIMENSION };
+
+	Position speedLinePos;
+	if (playerOriginPos.x < playerDestinationPos.x || playerOriginPos.y < playerDestinationPos.y)
+		speedLinePos = playerOriginPos;
+	else
+		speedLinePos = playerDestinationPos;
+
+	particle_engine_speed_lines(speedLinePos, particleArea, horizontal);
 
 	if (matrix->spaces[destination.x][destination.y].monster) {
 		Monster *monster = matrix->spaces[destination.x][destination.y].monster;
@@ -174,9 +202,10 @@ skill_charge(Skill *skill, SkillData *data)
 		unsigned int dmg = stats_fight(&tmpStats, &monster->stats);
 		if (dmg > 0) {
 			gui_log("You charged %s for %u damage", monster->lclabel, dmg);
-			monster_hit(monster, dmg);
 			mixer_play_effect(SWORD_HIT);
+			data->player->hits += 1;
 		}
+		monster_hit(monster, dmg);
 	}
 
 	return true;

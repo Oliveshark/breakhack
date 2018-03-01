@@ -164,13 +164,13 @@ item_builder_build_item(ItemKey key, int level)
 			item = create_item(path_flesh,
 					   CLIP16(get_random(7) * 16, get_random(1) * 16),
 					   &eat_flesh);
-			item->value = 1 + get_random(level*2);
+			item->value = 1 + get_random(level);
 			break;
 		case HEALTH:
 			item = create_item(path_potion,
 					   CLIP16(0, 0),
 					   &drink_health);
-			item->value = 1 + get_random(level*2);
+			item->value = 1 + get_random(level);
 			break;
 		default:
 			fatal("in item_builder_build() : Unhandled item key %d", key);
