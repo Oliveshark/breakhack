@@ -78,17 +78,23 @@ player_gain_xp(Player *player, unsigned int xp_gain)
 }
 
 static void
-player_step(Player *p)
+action_spent(Player *p)
 {
-	p->total_steps++;
 	p->steps++;
-	p->missText->pos = p->sprite->pos;
-	p->hitText->pos = p->sprite->pos;
+	p->total_steps++;
 
 	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (p->skills[i] != NULL && p->skills[i]->resetCountdown > 0)
 			p->skills[i]->resetCountdown--;
 	}
+}
+
+static void
+player_step(Player *p)
+{
+	action_spent(p);
+	p->missText->pos = p->sprite->pos;
+	p->hitText->pos = p->sprite->pos;
 }
 
 static bool 
@@ -129,14 +135,14 @@ has_collided(Player *player, RoomMatrix *matrix)
 
 		player_monster_kill_check(player, space->monster);
 
-		player_step(player);
+		action_spent(player);
 
 	} else if (collided) {
 		mixer_play_effect(BONK);
 		gui_log("Ouch! There is something in the way");
 	}
 
-	if (space->items != NULL) {
+	if (space->items != NULL && !collided) {
 		LinkedList *items = space->items;
 		while (items != NULL) {
 			Item *item = items->data;
