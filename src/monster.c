@@ -302,9 +302,8 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 	Item *item;
 	Item *items[2];
 	unsigned int item_count = 0;
-	bool player_full_health = false;
+	bool player_full_health = player->stats.hp >= player->stats.maxhp;
 
-	player_full_health = player->stats.hp >= player->stats.maxhp;
 	if (player->stats.hp < player->stats.maxhp / 2)
 		item_drop_chance = 0;
 
