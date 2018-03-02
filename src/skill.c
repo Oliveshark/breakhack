@@ -147,6 +147,8 @@ create_sip_health(void)
 static bool
 skill_charge(Skill *skill, SkillData *data)
 {
+	UNUSED(skill);
+
 	Player *player = data->player;
 	RoomMatrix *matrix = data->matrix;
 

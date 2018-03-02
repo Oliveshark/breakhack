@@ -47,6 +47,19 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	}
 }
 
+static void
+load_countdown_sprites(SkillBar *bar)
+{
+	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		Sprite *s = sprite_create();
+		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 16);
+		s->fixed = true;
+		s->pos = (Position) { 8 + (32 * i), 8 };
+		s->dim = (Dimension) { 16, 16 };
+		bar->countdowns[i] = s;
+	}
+}
+
 SkillBar *
 skillbar_create(SDL_Renderer *renderer)
 {
@@ -55,6 +68,7 @@ skillbar_create(SDL_Renderer *renderer)
 	bar->activationTimer = timer_create();
 	bar->lastActivation = 0;
 	load_texture(bar, "GUI/GUI0.png", renderer);
+	load_countdown_sprites(bar);
 	return bar;
 }
 
@@ -114,6 +128,18 @@ render_activation_indicator(SkillBar *bar, Camera *cam)
 }
 
 static void
+render_skill_countdown(SkillBar *bar, int index, unsigned int count, Camera *cam)
+{
+	static SDL_Color color = { 255, 255, 255, 255 };
+	char buffer[5];
+	Sprite *s = bar->countdowns[index];
+
+	m_sprintf(buffer, 5, "%u", count);
+	texture_load_from_text(s->textures[0], buffer, color, cam->renderer);
+	sprite_render(s, cam);
+}
+
+static void
 render_skills(Player *player, Camera *cam)
 {
 	static SDL_Rect activeSkillBox = { 0, 0, 32, 32 };
@@ -131,16 +157,11 @@ render_skills(Player *player, Camera *cam)
 			SDL_SetRenderDrawColor(cam->renderer, 0, 0, 255, 100);
 			SDL_RenderFillRect(cam->renderer, &activeSkillBox);
 		}
-		if (player->skills[i]->resetCountdown > 0) {
-			activeSkillBox.x = i * 32;
-			SDL_SetRenderDrawColor(cam->renderer, 255, 0, 0, 100);
-			SDL_RenderFillRect(cam->renderer, &activeSkillBox);
-		}
 	}
 }
 
 static void
-render_skill_unavailable(Player *player, Camera *cam)
+render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
 {
 	static SDL_Rect unavailableSkillBox = { 0, 0, 32, 32 };
 
@@ -152,6 +173,7 @@ render_skill_unavailable(Player *player, Camera *cam)
 			unavailableSkillBox.x = i * 32;
 			SDL_SetRenderDrawColor(cam->renderer, 255, 0, 0, 70);
 			SDL_RenderFillRect(cam->renderer, &unavailableSkillBox);
+			render_skill_countdown(bar, i, player->skills[i]->resetCountdown, cam);
 		}
 	}
 }
@@ -162,7 +184,7 @@ skillbar_render(SkillBar *bar, Player *player, Camera *cam)
 	render_frame(cam);
 	render_skills(player, cam);
 	render_sprites(bar, cam);
-	render_skill_unavailable(player, cam);
+	render_skill_unavailable(bar, player, cam);
 	render_activation_indicator(bar, cam);
 }
 

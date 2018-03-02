@@ -152,8 +152,12 @@ void
 particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 {
 	static SDL_Color color = { 0, 0, 255, 200 };
+	unsigned int count = (unsigned int) (dim.width + dim.height) / 2;
 
-	for (unsigned int i = 0; i < 150; ++i) {
+	if (dim.width == 0 || dim.height == 0)
+		return;
+
+	for (unsigned int i = 0; i < count; ++i) {
 		int x, y;
 		unsigned int lt;
 		Particle *p;

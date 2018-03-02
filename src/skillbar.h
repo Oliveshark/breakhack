@@ -27,6 +27,7 @@
 
 typedef struct SkillBar_t {
 	LinkedList *sprites;
+	Sprite *countdowns[PLAYER_SKILL_COUNT];
 	Timer *activationTimer;
 	unsigned int lastActivation;
 } SkillBar;

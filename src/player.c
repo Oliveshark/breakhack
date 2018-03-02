@@ -77,6 +77,20 @@ player_gain_xp(Player *player, unsigned int xp_gain)
 	}
 }
 
+static void
+player_step(Player *p)
+{
+	p->total_steps++;
+	p->steps++;
+	p->missText->pos = p->sprite->pos;
+	p->hitText->pos = p->sprite->pos;
+
+	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (p->skills[i] != NULL && p->skills[i]->resetCountdown > 0)
+			p->skills[i]->resetCountdown--;
+	}
+}
+
 static bool 
 has_collided(Player *player, RoomMatrix *matrix)
 {
@@ -115,6 +129,8 @@ has_collided(Player *player, RoomMatrix *matrix)
 
 		player_monster_kill_check(player, space->monster);
 
+		player_step(player);
+
 	} else if (collided) {
 		mixer_play_effect(BONK);
 		gui_log("Ouch! There is something in the way");
@@ -133,28 +149,14 @@ has_collided(Player *player, RoomMatrix *matrix)
 }
 
 static void
-player_step(Player *p)
-{
-	p->total_steps++;
-	p->steps++;
-	p->missText->pos = p->sprite->pos;
-	p->hitText->pos = p->sprite->pos;
-
-	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
-		if (p->skills[i] != NULL && p->skills[i]->resetCountdown > 0)
-			p->skills[i]->resetCountdown--;
-	}
-}
-
-static void
 move_left(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 16;
 	player->sprite->pos.x -= TILE_DIMENSION;
-	if (has_collided(player, matrix)) {
+	if (has_collided(player, matrix))
 		player->sprite->pos.x += TILE_DIMENSION;
-	}
-	player_step(player);
+	else
+		player_step(player);
 }
 
 static void
@@ -162,10 +164,10 @@ move_right(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 32;
 	player->sprite->pos.x += TILE_DIMENSION;
-	if (has_collided(player, matrix)) {
+	if (has_collided(player, matrix))
 		player->sprite->pos.x -= TILE_DIMENSION;
-	}
-	player_step(player);
+	else
+		player_step(player);
 }
 
 static void
@@ -173,10 +175,10 @@ move_up(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 48;
 	player->sprite->pos.y -= TILE_DIMENSION;
-	if (has_collided(player, matrix)) {
+	if (has_collided(player, matrix))
 		player->sprite->pos.y += TILE_DIMENSION;
-	}
-	player_step(player);
+	else
+		player_step(player);
 }
 
 static void
@@ -184,10 +186,10 @@ move_down(Player *player, RoomMatrix *matrix)
 {
 	player->sprite->clip.y = 0;
 	player->sprite->pos.y += TILE_DIMENSION;
-	if (has_collided(player, matrix)) {
+	if (has_collided(player, matrix))
 		player->sprite->pos.y -= TILE_DIMENSION;
-	}
-	player_step(player);
+	else
+		player_step(player);
 }
 
 void
