@@ -29,6 +29,7 @@
 #include "item_builder.h"
 #include "map.h"
 #include "particle_engine.h"
+#include "defines.h"
 
 static void
 monster_load_texts(Monster *m, SDL_Renderer *renderer)
@@ -186,20 +187,63 @@ monster_agressive_walk(Monster *m, RoomMatrix *rm)
 
 	mPos = position_to_matrix_coords(&m->sprite->pos);
 
-	x_dist = mPos.x - rm->playerRoomPos.x;
-	y_dist = mPos.y - rm->playerRoomPos.y;
+	unsigned int currentScore = 100;
+	unsigned int chosenDirection = UP;
 
+	for (unsigned int i = 0; i < 4; ++i) {
+		Position next = mPos;
+		unsigned int nextScore = 0;
 
-	if (abs(x_dist) > abs(y_dist)) {
-		if (x_dist > 0)
-			move_left(m, rm);
-		else
-			move_right(m, rm);
-	} else {
-		if (y_dist > 0)
-			move_up(m, rm);
-		else
-			move_down(m, rm);
+		switch (i) {
+		case UP:
+			next.y -= 1;
+			break;
+		case DOWN:
+			next.y += 1;
+			break;
+		case LEFT:
+			next.x -= 1;
+			break;
+		case RIGHT:
+			next.x += 1;
+			break;
+		}
+
+		if (position_equals(&next, &rm->playerRoomPos)) {
+			chosenDirection = (Direction) i;
+			break;
+		}
+
+		if (!position_in_roommatrix(&next))
+			continue;
+
+		x_dist = next.x - rm->playerRoomPos.x;
+		y_dist = next.y - rm->playerRoomPos.y;
+
+		if (rm->spaces[next.x][next.y].occupied) {
+			nextScore += 50;
+		}
+
+		nextScore += (max(abs(x_dist), abs(y_dist)));
+		if (nextScore < currentScore) {
+			currentScore = nextScore;
+			chosenDirection = (Direction)i;
+		}
+	}
+
+	switch (chosenDirection) {
+	case UP:
+		move_up(m, rm);
+		break;
+	case DOWN:
+		move_down(m, rm);
+		break;
+	case LEFT:
+		move_left(m, rm);
+		break;
+	case RIGHT:
+		move_right(m, rm);
+		break;
 	}
 }
 

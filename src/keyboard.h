@@ -21,10 +21,7 @@
 
 #include <SDL.h>
 #include <stdbool.h>
-
-typedef enum Direction_t {
-	UP, DOWN, LEFT, RIGHT
-} Direction;
+#include "defines.h"
 
 bool
 keyboard_direction_press(Direction, SDL_Event*);

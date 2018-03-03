@@ -59,4 +59,8 @@
 
 #define UNUSED(x) (void)(x)
 
+typedef enum Direction_t {
+	UP, DOWN, LEFT, RIGHT
+} Direction;
+
 #endif // DEFINES_H_
