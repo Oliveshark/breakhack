@@ -217,14 +217,14 @@ monster_agressive_walk(Monster *m, RoomMatrix *rm)
 		if (!position_in_roommatrix(&next))
 			continue;
 
-		x_dist = next.x - rm->playerRoomPos.x;
-		y_dist = next.y - rm->playerRoomPos.y;
+		x_dist = abs(next.x - rm->playerRoomPos.x);
+		y_dist = abs(next.y - rm->playerRoomPos.y);
 
 		if (rm->spaces[next.x][next.y].occupied) {
 			nextScore += 50;
 		}
 
-		nextScore += (max(abs(x_dist), abs(y_dist)));
+		nextScore += x_dist > y_dist ? x_dist : y_dist;
 		if (nextScore < currentScore) {
 			currentScore = nextScore;
 			chosenDirection = (Direction)i;
