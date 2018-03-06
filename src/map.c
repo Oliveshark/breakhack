@@ -342,5 +342,6 @@ void map_destroy(Map *map)
 		item_destroy(linkedlist_pop(&map->items));
 
 	timer_destroy(map->renderTimer);
+	timer_destroy(map->monsterMoveTimer);
 	free(map);
 }
