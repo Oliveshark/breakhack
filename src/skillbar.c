@@ -217,5 +217,9 @@ skillbar_destroy(SkillBar *bar)
 {
 	while (bar->sprites)
 		sprite_destroy(linkedlist_pop(&bar->sprites));
+	for (unsigned int i = 0; i < PLAYER_SKILL_COUNT; ++i)
+		if (bar->countdowns[i])
+			sprite_destroy(bar->countdowns[i]);
+	timer_destroy(bar->activationTimer);
 	free(bar);
 }
