@@ -499,7 +499,7 @@ gui_render_log(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 void
 gui_render_event_message(Gui *gui, Camera *cam)
 {
-	static SDL_Color color = { 255, 255, 255, 255 };
+	static SDL_Color fg_color = { 255, 255, 255, 255 };
 	static SDL_Rect box = { 0, 0, 150, 50 };
 
 	if (timer_started(gui->event_message_timer)
@@ -512,7 +512,7 @@ gui_render_event_message(Gui *gui, Camera *cam)
 	if (event_messages.count > 0) {
 		texture_load_from_text(gui->event_message,
 				       event_messages.messages[0],
-				       color,
+				       fg_color,
 				       cam->renderer);
 
 		box.x = (GAME_VIEW_WIDTH/2) - (gui->event_message->dim.width/2);

@@ -21,4 +21,10 @@
 
 #cmakedefine _WIN32 ${WIN32}
 
+#define GAME_TITLE		"@breakhack_GAME_TITLE@"
+#define MAJOR_VERSION	@breakhack_MAJOR_VERSION@
+#define MINOR_VERSION	@breakhack_MINOR_VERSION@
+#define PATCH_VERSION	@breakhack_PATCH_VERSION@
+#define RELEASE_TYPE	"@breakhack_RELEASE_TYPE@"
+
 #endif // CONFIG_H_

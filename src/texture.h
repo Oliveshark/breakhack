@@ -47,6 +47,19 @@ texture_load_from_text(Texture*,
 					   SDL_Renderer*);
 
 void
+texture_load_from_text_shaded(Texture*,
+					   const char *text,
+					   SDL_Color,
+					   SDL_Color,
+					   SDL_Renderer*);
+
+void
+texture_load_from_text_blended(Texture*,
+					   const char *text,
+					   SDL_Color,
+					   SDL_Renderer*);
+
+void
 texture_render(Texture*, SDL_Rect*, Camera*);
 
 void

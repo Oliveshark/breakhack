@@ -122,7 +122,9 @@ bool initSDL(void)
 
 	mixer_init();
 
-	gWindow = SDL_CreateWindow("Breakhack",
+	char title_buffer[100];
+	m_sprintf(title_buffer, 100, "%s %d.%d.%d %s", GAME_TITLE, MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION, RELEASE_TYPE);
+	gWindow = SDL_CreateWindow(title_buffer,
 				   SDL_WINDOWPOS_UNDEFINED,
 				   SDL_WINDOWPOS_UNDEFINED, 
 				   (int)(SCREEN_WIDTH * renderScale),

@@ -84,20 +84,9 @@ texture_load_font(Texture *t, const char *path, unsigned int size)
 	}
 }
 
-void
-texture_load_from_text(Texture *t,
-		       const char *text,
-		       SDL_Color c,
-		       SDL_Renderer *renderer)
+static void
+load_from_surface(Texture *t, SDL_Surface *surface, SDL_Renderer *renderer)
 {
-	SDL_Surface *surface = TTF_RenderText_Solid( t->font, text, c );
-	if (surface == NULL)
-	{
-		error("Unable to create texture from rendered text: %s",
-		       IMG_GetError());
-		return;
-	}
-
 	if (t->texture) {
 		SDL_DestroyTexture(t->texture);
 		t->texture = NULL;
@@ -114,6 +103,51 @@ texture_load_from_text(Texture *t,
 	t->dim.height = surface->h;
 
 	SDL_FreeSurface(surface);
+}
+
+void
+texture_load_from_text(Texture *t,
+		       const char *text,
+		       SDL_Color c,
+		       SDL_Renderer *renderer)
+{
+	SDL_Surface *surface = TTF_RenderText_Solid( t->font, text, c );
+	if (surface == NULL)
+	{
+		error("Unable to create texture from rendered text: %s",
+		       IMG_GetError());
+		return;
+	}
+
+	load_from_surface(t, surface, renderer);
+}
+
+void
+texture_load_from_text_shaded(Texture *t, const char * text, SDL_Color fg, SDL_Color bg, SDL_Renderer *renderer)
+{
+	SDL_Surface *surface = TTF_RenderText_Shaded( t->font, text, fg, bg );
+	if (surface == NULL)
+	{
+		error("Unable to create texture from rendered text: %s",
+		       IMG_GetError());
+		return;
+	}
+
+	load_from_surface(t, surface, renderer);
+}
+
+void
+texture_load_from_text_blended(Texture *t, const char * text, SDL_Color fg, SDL_Renderer *renderer)
+{
+	SDL_Surface *surface = TTF_RenderText_Blended( t->font, text, fg );
+	if (surface == NULL)
+	{
+		error("Unable to create texture from rendered text: %s",
+		       IMG_GetError());
+		return;
+	}
+
+	load_from_surface(t, surface, renderer);
 }
 
 void 
