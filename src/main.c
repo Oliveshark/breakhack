@@ -461,6 +461,7 @@ run_game(void)
 
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 	particle_engine_update(deltaTime);
+	player_update(gPlayer, deltaTime);
 
 	roommatrix_update_with_player(gRoomMatrix, gPlayer);
 	if (currentTurn == PLAYER) {

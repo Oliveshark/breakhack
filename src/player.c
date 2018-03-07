@@ -29,6 +29,8 @@
 #include "keyboard.h"
 #include "mixer.h"
 #include "random.h"
+#include "projectile.h"
+#include "texturecache.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1 }
@@ -332,6 +334,9 @@ handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 	if (event->type != SDL_KEYDOWN)
 		return;
 
+	if (player->projectiles)
+		return;
+
 	check_skill_activation(player, matrix, event);
 	if (!check_skill_trigger(player, matrix, event))
 		handle_movement_input(player, matrix, event);
@@ -407,6 +412,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->sprite->dim = GAME_DIMENSION;
 	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
 	player->handle_event = &handle_player_input;
+	player->projectiles = linkedlist_create();
 	player_load_texts(player, renderer);
 
 	return player;
@@ -465,6 +471,12 @@ player_render(Player *player, Camera *cam)
 	sprite_render(player->sprite, cam);
 	actiontext_render(player->hitText, cam);
 	actiontext_render(player->missText, cam);
+
+	LinkedList *projectile = player->projectiles;
+	while (projectile) {
+		projectile_render(projectile->data, cam);
+		projectile = projectile->next;
+	}
 }
 
 static void
@@ -490,6 +502,39 @@ player_reset_steps(Player *p)
 	player_print(p);
 }
 
+void player_update(Player *player, float deltatime)
+{
+	if (!player->projectiles)
+		return;
+
+	LinkedList *last, *current, *next;
+	last = NULL;
+	current = player->projectiles;
+	next = NULL;
+
+	while (current) {
+		Projectile *p = current->data;
+		projectile_update(p, deltatime);
+		if (!p->alive) {
+			if (last == NULL)
+				player->projectiles = current->next;
+			else
+				last->next = current->next;
+
+			projectile_destroy(p);
+
+			next = current->next;
+			current->data = NULL;
+			current->next = NULL;
+			linkedlist_destroy(&current);
+			current = next;
+		} else {
+			last = current;
+			current = current->next;
+		}
+	}
+}
+
 void
 player_destroy(Player *player)
 {
@@ -503,6 +548,9 @@ player_destroy(Player *player)
 			skill_destroy(player->skills[i]);
 		player->skills[i] = NULL;
 	}
+
+	while (player->projectiles)
+		projectile_destroy(linkedlist_pop(&player->projectiles));
 
 	free(player);
 }

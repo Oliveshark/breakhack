@@ -25,6 +25,7 @@
 #include "actiontext.h"
 #include "camera.h"
 #include "skill.h"
+#include "linkedlist.h"
 
 #define PLAYER_SKILL_COUNT 5
 
@@ -43,6 +44,7 @@ typedef struct Player_t {
 	ActionText *hitText;
 	ActionText *missText;
 	Stats stats;
+	LinkedList *projectiles;
 	unsigned int xp;
 	unsigned int total_steps;
 	unsigned int steps;
@@ -73,6 +75,9 @@ player_hit(Player*, unsigned int dmg);
 
 void
 player_reset_steps(Player*);
+
+void
+player_update(Player*, float deltatime);
 
 void
 player_render(Player*, Camera*);

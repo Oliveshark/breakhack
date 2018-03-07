@@ -116,6 +116,8 @@ add_executable(breakhack
 	src/skillbar
 	src/texturecache
 	src/skill
+	src/projectile
+	src/vector2d
 	)
 
 target_link_libraries(breakhack

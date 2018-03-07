@@ -16,23 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VECTOR2D_H_
-#define	VECTOR2D_H_
+#ifndef PROJECTILE_H_
+#define PROJECTILE_H_
 
 #include <stdbool.h>
+#include "sprite.h"
+#include "camera.h"
+#include "vector2d.h"
+#include "timer.h"
 
-#define VECTOR2D_NODIR	(Vector2d) {  0,  0 }
-#define VECTOR2D_RIGHT	(Vector2d) {  1,  0 }
-#define VECTOR2D_LEFT	(Vector2d) { -1,  0 }
-#define VECTOR2D_UP		(Vector2d) {  0, -1 }
-#define VECTOR2D_DOWN	(Vector2d) {  0,  1 }
+typedef struct Prjectile_t {
+	Sprite *sprite;
+	Vector2d velocity;
+	Timer *lifetime;
+	bool alive;
+} Projectile;
 
-typedef struct Vector2d_t {
-	float x;
-	float y;
-} Vector2d;
+Projectile *
+projectile_create(void);
 
-bool
-vector2d_equals(Vector2d, Vector2d);
+void
+projectile_update(Projectile*, float deltatime);
 
-#endif // VECTOR2D_H_
+void
+projectile_render(Projectile*, Camera*);
+
+void
+projectile_destroy(Projectile*);
+
+#endif // PROJECTILE_H_
