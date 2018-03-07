@@ -23,10 +23,14 @@
 #define LOG_FONT_SIZE	8
 #define LABEL_FONT_SIZE	8
 
+#define EVENT_MESSAGE_DISPLAY_TIME	2500
+#define EVENT_MESSAGE_FONT_SIZE		20
+
 #include "linkedlist.h"
 #include "sprite.h"
 #include "camera.h"
 #include "player.h"
+#include "timer.h"
 
 typedef enum Label_e {
 	LEVEL_LABEL,
@@ -43,6 +47,8 @@ typedef struct {
 	LinkedList *xp_bar;
 	Sprite *labels[LABEL_COUNT];
 	Texture *log_lines[LOG_LINES_COUNT];
+	Texture *event_message;
+	Timer *event_message_timer;
 } Gui;
 
 Gui*
@@ -58,7 +64,16 @@ void
 gui_render_log(Gui*, unsigned int width, unsigned int height, Camera*);
 
 void
+gui_render_event_message(Gui*, Camera*);
+
+void
 gui_log(const char *fmt, ...);
+
+void
+gui_event_message(const char *fmt, ...);
+
+void
+gui_clear_message_log(void);
 
 void
 gui_destroy(Gui*);

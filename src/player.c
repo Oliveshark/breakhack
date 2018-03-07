@@ -74,6 +74,7 @@ player_gain_xp(Player *player, unsigned int xp_gain)
 	if (player->xp >= next_level_threshold(player->stats.lvl)) {
 		player_levelup(player);
 		gui_log("You have reached level %u", player->stats.lvl);
+		gui_event_message("You reached level %u", player->stats.lvl);
 	}
 }
 

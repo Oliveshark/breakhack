@@ -205,6 +205,9 @@ startGame(void *unused)
 	gPlayer = player_create(WARRIOR, gRenderer);
 	mixer_play_music(GAME_MUSIC0 + get_random(2));
 	resetGame();
+	gui_clear_message_log();
+	gui_log("The Dungeon Crawl begins!");
+	gui_event_message("Welcome to the dungeon!");
 }
 
 static void
@@ -483,6 +486,7 @@ run_game(void)
 		roommatrix_render_mouse_square(gRoomMatrix, &gCamera);
 
 	roommatrix_render_lightmap(gRoomMatrix, &gCamera);
+	gui_render_event_message(gGui, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &rightGuiViewport);
 	gui_render_panel(gGui, RIGHT_GUI_WIDTH,
@@ -511,6 +515,7 @@ run_game(void)
 
 	if (gGameState == PLAYING && is_player_dead()) {
 		gui_log("The dungeon consumed you");
+		gui_event_message("You died!");
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
 	}
@@ -553,8 +558,6 @@ void run(void)
 
 	bool quit = false;
 	Timer* fpsTimer = timer_create();
-
-	gui_log("The Dungeon Crawl begins!");
 
 	while (!quit)
 	{

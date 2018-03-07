@@ -19,6 +19,8 @@
 #ifndef UTIL_H_
 #define	UTIL_H_
 
+#include <stdarg.h>
+
 void
 fatal(const char *fmt, ...);
 
@@ -42,6 +44,9 @@ m_strncat(char *dest, size_t destsz, char *src, size_t srcsz);
 
 void
 m_sprintf(char *dest, size_t destsz, const char *format, ...);
+
+void
+m_vsprintf(char *dest, size_t sz, const char *fmt, va_list args);
 
 void
 timestamp(char *tstamp, size_t sz);

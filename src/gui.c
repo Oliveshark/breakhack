@@ -28,6 +28,7 @@
 #include "texturecache.h"
 
 #define DEFAULT_LOG { NULL, 50, 0, 200 }
+#define DEFAULT_EVENT_MESSAGES { NULL, 5, 0, 200 }
 
 #define POS_Y_COLLECTABLES 64
 #define POS_Y_XPBAR	112
@@ -49,6 +50,13 @@ static struct LogData_t {
 	unsigned int strlen;
 } log_data = DEFAULT_LOG;
 
+static struct GuiEventMsgData_t {
+	char **messages;
+	unsigned int len;
+	unsigned int count;
+	unsigned int strlen;
+} event_messages = DEFAULT_EVENT_MESSAGES;
+
 static void
 gui_malloc_log(void)
 {
@@ -60,6 +68,19 @@ gui_malloc_log(void)
 	log_data.log = ec_malloc(log_data.len * sizeof(char*));
 	for (i = 0; i < log_data.len; ++i)
 		log_data.log[i] = NULL;
+}
+
+static void
+gui_malloc_eventmessages(void)
+{
+	if (event_messages.messages != NULL)
+		return;
+
+	unsigned int i;
+
+	event_messages.messages = ec_malloc(event_messages.len * sizeof(char*));
+	for (i = 0; i < event_messages.len; ++i)
+		event_messages.messages[i] = NULL;
 }
 
 static Sprite*
@@ -160,6 +181,10 @@ gui_create(void)
 		gui->log_lines[i] = t;
 	}
 
+	gui->event_message = texture_create();
+	texture_load_font(gui->event_message, "GUI/SDS_8x8.ttf", EVENT_MESSAGE_FONT_SIZE);
+	gui->event_message_timer = timer_create();
+
 	gui->labels[CURRENT_XP_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 });
 	gui->labels[LEVEL_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 + 14  });
 	gui->labels[DUNGEON_LEVEL_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 + (2*14)  });
@@ -167,6 +192,7 @@ gui_create(void)
 	gui->labels[GOLD_LABEL] = create_label_sprite((Position) { 32, POS_Y_COLLECTABLES + 16 + 5 });
 
 	gui_malloc_log();
+	gui_malloc_eventmessages();
 
 	init_sprites(gui);
 
@@ -406,17 +432,13 @@ gui_log(const char *fmt, ...)
 	char tstamp[10];
 
 	va_list args;
-	va_start(args, fmt);
-#ifndef _MSC_VER
-	vsprintf(buffer, fmt, args);
-#else // _MSC_VER
-	vsprintf_s(buffer, log_data.strlen, fmt, args);
-#endif // _MSC_VER
-	va_end(args);
 
 	new_message = ec_malloc(log_data.strlen * sizeof(char));
-
 	timestamp(tstamp, 10);
+
+	va_start(args, fmt);
+	m_vsprintf(buffer, 200, fmt, args);
+	va_end(args);
 	m_sprintf(new_message, log_data.strlen, "%s > %s", tstamp, buffer);
 
 	log_data.count++;
@@ -429,6 +451,25 @@ gui_log(const char *fmt, ...)
 		log_data.log[i] = log_data.log[i-1];
 	}
 	log_data.log[0] = new_message;
+}
+
+void
+gui_event_message(const char *fmt, ...)
+{
+	char *new_message = ec_malloc(sizeof(char) * event_messages.strlen);
+
+	va_list args;
+	va_start(args, fmt);
+	m_vsprintf(new_message, event_messages.strlen, fmt, args);
+	va_end(args);
+
+	if (event_messages.count == event_messages.len) {
+		error("To many event messages");
+		free(new_message);
+		return;
+	}
+	event_messages.messages[event_messages.count] = new_message;
+	event_messages.count++;
 }
 
 void
@@ -455,6 +496,53 @@ gui_render_log(Gui *gui, unsigned int width, unsigned int height, Camera *cam)
 	}
 }
 
+void
+gui_render_event_message(Gui *gui, Camera *cam)
+{
+	static SDL_Color color = { 255, 255, 255, 255 };
+	static SDL_Rect box = { 0, 0, 150, 50 };
+
+	if (timer_started(gui->event_message_timer)
+	    && timer_get_ticks(gui->event_message_timer) < EVENT_MESSAGE_DISPLAY_TIME)
+	{
+		texture_render(gui->event_message, &box, cam);
+		return;
+	}
+
+	if (event_messages.count > 0) {
+		texture_load_from_text(gui->event_message,
+				       event_messages.messages[0],
+				       color,
+				       cam->renderer);
+
+		box.x = (GAME_VIEW_WIDTH/2) - (gui->event_message->dim.width/2);
+		box.y = (GAME_VIEW_HEIGHT/2) - (gui->event_message->dim.height/2);
+		box.w = gui->event_message->dim.width;
+		box.h = gui->event_message->dim.height;
+
+		free(event_messages.messages[0]);
+		for (size_t i = 1; i < event_messages.count; ++i) {
+			event_messages.messages[i-1] = event_messages.messages[i];
+		}
+		event_messages.count--;
+
+		texture_render(gui->event_message, &box, cam);
+		timer_start(gui->event_message_timer);
+	}
+}
+
+void
+gui_clear_message_log(void)
+{
+	for (size_t i = 0; i < event_messages.count; ++i)
+		free(event_messages.messages[i]);
+	event_messages.count = 0;
+
+	for (size_t i = 0; i < log_data.count; ++i)
+		free(log_data.log[i]);
+	log_data.count = 0;
+}
+
 static void
 destroy_log(void)
 {
@@ -469,10 +557,27 @@ destroy_log(void)
 	log_data.log = NULL;
 }
 
+static void
+destroy_event_messages(void)
+{
+	if (event_messages.messages == NULL)
+		return;
+
+	for (unsigned int i = 0; i < event_messages.count; ++i)
+		free(event_messages.messages[i]);
+	
+	free(event_messages.messages);
+	event_messages.messages = NULL;
+}
+
 void
 gui_destroy(Gui *gui)
 {
 	destroy_log();
+	destroy_event_messages();
+
+	timer_destroy(gui->event_message_timer);
+	texture_destroy(gui->event_message);
 
 	while (gui->sprites != NULL)
 		sprite_destroy(linkedlist_pop(&gui->sprites));

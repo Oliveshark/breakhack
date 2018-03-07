@@ -73,6 +73,17 @@ m_sprintf(char * dest, size_t destsz, const char * format, ...)
 }
 
 void
+m_vsprintf(char *dest, size_t sz, const char *fmt, va_list args)
+{
+#ifndef _MSC_VER
+	UNUSED (sz);
+	vsprintf(dest, fmt, args);
+#else // _MSC_VER
+	vsprintf_s(dest, sz, fmt, args);
+#endif // _MSC_VER
+}
+
+void
 debug(const char *fmt, ...)
 {
 #ifdef DEBUG
