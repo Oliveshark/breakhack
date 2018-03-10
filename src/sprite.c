@@ -35,6 +35,7 @@ sprite_create_default(void)
 	s->fixed = false;
 	s->animate = true;
 	s->hidden = false;
+	s->onRender = NULL;
 
 	return s;
 }
@@ -90,11 +91,13 @@ sprite_set_texture(Sprite *s, Texture *t, int index)
 	s->textures[index] = t;
 }
 
-void sprite_render(Sprite *s, Camera *cam)
+void
+sprite_render(Sprite *s, Camera *cam)
 {
 	if (s->hidden)
 		return;
-
+	if (s->onRender)
+		s->onRender(s);
 	if (s->textures[1] && s->animate) {
 		if (!timer_started(s->renderTimer))
 			timer_start(s->renderTimer);

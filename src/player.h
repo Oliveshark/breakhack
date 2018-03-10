@@ -77,7 +77,7 @@ void
 player_reset_steps(Player*);
 
 void
-player_update(Player*, float deltatime);
+player_update(Player*, RoomMatrix*, float deltatime);
 
 void
 player_render(Player*, Camera*);

@@ -31,6 +31,7 @@
 #include "random.h"
 #include "projectile.h"
 #include "texturecache.h"
+#include "vector2d.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1 }
@@ -402,6 +403,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 			player->stats = (Stats) WARRIOR_STATS;
 			player->skills[0] = skill_create(FLURRY);
 			player->skills[1] = skill_create(CHARGE);
+			player->skills[2] = skill_create(DAGGER_THROW);
 			break;
 	}
 
@@ -502,7 +504,7 @@ player_reset_steps(Player *p)
 	player_print(p);
 }
 
-void player_update(Player *player, float deltatime)
+void player_update(Player *player, RoomMatrix *rm, float deltatime)
 {
 	if (!player->projectiles)
 		return;
@@ -514,7 +516,7 @@ void player_update(Player *player, float deltatime)
 
 	while (current) {
 		Projectile *p = current->data;
-		projectile_update(p, deltatime);
+		projectile_update(p, player, rm, deltatime);
 		if (!p->alive) {
 			if (last == NULL)
 				player->projectiles = current->next;
@@ -528,6 +530,7 @@ void player_update(Player *player, float deltatime)
 			current->next = NULL;
 			linkedlist_destroy(&current);
 			current = next;
+			action_spent(player);
 		} else {
 			last = current;
 			current = current->next;

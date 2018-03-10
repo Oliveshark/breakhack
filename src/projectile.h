@@ -24,19 +24,28 @@
 #include "camera.h"
 #include "vector2d.h"
 #include "timer.h"
+#include "roommatrix.h"
 
-typedef struct Prjectile_t {
+// Forward declare
+struct Player_t;
+
+typedef struct Projectile_t {
 	Sprite *sprite;
 	Vector2d velocity;
 	Timer *lifetime;
 	bool alive;
+	Timer *animation_timer;
+	void (*onRender)(struct Projectile_t*);
 } Projectile;
+
+Projectile *
+projectile_dagger_create(void);
 
 Projectile *
 projectile_create(void);
 
 void
-projectile_update(Projectile*, float deltatime);
+projectile_update(Projectile*, struct Player_t*, RoomMatrix *rm, float deltatime);
 
 void
 projectile_render(Projectile*, Camera*);

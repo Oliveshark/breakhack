@@ -38,6 +38,7 @@ typedef struct Sprite_t {
 	bool fixed;
 	bool animate;
 	bool hidden;
+	void (*onRender)(Sprite*);
 } Sprite;
 
 Sprite* sprite_create(void);

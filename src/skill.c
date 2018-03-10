@@ -29,6 +29,8 @@
 #include "gui.h"
 #include "random.h"
 #include "particle_engine.h"
+#include "projectile.h"
+#include "linkedlist.h"
 
 static void
 set_player_clip_for_direction(Player *player, Vector2d *direction)
@@ -117,6 +119,44 @@ create_flurry(void)
 	s->fixed = true;
 	Skill *skill = create_default("Flurry", s);
 	skill->use = skill_use_flurry;
+	return skill;
+}
+
+static bool
+skill_throw_dagger(Skill *skill, SkillData *data)
+{
+	UNUSED(skill);
+	UNUSED(data);
+
+	Projectile *p = projectile_dagger_create();
+	if (vector2d_equals(VECTOR2D_UP, data->direction))
+		p->velocity = (Vector2d) { 0, -300 };
+	else if (vector2d_equals(VECTOR2D_DOWN, data->direction))
+		p->velocity = (Vector2d) { 0, 300 };
+	else if (vector2d_equals(VECTOR2D_RIGHT, data->direction))
+		p->velocity = (Vector2d) { 300, 0 };
+	else
+		p->velocity = (Vector2d) { -300, 0 };
+
+	p->sprite->pos = data->player->sprite->pos;
+	linkedlist_append(&data->player->projectiles, p);
+
+	return true;
+}
+
+static Skill *
+create_throw_dagger(void)
+{
+	Texture *t = texturecache_add("Extras/Dagger.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = DEFAULT_DIMENSION;
+	s->clip = CLIP16(0, 0);
+	s->fixed = true;
+	Skill *skill = create_default("Throw dagger", s);
+	skill->instantUse = false;
+	skill->use = skill_throw_dagger;
+	skill->actionRequired = false;
 	return skill;
 }
 
@@ -238,6 +278,8 @@ skill_create(enum SkillType t)
 			return create_sip_health();
 		case CHARGE:
 			return create_charge();
+		case DAGGER_THROW:
+			return create_throw_dagger();
 		default:
 			fatal("Unknown SkillType %u", (unsigned int) t);
 			return NULL;

@@ -50,7 +50,8 @@
 /* Quality of life stuff */
 #define DEFAULT_DIMENSION	(Dimension) { 16, 16 }
 #define GAME_DIMENSION		(Dimension) { TILE_DIMENSION, TILE_DIMENSION }
-#define CLIP16(x, y)			(SDL_Rect) { x, y, 16, 16 }
+#define CLIP16(x, y)		(SDL_Rect) { x, y, 16, 16 }
+#define CLIP32(x, y)		(SDL_Rect) { x, y, 32, 32 }
 
 /* Windows and compile crap */
 #ifdef _WIN32
