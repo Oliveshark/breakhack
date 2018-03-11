@@ -111,11 +111,11 @@ skill_use_flurry(Skill *skill, SkillData *data)
 static Skill *
 create_flurry(void)
 {
-	Texture *t = texturecache_add("Items/MedWep.png");
+	Texture *t = texturecache_add("Extras/Skills.png");
 	Sprite *s = sprite_create();
 	sprite_set_texture(s, t, 0);
-	s->dim = DEFAULT_DIMENSION;
-	s->clip = CLIP16(0, 0);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(0, 0);
 	s->fixed = true;
 	Skill *skill = create_default("Flurry", s);
 	skill->use = skill_use_flurry;
@@ -147,11 +147,11 @@ skill_throw_dagger(Skill *skill, SkillData *data)
 static Skill *
 create_throw_dagger(void)
 {
-	Texture *t = texturecache_add("Extras/Dagger.png");
+	Texture *t = texturecache_add("Extras/Skills.png");
 	Sprite *s = sprite_create();
 	sprite_set_texture(s, t, 0);
-	s->dim = DEFAULT_DIMENSION;
-	s->clip = CLIP16(0, 0);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(64, 0);
 	s->fixed = true;
 	Skill *skill = create_default("Throw dagger", s);
 	skill->instantUse = false;
@@ -257,11 +257,11 @@ skill_charge(Skill *skill, SkillData *data)
 static Skill *
 create_charge(void)
 {
-	Texture *t = texturecache_add("Commissions/Warrior.png");
+	Texture *t = texturecache_add("Extras/Skills.png");
 	Sprite *s = sprite_create();
 	sprite_set_texture(s, t, 0);
-	s->dim = DEFAULT_DIMENSION;
-	s->clip = CLIP16(48, 32);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(32, 0);
 	s->fixed = true;
 	Skill *skill = create_default("Charge", s);
 	skill->use = skill_charge;

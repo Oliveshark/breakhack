@@ -149,7 +149,10 @@ render_skills(Player *player, Camera *cam)
 			continue;
 
 		Skill *skill = player->skills[i];
-		skill->icon->pos = (Position) { 8 + i * 32, 8 };
+		if (skill->icon->dim.width >16)
+			skill->icon->pos = (Position) { i * 32, 0 };
+		else
+			skill->icon->pos = (Position) { 8 + i * 32, 8 };
 		sprite_render(skill->icon, cam);
 
 		if (player->skills[i]->active) {

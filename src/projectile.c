@@ -86,8 +86,12 @@ projectile_update(Projectile *p, Player *player, RoomMatrix *rm, float deltatime
 
 	if (space->monster) {
 		Uint32 dmg = stats_fight(&player->stats, &space->monster->stats);
+		if (dmg > 0) {
+			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, dmg);
+			mixer_play_effect(SWORD_HIT);
+			player->hits += 1;
+		}
 		monster_hit(space->monster, dmg);
-		mixer_play_effect(SWORD_HIT);
 	}
 	p->alive = false;
 }
