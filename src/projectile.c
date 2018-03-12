@@ -22,6 +22,7 @@
 #include "player.h"
 #include "monster.h"
 #include "mixer.h"
+#include "gui.h"
 
 static void
 onDaggerRender(Sprite *s)

@@ -31,6 +31,7 @@
 #include "particle_engine.h"
 #include "projectile.h"
 #include "linkedlist.h"
+#include "item.h"
 
 static void
 set_player_clip_for_direction(Player *player, Vector2d *direction)
@@ -126,18 +127,18 @@ static bool
 skill_throw_dagger(Skill *skill, SkillData *data)
 {
 	UNUSED(skill);
-	UNUSED(data);
 
 	Projectile *p = projectile_dagger_create();
 	if (vector2d_equals(VECTOR2D_UP, data->direction))
-		p->velocity = (Vector2d) { 0, -300 };
+		p->velocity = (Vector2d) { 0, -DAGGER_VELOCITY };
 	else if (vector2d_equals(VECTOR2D_DOWN, data->direction))
-		p->velocity = (Vector2d) { 0, 300 };
+		p->velocity = (Vector2d) { 0, DAGGER_VELOCITY };
 	else if (vector2d_equals(VECTOR2D_RIGHT, data->direction))
-		p->velocity = (Vector2d) { 300, 0 };
+		p->velocity = (Vector2d) { DAGGER_VELOCITY, 0 };
 	else
-		p->velocity = (Vector2d) { -300, 0 };
+		p->velocity = (Vector2d) { -DAGGER_VELOCITY, 0 };
 
+	mixer_play_effect(SWOOSH);
 	p->sprite->pos = data->player->sprite->pos;
 	linkedlist_append(&data->player->projectiles, p);
 
@@ -200,11 +201,20 @@ skill_charge(Skill *skill, SkillData *data)
 	// Find collider
 	destination.x += (int) data->direction.x;
 	destination.y += (int) data->direction.y;
-	while (position_in_roommatrix(&destination)
-		&& !matrix->spaces[destination.x][destination.y].occupied)
+	RoomSpace *space = &matrix->spaces[destination.x][destination.y];
+	while (position_in_roommatrix(&destination) && !space->occupied)
 	{
 		destination.x += (int) data->direction.x;
 		destination.y += (int) data->direction.y;
+		if (space->items != NULL) {
+			LinkedList *items = space->items;
+			while (items != NULL) {
+				Item *item = items->data;
+				items = items->next;
+				item_collected(item, player);
+			}
+		}
+		space = &matrix->spaces[destination.x][destination.y];
 		steps++;
 	}
 

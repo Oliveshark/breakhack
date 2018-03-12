@@ -26,6 +26,8 @@
 #include "timer.h"
 #include "roommatrix.h"
 
+#define DAGGER_VELOCITY 500
+
 // Forward declare
 struct Player_t;
 
