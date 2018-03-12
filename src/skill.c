@@ -138,6 +138,8 @@ skill_throw_dagger(Skill *skill, SkillData *data)
 	else
 		p->velocity = (Vector2d) { -DAGGER_VELOCITY, 0 };
 
+	set_player_clip_for_direction(data->player, &data->direction);
+
 	mixer_play_effect(SWOOSH);
 	p->sprite->pos = data->player->sprite->pos;
 	linkedlist_append(&data->player->projectiles, p);

@@ -30,7 +30,7 @@ onDaggerRender(Sprite *s)
 	if (!timer_started(s->renderTimer))
 		timer_start(s->renderTimer);
 
-	if (timer_get_ticks(s->renderTimer) > 100) {
+	if (timer_get_ticks(s->renderTimer) > 60) {
 		timer_start(s->renderTimer);
 		s->clip.x += 16;
 		s->clip.x = s->clip.x % 64;
