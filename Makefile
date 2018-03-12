@@ -13,3 +13,7 @@ test:
 run: $(all)
 	@./build/breakhack
 .PHONY: run
+
+lint:
+	@make lint -sC build
+.PHONY: lint

@@ -77,6 +77,11 @@ if (NOT WIN32)
 		-Wmissing-prototypes
 		-Wconversion -Wno-sign-conversion
 		)
+	add_custom_target(lint
+		COMMENT "Running cppcheck"
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		COMMAND cppcheck --language=c --error-exitcode=1 --template=gcc --enable=warning,performance,portability,information,missingInclude --quiet src/*
+		)
 endif (NOT WIN32)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")

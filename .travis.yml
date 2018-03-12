@@ -22,7 +22,7 @@ before_install:
 
 install:
     - sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
-    - sudo apt-get install -y cmake cmake-data check lua5.2 liblua5.2-dev
+    - sudo apt-get install -y cmake cmake-data check lua5.2 liblua5.2-dev cppcheck
 
       #g++6
     - if [ "$CXX" = "g++" ]; then sudo apt-get install -y g++-6; fi
@@ -39,3 +39,4 @@ script:
     - cmake ..
     - make
     - make test
+    - make lint
