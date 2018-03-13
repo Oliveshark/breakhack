@@ -164,7 +164,7 @@ local undead = {
 
 local dogs = {
 	{ texturePaths.dog0, texturePaths.dog1, stats.dog,  0, 16, "A Rabid Dog", state.passive, state.agressive };
-	{ texturePaths.dog0, texturePaths.dog1, stats.dog,  0, 16, "An Angry Rabid Dog", state.agressive, state.agressive };
+	{ texturePaths.dog0, texturePaths.dog1, stats.dog,  16, 16, "An Angry Rabid Dog", state.agressive, state.agressive };
 }
 
 local reptile = {
