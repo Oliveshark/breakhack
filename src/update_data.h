@@ -16,44 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PROJECTILE_H_
-#define PROJECTILE_H_
+#ifndef UPDATE_DATA_H_
+#define	UPDATE_DATA_H_
 
-#include <stdbool.h>
-#include "sprite.h"
-#include "camera.h"
-#include "vector2d.h"
-#include "timer.h"
+#include "player.h"
+#include "map.h"
 #include "roommatrix.h"
-#include "update_data.h"
 
-#define DAGGER_VELOCITY 500
+typedef struct UpdateData_t {
+	Player *player;
+	Map *map;
+	RoomMatrix *matrix;
+	float deltatime;
+} UpdateData;
 
-// Forward declare
-struct Player_t;
-
-typedef struct Projectile_t {
-	Sprite *sprite;
-	Vector2d velocity;
-	Timer *lifetime;
-	bool alive;
-	Timer *animation_timer;
-	void (*onRender)(struct Projectile_t*);
-} Projectile;
-
-Projectile *
-projectile_dagger_create(void);
-
-Projectile *
-projectile_create(void);
-
-void
-projectile_update(Projectile*, UpdateData *);
-
-void
-projectile_render(Projectile*, Camera*);
-
-void
-projectile_destroy(Projectile*);
-
-#endif // PROJECTILE_H_
+#endif // UPDATE_DATA_H_

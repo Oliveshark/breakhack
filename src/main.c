@@ -45,6 +45,7 @@
 #include "random.h"
 #include "skillbar.h"
 #include "texturecache.h"
+#include "update_data.h"
 
 typedef enum Turn_t {
 	PLAYER,
@@ -65,6 +66,7 @@ static double		renderScale	= 1.0;
 static Menu		*mainMenu	= NULL;
 static Menu		*inGameMenu	= NULL;
 static Timer		*menuTimer	= NULL;
+static UpdateData	gUpdateData;
 static GameState	gGameState;
 static Camera		gCamera;
 static SDL_Rect		gameViewport;
@@ -207,6 +209,9 @@ startGame(void *unused)
 	gPlayer = player_create(WARRIOR, gRenderer);
 	mixer_play_music(GAME_MUSIC0 + get_random(2));
 	resetGame();
+	gUpdateData.player = gPlayer;
+	gUpdateData.map = gMap;
+	gUpdateData.matrix = gRoomMatrix;
 	gui_clear_message_log();
 	gui_log("The Dungeon Crawl begins!");
 	gui_event_message("Welcome to the dungeon!");
@@ -348,12 +353,6 @@ init(void)
 	return result;
 }
 
-static void
-loadMedia(void)
-{
-	gPlayer = player_create(WARRIOR, gRenderer);
-}
-
 static bool
 handle_main_events(SDL_Event *event)
 {
@@ -461,7 +460,7 @@ run_game(void)
 
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 	particle_engine_update(deltaTime);
-	player_update(gPlayer, gRoomMatrix, deltaTime);
+	player_update(&gUpdateData);
 
 	roommatrix_update_with_player(gRoomMatrix, gPlayer);
 	if (currentTurn == PLAYER) {
@@ -595,6 +594,7 @@ void run(void)
 			oldTime = currentTime;
 			currentTime = SDL_GetTicks();
 			deltaTime = (float) ((currentTime - oldTime) / 1000.0);
+			gUpdateData.deltatime = deltaTime;
 		}
 	}
 
@@ -647,7 +647,6 @@ int main(int argc, char *argv[])
 	if (!init())
 		return 1;
 
-	loadMedia();
 	run();
 	close();
 	PHYSFS_deinit();

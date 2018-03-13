@@ -29,6 +29,9 @@
 
 #define PLAYER_SKILL_COUNT 5
 
+// Foward declare
+struct UpdateData_t;
+
 enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR };
 typedef enum PlayerClass class_t;
 
@@ -78,7 +81,7 @@ void
 player_reset_steps(Player*);
 
 void
-player_update(Player*, RoomMatrix*, float deltatime);
+player_update(struct UpdateData_t *);
 
 void
 player_render(Player*, Camera*);

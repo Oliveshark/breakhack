@@ -26,6 +26,7 @@
 #include "gui.h"
 #include "item_builder.h"
 #include "random.h"
+#include "update_data.h"
 
 static void
 onDaggerRender(Sprite *s)
@@ -66,10 +67,10 @@ projectile_create(void)
 }
 
 void
-projectile_update(Projectile *p, Player *player, RoomMatrix *rm, float deltatime)
+projectile_update(Projectile *p, UpdateData *data)
 {
-	p->sprite->pos.x += (int) (p->velocity.x * deltatime);
-	p->sprite->pos.y += (int) (p->velocity.y * deltatime);
+	p->sprite->pos.x += (int) (p->velocity.x * data->deltatime);
+	p->sprite->pos.y += (int) (p->velocity.y * data->deltatime);
 
 	if (timer_get_ticks(p->lifetime) > 2000)
 		p->alive = false;
@@ -81,7 +82,7 @@ projectile_update(Projectile *p, Player *player, RoomMatrix *rm, float deltatime
 		collisionPos.y += TILE_DIMENSION;
 
 	Position roomPos = position_to_matrix_coords(&collisionPos);
-	RoomSpace *space = &rm->spaces[roomPos.x][roomPos.y];
+	RoomSpace *space = &data->matrix->spaces[roomPos.x][roomPos.y];
 	if (!space->occupied)
 		return;
 
@@ -89,24 +90,17 @@ projectile_update(Projectile *p, Player *player, RoomMatrix *rm, float deltatime
 		return;
 
 	if (space->monster) {
-		Uint32 dmg = stats_fight(&player->stats, &space->monster->stats);
+		Uint32 dmg = stats_fight(&data->player->stats, &space->monster->stats);
 		if (dmg > 0) {
 			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, dmg);
 			mixer_play_effect(SWORD_HIT);
-			player->hits += 1;
+			data->player->hits += 1;
 		}
-		/*
-		 * TODO(Linus): This can be fixed so that daggers
-		 * can be retrieved. Probably best to create an "UpdateData" container that
-		 * can be sent as arguments down the update queue.
-
-		 if (get_random(1) == 0) {
-			debug("Adding dagger item");
+		if (get_random(2) == 0) {
 			Item *item = item_builder_build_item(DAGGER, 1);
 			item->sprite->pos = space->monster->sprite->pos;
-			linkedlist_append(&map->items, item);
+			linkedlist_append(&data->map->items, item);
 		}
-		*/
 		monster_hit(space->monster, dmg);
 	}
 	p->alive = false;

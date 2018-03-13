@@ -368,7 +368,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 {
 	Player *player = malloc(sizeof(Player));
 	player->sprite = sprite_create();
-	player->daggers		= 10;
+	player->daggers		= 0;
 	player->total_steps	= 0;
 	player->steps		= 0;
 	player->xp		= 0;
@@ -507,22 +507,22 @@ player_reset_steps(Player *p)
 	player_print(p);
 }
 
-void player_update(Player *player, RoomMatrix *rm, float deltatime)
+void player_update(UpdateData *data)
 {
-	if (!player->projectiles)
+	if (!data->player->projectiles)
 		return;
 
 	LinkedList *last, *current, *next;
 	last = NULL;
-	current = player->projectiles;
+	current = data->player->projectiles;
 	next = NULL;
 
 	while (current) {
 		Projectile *p = current->data;
-		projectile_update(p, player, rm, deltatime);
+		projectile_update(p, data);
 		if (!p->alive) {
 			if (last == NULL)
-				player->projectiles = current->next;
+				data->player->projectiles = current->next;
 			else
 				last->next = current->next;
 
@@ -533,7 +533,7 @@ void player_update(Player *player, RoomMatrix *rm, float deltatime)
 			current->next = NULL;
 			linkedlist_destroy(&current);
 			current = next;
-			action_spent(player);
+			action_spent(data->player);
 		} else {
 			last = current;
 			current = current->next;
