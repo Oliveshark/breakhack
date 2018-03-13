@@ -17,6 +17,7 @@ include(cmake/FindSDL2_image.cmake)
 include(cmake/FindSDL2_ttf.cmake)
 include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindCCache.cmake)
+include(cmake/Findcppcheck.cmake)
 
 if (NOT WIN32)
 	include(FindX11)
@@ -76,11 +77,6 @@ if (NOT WIN32)
 		-Wstrict-prototypes
 		-Wmissing-prototypes
 		-Wconversion -Wno-sign-conversion
-		)
-	add_custom_target(lint
-		COMMENT "Running cppcheck"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		COMMAND cppcheck --language=c --error-exitcode=1 --template=gcc --enable=warning,performance,portability,information,missingInclude --quiet src/*
 		)
 endif (NOT WIN32)
 
@@ -176,6 +172,15 @@ IF (CHECK_FOUND AND NOT WIN32)
 	add_test(test_hashtable test_hashtable)
 ENDIF (CHECK_FOUND AND NOT WIN32)
 
+# LINT:
+if (CPPCHECK_FOUND)
+	add_custom_target(lint
+		COMMAND ${CPPCHECK_EXECUTABLE} --language=c --template=gcc --error-exitcode=1 --quiet --enable=warning,style,performance,portability,information,missingInclude src/
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+		COMMENT "Run cppcheck"
+		)
+endif (CPPCHECK_FOUND)
+
 if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
 	add_custom_target(assets_pack ALL
 		COMMAND ${CMAKE_COMMAND} -E tar "-cf" "../assets.pack" "--format=zip" --
@@ -187,9 +192,7 @@ if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
 			"${CMAKE_CURRENT_SOURCE_DIR}/assets/Sounds"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets
 		)
-endif (NOT CMAKE_BUILD_TYPE MATCHES Debug)
 
-if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
 	add_custom_target(data_pack ALL
 		COMMAND ${CMAKE_COMMAND} -E tar "-cf" "../data.pack" "--format=zip" --
 			"mapgen.lua"
