@@ -39,4 +39,3 @@ script:
     - cmake ..
     - make
     - make test
-    - make lint
