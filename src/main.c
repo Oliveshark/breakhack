@@ -476,10 +476,10 @@ run_game(void)
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
 		}
-	}
-	if (currentTurn == MONSTER) {
-		if (map_move_monsters(gMap, gRoomMatrix))
+	} else if (currentTurn == MONSTER) {
+		if (map_move_monsters(gMap, gRoomMatrix)) {
 			currentTurn = PLAYER;
+		}
 	}
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);

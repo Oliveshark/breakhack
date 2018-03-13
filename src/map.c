@@ -102,7 +102,6 @@ map_clear_dead_monsters(Map *map, Player *player)
 	while (map->monsters) {
 		Monster *monster = linkedlist_pop(&map->monsters);
 		if (monster->stats.hp <= 0) {
-			// Loot drops
 			monster_drop_loot(monster, map, player);
 			monster_destroy(monster);
 		} else {
@@ -147,6 +146,8 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 	while (m) {
 		Monster *monster = m->data;
 		m = m->next;
+		if (monster->stats.hp <= 0)
+			continue;
 		if (!position_in_room(&monster->sprite->pos, &map->currentRoom))
 			continue;
 		allDone = allDone && monster_move(monster, rm);
