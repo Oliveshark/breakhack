@@ -66,7 +66,6 @@ static double		renderScale	= 1.0;
 static Menu		*mainMenu	= NULL;
 static Menu		*inGameMenu	= NULL;
 static Timer		*menuTimer	= NULL;
-static UpdateData	gUpdateData;
 static GameState	gGameState;
 static Camera		gCamera;
 static SDL_Rect		gameViewport;
@@ -209,9 +208,6 @@ startGame(void *unused)
 	gPlayer = player_create(WARRIOR, gRenderer);
 	mixer_play_music(GAME_MUSIC0 + get_random(2));
 	resetGame();
-	gUpdateData.player = gPlayer;
-	gUpdateData.map = gMap;
-	gUpdateData.matrix = gRoomMatrix;
 	gui_clear_message_log();
 	gui_log("The Dungeon Crawl begins!");
 	gui_event_message("Welcome to the dungeon!");
@@ -448,8 +444,19 @@ check_next_level(void)
 }
 
 static void
+populateUpdateData(UpdateData *data, float deltatime)
+{
+	data->player = gPlayer;
+	data->map = gMap;
+	data->matrix = gRoomMatrix;
+	data->deltatime = deltatime;
+}
+
+static void
 run_game(void)
 {
+	static UpdateData updateData;
+
 	map_clear_dead_monsters(gMap, gPlayer);
 	map_clear_collected_items(gMap);
 	roommatrix_populate_from_map(gRoomMatrix, gMap);
@@ -458,9 +465,10 @@ run_game(void)
 
 	roommatrix_build_lightmap(gRoomMatrix);
 
+	populateUpdateData(&updateData, deltaTime);
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 	particle_engine_update(deltaTime);
-	player_update(&gUpdateData);
+	player_update(&updateData);
 
 	roommatrix_update_with_player(gRoomMatrix, gPlayer);
 	if (currentTurn == PLAYER) {
@@ -594,7 +602,6 @@ void run(void)
 			oldTime = currentTime;
 			currentTime = SDL_GetTicks();
 			deltaTime = (float) ((currentTime - oldTime) / 1000.0);
-			gUpdateData.deltatime = deltaTime;
 		}
 	}
 

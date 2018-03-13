@@ -97,62 +97,34 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 void
 map_clear_dead_monsters(Map *map, Player *player)
 {
-	LinkedList *last, *current, *next;
+	LinkedList *cleared = linkedlist_create();
 
-	last = NULL;
-	current = map->monsters;
-
-	while (current != NULL) {
-		if (((Monster*) current->data)->stats.hp <= 0) {
-			if (last == NULL)
-				map->monsters = current->next;
-			else
-				last->next = current->next;
-
-			Monster *monster = current->data;
-
+	while (map->monsters) {
+		Monster *monster = linkedlist_pop(&map->monsters);
+		if (monster->stats.hp <= 0) {
 			// Loot drops
 			monster_drop_loot(monster, map, player);
-
 			monster_destroy(monster);
-			current->data = NULL;
-			next = current->next;
-			current->next = NULL;
-			linkedlist_destroy(&current);
-			current = next;
-			continue;
+		} else {
+			linkedlist_append(&cleared, monster);
 		}
-		last = current;
-		current = current->next;
 	}
+	map->monsters = cleared;
 }
 
 void
 map_clear_collected_items(Map *map)
 {
-	LinkedList *last, *current, *next;
+	LinkedList *filtered = linkedlist_create();
 
-	last = NULL;
-	current = map->items;
-
-	while (current != NULL) {
-		if (((Item*) current->data)->collected) {
-			if (last == NULL)
-				map->items = current->next;
-			else
-				last->next = current->next;
-
-			item_destroy(current->data);
-			current->data = NULL;
-			next = current->next;
-			current->next = NULL;
-			linkedlist_destroy(&current);
-			current = next;
-			continue;
-		}
-		last = current;
-		current = current->next;
+	while (map->items) {
+		Item *item = linkedlist_pop(&map->items);
+		if (item->collected)
+			item_destroy(item);
+		else
+			linkedlist_append(&filtered, item);
 	}
+	map->items = filtered;
 }
 
 void
