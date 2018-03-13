@@ -35,6 +35,7 @@ typedef enum {
 
 typedef enum {
 	HEALTH,
+	DAGGER,
 	FLESH,
 	TREASURE,
 	ITEM_COUNT

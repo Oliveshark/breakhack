@@ -408,7 +408,7 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 	// Reset the map
 	map->currentRoom = (Position) { 0, 0 };
 
-	debug("Done");
+	debug("Running lua script %s: Done", file);
 
 	return map;
 }

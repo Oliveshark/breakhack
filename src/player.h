@@ -44,6 +44,7 @@ typedef struct Player_t {
 	ActionText *hitText;
 	ActionText *missText;
 	Stats stats;
+	unsigned int daggers;
 	LinkedList *projectiles;
 	unsigned int xp;
 	unsigned int total_steps;

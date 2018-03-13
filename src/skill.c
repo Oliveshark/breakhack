@@ -57,6 +57,7 @@ create_default(const char *s_label, Sprite *s)
 	skill->actionRequired = true;
 	skill->instantUse = false;
 	skill->active = false;
+	skill->available = NULL;
 	skill->use = NULL;
 	return skill;
 }
@@ -124,9 +125,20 @@ create_flurry(void)
 }
 
 static bool
+skill_throw_dagger_available(Player *player)
+{
+	return player->daggers > 0;
+}
+
+static bool
 skill_throw_dagger(Skill *skill, SkillData *data)
 {
 	UNUSED(skill);
+
+	if (data->player->daggers == 0)
+		return false;
+
+	data->player->daggers--;
 
 	Projectile *p = projectile_dagger_create();
 	if (vector2d_equals(VECTOR2D_UP, data->direction))
@@ -158,9 +170,17 @@ create_throw_dagger(void)
 	s->fixed = true;
 	Skill *skill = create_default("Throw dagger", s);
 	skill->instantUse = false;
+	skill->resetTime = 1;
+	skill->available = skill_throw_dagger_available;
 	skill->use = skill_throw_dagger;
 	skill->actionRequired = false;
 	return skill;
+}
+
+static bool
+skill_sip_health_available(Player *player)
+{
+	return player->potion_sips > 0 && player->stats.hp != player->stats.maxhp;
 }
 
 static bool
@@ -182,6 +202,7 @@ create_sip_health(void)
 	s->fixed = true;
 	Skill *skill = create_default("Sip health", s);
 	skill->instantUse = true;
+	skill->available = skill_sip_health_available;
 	skill->use = skill_sip_health;
 	skill->resetTime = 0;
 	return skill;

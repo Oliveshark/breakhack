@@ -65,6 +65,18 @@ drink_health(Item *item, Player *player)
 	gui_log("You collect %u sips of health", (unsigned int) item->value);
 }
 
+static void
+pickup_dagger(Item *item, Player *player)
+{
+	player->daggers += (Uint32) item->value;
+
+	mixer_play_effect(SWORD_HIT);
+	if (item->value > 1)
+		gui_log("You collect %u daggers", (Uint32) item->value);
+	else
+		gui_log("You collect a dagger");
+}
+
 static Item *
 create_item(const char *path, SDL_Rect clip, void (*cb)(Item*, Player*))
 {
@@ -150,8 +162,9 @@ create_treasure(int current_level)
 Item *
 item_builder_build_item(ItemKey key, int level)
 {
-	static const char *path_flesh	= "Items/Flesh.png";
-	static const char *path_potion	= "Items/Potion.png";
+	static const char *path_flesh		= "Items/Flesh.png";
+	static const char *path_potion		= "Items/Potion.png";
+	static const char *path_short_wep	= "Items/ShortWep.png";
 
 	check_builder();
 
@@ -171,6 +184,12 @@ item_builder_build_item(ItemKey key, int level)
 					   CLIP16(0, 0),
 					   &drink_health);
 			item->value = 1 + get_random(level);
+			break;
+		case DAGGER:
+			item = create_item(path_short_wep,
+					   CLIP16(0, 0),
+					   &pickup_dagger);
+			item->value = 1;
 			break;
 		default:
 			fatal("in item_builder_build() : Unhandled item key %d", key);

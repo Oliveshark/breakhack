@@ -289,6 +289,8 @@ check_skill_activation(Player *player, RoomMatrix *matrix, SDL_Event *event)
 			continue;
 
 		Skill *skill = player->skills[i];
+		if (skill->available && !skill->available(player))
+		    continue;
 		skill->active = (selected - 1) == i && !skill->active && skill->resetCountdown == 0;
 		if (skill->active && skill->instantUse) {
 			SkillData skillData = { player, matrix, VECTOR2D_NODIR };
@@ -366,9 +368,10 @@ player_create(class_t class, SDL_Renderer *renderer)
 {
 	Player *player = malloc(sizeof(Player));
 	player->sprite = sprite_create();
+	player->daggers		= 10;
 	player->total_steps	= 0;
 	player->steps		= 0;
-	player->xp			= 0;
+	player->xp		= 0;
 	player->hits		= 0;
 	player->kills		= 0;
 	player->misses		= 0;

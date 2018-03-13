@@ -344,7 +344,7 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 
 	unsigned int item_drop_chance = 1;
 	Item *item;
-	Item *items[2];
+	Item *items[3];
 	unsigned int item_count = 0;
 	bool player_full_health = player->stats.hp >= player->stats.maxhp;
 
@@ -358,11 +358,13 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 	}
 	if (get_random(item_drop_chance) == 0) {
 		ItemKey key;
-		if (!player_full_health)
-			key = get_random(TREASURE - 1);
-		else
-			key = HEALTH;
+		key = get_random(DAGGER);
 		item = item_builder_build_item(key, map->level);
+		item->sprite->pos = monster->sprite->pos;
+		items[item_count++] = item;
+	}
+	if (!player_full_health && get_random(2) == 0) {
+		item = item_builder_build_item(FLESH, map->level);
 		item->sprite->pos = monster->sprite->pos;
 		items[item_count++] = item;
 	}

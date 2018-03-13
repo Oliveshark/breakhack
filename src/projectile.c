@@ -24,6 +24,8 @@
 #include "monster.h"
 #include "mixer.h"
 #include "gui.h"
+#include "item_builder.h"
+#include "random.h"
 
 static void
 onDaggerRender(Sprite *s)
@@ -93,6 +95,18 @@ projectile_update(Projectile *p, Player *player, RoomMatrix *rm, float deltatime
 			mixer_play_effect(SWORD_HIT);
 			player->hits += 1;
 		}
+		/*
+		 * TODO(Linus): This can be fixed so that daggers
+		 * can be retrieved. Probably best to create an "UpdateData" container that
+		 * can be sent as arguments down the update queue.
+
+		 if (get_random(1) == 0) {
+			debug("Adding dagger item");
+			Item *item = item_builder_build_item(DAGGER, 1);
+			item->sprite->pos = space->monster->sprite->pos;
+			linkedlist_append(&map->items, item);
+		}
+		*/
 		monster_hit(space->monster, dmg);
 	}
 	p->alive = false;

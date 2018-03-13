@@ -30,8 +30,8 @@
 #define DEFAULT_LOG { NULL, 50, 0, 200 }
 #define DEFAULT_EVENT_MESSAGES { NULL, 5, 0, 200 }
 
-#define POS_Y_COLLECTABLES 64
-#define POS_Y_XPBAR	112
+#define POS_Y_COLLECTABLES	 64
+#define POS_Y_XPBAR		128
 
 static SDL_Rect frame_top_left		= { 16, 160, 16, 16 };
 static SDL_Rect frame_top_right		= { 48, 160, 16, 16 };
@@ -151,7 +151,7 @@ init_sprites(Gui *gui)
 	s = sprite_create();
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
-	s->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	s->clip = CLIP16(0, 0);
 	s->pos = (Position) { 16, POS_Y_COLLECTABLES };
 	linkedlist_append(&gui->sprites, s);
 
@@ -159,8 +159,16 @@ init_sprites(Gui *gui)
 	s = sprite_create();
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
-	s->clip = (SDL_Rect) { 16, 16, 16, 16 };
+	s->clip = CLIP16(16, 16);
 	s->pos = (Position) { 16, POS_Y_COLLECTABLES + 16 };
+	linkedlist_append(&gui->sprites, s);
+
+	t = texturecache_add("Items/ShortWep.png");
+	s = sprite_create();
+	s->fixed = true;
+	sprite_set_texture(s, t, 0);
+	s->clip = CLIP16(0, 0);
+	s->pos = (Position) { 16, POS_Y_COLLECTABLES + 32 };
 	linkedlist_append(&gui->sprites, s);
 }
 
@@ -190,6 +198,7 @@ gui_create(void)
 	gui->labels[DUNGEON_LEVEL_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 + (2*14)  });
 	gui->labels[HEALTH_POTION_LABEL] = create_label_sprite((Position) { 32, POS_Y_COLLECTABLES + 5  });
 	gui->labels[GOLD_LABEL] = create_label_sprite((Position) { 32, POS_Y_COLLECTABLES + 16 + 5 });
+	gui->labels[DAGGER_LABEL] = create_label_sprite((Position) { 32, POS_Y_COLLECTABLES + 32 + 5  });
 
 	gui_malloc_log();
 	gui_malloc_eventmessages();
@@ -303,6 +312,7 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 	static int max_health = -1;
 	static int current_health = -1;
 	static int current_potion_sips = -1;
+	static int current_dagger_count = -1;
 
 	static SDL_Color color = { 255, 255, 255, 255 };
 
@@ -335,6 +345,13 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 		texture_load_from_text(gui->labels[HEALTH_POTION_LABEL]->textures[0], buffer, color, renderer);
 		gui->labels[HEALTH_POTION_LABEL]->dim = gui->labels[HEALTH_POTION_LABEL]->textures[0]->dim;
 		current_potion_sips = player->potion_sips;
+	}
+
+	if (current_dagger_count != (int) player->daggers) {
+		m_sprintf(buffer, 200, "x %u", (unsigned int) player->daggers);
+		texture_load_from_text(gui->labels[DAGGER_LABEL]->textures[0], buffer, color, renderer);
+		gui->labels[DAGGER_LABEL]->dim = gui->labels[DAGGER_LABEL]->textures[0]->dim;
+		current_dagger_count = (int) player->daggers;
 	}
 
 	if (last_gold != player->gold) {

@@ -172,11 +172,14 @@ render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
 		if (!player->skills[i])
 			continue;
 
-		if (player->skills[i]->resetCountdown > 0) {
+		Skill *skill = player->skills[i];
+		if (skill->resetCountdown || (skill->available && !skill->available(player))) {
 			unavailableSkillBox.x = i * 32;
 			SDL_SetRenderDrawColor(cam->renderer, 255, 0, 0, 70);
 			SDL_RenderFillRect(cam->renderer, &unavailableSkillBox);
-			render_skill_countdown(bar, i, player->skills[i]->resetCountdown, cam);
+			if (skill->resetCountdown) {
+				render_skill_countdown(bar, i, skill->resetCountdown, cam);
+			}
 		}
 	}
 }

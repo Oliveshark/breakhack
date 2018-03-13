@@ -48,6 +48,7 @@ typedef struct Skill_t {
 	bool actionRequired;
 	bool instantUse;
 	bool active;
+	bool (*available)(Player*);
 	bool (*use)(struct Skill_t*, SkillData*);
 } Skill;
 

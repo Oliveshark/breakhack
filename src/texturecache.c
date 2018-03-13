@@ -39,6 +39,8 @@ texturecache_add(const char *path)
 		texture_load_from_file(t, path, renderer);
 		ht_set(textures, path, t);
 		debug("Cached texture: %s", path);
+	} else {
+		debug("Retrieved cached texture: %s", path);
 	}
 
 	return t;

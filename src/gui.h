@@ -38,6 +38,7 @@ typedef enum Label_e {
 	GOLD_LABEL,
 	DUNGEON_LEVEL_LABEL,
 	HEALTH_POTION_LABEL,
+	DAGGER_LABEL,
 	LABEL_COUNT
 } LabelIndex;
 
