@@ -23,6 +23,7 @@
 #include "position.h"
 #include "dimension.h"
 #include "camera.h"
+#include "vector2d.h"
 
 void
 particle_engine_init(void);
@@ -38,6 +39,9 @@ particle_engine_eldritch_explosion(Position, Dimension);
 
 void
 particle_engine_speed_lines(Position, Dimension, bool horizontal);
+
+void
+particle_engine_wind(Vector2d direction);
 
 void
 particle_engine_update(float deltatime);

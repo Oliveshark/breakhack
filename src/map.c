@@ -23,6 +23,7 @@
 #include "item.h"
 #include "item_builder.h"
 #include "gui.h"
+#include "particle_engine.h"
 
 static
 Room* create_room(void)
@@ -31,6 +32,7 @@ Room* create_room(void)
 	Room *room;
 
 	room = ec_malloc(sizeof(Room));
+	room->modifier.type = RMOD_TYPE_NONE;
 	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			room->tiles[i][j] = NULL;
@@ -235,6 +237,9 @@ void map_render(Map *map, Camera *cam)
 					&tilePos,
 					cam);
 		}
+	}
+	if (room->modifier.type == RMOD_TYPE_WINDY) {
+		particle_engine_wind(room->modifier.data.wind.direction);
 	}
 
 	monsterItem = map->monsters;

@@ -30,6 +30,7 @@
 #include "defines.h"
 #include "monster.h"
 #include "player.h"
+#include "map_room_modifiers.h"
 
 typedef struct MapTile_t {
 	int textureIndex0;
@@ -43,6 +44,7 @@ typedef struct MapTile_t {
 typedef struct Room_t {
 	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	RoomModifierData modifier;
 } Room;
 
 typedef struct Map_t {

@@ -31,6 +31,7 @@ typedef struct Particle_t {
 	Dimension dim;
 	unsigned int movetime;
 	unsigned int lifetime;
+	bool fixed;
 	SDL_Color color;
 } Particle;
 
@@ -39,6 +40,20 @@ typedef struct Engine_t {
 } Engine;
 
 static Engine		*engine		= NULL;
+
+static Particle*
+create_particle(void)
+{
+	Particle *p = ec_malloc(sizeof(Particle));
+	p->pos = (Position) { 0, 0 };
+	p->dim = (Dimension) { 1, 1 };
+	p->velocity = VECTOR2D_NODIR;
+	p->movetime = 100;
+	p->lifetime = 100;
+	p->fixed = false;
+	p->color = (SDL_Color) { 255, 255, 255, 255 };
+	return p;
+}
 
 static void
 check_engine(void)
@@ -82,7 +97,7 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 		w = get_random(3) + 2;
 		h = get_random(3) + 2;
 
-		p = ec_malloc(sizeof(Particle));
+		p = create_particle();
 		p->pos = (Position) { x, y };
 		p->velocity = (Vector2d) { (float) xv, (float) yv };
 		p->movetime = mt;
@@ -118,7 +133,7 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 
 		lt = get_random(10);
 
-		p = ec_malloc(sizeof(Particle));
+		p = create_particle();
 		p->pos = (Position) { x, y };
 		p->velocity = (Vector2d) { (float) xv, (float) yv };
 		p->movetime = lt;
@@ -127,6 +142,7 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 		p->color = colors[get_random((unsigned int) c_count-1)];
 		linkedlist_append(&engine->particles, p);
 	}
+	free(colors);
 }
 
 void
@@ -167,7 +183,7 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 
 		lt = get_random(10);
 
-		p = ec_malloc(sizeof(Particle));
+		p = create_particle();
 		p->pos = (Position) { x, y };
 		p->velocity = (Vector2d) { 0, 0 };
 		p->movetime = lt;
@@ -177,6 +193,46 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 		else
 			p->dim = (Dimension) { 2, 20 };
 		p->color = color;
+		linkedlist_append(&engine->particles, p);
+	}
+}
+
+void
+particle_engine_wind(Vector2d direction)
+{
+	static SDL_Color color = { 255, 255, 255, 255 };
+	unsigned int count = 5;
+
+	Position pos = { 0, 0 };
+	Dimension dim = { GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
+
+	if (dim.width == 0 || dim.height == 0)
+		return;
+
+	for (unsigned int i = 0; i < count; ++i) {
+		int x, y;
+		int w, h;
+		unsigned int lt;
+		Particle *p;
+		int velocity;
+
+		x = get_random(dim.width) + pos.x;
+		y = get_random(dim.height) + pos.y;
+		w = get_random(2) + 1;
+		h = get_random(2) + 1;
+
+		velocity = get_random(500) + 500;
+
+		lt = get_random(500);
+
+		p = create_particle();
+		p->pos = (Position) { x, y };
+		p->velocity = (Vector2d) { direction.x * (float) velocity, direction.y * (float) velocity };
+		p->movetime = lt;
+		p->lifetime = lt;
+		p->dim = (Dimension) { w, h };
+		p->color = color;
+		p->fixed = true;
 		linkedlist_append(&engine->particles, p);
 	}
 }
@@ -230,7 +286,12 @@ particle_engine_update(float deltaTime)
 static void
 render_particle(Particle *p, Camera *cam)
 {
-	Position pos = camera_to_camera_position(cam, &p->pos);
+	Position pos;
+	if (p->fixed)
+		pos = p->pos;
+	else
+		pos = camera_to_camera_position(cam, &p->pos);
+
 	SDL_Rect box = { pos.x, pos.y, p->dim.width, p->dim.height };
 	SDL_SetRenderDrawColor(cam->renderer,
 			       p->color.r,
