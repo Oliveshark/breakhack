@@ -97,9 +97,8 @@ l_map_set_current_room_modifier(lua_State *L)
 	Map *map = luaL_checkmap(L, 1);
 	modifier = luaL_checkstring(L, 2);
 
-	Room *room;
 	if (strcmp(modifier, "WINDY") == 0) {
-		room = map->rooms[map->currentRoom.x][map->currentRoom.y];
+		Room *room = map->rooms[map->currentRoom.x][map->currentRoom.y];
 		room->modifier.type = RMOD_TYPE_WINDY;
 		room->modifier.data.wind.direction = VECTOR2D_LEFT;
 	} else {
