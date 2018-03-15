@@ -78,7 +78,7 @@ projectile_update(Projectile *p, UpdateData *data)
 	Position collisionPos = p->sprite->pos;
 	if (p->velocity.x > 0)
 		collisionPos.x += TILE_DIMENSION;
-	else if(p->velocity.y > 0)
+	if(p->velocity.y > 0)
 		collisionPos.y += TILE_DIMENSION;
 
 	Position roomPos = position_to_matrix_coords(&collisionPos);

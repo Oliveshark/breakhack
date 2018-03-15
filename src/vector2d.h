@@ -35,4 +35,7 @@ typedef struct Vector2d_t {
 bool
 vector2d_equals(Vector2d, Vector2d);
 
+bool
+vector2d_is_opposite(Vector2d, Vector2d);
+
 #endif // VECTOR2D_H_

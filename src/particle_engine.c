@@ -200,7 +200,7 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 void
 particle_engine_wind(Vector2d direction)
 {
-	static SDL_Color color = { 255, 255, 255, 255 };
+	static SDL_Color color = { 0, 0, 255, 255 };
 	unsigned int count = 5;
 
 	Position pos = { 0, 0 };
@@ -218,8 +218,8 @@ particle_engine_wind(Vector2d direction)
 
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
-		w = get_random(2) + 1;
-		h = get_random(2) + 1;
+		w = get_random(2) + 2;
+		h = get_random(2) + 2;
 
 		velocity = get_random(500) + 500;
 
@@ -292,6 +292,9 @@ render_particle(Particle *p, Camera *cam)
 	else
 		pos = camera_to_camera_position(cam, &p->pos);
 
+	// Make the particles look visible on all surfaces
+	SDL_SetRenderDrawBlendMode(cam->renderer, SDL_BLENDMODE_MOD);
+
 	SDL_Rect box = { pos.x, pos.y, p->dim.width, p->dim.height };
 	SDL_SetRenderDrawColor(cam->renderer,
 			       p->color.r,
@@ -299,6 +302,9 @@ render_particle(Particle *p, Camera *cam)
 			       p->color.b,
 			       p->color.a);
 	SDL_RenderFillRect(cam->renderer, &box);
+
+	// Reset the blend mode
+	SDL_SetRenderDrawBlendMode(cam->renderer, SDL_BLENDMODE_BLEND);
 }
 
 void

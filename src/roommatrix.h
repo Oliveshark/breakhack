@@ -23,6 +23,7 @@
 #include "defines.h"
 #include "position.h"
 #include "camera.h"
+#include "map_room_modifiers.h"
 
 typedef struct Sprite_t Sprite;
 typedef struct Map_t Map;
@@ -40,11 +41,12 @@ typedef struct {
 	LinkedList *items;
 } RoomSpace;
 
-typedef struct {
+typedef struct RoomMatrix_t {
 	RoomSpace spaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	Position roomPos;
 	Position playerRoomPos;
 	Position mousePos;
+	RoomModifierData *modifier;
 } RoomMatrix;
 
 RoomMatrix* roommatrix_create(void);

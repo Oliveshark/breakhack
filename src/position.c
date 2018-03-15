@@ -19,7 +19,8 @@
 #include "position.h"
 #include "defines.h"
 
-Position position_to_matrix_coords(Position *src)
+Position
+position_to_matrix_coords(Position *src)
 {
 	unsigned int room_px_width, room_px_height;
 	Position pos;
@@ -33,7 +34,8 @@ Position position_to_matrix_coords(Position *src)
 	return pos;
 }
 
-Position position_to_room_coords(Position *src)
+Position
+position_to_room_coords(Position *src)
 {
 	unsigned int room_px_width, room_px_height;
 	Position pos;
@@ -53,7 +55,8 @@ position_equals(const Position *p1, const Position *p2)
 	return p1->x == p2->x && p1->y == p2->y;
 }
 
-bool position_in_room(Position *pos, Position *roomPos)
+bool
+position_in_room(Position *pos, Position *roomPos)
 {
 	int room_px_width, room_px_height, room_x_px, room_y_px;
 

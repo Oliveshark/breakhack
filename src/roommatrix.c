@@ -65,6 +65,7 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 
 	rm->roomPos = m->currentRoom;
 	r = m->rooms[rm->roomPos.x][rm->roomPos.y];
+	rm->modifier = &r->modifier;
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {

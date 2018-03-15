@@ -371,6 +371,10 @@ function module.build_square_room(map, room)
 	if room.goal then
 		add_level_exit(map);
 	end
+
+	if CURRENT_LEVEL > 2 and random(10) == 1 then
+		set_modifier(map, "WINDY");
+	end
 end
 
 function module.load_textures(map)

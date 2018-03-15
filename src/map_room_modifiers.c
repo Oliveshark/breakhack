@@ -16,37 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MAP_ROOM_MODIFIERS_H_
-#define	MAP_ROOM_MODIFIERS_H_
-
-#include "vector2d.h"
-
-// Forward declares
-typedef struct Player_t Player;
-typedef struct RoomMatrix_t RoomMatrix;
-
-typedef enum RoomModifierType_e {
-	RMOD_TYPE_NONE,
-	RMOD_TYPE_WINDY
-} RoomModifierType;
-
-typedef struct WindData_t {
-	Vector2d direction;
-} WindData;
-
-typedef union RoomModifierDataContainer_t {
-	WindData wind;
-} RoomModifierDataContainer;
-
-typedef struct RoomModifierData_t {
-	RoomModifierType type;
-	RoomModifierDataContainer data;
-} RoomModifierData;
+#include <stdlib.h>
+#include "map_room_modifiers.h"
+#include "player.h"
+#include "roommatrix.h"
+#include "position.h"
 
 void
-map_room_modifier_player_effect(Player*,
-								RoomMatrix*,
-								Vector2d *direction,
-								void (*)(Player*, RoomMatrix*, Vector2d));
-
-#endif // MAP_ROOM_MODIFIERS_H_
+map_room_modifier_player_effect(Player *player,
+				RoomMatrix *matrix,
+				Vector2d *direction,
+				void (*move_cb)(Player*, RoomMatrix*, Vector2d))
+{
+	Position matrixPos = position_to_matrix_coords(&player->sprite->pos);
+	if (matrix->modifier->type == RMOD_TYPE_WINDY
+	    && !vector2d_equals(*direction, VECTOR2D_NODIR)
+	    && matrixPos.x > 0 && matrixPos.x < MAP_ROOM_WIDTH-1
+	    && matrixPos.y > 0 && matrixPos.y < MAP_ROOM_HEIGHT-1)
+	{
+		if (!vector2d_is_opposite(*direction, matrix->modifier->data.wind.direction)) {
+			move_cb(player, matrix, matrix->modifier->data.wind.direction);
+		}
+	}
+}

@@ -89,6 +89,26 @@ SDL_Renderer* luaL_checksdlrenderer(lua_State *L)
 	return renderer;
 }
 
+static int
+l_map_set_current_room_modifier(lua_State *L)
+{
+	const char *modifier;
+
+	Map *map = luaL_checkmap(L, 1);
+	modifier = luaL_checkstring(L, 2);
+
+	Room *room;
+	if (strcmp(modifier, "WINDY") == 0) {
+		room = map->rooms[map->currentRoom.x][map->currentRoom.y];
+		room->modifier.type = RMOD_TYPE_WINDY;
+		room->modifier.data.wind.direction = VECTOR2D_LEFT;
+	} else {
+		luaL_error(L, "Unknown room modifier: %s", modifier);
+		return 1;
+	}
+	return 0;
+}
+
 static
 int l_map_set_current_room(lua_State *L)
 {
@@ -378,6 +398,9 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_map_set_current_room);
 	lua_setglobal(L, "set_current_room");
+
+	lua_pushcfunction(L, l_map_set_current_room_modifier);
+	lua_setglobal(L, "set_modifier");
 
 	lua_pushcfunction(L, l_add_monster);
 	lua_setglobal(L, "add_monster");

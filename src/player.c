@@ -159,47 +159,30 @@ has_collided(Player *player, RoomMatrix *matrix)
 }
 
 static void
-move_left(Player *player, RoomMatrix *matrix)
+set_clip_for_direction(Player *player, Vector2d *direction)
 {
-	player->sprite->clip.y = 16;
-	player->sprite->pos.x -= TILE_DIMENSION;
-	if (has_collided(player, matrix))
-		player->sprite->pos.x += TILE_DIMENSION;
-	else
-		player_step(player);
+	if (vector2d_equals(*direction, VECTOR2D_LEFT))
+		player->sprite->clip.y = 16;
+	else if (vector2d_equals(*direction, VECTOR2D_RIGHT))
+		player->sprite->clip.y = 32;
+	else if (vector2d_equals(*direction, VECTOR2D_UP))
+		player->sprite->clip.y = 48;
+	else if (vector2d_equals(*direction, VECTOR2D_DOWN))
+		player->sprite->clip.y = 0;
 }
 
 static void
-move_right(Player *player, RoomMatrix *matrix)
+move(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
-	player->sprite->clip.y = 32;
-	player->sprite->pos.x += TILE_DIMENSION;
-	if (has_collided(player, matrix))
-		player->sprite->pos.x -= TILE_DIMENSION;
-	else
+	set_clip_for_direction(player, &direction);
+	player->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
+	player->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
+	if (has_collided(player, matrix)) {
+		player->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;
+		player->sprite->pos.y -= TILE_DIMENSION * (int) direction.y;
+	} else {
 		player_step(player);
-}
-
-static void
-move_up(Player *player, RoomMatrix *matrix)
-{
-	player->sprite->clip.y = 48;
-	player->sprite->pos.y -= TILE_DIMENSION;
-	if (has_collided(player, matrix))
-		player->sprite->pos.y += TILE_DIMENSION;
-	else
-		player_step(player);
-}
-
-static void
-move_down(Player *player, RoomMatrix *matrix)
-{
-	player->sprite->clip.y = 0;
-	player->sprite->pos.y += TILE_DIMENSION;
-	if (has_collided(player, matrix))
-		player->sprite->pos.y -= TILE_DIMENSION;
-	else
-		player_step(player);
+	}
 }
 
 void
@@ -219,24 +202,23 @@ static void
 handle_movement_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 {
 	static unsigned int step = 1;
-	bool moved = false;
+	Vector2d direction = VECTOR2D_NODIR;
 
-	if (keyboard_direction_press(LEFT, event)) {
-		move_left(player, matrix);
-		moved = true;
-	}
-	if (keyboard_direction_press(RIGHT, event)) {
-		move_right(player, matrix);
-		moved = true;
-	}
-	if (keyboard_direction_press(UP, event)) {
-		move_up(player, matrix);
-		moved = true;
-	}
-	if (keyboard_direction_press(DOWN, event)) {
-		move_down(player, matrix);
-		moved = true;
-	}
+	if (keyboard_direction_press(LEFT, event))
+		direction = VECTOR2D_LEFT;
+	if (keyboard_direction_press(RIGHT, event))
+		direction = VECTOR2D_RIGHT;
+	if (keyboard_direction_press(UP, event))
+		direction = VECTOR2D_UP;
+	if (keyboard_direction_press(DOWN, event))
+		direction = VECTOR2D_DOWN;
+
+	if (!vector2d_equals(direction, VECTOR2D_NODIR))
+		move(player, matrix, direction);
+
+	map_room_modifier_player_effect(player, matrix, &direction, move);
+
+
 #ifdef DEBUG
 	if (keyboard_mod_press(SDLK_SPACE, KMOD_CTRL, event)) {
 		Position pos = player->sprite->pos;
@@ -247,7 +229,7 @@ handle_movement_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 	}
 #endif // DEBUG
 
-	if (moved) {
+	if (!vector2d_equals(VECTOR2D_NODIR, direction)) {
 		player->sprite->clip.x = 16*step;
 		++step;
 		step = step % 4;

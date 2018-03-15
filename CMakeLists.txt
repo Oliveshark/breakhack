@@ -119,6 +119,7 @@ add_executable(breakhack
 	src/skill
 	src/projectile
 	src/vector2d
+	src/map_room_modifiers
 	)
 
 target_link_libraries(breakhack
