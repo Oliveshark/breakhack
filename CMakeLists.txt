@@ -120,9 +120,14 @@ add_executable(breakhack
 	src/projectile
 	src/vector2d
 	src/map_room_modifiers
+	src/sqlite3
 	)
 
+# Sqlite has some warnings that I we don't need to see
+set_source_files_properties(src/sqlite3.c COMPILE_FLAGS -w)
+
 target_link_libraries(breakhack
+	${CMAKE_DL_LIBS} # Sqlite needs DL libs
 	${LUA_LIBRARY}
 	${SDL2_LIBRARY}
 	${SDL2MAIN_LIBRARY}
