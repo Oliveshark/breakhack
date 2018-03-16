@@ -92,15 +92,26 @@ SDL_Renderer* luaL_checksdlrenderer(lua_State *L)
 static int
 l_map_set_current_room_modifier(lua_State *L)
 {
-	const char *modifier;
+	const char *modifier, *direction;
 
 	Map *map = luaL_checkmap(L, 1);
 	modifier = luaL_checkstring(L, 2);
+	direction = luaL_checkstring(L, 3);
+
+	Vector2d dir = VECTOR2D_LEFT;
+	if (strcmp(direction, "LEFT") == 0)
+		dir = VECTOR2D_LEFT;
+	else if (strcmp(direction, "RIGHT") == 0)
+		dir = VECTOR2D_RIGHT;
+	else if (strcmp(direction, "UP") == 0)
+		dir = VECTOR2D_UP;
+	else if (strcmp(direction, "DOWN") == 0)
+		dir = VECTOR2D_DOWN;
 
 	if (strcmp(modifier, "WINDY") == 0) {
 		Room *room = map->rooms[map->currentRoom.x][map->currentRoom.y];
 		room->modifier.type = RMOD_TYPE_WINDY;
-		room->modifier.data.wind.direction = VECTOR2D_LEFT;
+		room->modifier.data.wind.direction = dir;
 	} else {
 		luaL_error(L, "Unknown room modifier: %s", modifier);
 		return 1;

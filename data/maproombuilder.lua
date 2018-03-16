@@ -373,7 +373,8 @@ function module.build_square_room(map, room)
 	end
 
 	if CURRENT_LEVEL > 2 and random(10) == 1 then
-		set_modifier(map, "WINDY");
+		directions = { "LEFT", "RIGHT", "UP", "DOWN" }
+		set_modifier(map, "WINDY", directions[random(#directions)]);
 	end
 end
 
