@@ -20,6 +20,8 @@
 #include "mixer.h"
 #include "util.h"
 #include "io_util.h"
+#include "settings.h"
+#include "random.h"
 
 static Mix_Chunk *effects[LAST_EFFECT];
 static Mix_Music *current_song = NULL;
@@ -31,9 +33,6 @@ static char *music[LAST_MUSIC] = {
 	 "Sounds/Music/fantascape-looping.ogg",			  // GAME_MUSIC2
 	 "Sounds/Music/fantasy-forest-battle.ogg"		  // MENU_MUSIC
 };
-
-static bool sound_enabled = true;
-static bool music_enabled = true;
 
 static Mix_Music*
 load_song(char *path)
@@ -95,27 +94,31 @@ mixer_init(void)
 bool
 mixer_toggle_sound(void)
 {
-	sound_enabled = !sound_enabled;
-	return sound_enabled;
+	Settings *settings = settings_get();
+	settings->sound_enabled = !settings->sound_enabled;
+	return settings->sound_enabled;
 }
 
 bool
 mixer_toggle_music(void)
 {
-	music_enabled = !music_enabled;
+	Settings *settings = settings_get();
+	settings->music_enabled = !settings->music_enabled;
 
-	if (Mix_PlayingMusic() && !music_enabled)
+	if (Mix_PlayingMusic() && !settings->music_enabled)
 		Mix_PauseMusic();
 	else if (Mix_PausedMusic())
 		Mix_ResumeMusic();
+	else
+		mixer_play_music(GAME_MUSIC0 + get_random(2));
 
-	return music_enabled;
+	return settings->music_enabled;
 }
 
 void
 mixer_play_effect(Fx fx)
 {
-	if (!sound_enabled)
+	if (!settings_get()->sound_enabled)
 		return;
 
 	if (Mix_PlayChannel( -1, effects[fx], 0) == -1)
@@ -125,7 +128,7 @@ mixer_play_effect(Fx fx)
 void
 mixer_play_music(Music mus)
 {
-	if (!music_enabled)
+	if (!settings_get()->music_enabled)
 		return;
 
 	if (mus != loaded_song) {

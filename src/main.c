@@ -46,6 +46,7 @@
 #include "skillbar.h"
 #include "texturecache.h"
 #include "update_data.h"
+#include "settings.h"
 
 typedef enum Turn_t {
 	PLAYER,
@@ -340,6 +341,7 @@ init(void)
 	bool result = true;
 	result = result && initSDL();
 	result = result && initGame();
+	settings_init();
 	initMainMenu();
 
 	gCamera.pos = (Position) { 0, 0 };
@@ -629,6 +631,7 @@ void close(void)
 	timer_destroy(menuTimer);
 	mixer_close();
 	texturecache_close();
+	settings_close();
 
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
