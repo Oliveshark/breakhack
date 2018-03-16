@@ -23,6 +23,8 @@
 #include "util.h"
 #include "defines.h"
 
+#define SETTINGS_DB_FILE ".data.db"
+
 static sqlite3 *db = NULL;
 static Settings settings;
 
@@ -92,7 +94,7 @@ load_settings(void)
 void
 settings_init(void)
 {
-	int result = sqlite3_open("data.db", &db);
+	int result = sqlite3_open(SETTINGS_DB_FILE, &db);
 	if (result) {
 		error("Failed to open settings db: %s", sqlite3_errmsg(db));
 		sqlite3_close(db);

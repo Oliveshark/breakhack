@@ -4,5 +4,6 @@
 /assets.pack
 /data.pack
 /.vs/
+/.data.db
 *.swp
 *~
