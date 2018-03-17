@@ -100,7 +100,7 @@ mixer_toggle_sound(void)
 }
 
 bool
-mixer_toggle_music(void)
+mixer_toggle_music(GameState *state)
 {
 	Settings *settings = settings_get();
 	settings->music_enabled = !settings->music_enabled;
@@ -109,8 +109,12 @@ mixer_toggle_music(void)
 		Mix_PauseMusic();
 	else if (Mix_PausedMusic())
 		Mix_ResumeMusic();
-	else
-		mixer_play_music(GAME_MUSIC0 + get_random(2));
+	else {
+		if (*state == MENU)
+			mixer_play_music(MENU_MUSIC);
+		else
+			mixer_play_music(GAME_MUSIC0 + get_random(2));
+	}
 
 	return settings->music_enabled;
 }

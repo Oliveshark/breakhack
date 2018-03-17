@@ -20,6 +20,7 @@
 #define	MIXER_H_
 
 #include <stdbool.h>
+#include "gamestate.h"
 
 typedef enum Music_t {
 	MENU_MUSIC,
@@ -64,7 +65,7 @@ bool
 mixer_toggle_sound(void);
 
 bool
-mixer_toggle_music(void);
+mixer_toggle_music(GameState*);
 
 void
 mixer_play_effect(Fx fx);
