@@ -7,10 +7,8 @@ compiler:
     - clang
 
 env:
-      global:
-             # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-             #   via the "travis encrypt" command using the project repo's public key
-             - secure: "sM7ZGPk1dw74Ujy/JmEoJoPlVtFX3OOioEPfRDKHxW0KTlyy3vV7+zVbGZ74SoktCoLJHIFL86kN3MfX4R3FyKiOGbvDn+f6/AbsJlCnx7CtIbgjds0JA18PA1njPHAVG2po1Bdi6H8txtgPkOpjmMETvVnJPQep1uxr8Y0bViIUay8izeLn4hv02p/ZpLrtfXCcDvn5CwwPk98cELfZJPWJi3VM7JYHat4pb5M1dUoo3GcaMpWQS2B22uimU3cF76GL+IFn9hgZLJsxeQeCj0Ju7NVV1qp34tthgalfSc//ETj+EilIeh8PAuImGQyBdjav3eErC9RP6bI1OjDSoX9FEruUNhnf8kXhrFvk+poOPjBWCg7WPv5rXdhKPyPaVH7apfV+V6572obkyP9wNKWTUQOSW35XmmsEaeMSPrmbQ6t9vR2w35o3Fd0IFdy0IIAYU1KRuC1c3VT3KUKwCKsuXROXqxkxNHJ1i4IF4TV0Egl3t2chOaTqwqiY+6+6wjMw3mfIQxd96SSYKUBCi9H9uBC2H/YCIIp8hznbWAs4mfqw0eEYliI0NFvLbIIOYHNiYTEqQvFM9kmDZsyRljP6zak+Zp62Mp5Bv1zwi8+VIzr9Ig7jmrA0G4f3rJQbnICDNaLpf1Y5lqRjVazxzUyisp+ZdY+ZYyDJyBnen9g="
+    global:
+        - secure: "sM7ZGPk1dw74Ujy/JmEoJoPlVtFX3OOioEPfRDKHxW0KTlyy3vV7+zVbGZ74SoktCoLJHIFL86kN3MfX4R3FyKiOGbvDn+f6/AbsJlCnx7CtIbgjds0JA18PA1njPHAVG2po1Bdi6H8txtgPkOpjmMETvVnJPQep1uxr8Y0bViIUay8izeLn4hv02p/ZpLrtfXCcDvn5CwwPk98cELfZJPWJi3VM7JYHat4pb5M1dUoo3GcaMpWQS2B22uimU3cF76GL+IFn9hgZLJsxeQeCj0Ju7NVV1qp34tthgalfSc//ETj+EilIeh8PAuImGQyBdjav3eErC9RP6bI1OjDSoX9FEruUNhnf8kXhrFvk+poOPjBWCg7WPv5rXdhKPyPaVH7apfV+V6572obkyP9wNKWTUQOSW35XmmsEaeMSPrmbQ6t9vR2w35o3Fd0IFdy0IIAYU1KRuC1c3VT3KUKwCKsuXROXqxkxNHJ1i4IF4TV0Egl3t2chOaTqwqiY+6+6wjMw3mfIQxd96SSYKUBCi9H9uBC2H/YCIIp8hznbWAs4mfqw0eEYliI0NFvLbIIOYHNiYTEqQvFM9kmDZsyRljP6zak+Zp62Mp5Bv1zwi8+VIzr9Ig7jmrA0G4f3rJQbnICDNaLpf1Y5lqRjVazxzUyisp+ZdY+ZYyDJyBnen9g="
 
 before_install:
     - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
@@ -50,9 +48,9 @@ script:
 addons:
     coverity_scan:
         project:
-        name: "LiquidityC/breakhack"
-    description: "A rougelike game, inspired by Nethack"
-    notification_email: linus.probert@gmail.com
-    build_command_prepend: "mkdir -p build;cd build;cmake -DCMAKE_BUILD_TYPE=Debug .."
-    build_command: "make"
-    branch_pattern: coverity_scan
+            name: "LiquidityC/breakhack"
+            description: "A rougelike game, inspired by Nethack"
+        notification_email: linus.probert@gmail.com
+        build_command_prepend: "mkdir -p build;cd build;cmake -DCMAKE_BUILD_TYPE=Debug .."
+        build_command: "make"
+        branch_pattern: coverity_scan
