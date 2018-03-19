@@ -152,6 +152,13 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 			continue;
 		if (!position_in_room(&monster->sprite->pos, &map->currentRoom))
 			continue;
+
+		// Prevent passive monsters from being "dodgy"
+		Position pos = position_to_matrix_coords(&monster->sprite->pos);
+		if (monster->state.current == PASSIVE
+		    && position_proximity(1, &rm->playerRoomPos, &pos))
+			continue;
+
 		allDone = allDone && monster_move(monster, rm);
 	}
 

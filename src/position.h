@@ -39,6 +39,9 @@ bool
 position_equals(const Position*, const Position*);
 
 bool
+position_proximity(unsigned int distance, const Position*, const Position*);
+
+bool
 position_in_roommatrix(const Position*);
 
 #endif // POSITION_H_

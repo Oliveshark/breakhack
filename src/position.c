@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
 #include "position.h"
 #include "defines.h"
 
@@ -53,6 +54,19 @@ bool
 position_equals(const Position *p1, const Position *p2)
 {
 	return p1->x == p2->x && p1->y == p2->y;
+}
+
+bool
+position_proximity(unsigned int distance,
+		   const Position *p1,
+		   const Position *p2)
+{
+	unsigned int dx, dy;
+
+	dx = abs(p1->x - p2->x);
+	dy = abs(p1->y - p2->y);
+
+	return dx <= distance && dy <= distance;
 }
 
 bool
