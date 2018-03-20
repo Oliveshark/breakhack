@@ -25,6 +25,6 @@ SDL_RWops *
 io_load_rwops(const char *path);
 
 void
-io_load_lua_buffer(char **dest, unsigned long *len, const char *filepath);
+io_load_file_buffer(char **dest, unsigned long *len, const char *filepath);
 
 #endif // IO_UTIL_H_

@@ -359,10 +359,29 @@ l_load_script(lua_State *L)
 	}
 	debug("Loading module: %s from %s", name, filename);
 
-	io_load_lua_buffer(&content, &size, filename);
+	io_load_file_buffer(&content, &size, filename);
 	if (luaL_loadbuffer(L, content, size, name) != 0) {
 		luaL_error(L, "Error loading module %s from file %s\n\t%s", lua_tostring(L, 1), filename, lua_tostring(L, -1));
 	}
+	free(content);
+
+	return 1;
+}
+
+static int
+l_read_file(lua_State *L)
+{
+	unsigned long size;
+	const char *filename = luaL_checkstring(L, 1);
+	char *content;
+
+	if (!PHYSFS_exists(filename)) {
+		luaL_error(L, "Unable to locate file: %s\n", filename);
+		return 1; // Unable to locate file
+	}
+
+	io_load_file_buffer(&content, &size, filename);
+	lua_pushstring(L, content);
 	free(content);
 
 	return 1;
@@ -379,7 +398,7 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 
 	char *buffer = NULL;
 	long unsigned int len;
-	io_load_lua_buffer(&buffer, &len, file);
+	io_load_file_buffer(&buffer, &len, file);
 	status = luaL_loadbuffer(L, buffer, len, file);
 	free(buffer);
 
@@ -405,6 +424,9 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_add_texture);
 	lua_setglobal(L, "add_texture");
+
+	lua_pushcfunction(L, l_read_file);
+	lua_setglobal(L, "read_file");
 
 	lua_pushcfunction(L, l_map_set_current_room);
 	lua_setglobal(L, "set_current_room");
