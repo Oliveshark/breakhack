@@ -36,7 +36,7 @@ m_strcpy(char *dest, size_t destsz, const char *src)
 {
 #ifndef _MSC_VER
 	UNUSED(destsz);
-	strcpy(dest, src);
+	strncpy(dest, src, destsz);
 #else // _MSC_VER
 	strcpy_s(dest, destsz, src);
 #endif // _MSC_VER
@@ -65,7 +65,7 @@ m_sprintf(char * dest, size_t destsz, const char * format, ...)
 	va_start(args, format);
 #ifndef _MSC_VER
 	UNUSED(destsz);
-	vsprintf(dest, format, args);
+	vsnprintf(dest, destsz, format, args);
 #else // _MSC_VER
 	vsprintf_s(dest, destsz, format, args);
 #endif // _MSC_VER
@@ -77,7 +77,7 @@ m_vsprintf(char *dest, size_t sz, const char *fmt, va_list args)
 {
 #ifndef _MSC_VER
 	UNUSED (sz);
-	vsprintf(dest, fmt, args);
+	vsnprintf(dest, sz, fmt, args);
 #else // _MSC_VER
 	vsprintf_s(dest, sz, fmt, args);
 #endif // _MSC_VER
