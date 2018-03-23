@@ -60,6 +60,10 @@
 
 #define UNUSED(x) (void)(x)
 
+#define UNPACK_COLOR(color) color.r, color.g, color.b, color.a
+#define C_WHITE (SDL_Color) { 255, 255, 255, 255 }
+#define C_BLACK (SDL_Color) { 0, 0, 0, 255 }
+
 typedef enum Direction_t {
 	UP, DOWN, LEFT, RIGHT
 } Direction;

@@ -32,6 +32,7 @@ typedef struct Particle_t {
 	unsigned int movetime;
 	unsigned int lifetime;
 	bool fixed;
+	Uint8 blend_mode;
 	SDL_Color color;
 } Particle;
 
@@ -51,6 +52,7 @@ create_particle(void)
 	p->movetime = 100;
 	p->lifetime = 100;
 	p->fixed = false;
+	p->blend_mode = SDL_BLENDMODE_MOD;
 	p->color = (SDL_Color) { 255, 255, 255, 255 };
 	return p;
 }
@@ -198,6 +200,34 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 }
 
 void
+particle_engine_sparkle(Position pos, Dimension dim)
+{
+	debug("Sparkling");
+	for (unsigned int i = 0; i < 50; ++i) {
+		int x, y, yv;
+		unsigned int lt;
+		Particle *p;
+
+		x = get_random(dim.width) + pos.x;
+		y = get_random(dim.height) + pos.y;
+
+		yv = (get_random(100) + 100) * -1;
+
+		lt = get_random(20);
+
+		p = create_particle();
+		p->pos = (Position) { x, y };
+		p->velocity = (Vector2d) { (float) 0, (float) yv };
+		p->movetime = lt;
+		p->lifetime = lt;
+		p->blend_mode = SDL_BLENDMODE_BLEND;
+		p->dim = (Dimension) { 2, 2 };
+		p->color = C_WHITE;
+		linkedlist_append(&engine->particles, p);
+	}
+}
+
+void
 particle_engine_wind(Vector2d direction)
 {
 	static SDL_Color color = { 0, 0, 255, 255 };
@@ -293,7 +323,7 @@ render_particle(Particle *p, Camera *cam)
 		pos = camera_to_camera_position(cam, &p->pos);
 
 	// Make the particles look visible on all surfaces
-	SDL_SetRenderDrawBlendMode(cam->renderer, SDL_BLENDMODE_MOD);
+	SDL_SetRenderDrawBlendMode(cam->renderer, p->blend_mode);
 
 	SDL_Rect box = { pos.x, pos.y, p->dim.width, p->dim.height };
 	SDL_SetRenderDrawColor(cam->renderer,

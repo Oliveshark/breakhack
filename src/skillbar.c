@@ -24,6 +24,7 @@
 #include "sprite.h"
 #include "keyboard.h"
 #include "texturecache.h"
+#include "particle_engine.h"
 
 static void
 load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
@@ -66,10 +67,25 @@ skillbar_create(SDL_Renderer *renderer)
 	SkillBar *bar = ec_malloc(sizeof(SkillBar));
 	bar->sprites = linkedlist_create();
 	bar->activationTimer = timer_create();
+	bar->skillSparkleTimer = timer_create();
 	bar->lastActivation = 0;
 	load_texture(bar, "GUI/GUI0.png", renderer);
 	load_countdown_sprites(bar);
 	return bar;
+}
+
+void
+skillbar_check_skill_activation(SkillBar *bar, Player *player)
+{
+	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (!player->skills[i])
+			continue;
+
+		if (player->skills[i]->levelcap != player->stats.lvl)
+			continue;
+
+		timer_start(bar->skillSparkleTimer);
+	}
 }
 
 static void
@@ -169,18 +185,55 @@ render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
 	static SDL_Rect unavailableSkillBox = { 0, 0, 32, 32 };
 
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		bool unavailable = false;
+		SDL_Color color;
+
 		if (!player->skills[i])
 			continue;
 
 		Skill *skill = player->skills[i];
-		if (skill->resetCountdown || (skill->available && !skill->available(player))) {
+		if (skill->levelcap > player->stats.lvl) {
+			unavailable = true;
+			color = (SDL_Color) { 0, 0, 0, 220 };
+		} else if (skill->resetCountdown
+			   || (skill->available && !skill->available(player)))
+		{
+			unavailable = true;
+			color = (SDL_Color) { 255, 0, 0, 70 };
+		}
+
+		if (unavailable) {
 			unavailableSkillBox.x = i * 32;
-			SDL_SetRenderDrawColor(cam->renderer, 255, 0, 0, 70);
+			SDL_SetRenderDrawColor(cam->renderer, UNPACK_COLOR(color));
 			SDL_RenderFillRect(cam->renderer, &unavailableSkillBox);
 			if (skill->resetCountdown) {
-				render_skill_countdown(bar, i, skill->resetCountdown, cam);
+				render_skill_countdown(bar,
+						       i,
+						       skill->resetCountdown,
+						       cam);
 			}
 		}
+	}
+}
+
+static void
+render_skill_sparkles(SkillBar *bar, Player *player)
+{
+	if (timer_get_ticks(bar->skillSparkleTimer) > 3000) {
+		timer_stop(bar->skillSparkleTimer);
+		return;
+	}
+
+	Position pos = { 0, 0 };
+	Dimension dim = { 32, 32 };
+	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (!player->skills[i])
+			continue;
+		else if (player->skills[i]->levelcap != player->stats.lvl)
+			continue;
+
+		pos.x += 32 * i;
+		particle_engine_sparkle(pos, dim);
 	}
 }
 
@@ -192,6 +245,8 @@ skillbar_render(SkillBar *bar, Player *player, Camera *cam)
 	render_sprites(bar, cam);
 	render_skill_unavailable(bar, player, cam);
 	render_activation_indicator(bar, cam);
+	if (timer_started(bar->skillSparkleTimer))
+	    render_skill_sparkles(bar, player);
 }
 
 void

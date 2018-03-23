@@ -459,6 +459,7 @@ static void
 run_game(void)
 {
 	static UpdateData updateData;
+	static unsigned int playerLevel = 1;
 
 	map_clear_dead_monsters(gMap, gPlayer);
 	map_clear_collected_items(gMap);
@@ -469,6 +470,10 @@ run_game(void)
 	roommatrix_build_lightmap(gRoomMatrix);
 
 	populateUpdateData(&updateData, deltaTime);
+	if (playerLevel != gPlayer->stats.lvl) {
+		playerLevel = gPlayer->stats.lvl;
+		skillbar_check_skill_activation(gSkillBar, gPlayer);
+	}
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 	particle_engine_update(deltaTime);
 	player_update(&updateData);
