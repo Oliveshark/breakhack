@@ -50,7 +50,10 @@ void
 particle_engine_update(float deltatime);
 
 void
-particle_engine_render(Camera*);
+particle_engine_render_game(Camera*);
+
+void
+particle_engine_render_global(Camera*);
 
 void
 particle_engine_clear(void);

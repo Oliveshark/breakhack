@@ -219,12 +219,12 @@ render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
 static void
 render_skill_sparkles(SkillBar *bar, Player *player)
 {
-	if (timer_get_ticks(bar->skillSparkleTimer) > 3000) {
+	if (timer_get_ticks(bar->skillSparkleTimer) > 1500) {
 		timer_stop(bar->skillSparkleTimer);
 		return;
 	}
 
-	Position pos = { 0, 0 };
+	Position pos = { 0, GAME_VIEW_HEIGHT };
 	Dimension dim = { 32, 32 };
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (!player->skills[i])

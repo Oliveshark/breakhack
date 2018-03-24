@@ -495,7 +495,7 @@ run_game(void)
 
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
 	map_render(gMap, &gCamera);
-	particle_engine_render(&gCamera);
+	particle_engine_render_game(&gCamera);
 
 	if (!is_player_dead())
 		player_render(gPlayer, &gCamera);
@@ -518,6 +518,7 @@ run_game(void)
 		       BOTTOM_GUI_HEIGHT, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, NULL);
+	particle_engine_render_global(&gCamera);
 	if (gGameState == IN_GAME_MENU) {
 		SDL_Rect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);
