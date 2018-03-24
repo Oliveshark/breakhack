@@ -59,6 +59,7 @@ create_default(const char *s_label, Sprite *s)
 	skill->active = false;
 	skill->available = NULL;
 	skill->use = NULL;
+	skill->levelcap = 1;
 	return skill;
 }
 
@@ -120,6 +121,7 @@ create_flurry(void)
 	s->clip = CLIP32(0, 0);
 	s->fixed = true;
 	Skill *skill = create_default("Flurry", s);
+	skill->levelcap = 2;
 	skill->use = skill_use_flurry;
 	return skill;
 }
@@ -169,6 +171,7 @@ create_throw_dagger(void)
 	s->clip = CLIP32(64, 0);
 	s->fixed = true;
 	Skill *skill = create_default("Throw dagger", s);
+	skill->levelcap = 1;
 	skill->instantUse = false;
 	skill->resetTime = 1;
 	skill->available = skill_throw_dagger_available;
@@ -201,6 +204,7 @@ create_sip_health(void)
 	s->clip = CLIP16(0, 0);
 	s->fixed = true;
 	Skill *skill = create_default("Sip health", s);
+	skill->levelcap = 1;
 	skill->instantUse = true;
 	skill->available = skill_sip_health_available;
 	skill->use = skill_sip_health;
@@ -297,6 +301,7 @@ create_charge(void)
 	s->clip = CLIP32(32, 0);
 	s->fixed = true;
 	Skill *skill = create_default("Charge", s);
+	skill->levelcap = 4;
 	skill->use = skill_charge;
 	return skill;
 }

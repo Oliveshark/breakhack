@@ -459,6 +459,7 @@ static void
 run_game(void)
 {
 	static UpdateData updateData;
+	static unsigned int playerLevel = 1;
 
 	map_clear_dead_monsters(gMap, gPlayer);
 	map_clear_collected_items(gMap);
@@ -469,6 +470,10 @@ run_game(void)
 	roommatrix_build_lightmap(gRoomMatrix);
 
 	populateUpdateData(&updateData, deltaTime);
+	if (playerLevel != gPlayer->stats.lvl) {
+		playerLevel = gPlayer->stats.lvl;
+		skillbar_check_skill_activation(gSkillBar, gPlayer);
+	}
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 	particle_engine_update(deltaTime);
 	player_update(&updateData);
@@ -490,7 +495,7 @@ run_game(void)
 
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
 	map_render(gMap, &gCamera);
-	particle_engine_render(&gCamera);
+	particle_engine_render_game(&gCamera);
 
 	if (!is_player_dead())
 		player_render(gPlayer, &gCamera);
@@ -513,6 +518,7 @@ run_game(void)
 		       BOTTOM_GUI_HEIGHT, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, NULL);
+	particle_engine_render_global(&gCamera);
 	if (gGameState == IN_GAME_MENU) {
 		SDL_Rect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);

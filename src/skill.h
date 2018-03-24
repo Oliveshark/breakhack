@@ -45,6 +45,7 @@ typedef struct Skill_t {
 	Sprite *icon;
 	unsigned int resetTime;
 	unsigned int resetCountdown;
+	unsigned int levelcap;
 	bool actionRequired;
 	bool instantUse;
 	bool active;

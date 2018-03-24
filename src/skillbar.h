@@ -29,11 +29,15 @@ typedef struct SkillBar_t {
 	LinkedList *sprites;
 	Sprite *countdowns[PLAYER_SKILL_COUNT];
 	Timer *activationTimer;
+	Timer *skillSparkleTimer;
 	unsigned int lastActivation;
 } SkillBar;
 
 SkillBar *
 skillbar_create(SDL_Renderer*);
+
+void
+skillbar_check_skill_activation(SkillBar*, Player*);
 
 void
 skillbar_render(SkillBar*, Player*, Camera*);

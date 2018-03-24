@@ -41,13 +41,19 @@ void
 particle_engine_speed_lines(Position, Dimension, bool horizontal);
 
 void
+particle_engine_sparkle(Position, Dimension);
+
+void
 particle_engine_wind(Vector2d direction);
 
 void
 particle_engine_update(float deltatime);
 
 void
-particle_engine_render(Camera*);
+particle_engine_render_game(Camera*);
+
+void
+particle_engine_render_global(Camera*);
 
 void
 particle_engine_clear(void);

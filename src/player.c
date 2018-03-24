@@ -271,8 +271,10 @@ check_skill_activation(Player *player, RoomMatrix *matrix, SDL_Event *event)
 			continue;
 
 		Skill *skill = player->skills[i];
+		if (skill->levelcap > player->stats.lvl)
+			continue;
 		if (skill->available && !skill->available(player))
-		    continue;
+			continue;
 		skill->active = (selected - 1) == i && !skill->active && skill->resetCountdown == 0;
 		if (skill->active && skill->instantUse) {
 			SkillData skillData = { player, matrix, VECTOR2D_NODIR };

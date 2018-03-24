@@ -90,13 +90,15 @@ projectile_update(Projectile *p, UpdateData *data)
 		return;
 
 	if (space->monster) {
-		Uint32 dmg = stats_fight(&data->player->stats, &space->monster->stats);
+		Stats tmpStats = data->player->stats;
+		tmpStats.dmg *= 2;
+		Uint32 dmg = stats_fight(&tmpStats, &space->monster->stats);
 		if (dmg > 0) {
 			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, dmg);
 			mixer_play_effect(SWORD_HIT);
 			data->player->hits += 1;
 		}
-		if (get_random(2) == 0) {
+		if (get_random(2) >= 1) {
 			Item *item = item_builder_build_item(DAGGER, 1);
 			item->sprite->pos = space->monster->sprite->pos;
 			linkedlist_append(&data->map->items, item);
