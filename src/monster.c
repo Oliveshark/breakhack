@@ -111,7 +111,7 @@ has_collided(Monster *monster, RoomMatrix *matrix)
 			gui_log("%s missed you", monster->label);
 	}
 
-	return space->occupied;
+	return space->occupied || space->lethal;
 }
 
 static bool
@@ -220,7 +220,7 @@ monster_agressive_walk(Monster *m, RoomMatrix *rm)
 		x_dist = abs(next.x - rm->playerRoomPos.x);
 		y_dist = abs(next.y - rm->playerRoomPos.y);
 
-		if (rm->spaces[next.x][next.y].occupied) {
+		if (rm->spaces[next.x][next.y].occupied || rm->spaces[next.x][next.y].lethal) {
 			nextScore += 50;
 		}
 

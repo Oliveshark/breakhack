@@ -37,6 +37,7 @@ typedef struct MapTile_t {
 	int textureIndex1;
 	SDL_Rect clip;
 	bool collider;
+	bool lethal;
 	bool lightsource;
 	bool levelExit;
 } MapTile;
@@ -60,6 +61,9 @@ typedef struct Map_t {
 
 Map*
 map_create(void);
+
+MapTile *
+map_create_tile(void);
 
 int
 map_add_texture(Map*, const char *path, SDL_Renderer*);

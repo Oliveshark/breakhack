@@ -66,6 +66,9 @@ void
 texture_render_clip(Texture*, SDL_Rect*, SDL_Rect*, Camera*);
 
 void
+texture_render_clip_ex(Texture*, SDL_Rect*, SDL_Rect*, double angle, SDL_Point*, SDL_RendererFlip, Camera*);
+
+void
 texture_destroy(Texture *texture);
 
 #endif // TEXTURE_H_

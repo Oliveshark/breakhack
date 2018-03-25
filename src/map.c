@@ -42,7 +42,8 @@ Room* create_room(void)
 	return room;
 }
 
-Map* map_create()
+Map*
+map_create(void)
 {
 	int i, j;
 
@@ -64,7 +65,22 @@ Map* map_create()
 	return map;
 }
 
-void map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
+MapTile*
+map_create_tile(void)
+{
+	MapTile *tile = ec_malloc(sizeof(MapTile));
+	tile->textureIndex0 = -1;
+	tile->textureIndex1 = -1;
+	tile->clip = CLIP16(0, 0);
+	tile->collider = false;
+	tile->lethal = false;
+	tile->lightsource = false;
+	tile->levelExit = false;
+	return tile;
+}
+
+void
+map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
 {
 	const Position *cr = &map->currentRoom;
 	Room *room = map->rooms[cr->x][cr->y];

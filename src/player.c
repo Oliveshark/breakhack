@@ -84,8 +84,8 @@ player_gain_xp(Player *player, unsigned int xp_gain)
 static void
 action_spent(Player *p)
 {
-	p->steps++;
-	p->total_steps++;
+	p->stat_data.steps++;
+	p->stat_data.total_steps++;
 
 	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (p->skills[i] != NULL && p->skills[i]->resetCountdown > 0)
@@ -125,10 +125,10 @@ has_collided(Player *player, RoomMatrix *matrix)
 		monster_hit(space->monster, hit);
 
 		if (hit > 0) {
-			player->hits += 1;
+			player->stat_data.hits += 1;
 			mixer_play_effect(SWORD_HIT);
 		} else {
-			player->misses += 1;
+			player->stat_data.misses += 1;
 		}
 
 		if (hit > 0)
@@ -153,6 +153,11 @@ has_collided(Player *player, RoomMatrix *matrix)
 			items = items->next;
 			item_collected(item, player);
 		}
+	}
+
+	if (space->lethal && !collided) {
+		mixer_play_effect(FALL);
+		player->state = FALLING;
 	}
 
 	return collided;
@@ -318,6 +323,9 @@ check_skill_trigger(Player *player, RoomMatrix *matrix, SDL_Event *event)
 static void
 handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 {
+	if (player->state != ALIVE)
+		return;
+
 	if (event->type != SDL_KEYDOWN)
 		return;
 
@@ -352,16 +360,19 @@ player_create(class_t class, SDL_Renderer *renderer)
 {
 	Player *player = malloc(sizeof(Player));
 	player->sprite = sprite_create();
-	player->daggers		= 0;
-	player->total_steps	= 0;
-	player->steps		= 0;
-	player->xp		= 0;
-	player->hits		= 0;
-	player->kills		= 0;
-	player->misses		= 0;
-	player->gold		= 0;
-	player->potion_sips	= 0;
-	player->class		= class;
+	player->daggers			= 0;
+	player->stat_data.total_steps	= 0;
+	player->stat_data.steps		= 0;
+	player->stat_data.hits		= 0;
+	player->stat_data.kills		= 0;
+	player->stat_data.misses	= 0;
+	player->xp			= 0;
+	player->gold			= 0;
+	player->potion_sips		= 0;
+	player->class			= class;
+	player->state			= ALIVE;
+	player->projectiles		= linkedlist_create();
+	player->animationTimer		= timer_create();
 
 	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		player->skills[i] = NULL;
@@ -401,7 +412,6 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->sprite->dim = GAME_DIMENSION;
 	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
 	player->handle_event = &handle_player_input;
-	player->projectiles = linkedlist_create();
 	player_load_texts(player, renderer);
 
 	return player;
@@ -425,8 +435,7 @@ player_monster_kill_check(Player *player, Monster *monster)
 
 	if (monster->stats.hp <= 0) {
 		unsigned int gained_xp = 5 * monster->stats.lvl;
-		player->kills += 1;
-
+		player->stat_data.kills += 1;
 		mixer_play_effect(DEATH);
 		gui_log("You killed %s and gained %d xp",
 			monster->lclabel, gained_xp);
@@ -473,12 +482,13 @@ player_print(Player *p)
 {
 	Position roomPos = position_to_matrix_coords(&p->sprite->pos);
 	Position pos = p->sprite->pos;
+	PlayerStatData *data = &p->stat_data;
 
 	debug("\n");
 	debug("--------=== <[ Player Stats ]> ===--------");
-	debug("Hits:  %u\tMisses:\t%u", p->hits, p->misses);
-	debug("Kills: %u", p->kills);
-	debug("Steps: %u", p->total_steps);
+	debug("Hits:  %u\tMisses:\t%u", data->hits, data->misses);
+	debug("Kills: %u", data->kills);
+	debug("Steps: %u", data->total_steps);
 	debug("Pos:   %dx%d\tRoomPos: %dx%d", pos.x, pos.y,
 	       roomPos.x, roomPos.y);
 	debug("------------------------------------------");
@@ -487,42 +497,53 @@ player_print(Player *p)
 void
 player_reset_steps(Player *p)
 {
-	p->steps = 0;
+	p->stat_data.steps = 0;
 	player_print(p);
 }
 
 void player_update(UpdateData *data)
 {
-	if (!data->player->projectiles)
-		return;
-
-	LinkedList *last, *current, *next;
-	last = NULL;
-	current = data->player->projectiles;
-	next = NULL;
-
-	while (current) {
-		Projectile *p = current->data;
-		projectile_update(p, data);
-		if (!p->alive) {
-			if (last == NULL)
-				data->player->projectiles = current->next;
-			else
-				last->next = current->next;
-
-			projectile_destroy(p);
-
-			next = current->next;
-			current->data = NULL;
-			current->next = NULL;
-			linkedlist_destroy(&current);
-			current = next;
-			action_spent(data->player);
+	Player *player = data->player;
+	if (player->state == FALLING) {
+		if (!timer_started(player->animationTimer)) {
+			timer_start(player->animationTimer);
+			player->sprite->clip = CLIP16(0, 0);
 		} else {
-			last = current;
-			current = current->next;
+			if (timer_get_ticks(player->animationTimer) > 100) {
+				timer_start(player->animationTimer);
+				player->sprite->angle += 60;
+				player->sprite->dim.width -= 4;
+				player->sprite->dim.height -= 4;
+				player->sprite->pos.x += 2;
+				player->sprite->pos.y += 2;
+				player->sprite->rotationPoint = (SDL_Point) {
+					player->sprite->dim.width /2,
+					player->sprite->dim.height /2
+				};
+				if (player->sprite->dim.width <= 4)
+					player->stats.hp = 0;
+			}
 		}
 	}
+
+	if (!player->projectiles)
+		return;
+
+	LinkedList *remaining = linkedlist_create();
+
+	while (player->projectiles) {
+		Projectile *p = linkedlist_pop(&player->projectiles);
+		projectile_update(p, data);
+		if (p->alive) {
+			linkedlist_push(&remaining, p);
+		} else {
+			projectile_destroy(p);
+			action_spent(player);
+		}
+	}
+
+	linkedlist_destroy(&player->projectiles);
+	player->projectiles = remaining;
 }
 
 void

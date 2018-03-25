@@ -42,6 +42,7 @@ typedef enum Fx_t {
 	TRIPPLE_SWORD_HIT,
 	BONK,
 	DEATH,
+	FALL,
 	COIN,
 	BOTTLE,
 	BUBBLE0,

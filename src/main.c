@@ -480,7 +480,7 @@ run_game(void)
 
 	roommatrix_update_with_player(gRoomMatrix, gPlayer);
 	if (currentTurn == PLAYER) {
-		if (gPlayer->steps >= gPlayer->stats.speed) {
+		if (gPlayer->stat_data.steps >= gPlayer->stats.speed) {
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
 		}

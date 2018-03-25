@@ -101,7 +101,7 @@ skill_use_flurry(Skill *skill, SkillData *data)
 			mixer_play_effect(TRIPPLE_SWORD_HIT);
 		}
 
-		data->player->hits += hitCount;
+		data->player->stat_data.hits += hitCount;
 
 	} else {
 		gui_log("You swing at thin air with a flurry of strikes");
@@ -283,7 +283,7 @@ skill_charge(Skill *skill, SkillData *data)
 		if (dmg > 0) {
 			gui_log("You charged %s for %u damage", monster->lclabel, dmg);
 			mixer_play_effect(SWORD_HIT);
-			data->player->hits += 1;
+			data->player->stat_data.hits += 1;
 		}
 		monster_hit(monster, dmg);
 	}

@@ -75,6 +75,8 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 					r->tiles[i][j]->collider;
 				space->lightsource =
 					r->tiles[i][j]->lightsource;
+				space->lethal =
+					r->tiles[i][j]->lethal;
 			}
 			if (r->decorations[i][j]) {
 				space->occupied |=
@@ -253,7 +255,8 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 	}
 }
 
-void roommatrix_reset(RoomMatrix *m)
+void
+roommatrix_reset(RoomMatrix *m)
 {
 	RoomSpace *space;
 	int i, j;
@@ -262,6 +265,7 @@ void roommatrix_reset(RoomMatrix *m)
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			space = &m->spaces[i][j];
 			space->occupied = false;
+			space->lethal = false;
 			space->lightsource = false;
 			space->light = 0;
 			space->monster = NULL;

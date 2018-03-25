@@ -30,6 +30,9 @@ sprite_create_default(void)
 	s->destroyTextures = false;
 	s->pos = (Position) { 0, 0 };
 	s->dim = DEFAULT_DIMENSION;
+	s->angle = 0;
+	s->rotationPoint = (SDL_Point) { 0, 0 };
+	s->flip = SDL_FLIP_NONE;
 	s->renderTimer = timer_create();
 	s->texture_index = 0;
 	s->fixed = false;
@@ -119,13 +122,20 @@ sprite_render(Sprite *s, Camera *cam)
 		cameraPos.x, cameraPos.y, s->dim.width, s->dim.height
 	};
 
-	if (s->clip.w && s->clip.h) {
+	if ((s->clip.w && s->clip.h) || s->angle || s->flip != SDL_FLIP_NONE) {
+		texture_render_clip_ex(s->textures[s->texture_index],
+			&box,
+			&s->clip,
+			s->angle,
+			&s->rotationPoint,
+			s->flip,
+			cam);
+	} else if (s->clip.w && s->clip.h) {
 		texture_render_clip(s->textures[s->texture_index],
 			&box,
 			&s->clip,
 			cam);
-	}
-	else {
+	} else {
 		texture_render(s->textures[s->texture_index],
 			&box,
 			cam);

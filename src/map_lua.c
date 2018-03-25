@@ -157,7 +157,7 @@ extract_tile_data(lua_State *L,
 	Map *map;
 	int tile_x, tile_y;
 	int t_index0, t_index1, tile_clip_x, tile_clip_y;
-	bool collider, lightsource, levelExit;
+	bool collider, lightsource, levelExit, lethal;
 
 	map = luaL_checkmap(L, 1);
 	tile_x = (int) luaL_checkinteger(L, 2);
@@ -175,28 +175,31 @@ extract_tile_data(lua_State *L,
 	lua_getfield(L, 4, "isCollider");
 	lua_getfield(L, 4, "isLightSource");
 	lua_getfield(L, 4, "isLevelExit");
+	lua_getfield(L, 4, "isLethal");
 
-	t_index0 = (int) luaL_checkinteger(L, -7);
-	t_index1 = (int) luaL_checkinteger(L, -6);
-	tile_clip_x = (int) luaL_checkinteger(L, -5);
-	tile_clip_y = (int) luaL_checkinteger(L, -4);
-	collider = lua_toboolean(L, -3);
-	lightsource = lua_toboolean(L, -2);
-	levelExit = lua_toboolean(L, -1);
+	t_index0 = (int) luaL_checkinteger(L, -8);
+	t_index1 = (int) luaL_checkinteger(L, -7);
+	tile_clip_x = (int) luaL_checkinteger(L, -6);
+	tile_clip_y = (int) luaL_checkinteger(L, -5);
+	collider = lua_toboolean(L, -4);
+	lightsource = lua_toboolean(L, -3);
+	levelExit = lua_toboolean(L, -2);
+	lethal = lua_toboolean(L, -1);
 
 	// Clear the stack
-	lua_pop(L, 7);
+	lua_pop(L, 8);
 
 	Position tilePos = (Position) { tile_x, tile_y };
 	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
 
-	MapTile *tile = malloc(sizeof(MapTile));
-	*tile = (MapTile) { t_index0,
-		t_index1,
-		clip, collider,
-		lightsource,
-		levelExit
-	};
+	MapTile *tile = map_create_tile();
+	tile->textureIndex0 = t_index0;
+	tile->textureIndex1 = t_index1;
+	tile->clip = clip;
+	tile->collider = collider;
+	tile->lightsource = lightsource;
+	tile->levelExit = levelExit;
+	tile->lethal = lethal;
 
 	f_add_tile(map, &tilePos, tile);
 }
@@ -252,7 +255,7 @@ int l_tile_occupied(lua_State *L)
 	tile = room->tiles[x][y];
 	decor = room->decorations[x][y];
 
-	response = response || (tile && (tile->collider || tile->levelExit));
+	response = response || (tile && (tile->collider || tile->levelExit || tile->lethal));
 	response = response || (decor && (decor->collider || decor->levelExit));
 
 	lua_pushboolean(L, response);

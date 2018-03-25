@@ -171,6 +171,21 @@ texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip, Camera *cam
 		       box);
 }
 
+void 
+texture_render_clip_ex(Texture *texture, SDL_Rect *box, SDL_Rect *clip, double angle, SDL_Point *point, SDL_RendererFlip flipType, Camera *cam)
+{
+	if (!texture->texture)
+		return;
+
+	SDL_RenderCopyEx(cam->renderer,
+			 texture->texture,
+			 clip,
+			 box,
+			 angle,
+			 point,
+			 flipType);
+}
+
 void texture_destroy(Texture *texture)
 {
 	if (texture->texture)

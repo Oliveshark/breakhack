@@ -96,7 +96,7 @@ projectile_update(Projectile *p, UpdateData *data)
 		if (dmg > 0) {
 			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, dmg);
 			mixer_play_effect(SWORD_HIT);
-			data->player->hits += 1;
+			data->player->stat_data.hits += 1;
 		}
 		if (get_random(2) >= 1) {
 			Item *item = item_builder_build_item(DAGGER, 1);

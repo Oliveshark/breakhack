@@ -32,8 +32,16 @@
 // Foward declare
 struct UpdateData_t;
 
-enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR };
-typedef enum PlayerClass class_t;
+typedef enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR } class_t;
+typedef enum PlayerState { ALIVE, DEAD, FALLING } state_t;
+
+typedef struct PlayerStatData_t {
+	unsigned int total_steps;
+	unsigned int steps;
+	unsigned int hits;
+	unsigned int kills;
+	unsigned int misses;
+} PlayerStatData;
 
 typedef struct ExperienceData_t {
 	unsigned int previousLevel;
@@ -50,15 +58,13 @@ typedef struct Player_t {
 	unsigned int daggers;
 	LinkedList *projectiles;
 	unsigned int xp;
-	unsigned int total_steps;
-	unsigned int steps;
-	unsigned int hits;
-	unsigned int kills;
-	unsigned int misses;
 	double gold;
+	PlayerStatData stat_data;
 	unsigned int potion_sips;
 	class_t class;
+	state_t state;
 	Skill *skills[PLAYER_SKILL_COUNT];
+	Timer *animationTimer;
 	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 

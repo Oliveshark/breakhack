@@ -34,6 +34,7 @@ typedef struct Node LinkedList;
 
 typedef struct {
 	bool occupied;
+	bool lethal;
 	bool lightsource;
 	unsigned int light;
 	Monster *monster;

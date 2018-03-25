@@ -126,6 +126,7 @@ local function repack(data)
 		isCollider		= data[5] or false,
 		isLightSource	= data[6] or false,
 		isLevelExit		= data[7] or false,
+		isLethal		= data[8] or false
 	}
 end
 
@@ -154,6 +155,12 @@ end
 
 local function add_pits_to_room(map)
 
+	if CURRENT_LEVEL < 2 then
+		return
+	elseif not random(4) == 1 then
+		return
+	end
+
 	local pitdata = read_file("pitlayouts.dat")
 
 	local cleanData = ""
@@ -176,7 +183,7 @@ local function add_pits_to_room(map)
 	end
 
 	for i=0, #cleanData-1 do
-		local c = cleanData:sub(i+1, i+1)
+		local c = cleanData:sub(i, i)
 		local col = i % 16
 		local row = (i - (i % 16))/16
 		if c == "#" then
@@ -197,8 +204,8 @@ local function add_pits_to_room(map)
 		io.write("\n")
 	end
 
-	for i=2,12 do
-		for j=2,9 do
+	for i=2,13 do
+		for j=2,10 do
 			if not tile_occupied(map, (i), (j)) and matrix[i][j] then
 				if not matrix[i-1][j-1] and not matrix[i+1][j-1] and matrix[i-1][j] and matrix[i+1][j] and matrix[i][j-1] then
 					add_tile(map, i, j, repack(pits.innermid))
@@ -458,7 +465,7 @@ function module.build_square_room(map, room)
 		add_level_exit(map);
 	end
 
-	if CURRENT_LEVEL > 2 and random(10) == 1 then
+	if CURRENT_LEVEL > 3 and random(10) == 1 then
 		directions = { "LEFT", "RIGHT", "UP", "DOWN" }
 		set_modifier(map, "WINDY", directions[random(#directions)]);
 	end
@@ -489,17 +496,17 @@ function module.load_textures(map)
 	floor.singleright	= { t_floor, -1, xo + 96, yo + 16, false }
 
 	local pit_yo = (random(5) + random(3)) * (16 * 2)
-	pits.topleft		= { t_pit0, t_pit1, 0, pit_yo, true }
-	pits.top			= { t_pit0, t_pit1, 16, pit_yo, true }
-	pits.topright		= { t_pit0, t_pit1, 32, pit_yo, true }
-	pits.left	   		= { t_pit0, t_pit1, 0, pit_yo + 16, true }
-	pits.center			= { t_pit0, t_pit1, 16, pit_yo + 16, true }
-	pits.right			= { t_pit0, t_pit1, 32, pit_yo + 16, true }
-	pits.innerleft		= { t_pit0, t_pit1, 80, pit_yo, true }
-	pits.innermid		= { t_pit0, t_pit1, 96, pit_yo, true }
-	pits.innerright		= { t_pit0, t_pit1, 112, pit_yo, true }
-	pits.topcrevice		= { t_pit0, t_pit1, 64, pit_yo, true }
-	pits.bottomcrevice	= { t_pit0, t_pit1, 64, pit_yo + 16, true }
+	pits.topleft		= { t_pit0, t_pit1, 0, pit_yo, false, false, false, true }
+	pits.top			= { t_pit0, t_pit1, 16, pit_yo, false, false, false, true }
+	pits.topright		= { t_pit0, t_pit1, 32, pit_yo, false, false, false, true }
+	pits.left	   		= { t_pit0, t_pit1, 0, pit_yo + 16, false, false, false, true }
+	pits.center			= { t_pit0, t_pit1, 16, pit_yo + 16, false, false, false, true }
+	pits.right			= { t_pit0, t_pit1, 32, pit_yo + 16, false, false, false, true }
+	pits.innerleft		= { t_pit0, t_pit1, 80, pit_yo, false, false, false, true }
+	pits.innermid		= { t_pit0, t_pit1, 96, pit_yo, false, false, false, true }
+	pits.innerright		= { t_pit0, t_pit1, 112, pit_yo, false, false, false, true }
+	pits.topcrevice		= { t_pit0, t_pit1, 64, pit_yo, false, false, false, true }
+	pits.bottomcrevice	= { t_pit0, t_pit1, 64, pit_yo + 16, false, false, false, true }
 
 	wall.topleft		= { t_wall, -1, xo +  0, yo +  0, true }
 	wall.topright		= { t_wall, -1, xo + 32, yo +  0, true }
