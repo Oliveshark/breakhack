@@ -157,7 +157,7 @@ local function add_pits_to_room(map)
 
 	if CURRENT_LEVEL < 2 then
 		return
-	elseif not random(4) == 1 then
+	elseif not random(4) ~= 1 then
 		return
 	end
 
@@ -166,8 +166,6 @@ local function add_pits_to_room(map)
 	local cleanData = ""
 	for i=1, #pitdata do
 		local c = pitdata:sub(i+1, i+1)
-		local col = i % 16
-		local row = (i - (i % 16))/16
 		if c == "#" or c == "-" then
 			cleanData = cleanData .. c
 		end
@@ -175,24 +173,23 @@ local function add_pits_to_room(map)
 
 
 	local matrix = {}
-	for i=0, 16 do
-		matrix[i] = {}
-		for j=0, 12 do
-			matrix[i][j] = false
-		end
-	end
-
 	for i=0, #cleanData-1 do
 		local c = cleanData:sub(i, i)
 		local col = i % 16
-		local row = (i - (i % 16))/16
+		local row = (i - col)/16
+		local layout = 1 + (row - (row % 12))/12
+		local row = row % 12
+		if not matrix[layout] then matrix[layout] = {} end
+		if not matrix[layout][col] then matrix[layout][col] = {} end
 		if c == "#" then
-			matrix[col][row] = true
+			matrix[layout][col][row] = true
 		elseif c == "-" then
-			matrix[col][row] = false
+			matrix[layout][col][row] = false
 		end
 	end
 	
+	print(#matrix)
+	matrix = matrix[random(#matrix)]
 	for i=0, 11 do
 		for j=0, 15 do
 			if matrix[j][i] then

@@ -504,7 +504,7 @@ player_reset_steps(Player *p)
 void player_update(UpdateData *data)
 {
 	Player *player = data->player;
-	if (player->state == FALLING) {
+	if (player->state == FALLING && player->stats.hp > 0) {
 		if (!timer_started(player->animationTimer)) {
 			timer_start(player->animationTimer);
 			player->sprite->clip = CLIP16(0, 0);
