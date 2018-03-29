@@ -226,7 +226,7 @@ particle_engine_sparkle(Position pos, Dimension dim)
 		p->blend_mode = SDL_BLENDMODE_BLEND;
 		p->dim = (Dimension) { 2, 2 };
 		p->color = C_WHITE;
-		p->color.a = alpha;
+		p->color.a = (Uint8) alpha;
 		p->fixed = true;
 		linkedlist_append(&engine->global_particles, p);
 	}
