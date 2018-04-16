@@ -121,6 +121,7 @@ add_executable(breakhack
 	src/vector2d
 	src/map_room_modifiers
 	src/sqlite3
+	src/db
 	src/settings
 	)
 

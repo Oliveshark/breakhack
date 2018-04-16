@@ -22,6 +22,7 @@
 #include "sqlite3.h"
 #include "util.h"
 #include "defines.h"
+#include "db.h"
 
 #define SETTINGS_DB_FILE ".data.db"
 
@@ -40,17 +41,11 @@ set_default_settings(void)
 
 static void
 execute_statement(const char *stmt,
-		  int (*cb)(void*, int, char**, char**),
-		  void *cb_arg)
+	int(*cb)(void*, int, char**, char**),
+	void *cb_arg)
 {
-	char *errorMsg;
-
-	set_default_settings();
-	if (sqlite3_exec(db, stmt, cb, cb_arg, &errorMsg)) {
-		error("Faled to execture statement: %s", stmt);
-		error("Sqlite3: %s", errorMsg);
-		sqlite3_free(errorMsg);
-		sqlite3_close(db);
+	if (!db_execute_stmnt(stmt, db, cb, cb_arg)) {
+		db_close(&db);
 		fatal("Exiting");
 	}
 }
@@ -59,8 +54,8 @@ static void
 create_tables(void)
 {
 	execute_statement("CREATE TABLE IF NOT EXISTS settings_int(key TEXT PRIMARY KEY, value INTEGER)",
-			  NULL,
-			  NULL);
+		NULL,
+		NULL);
 }
 
 static int
@@ -73,12 +68,13 @@ load_settings_cb(void *unused, int count, char **values, char **colNames)
 		if (strcmp("key", colNames[i]) != 0)
 			continue;
 
-		debug("Loading setting: %s = %s", values[i], values[i+1]);
+		debug("Loading setting: %s = %s", values[i], values[i + 1]);
 		if (!strcmp(KEY_SOUND_ENABLED, values[i])) {
-			settings.sound_enabled = (bool) atoi(values[i+1]);
+			settings.sound_enabled = (bool)atoi(values[i + 1]);
 			i += 2;
-		} else if (!strcmp(KEY_MUSIC_ENABLED, values[i])) {
-			settings.music_enabled = (bool) atoi(values[i+1]);
+		}
+		else if (!strcmp(KEY_MUSIC_ENABLED, values[i])) {
+			settings.music_enabled = (bool)atoi(values[i + 1]);
 			i += 2;
 		}
 	}
@@ -94,12 +90,11 @@ load_settings(void)
 void
 settings_init(void)
 {
-	int result = sqlite3_open(SETTINGS_DB_FILE, &db);
-	if (result) {
-		error("Failed to open settings db: %s", sqlite3_errmsg(db));
-		sqlite3_close(db);
+	if (!db_open(SETTINGS_DB_FILE, &db)) {
+		db_close(&db);
 		fatal("Exiting");
 	}
+	set_default_settings();
 	create_tables();
 	load_settings();
 }
@@ -107,6 +102,8 @@ settings_init(void)
 static void
 save_setting_int(const char *key, int value)
 {
+	// TODO(Linus): Move this into db.c, probably using varargs
+
 	const char *stmtStr = "INSERT OR REPLACE INTO settings_int(key, value) values (?, ?)";
 	const char *pzTest;
 	sqlite3_stmt *stmt;
@@ -147,5 +144,5 @@ void
 settings_close(void)
 {
 	settings_save();
-	sqlite3_close(db);
+	db_close(&db);
 }
