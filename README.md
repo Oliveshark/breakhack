@@ -26,6 +26,19 @@ the code will remain open source under GPLv3 even after a possible Steam
 release. So you'll still be able to download and compile it yourself if you
 can and want to.
 
+Compile
+-------
+Apart from basic compile tools (GCC/Clang) you'll also need to install **sdl2, sdl2-image, sdl2-ttf, sdl2-mixer**
+Optionally you can also install **cppcheck** and **physfs**
+
+Once that is done run the following:
+```bash
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug .. # Build type flag is optional
+make
+```
+
 Contribute
 ----------
 Have an idea and able to implement it? Fork and send me a pull request and
