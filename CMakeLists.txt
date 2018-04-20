@@ -66,9 +66,13 @@ include_directories(
 if (NOT WIN32)
 	include_directories(
 		${X11_INCLUDE_DIR}
-		${CHECK_INCLUDE_DIR}
 		)
 endif (NOT WIN32)
+if (CHECK_FOUND)
+	include_directories(
+		${CHECK_INCLUDE_DIR}
+		)
+endif(CHECK_FOUND)
 
 if (NOT WIN32)
 	add_definitions(-std=gnu11

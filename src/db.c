@@ -9,7 +9,7 @@ db_open(const char *file, sqlite3 **db)
 
 	int result = sqlite3_open(file, db);
 	if (result) {
-		error("Failed to open db: %s", sqlite3_errmsg(db));
+		error("Failed to open db: %s", sqlite3_errmsg(*db));
 	}
 	return result == 0;
 }
@@ -34,7 +34,7 @@ db_execute_stmnt(const char *stmnt,
 
 void db_close(sqlite3 **db)
 {
-	char *fname = sqlite3_db_filename(*db, NULL);
+	const char *fname = sqlite3_db_filename(*db, NULL);
 	debug("Closing db: %s", fname);
 	sqlite3_close(*db);
 	*db = NULL;
