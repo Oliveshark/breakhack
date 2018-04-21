@@ -84,64 +84,40 @@ m_vsprintf(char *dest, size_t sz, const char *fmt, va_list args)
 }
 
 void
-debug(const char *fmt, ...)
+log_print(FILE *out,
+	  const char *prefix,
+	  const char *file,
+	  int line,
+	  const char *function,
+	  const char * fmt,
+	  ...)
 {
-#ifdef DEBUG
 	va_list args;
 	char tstamp[10];
 
 	timestamp(tstamp, 10);
-	printf("[%s][--] ", tstamp);
+#ifndef _WIN32
+	if (out == stdout || out == stderr) {
+		fprintf(out, "\033[34m[%s]", tstamp);
+		if (strcmp(prefix, "DEBUG") == 0)
+			fprintf(out, "\033[33m");
+		else if (strcmp(prefix, "FATAL") == 0 || strcmp(prefix, "ERROR") == 0)
+			fprintf(out, "\033[31m");
+		else
+			fprintf(out, "\033[32m");
+		fprintf(out, "[%5s]", prefix);
+		fprintf(out, "\033[36m[%20s:%-3d]\033[37m[%20s()]\033[0m ",
+			file, line, function);
+	} else {
+		fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line, function);
+	}
+#else
+	fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line, function);
+#endif
 	va_start(args, fmt);
-	vprintf(fmt, args);
+	vfprintf(out, fmt, args);
 	va_end(args);
 	printf("\n");
-#else // DEBUG
-	UNUSED (fmt);
-#endif // DEBUG
-}
-
-void
-info(const char * fmt, ...)
-{
-	va_list args;
-	char tstamp[10];
-
-	timestamp(tstamp, 10);
-	printf("[%s][**] ", tstamp);
-	va_start(args, fmt);
-	vprintf(fmt, args);
-	va_end(args);
-	printf("\n");
-}
-
-void
-error(const char *fmt, ...)
-{
-	va_list args;
-	char tstamp[10];
-
-	timestamp(tstamp, 10);
-	fprintf(stderr, "[%s][!*] ", tstamp);
-	va_start(args, fmt);
-	vfprintf(stderr, fmt, args);
-	va_end(args);
-	fprintf(stderr, "\n");
-}
-
-void
-fatal(const char *fmt, ...)
-{
-	va_list args;
-	char tstamp[10];
-
-	timestamp(tstamp, 10);
-	fprintf(stderr, "[%s][!!] ", tstamp);
-	va_start(args, fmt);
-	vfprintf(stderr, fmt, args);
-	va_end(args);
-	fprintf(stderr, "\n");
-	exit(-1);
 }
 
 void

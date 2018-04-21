@@ -19,20 +19,36 @@
 #ifndef UTIL_H_
 #define	UTIL_H_
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 
-void
-fatal(const char *fmt, ...);
+#ifndef __FNAME__
+#define __FNAME__ __FILE__
+#endif // __FNAME__
+
+#ifdef DEBUG
+#define debug(...) log_print(stdout, "DEBUG", __FNAME__,  __LINE__, __func__, __VA_ARGS__)
+#define info(...)  log_print(stdout, "INFO", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#else // DEBUG
+#define debug(...) do  {} while(0)
+#define info(...) do  {} while(0)
+#endif // DEBUG
+#define error(...) log_print(stderr, "ERROR", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#define fatal(...) \
+{ \
+	log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__, __VA_ARGS__); \
+	exit(-1); \
+}
 
 void
-error(const char *fmt, ...);
-
-void
-debug(const char *fmt, ...);
-
-void
-info(const char *fmt, ...);
+log_print(FILE *out,
+		  const char *prefix,
+		  const char *file,
+		  int line,
+		  const char *func,
+		  const char *fmt,
+		  ...);
 
 void *
 ec_malloc(unsigned long size);
