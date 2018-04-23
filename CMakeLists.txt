@@ -33,6 +33,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	set(CLANG 1)
 endif()
 
+# Deal with travis compile issue
 if (CCACHE_FOUND AND CLANG)
 	add_definitions(-Qunused-arguments -fcolor-diagnostics)
 endif()
