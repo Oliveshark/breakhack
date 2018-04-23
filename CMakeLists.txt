@@ -29,6 +29,15 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	set(CLANG 1)
+endif()
+
+if (CCACHE_FOUND AND CLANG)
+	add_definitions(-Qunused-arguments -fcolor-diagnostics)
+endif()
+
+
 IF ( WIN32 )
     MESSAGE ( STATUS "Setting MSVC MT switches")
     SET (
