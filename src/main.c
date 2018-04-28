@@ -92,6 +92,13 @@ static
 bool initSDL(void)
 {
 	int imgFlags = IMG_INIT_PNG;
+
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+	{
+		error("Could not initiate SDL2: %s", SDL_GetError());
+		return false;
+	}
+
 	Dimension dim = getScreenDimensions();
 
 	if (dim.height > 1080) {
@@ -102,12 +109,6 @@ bool initSDL(void)
 		else if (renderScale > 1)
 			renderScale = 2;
 		info("Scaling by %f", renderScale);
-	}
-
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
-	{
-		error("Could not initiate SDL2: %s", SDL_GetError());
-		return false;
 	}
 
 	if ( (IMG_Init(imgFlags) & imgFlags) == 0 ) {

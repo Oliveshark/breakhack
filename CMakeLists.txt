@@ -19,11 +19,6 @@ include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindCCache.cmake)
 include(cmake/Findcppcheck.cmake)
 
-if (NOT WIN32)
-	include(FindX11)
-	include(cmake/FindCheck.cmake)
-endif (NOT WIN32)
-
 configure_file(
 	"${PROJECT_SOURCE_DIR}/src/config.h.in"
 	"${PROJECT_BINARY_DIR}/config.h"
@@ -73,11 +68,6 @@ include_directories(
 	${SDL2_MIXER_INCLUDE_DIR}
 	)
 
-if (NOT WIN32)
-	include_directories(
-		${X11_INCLUDE_DIR}
-		)
-endif (NOT WIN32)
 if (CHECK_FOUND)
 	include_directories(
 		${CHECK_INCLUDE_DIR}
@@ -162,12 +152,6 @@ else (NOT PHYSFS_FOUND)
 		${PHYSFS_LIBRARY}
 		)
 endif (NOT PHYSFS_FOUND)
-
-if (NOT WIN32)
-	target_link_libraries(breakhack
-		${X11_LIBRARIES}
-		)
-endif (NOT WIN32)
 
 if (MSVC)
 	set_target_properties(breakhack PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
