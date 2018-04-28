@@ -53,8 +53,7 @@ int l_create_map(lua_State *L)
 static int
 l_print_info(lua_State *L)
 {
-	const char *str = luaL_checkstring(L, 1);
-	debug(str);
+	debug(luaL_checkstring(L, 1));
 	return 0;
 }
 

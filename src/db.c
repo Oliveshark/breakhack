@@ -34,8 +34,7 @@ db_execute_stmnt(const char *stmnt,
 
 void db_close(sqlite3 **db)
 {
-	const char *fname = sqlite3_db_filename(*db, NULL);
-	debug("Closing db: %s", fname);
+	debug("Closing db: %s", sqlite3_db_filename(*db, NULL));
 	sqlite3_close(*db);
 	*db = NULL;
 }
