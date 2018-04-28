@@ -477,28 +477,10 @@ player_render(Player *player, Camera *cam)
 	}
 }
 
-static void
-player_print(Player *p)
-{
-	Position roomPos = position_to_matrix_coords(&p->sprite->pos);
-	Position pos = p->sprite->pos;
-	PlayerStatData *data = &p->stat_data;
-
-	debug("\n");
-	debug("--------=== <[ Player Stats ]> ===--------");
-	debug("Hits:  %u\tMisses:\t%u", data->hits, data->misses);
-	debug("Kills: %u", data->kills);
-	debug("Steps: %u", data->total_steps);
-	debug("Pos:   %dx%d\tRoomPos: %dx%d", pos.x, pos.y,
-	       roomPos.x, roomPos.y);
-	debug("------------------------------------------");
-}
-
 void
 player_reset_steps(Player *p)
 {
 	p->stat_data.steps = 0;
-	player_print(p);
 }
 
 void player_update(UpdateData *data)

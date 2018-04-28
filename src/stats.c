@@ -39,10 +39,6 @@ stats_fight(Stats *attacker, Stats *defender)
 	defRoll = (get_random(19) + 1) + defender->def;
 	dmgRoll = 0;
 
-	debug("");
-	debug("-----------[ FIGHT ]---------");
-	debug("Attacking: %d   Defending: %d", atkRoll, defRoll);
-
 	if (atkRoll >= defRoll) {
 		if (attacker->dmg > 0)
 			dmgRoll = get_random(attacker->dmg) + 1;
@@ -56,9 +52,6 @@ stats_fight(Stats *attacker, Stats *defender)
 
 		defender->hp -= dmgRoll;
 	}
-
-	debug("Attacker hp: %d  Defender hp: %d", attacker->hp, defender->hp);
-	debug("-----------------------------");
 
 	return dmgRoll;
 }
