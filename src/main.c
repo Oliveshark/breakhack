@@ -339,9 +339,12 @@ resetGame(void)
 static bool
 init(void)
 {
-	bool result = true;
-	result = result && initSDL();
-	result = result && initGame();
+	if (!initSDL()) {
+		return false;
+	} else if (!initGame()) {
+		return false;
+	}
+
 	settings_init();
 	initMainMenu();
 
@@ -349,7 +352,7 @@ init(void)
 
 	gGameState = MENU;
 
-	return result;
+	return true;
 }
 
 static bool

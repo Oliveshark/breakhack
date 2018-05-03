@@ -96,6 +96,7 @@ log_print(FILE *out,
 	char tstamp[10];
 
 	timestamp(tstamp, 10);
+#ifdef DEBUG
 #ifndef _WIN32
 	if (out == stdout || out == stderr) {
 		fprintf(out, "\033[34m[%s]", tstamp);
@@ -111,9 +112,15 @@ log_print(FILE *out,
 	} else {
 		fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line, function);
 	}
-#else
+#else // _WIN32
 	fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line, function);
-#endif
+#endif // _WIN32
+#else // DEBUG
+	UNUSED(prefix);
+	UNUSED(file);
+	UNUSED(line);
+	UNUSED(function);
+#endif // DEBUG
 	va_start(args, fmt);
 	vfprintf(out, fmt, args);
 	va_end(args);
