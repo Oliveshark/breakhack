@@ -35,14 +35,14 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	t->dim.width = 16;
 	t->dim.height = 16;
 
-	for (unsigned int i = 0; i < 5; ++i) {
+	for (unsigned int i = 0; i < 10; ++i) {
 		char buffer[4];
 		Sprite *s = sprite_create();
 		s->pos = (Position) { i * 32 + 20, 20 };
 		s->dim = (Dimension) { 8, 8 };
 		s->fixed = true;
 		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8);
-		m_sprintf(buffer, 4, "%u", i+1);
+		m_sprintf(buffer, 4, "%u", i+1 < 10 ? i+1 : 0);
 		texture_load_from_text(s->textures[0], buffer, c_yellow, renderer);
 		linkedlist_append(&bar->sprites, s);
 	}
@@ -256,16 +256,13 @@ skillbar_handle_event(SkillBar *bar, SDL_Event *event)
 		return;
 
 	unsigned int key = 0;
-	if (keyboard_press(SDLK_1, event))
-		key = 1;
-	else if (keyboard_press(SDLK_2, event))
-		key = 2;
-	else if (keyboard_press(SDLK_3, event))
-		key = 3;
-	else if (keyboard_press(SDLK_4, event))
-		key = 4;
-	else if (keyboard_press(SDLK_5, event))
-		key = 5;
+	for (SDL_Keycode keysym = SDLK_0; keysym <= SDLK_9; ++keysym) {
+		if (!keyboard_press(keysym, event))
+			continue;
+		key = (int)(keysym - SDLK_0);
+		if (key == 0) key = 10;
+		break;
+	}
 
 	if (key != 0) {
 		bar->lastActivation = key;
