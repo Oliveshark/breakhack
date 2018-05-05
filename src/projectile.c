@@ -92,7 +92,6 @@ projectile_update(Projectile *p, UpdateData *data)
 		Uint32 dmg = stats_fight(&tmpStats, &space->monster->stats);
 		if (dmg > 0) {
 			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, dmg);
-			mixer_play_effect(SWORD_HIT);
 			data->player->stat_data.hits += 1;
 		}
 		if (get_random(2) >= 1) {
@@ -102,6 +101,7 @@ projectile_update(Projectile *p, UpdateData *data)
 		}
 		monster_hit(space->monster, dmg);
 	}
+	mixer_play_effect(SWORD_HIT);
 	p->alive = false;
 }
 
