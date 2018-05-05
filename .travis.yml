@@ -7,11 +7,9 @@ compiler:
     - clang
 
 env:
-    - CCACHE_CPP2=yes
-
-env:
     global:
         - secure: "XH9gOl7zX+QqtMhh1zAAcoNp0dIGpZOCKu1rs1tZSuOispXgSnRQ22hypyUHSqnhqh/q1pVoc3zJGk8qCpC8Qur2QcQnr0fP3z7tt7aF8EVqPIt81m+NIhsWQrJookvrKY9212qg0KuTOoPJ+FpNAIMWjtWT9w7DPrvgH2l+Ly6U5/vKGn49Z+rm6bwHdlDH0F1VxuiyXSv99h4Ik5FRB5jao2AWlszvvHOjRNbrZnpM9NTa+WuTOsGMNOxj2jbepu7oaZRuBZNRJDiEf7S84btdZM0wp2hOlhK8hqTCuzGkyV3RYqbYjt7qOucQpUWENtMmdz/E6/EA6t3palZaErOyf/ETy9UC6pw/myDzZfXi1iVwv1spff7pMTbrOa6rycS2M0Osgo0Ah2w5wPEYgT48363EQTN2nw9/5q1enjYJWdTFdACG+eAw5+LMfm3++dEhxht7DZJ/y89mae36b5CcMfWDxZS4CBYjhqDwFkRXgmcMIhqtXqF1zdheXd+zHw2zyYgrE0c/keOcyRvQ/DJzNSkRAPs11t4ETgKf295MzhPs/JXvHffY2Pfgwe09a3mX+fA9IgfL80rqw6d2tmtkoRApdvxT65OLITb+QPsbU4pE8SkgCDwZMvzenL7ChAXwt7vce7rXHJqmLAoaCvpvEor/c0Fbdluxk45hOwg="
+        - CCACHE_CPP2=yes
 
 before_install:
     - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
@@ -30,7 +28,7 @@ before_install:
 
 install:
     - sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
-    - sudo apt-get install -y cmake cmake-data check lua5.2 liblua5.2-dev libphysfs-dev
+    - sudo apt-get install -y cmake cmake-data check lua5.2 liblua5.2-dev
 
 script:
     - mkdir build
