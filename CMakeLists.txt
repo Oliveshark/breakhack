@@ -17,6 +17,7 @@ include(cmake/FindSDL2_image.cmake)
 include(cmake/FindSDL2_ttf.cmake)
 include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindCCache.cmake)
+include(cmake/FindCheck.cmake)
 include(cmake/Findcppcheck.cmake)
 
 configure_file(
@@ -46,7 +47,7 @@ IF ( WIN32 )
         "${CMAKE_CXX_FLAGS_RELEASE} /MT"
         CACHE STRING "MSVC MT flags " FORCE
     )
-  ENDIF ( WIN32 )
+ ENDIF ( WIN32 )
 
 if (NOT PHYSFS_FOUND)
 	add_subdirectory(physfs-3.0.1)
