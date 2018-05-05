@@ -143,14 +143,22 @@ skill_throw_dagger(Skill *skill, SkillData *data)
 	data->player->daggers--;
 
 	Projectile *p = projectile_dagger_create();
-	if (vector2d_equals(VECTOR2D_UP, data->direction))
+	if (vector2d_equals(VECTOR2D_UP, data->direction)) {
 		p->velocity = (Vector2d) { 0, -DAGGER_VELOCITY };
-	else if (vector2d_equals(VECTOR2D_DOWN, data->direction))
+		p->sprite->flip = SDL_FLIP_VERTICAL;
+	}
+	else if (vector2d_equals(VECTOR2D_DOWN, data->direction)) {
 		p->velocity = (Vector2d) { 0, DAGGER_VELOCITY };
-	else if (vector2d_equals(VECTOR2D_RIGHT, data->direction))
+		p->sprite->flip = SDL_FLIP_HORIZONTAL;
+	}
+	else if (vector2d_equals(VECTOR2D_RIGHT, data->direction)) {
 		p->velocity = (Vector2d) { DAGGER_VELOCITY, 0 };
-	else
+		p->sprite->flip = SDL_FLIP_HORIZONTAL;
+	}
+	else {
 		p->velocity = (Vector2d) { -DAGGER_VELOCITY, 0 };
+		p->sprite->angle = -270;
+	}
 
 	set_player_clip_for_direction(data->player, &data->direction);
 

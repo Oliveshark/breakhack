@@ -31,25 +31,22 @@
 static void
 onDaggerRender(Sprite *s)
 {
-	if (!timer_started(s->renderTimer))
-		timer_start(s->renderTimer);
-
-	if (timer_get_ticks(s->renderTimer) > 60) {
-		timer_start(s->renderTimer);
-		s->clip.x += 16;
-		s->clip.x = s->clip.x % 64;
-	}
+	if (s->angle >= 0)
+		s->angle += 30;
+	else
+		s->angle -= 30;
 }
 
 Projectile *
 projectile_dagger_create(void)
 {
 	Projectile *p = projectile_create();
-	sprite_set_texture(p->sprite, texturecache_add("Extras/Dagger.png"), 0);
+	sprite_set_texture(p->sprite, texturecache_add("Items/ShortWep.png"), 0);
 	p->sprite->onRender = onDaggerRender;
 	p->sprite->animate = false;
 	p->sprite->clip = CLIP16(0, 0);
 	p->sprite->dim = (Dimension) { 32, 32 };
+	p->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 	return p;
 }
 
