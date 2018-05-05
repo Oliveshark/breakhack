@@ -32,6 +32,20 @@ static Settings settings;
 static const char *KEY_MUSIC_ENABLED = "music_enabled";
 static const char *KEY_SOUND_ENABLED = "sound_enabled";
 
+typedef struct db_query {
+	char *stmt;
+	int (*cb)(void*, int, char**, char**);
+	void *cb_arg;
+} db_query;
+
+db_query MIGRATE_COMMANDS[] = {
+	{ "CREATE TABLE IF NOT EXISTS settings_int(key TEXT PRIMARY KEY, value INTEGER)", NULL, NULL },
+	{ NULL, NULL, NULL } // Sentinel
+};
+
+static int load_settings_cb(void *unused, int count, char **values, char **colNames);
+db_query LOAD_SETTINGS = { "SELECT * FROM settings_int", load_settings_cb, NULL };
+
 static void
 set_default_settings(void)
 {
@@ -40,11 +54,9 @@ set_default_settings(void)
 }
 
 static void
-execute_statement(const char *stmt,
-	int(*cb)(void*, int, char**, char**),
-	void *cb_arg)
+execute_statement(db_query *query)
 {
-	if (!db_execute_stmnt(stmt, db, cb, cb_arg)) {
+	if (!db_execute_stmnt(query->stmt, db, query->cb, query->cb_arg)) {
 		db_close(&db);
 		fatal("Exiting");
 	}
@@ -53,9 +65,13 @@ execute_statement(const char *stmt,
 static void
 create_tables(void)
 {
-	execute_statement("CREATE TABLE IF NOT EXISTS settings_int(key TEXT PRIMARY KEY, value INTEGER)",
-		NULL,
-		NULL);
+	for (unsigned int i = 0;; ++i) {
+		db_query *query = &MIGRATE_COMMANDS[i];
+		if (query->stmt == NULL)
+			break;
+
+		execute_statement(query);
+	}
 }
 
 static int
@@ -84,7 +100,7 @@ load_settings_cb(void *unused, int count, char **values, char **colNames)
 static void
 load_settings(void)
 {
-	execute_statement("SELECT * FROM settings_int", load_settings_cb, NULL);
+	execute_statement(&LOAD_SETTINGS);
 }
 
 void
