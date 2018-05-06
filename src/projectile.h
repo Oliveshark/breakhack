@@ -37,7 +37,6 @@ typedef struct Projectile_t {
 	Vector2d velocity;
 	Timer *lifetime;
 	bool alive;
-	Timer *animation_timer;
 	void (*onRender)(struct Projectile_t*);
 } Projectile;
 

@@ -9,7 +9,8 @@ o Make things less difficult and more interesting
 
 o Creat some nice room modifiers
 	x Windy room
-	- Liquid in rooms
+	x Liquid in rooms
+	- Falling floor tiles
 
 - Credit screen showing music and graphics guys:
 	- Music: http://soundimage.org/ (Eric Matyas)
