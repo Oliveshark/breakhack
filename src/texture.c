@@ -32,6 +32,8 @@ texture_create(void)
 	t->dim.width = 0;
 	t->texture = NULL;
 	t->font = NULL;
+	t->lastAccess = SDL_GetTicks();
+	t->path = "";
 	return t;
 }
 
@@ -65,6 +67,9 @@ texture_load_from_file(Texture *texture,
 		       SDL_GetError());
 	}
 
+	texture->lastAccess = SDL_GetTicks();
+	texture->path = path;
+
 	SDL_FreeSurface(surface);
 }
 
@@ -82,6 +87,7 @@ texture_load_font(Texture *t, const char *path, unsigned int size)
 			TTF_GetError());
 		return;
 	}
+	t->path = path;
 }
 
 static void
@@ -120,6 +126,7 @@ texture_load_from_text(Texture *t,
 	}
 
 	load_from_surface(t, surface, renderer);
+	t->lastAccess = SDL_GetTicks();
 }
 
 void
@@ -169,6 +176,8 @@ texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip, Camera *cam
 		       texture->texture,
 		       clip,
 		       box);
+
+	texture->lastAccess = SDL_GetTicks();
 }
 
 void 
@@ -184,6 +193,8 @@ texture_render_clip_ex(Texture *texture, SDL_Rect *box, SDL_Rect *clip, double a
 			 angle,
 			 point,
 			 flipType);
+
+	texture->lastAccess = SDL_GetTicks();
 }
 
 void texture_destroy(Texture *texture)

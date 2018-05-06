@@ -17,6 +17,8 @@
  */
 
 #include <check.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include "../src/hashtable.h"
 
@@ -76,6 +78,64 @@ START_TEST(test_hashtable_set_get)
 }
 END_TEST
 
+static bool checklist[] = {
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false
+};
+
+static void check_number(int *num)
+{
+	checklist[*num] = true;
+}
+
+START_TEST(test_hashtable_foreach)
+{
+	Hashtable *table = ht_create(10);
+
+	for (int i = 0; i < 10; i++) {
+		char str[4];
+		int *num = malloc(sizeof(int));
+		ck_assert( num != NULL );
+		*num = i;
+		sprintf(str, "%d", *num);
+		ht_set(table, str, num);
+	}
+
+	ht_foreach(table, (void (*)(void*)) check_number);
+	for (int i = 0; i < 10; i++) {
+		ck_assert(checklist[i]);
+	}
+}
+END_TEST
+
+START_TEST(test_hashtable_remove)
+{
+	char key1[] = "key1";
+	char value1[] = "value1";
+	char key2[] = "key2";
+	char value2[] = "value2";
+	char key3[] = "key3";
+	char value3[] = "value3";
+	char *getVal;
+
+	Hashtable *table = ht_create(10);
+	ht_set(table, key1, value1);
+	ht_set(table, key2, value2);
+	ht_set(table, key3, value3);
+	getVal = ht_remove(table, key2);
+	ck_assert(strcmp(value2, getVal) == 0);
+	ck_assert(ht_get(table, key2) == NULL);
+}
+END_TEST
+
 static Suite* t_suite_create(void)
 {
 	Suite *s;
@@ -86,6 +146,8 @@ static Suite* t_suite_create(void)
 
 	tcase_add_test(tc_core, test_hashtable_create);
 	tcase_add_test(tc_core, test_hashtable_set_get);
+	tcase_add_test(tc_core, test_hashtable_foreach);
+	tcase_add_test(tc_core, test_hashtable_remove);
 	suite_add_tcase(s, tc_core);
 
 	return s;

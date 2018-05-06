@@ -29,6 +29,8 @@ typedef struct {
 	SDL_Texture *texture;
 	TTF_Font *font;
 	Dimension dim;
+	const char *path;
+	unsigned long lastAccess;
 } Texture;
 
 Texture*

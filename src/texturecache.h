@@ -31,6 +31,9 @@ texturecache_add(const char *path);
 Texture*
 texturecache_get(const char *path);
 
+bool
+texturecache_remove(Texture **texture);
+
 void
 texturecache_close(void);
 

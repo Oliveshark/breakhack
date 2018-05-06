@@ -134,10 +134,64 @@ ht_get(Hashtable *table, const char *key)
 	return entry->value;
 }
 
+void*
+ht_remove(Hashtable *table, const char *key)
+{
+	unsigned int hashkey = 0;
+	Entry *entry, *last;
+
+	hashkey = hash(table, key);
+
+	entry = table->entries[hashkey];
+	last = NULL;
+
+	while (entry && entry->key && strcmp(entry->key, key) < 0) {
+		last = entry;
+		entry = entry->next;
+	}
+
+	if (!entry || !entry->key || strcmp(entry->key, key) != 0) {
+		return NULL;
+	}
+
+	if (last == NULL) {
+		table->entries[hashkey] = entry->next;
+	} else {
+		last->next = entry->next;
+	}
+
+	void *value = entry->value;
+	free(entry->key);
+	free(entry);
+
+	return value;
+}
+
 void
 ht_destroy(Hashtable *table)
 {
 	ht_destroy_custom(table, free);
+}
+
+void
+ht_foreach(Hashtable *table, void (*func)(void*))
+{
+	Entry *entry;
+	unsigned int i;
+
+	if (table == NULL) {
+		return;
+	}
+
+	for (i = 0; i < table->size; ++i) {
+		entry = table->entries[i];
+		if (entry == NULL)
+			continue;
+		while (entry) {
+			func(entry->value);
+			entry = entry->next;
+		}
+	}
 }
 
 void
