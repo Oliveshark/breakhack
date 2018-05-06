@@ -28,3 +28,4 @@ void
 io_load_file_buffer(char **dest, unsigned long *len, const char *filepath);
 
 #endif // IO_UTIL_H_
+

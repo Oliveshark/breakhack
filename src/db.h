@@ -17,3 +17,4 @@ void
 db_close(sqlite3 **db);
 
 #endif // DB_H_
+

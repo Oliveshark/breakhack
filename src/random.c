@@ -32,3 +32,4 @@ get_random(unsigned int max)
 
 	return rand() % (max + 1);
 }
+

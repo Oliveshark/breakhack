@@ -53,6 +53,7 @@ int l_create_map(lua_State *L)
 static int
 l_print_info(lua_State *L)
 {
+	UNUSED(L); // Compilers keep warning about L being unused
 	debug(luaL_checkstring(L, 1));
 	return 0;
 }

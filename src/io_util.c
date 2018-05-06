@@ -35,3 +35,4 @@ io_load_file_buffer(char **dest, unsigned long *len, const char *filepath)
 	*len = (unsigned long) size;
 	*dest = buffer;
 }
+

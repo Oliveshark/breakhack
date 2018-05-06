@@ -35,3 +35,4 @@ void
 texturecache_close(void);
 
 #endif // TEXTURECACHE_H_
+
