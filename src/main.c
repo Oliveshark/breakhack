@@ -139,7 +139,8 @@ bool initSDL(void)
 		return false;
 	}
 
-	gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+	gRenderer = SDL_CreateRenderer(gWindow, -1,
+				       SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 	if (gRenderer == NULL)
 	{
 		error("Unable to create renderer: %s", SDL_GetError());
@@ -189,7 +190,7 @@ initGame(void)
 	texturecache_init(gRenderer);
 	gCamera.renderer = gRenderer;
 	gRoomMatrix = roommatrix_create();
-	gGui = gui_create();
+	gGui = gui_create(&gCamera);
 	gSkillBar = skillbar_create(gRenderer);
 	item_builder_init(gRenderer);
 	gPointer = pointer_create(gRenderer);
@@ -511,15 +512,13 @@ run_game(void)
 	gui_render_event_message(gGui, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &rightGuiViewport);
-	gui_render_panel(gGui, RIGHT_GUI_WIDTH,
-			 RIGHT_GUI_HEIGHT, &gCamera);
+	gui_render_panel(gGui, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &skillBarViewport);
 	skillbar_render(gSkillBar, gPlayer, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
-	gui_render_log(gGui, BOTTOM_GUI_WIDTH,
-		       BOTTOM_GUI_HEIGHT, &gCamera);
+	gui_render_log(gGui, &gCamera);
 
 	SDL_RenderSetViewport(gRenderer, NULL);
 	particle_engine_render_global(&gCamera);

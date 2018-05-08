@@ -1,0 +1,5 @@
+-DDEBUG
+-I./build/config.h
+-I/usr/include/SDL2/
+-I/usr/include/lua5.2/
+-I/usr/include/physfs.h

@@ -25,8 +25,10 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
 	set(CLANG 1)
+elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+	set(GCC 1)
 endif()
 
 # Deal with travis compile issue
@@ -35,7 +37,7 @@ if (CCACHE_FOUND AND CLANG)
 endif()
 
 
-IF ( WIN32 )
+IF ( MSVC )
     MESSAGE ( STATUS "Setting MSVC MT switches")
     SET (
       CMAKE_C_FLAGS_DEBUG
@@ -47,7 +49,13 @@ IF ( WIN32 )
         "${CMAKE_CXX_FLAGS_RELEASE} /MT"
         CACHE STRING "MSVC MT flags " FORCE
     )
- ENDIF ( WIN32 )
+ENDIF ( MSVC )
+IF ( GCC OR CLANG )
+    SET (
+      CMAKE_C_FLAGS_DEBUG
+        "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer"
+		)
+ENDIF ( GCC OR CLANG )
 
 if (NOT PHYSFS_FOUND)
 	add_subdirectory(physfs-3.0.1)

@@ -50,6 +50,7 @@ texture_create_blank(Texture *t,
 				       access,
 				       t->dim.width,
 				       t->dim.height);
+	assert(t->texture != NULL);
 	t->textureAccessType = access;
 }
 
@@ -162,9 +163,16 @@ texture_load_from_text(Texture *t,
 }
 
 void
-texture_load_from_text_shaded(Texture *t, const char * text, SDL_Color fg, SDL_Color bg, SDL_Renderer *renderer)
+texture_load_from_text_shaded(Texture *t,
+			      const char *text,
+			      SDL_Color fg,
+			      SDL_Color bg,
+			      SDL_Renderer *renderer)
 {
-	SDL_Surface *surface = TTF_RenderText_Shaded( t->font, text, fg, bg );
+	SDL_Surface *surface = TTF_RenderText_Shaded( t->font,
+						      text,
+						      fg,
+						      bg );
 	if (surface == NULL)
 	{
 		error("Unable to create texture from rendered text: %s",

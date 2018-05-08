@@ -279,5 +279,6 @@ skillbar_destroy(SkillBar *bar)
 		if (bar->countdowns[i])
 			sprite_destroy(bar->countdowns[i]);
 	timer_destroy(bar->activationTimer);
+	timer_destroy(bar->skillSparkleTimer);
 	free(bar);
 }

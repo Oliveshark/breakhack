@@ -536,6 +536,8 @@ player_destroy(Player *player)
 	actiontext_destroy(player->hitText);
 	actiontext_destroy(player->missText);
 
+	timer_destroy(player->animationTimer);
+
 	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (player->skills[i])
 			skill_destroy(player->skills[i]);

@@ -46,6 +46,8 @@ typedef struct {
 	LinkedList *sprites;
 	LinkedList *health;
 	LinkedList *xp_bar;
+	Sprite *bottomFrame;
+	Sprite *rightFrame;
 	Sprite *labels[LABEL_COUNT];
 	Texture *log_lines[LOG_LINES_COUNT];
 	Texture *event_message;
@@ -53,16 +55,16 @@ typedef struct {
 } Gui;
 
 Gui*
-gui_create(void);
+gui_create(Camera *);
 
 void
 gui_update_player_stats(Gui*, Player*, Map*, SDL_Renderer*);
 
 void
-gui_render_panel(Gui*, unsigned int width, unsigned int height, Camera*);
+gui_render_panel(Gui*, Camera*);
 
 void
-gui_render_log(Gui*, unsigned int width, unsigned int height, Camera*);
+gui_render_log(Gui*, Camera*);
 
 void
 gui_render_event_message(Gui*, Camera*);

@@ -113,6 +113,8 @@ START_TEST(test_hashtable_foreach)
 	for (int i = 0; i < 10; i++) {
 		ck_assert(checklist[i]);
 	}
+
+	ht_destroy(table);
 }
 END_TEST
 
@@ -133,6 +135,10 @@ START_TEST(test_hashtable_remove)
 	getVal = ht_remove(table, key2);
 	ck_assert(strcmp(value2, getVal) == 0);
 	ck_assert(ht_get(table, key2) == NULL);
+	ht_remove(table, key1);
+	ht_remove(table, key3);
+
+	ht_destroy(table);
 }
 END_TEST
 
