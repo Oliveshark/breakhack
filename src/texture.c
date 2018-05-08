@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <physfs.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "texture.h"
 #include "util.h"
 #include "io_util.h"
@@ -34,7 +35,38 @@ texture_create(void)
 	t->font = NULL;
 	t->lastAccess = SDL_GetTicks();
 	t->path = "";
+	t->textureAccessType = SDL_TEXTUREACCESS_STATIC;
+	t->locked = false;
 	return t;
+}
+
+void
+texture_create_blank(Texture *t,
+		     SDL_TextureAccess access,
+		     SDL_Renderer *renderer)
+{
+	t->texture = SDL_CreateTexture(renderer,
+				       SDL_PIXELFORMAT_RGBA8888,
+				       access,
+				       t->dim.width,
+				       t->dim.height);
+	t->textureAccessType = access;
+}
+
+void
+texture_lock(Texture *t, SDL_Rect *rect, void **pixels, int *pitch)
+{
+	assert (!t->locked);
+	t->locked = true;
+	SDL_LockTexture(t->texture, rect, pixels, pitch);
+}
+
+void
+texture_unlock(Texture *t)
+{
+	assert (t->locked);
+	t->locked = false;
+	SDL_UnlockTexture(t->texture);
 }
 
 void

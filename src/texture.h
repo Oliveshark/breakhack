@@ -31,10 +31,23 @@ typedef struct {
 	Dimension dim;
 	const char *path;
 	unsigned long lastAccess;
+	SDL_TextureAccess textureAccessType;
+	bool locked;
 } Texture;
 
 Texture*
 texture_create(void);
+
+void
+texture_create_blank(Texture *t,
+					 SDL_TextureAccess,
+					 SDL_Renderer*);
+
+void
+texture_lock(Texture*, SDL_Rect*, void **pixels, int *pitch);
+
+void
+texture_unlock(Texture*);
 
 void
 texture_load_from_file(Texture*, const char *path, SDL_Renderer*);
