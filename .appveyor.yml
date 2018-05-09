@@ -80,5 +80,8 @@ build_script:
     mingw32-make package
 
 artifacts:
-    - path: /.\BreakHack*.exe/
-    - path: /.\BreakHack*.zip/
+    - path: /.\breakhack*.exe/
+      name: breakhack_exe
+
+    - path: /.\breakhack*.zip/
+      name: breakhack_zip
