@@ -80,8 +80,21 @@ build_script:
     mingw32-make package
 
 artifacts:
-    - path: C:/projects/breakhack/package/breakhack-*.zip
+    - path: package/breakhack-*.zip
       name: breakhack_zip
 
-    - path: C:/projects/breakhack/package/breakhack-*.exe
+    - path: package/breakhack-*.exe
       name: breakhack_exe
+
+deploy:
+    provider: GitHub
+    description: 'Alpha pre-release'
+    auth_token:
+        secure: IlMEyGp0AuDI8/MkFAY2KpRr70c3p8eVEMdcqC1EcgyCCbvoMOppBQ0gY44ao0gq
+    draft: false
+    prerelease: true
+    on:
+        branch: master
+        appveyor_repo_tag: true
+
+
