@@ -77,3 +77,4 @@ build_script:
 
   - |-
     mingw32-make breakhack
+    mingw32-make package
