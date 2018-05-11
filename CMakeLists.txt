@@ -246,12 +246,6 @@ if (WIN32)
 		${CMAKE_SOURCE_DIR}/bin/SDL2_ttf.dll
 		${CMAKE_SOURCE_DIR}/bin/zlib1.dll
 		)
-	if (NOT PHYSFS_FOUND)
-		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
-			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-			${CMAKE_BINARY_DIR}/physfs-3.0.1/libphysfs.dll
-			)
-	endif ()
 endif (WIN32)
 include(InstallRequiredSystemLibraries)
 
