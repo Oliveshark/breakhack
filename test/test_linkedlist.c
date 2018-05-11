@@ -51,7 +51,7 @@ static void test_linkedlist_append(void **state)
 	linkedlist_append(&list, v2);
 	assert_int_equal(linkedlist_size(list), 2);
 	linkedlist_destroy(&list);
-	assert_int_equal( list, NULL );
+	assert_null( list );
 }
 
 static void test_linkedlist_poplast(void **state)
@@ -193,7 +193,7 @@ static void test_linkedlist_get_index(void **state)
 	assert_int_equal(linkedlist_size(list), 2);
 
 	assert_int_equal(*get, *value2);
-	assert_int_equal(get, value2);
+	assert_ptr_equal(get, value2);
 
 	linkedlist_destroy(&list);
 
