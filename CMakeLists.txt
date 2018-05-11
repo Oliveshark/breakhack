@@ -58,8 +58,8 @@ IF ( GCC OR CLANG )
 ENDIF ( GCC OR CLANG )
 
 if (NOT PHYSFS_FOUND OR WIN32)
-	set(PHYSFS_BUILD_SHARED TRUE)
 	set(PHYSFS_BUILD_STATIC TRUE)
+	set(PHYSFS_BUILD_SHARED FALSE)
 	set(PHYSFS_BUILD_TEST FALSE)
 	add_subdirectory(physfs-3.0.1)
 	include_directories(
@@ -162,13 +162,13 @@ target_link_libraries(breakhack
 
 if (NOT PHYSFS_FOUND)
 	target_link_libraries(breakhack
-		physfs
+		physfs-static
 		)
-else (NOT PHYSFS_FOUND)
+else ()
 	target_link_libraries(breakhack
 		${PHYSFS_LIBRARY}
 		)
-endif (NOT PHYSFS_FOUND)
+endif ()
 
 if (MSVC)
 	set_target_properties(breakhack PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")

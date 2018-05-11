@@ -85,7 +85,7 @@ build_script:
     cmake -DCMAKE_PREFIX_PATH="%PREFIX%" -DCMAKE_C_COMPILER=mingw32-gcc.exe -DCMAKE_MAKE_PROGRAM=mingw32-make.exe -G "MinGW Makefiles"
 
   - |-
-    mingw32-make
+    mingw32-make breakhack
     ctest -V
     mingw32-make package
 
