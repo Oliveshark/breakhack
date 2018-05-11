@@ -57,16 +57,19 @@ IF ( GCC OR CLANG )
 		)
 ENDIF ( GCC OR CLANG )
 
-if (NOT PHYSFS_FOUND)
+if (NOT PHYSFS_FOUND OR WIN32)
+	set(PHYSFS_BUILD_SHARED TRUE)
+	set(PHYSFS_BUILD_STATIC TRUE)
+	set(PHYSFS_BUILD_TEST FALSE)
 	add_subdirectory(physfs-3.0.1)
 	include_directories(
 		physfs-3.0.1/src
 		)
-else (NOT PHYSFS_FOUND)
+else ()
 	include_directories(
 		${PHYSFS_INCLUDE_DIR}
 		)
-endif (NOT PHYSFS_FOUND)
+endif ()
 
 include_directories(
 	${PROJECT_BINARY_DIR}
@@ -236,13 +239,18 @@ if (WIN32)
 		${CMAKE_SOURCE_DIR}/bin/libpng16-16.dll
 		${CMAKE_SOURCE_DIR}/bin/libvorbis-0.dll
 		${CMAKE_SOURCE_DIR}/bin/libvorbisfile-3.dll
-		${CMAKE_SOURCE_DIR}/bin/libphysfs.dll
 		${CMAKE_SOURCE_DIR}/bin/SDL2.dll
 		${CMAKE_SOURCE_DIR}/bin/SDL2_image.dll
 		${CMAKE_SOURCE_DIR}/bin/SDL2_mixer.dll
 		${CMAKE_SOURCE_DIR}/bin/SDL2_ttf.dll
 		${CMAKE_SOURCE_DIR}/bin/zlib1.dll
 		)
+	if (NOT PHYSFS_FOUND)
+		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
+			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+			${CMAKE_BINARY_DIR}/physfs/libphysfs.dll
+			)
+	endif ()
 endif (WIN32)
 include(InstallRequiredSystemLibraries)
 

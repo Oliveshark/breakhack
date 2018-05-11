@@ -16,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdlib.h>
 #include <stdarg.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <setjmp.h>
 #include <cmocka.h>
 #include "../src/util.h"

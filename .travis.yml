@@ -28,7 +28,8 @@ before_install:
 
 install:
     - sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
-    - sudo apt-get install -y cmake cmake-data lua5.2 liblua5.2-dev libcmocka0 libcmocka-dev
+    - sudo apt-get install -y cmake cmake-data lua5.2 liblua5.2-dev
+    #- sudo apt-get install -y libcmocka0 libcmocka-dev
 
 script:
     - mkdir build
