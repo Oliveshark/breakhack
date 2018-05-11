@@ -16,21 +16,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <check.h>
+#include <stdarg.h>
+#include <stddef.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <setjmp.h>
+#include <cmocka.h>
 #include "../src/linkedlist.h"
 
-START_TEST(test_linkedlist_create)
+static void test_linkedlist_create(void **state)
 {
+	(void) state;
+
 	LinkedList *list = linkedlist_create();
-	ck_assert( list == NULL );
+	assert_null( list );
 	linkedlist_destroy(&list);
 }
-END_TEST
 
-START_TEST(test_linkedlist_append)
+static void test_linkedlist_append(void **state)
 {
+	(void) state;
+
 	int *v1, *v2;
 
 	v1 = malloc(sizeof(int));
@@ -40,18 +45,19 @@ START_TEST(test_linkedlist_append)
 	*v2 = 44;
 
 	LinkedList *list = linkedlist_create();
-	ck_assert(linkedlist_size(list) == 0);
+	assert_int_equal(linkedlist_size(list), 0);
 	linkedlist_append(&list, v1);
-	ck_assert(linkedlist_size(list) == 1);
+	assert_int_equal(linkedlist_size(list), 1);
 	linkedlist_append(&list, v2);
-	ck_assert(linkedlist_size(list) == 2);
+	assert_int_equal(linkedlist_size(list), 2);
 	linkedlist_destroy(&list);
-	ck_assert( list == NULL );
+	assert_int_equal( list, NULL );
 }
-END_TEST
 
-START_TEST(test_linkedlist_poplast)
+static void test_linkedlist_poplast(void **state)
 {
+	(void) state;
+
 	int *v1, *v2, *v3;
 
 	v1 = malloc(sizeof(int));
@@ -68,23 +74,23 @@ START_TEST(test_linkedlist_poplast)
 
 	LinkedList *list = linkedlist_create();
 
-	ck_assert(linkedlist_size(list) == 0);
+	assert_int_equal(linkedlist_size(list), 0);
 
 	linkedlist_append(&list, v3);
 	linkedlist_append(&list, v2);
 	linkedlist_append(&list, v1);
 
-	ck_assert(linkedlist_size(list) == 3);
+	assert_int_equal(linkedlist_size(list), 3);
 
 	pop1 = linkedlist_poplast(&list);
 	pop2 = linkedlist_poplast(&list);
 	pop3 = linkedlist_poplast(&list);
 
-	ck_assert(linkedlist_size(list) == 0);
+	assert_int_equal(linkedlist_size(list), 0);
 
-	ck_assert(*pop1 == *v1);
-	ck_assert(*pop2 == *v2);
-	ck_assert(*pop3 == *v3);
+	assert_int_equal(*pop1, *v1);
+	assert_int_equal(*pop2, *v2);
+	assert_int_equal(*pop3, *v3);
 
 	free(pop1);
 	free(pop2);
@@ -92,12 +98,13 @@ START_TEST(test_linkedlist_poplast)
 
 	linkedlist_destroy(&list);
 
-	ck_assert(list == NULL);
+	assert_null(list);
 }
-END_TEST
 
-START_TEST(test_linkedlist_push)
+static void test_linkedlist_push(void **state)
 {
+	(void) state;
+
 	int *v1, *v2;
 
 	v1 = malloc(sizeof(int));
@@ -107,18 +114,19 @@ START_TEST(test_linkedlist_push)
 	*v2 = 1;
 
 	LinkedList *list = linkedlist_create();
-	ck_assert(linkedlist_size(list) == 0);
+	assert_int_equal(linkedlist_size(list), 0);
 	linkedlist_push(&list, v1);
-	ck_assert(linkedlist_size(list) == 1);
+	assert_int_equal(linkedlist_size(list), 1);
 	linkedlist_push(&list, v2);
-	ck_assert(linkedlist_size(list) == 2);
+	assert_int_equal(linkedlist_size(list), 2);
 	linkedlist_destroy(&list);
-	ck_assert( list == NULL );
+	assert_null( list );
 }
-END_TEST
 
-START_TEST(test_linkedlist_pop)
+static void test_linkedlist_pop(void **state)
 {
+	(void) state;
+
 	int *value1, *value2, *value3;
 	int *pop1, *pop2, *pop3;
 
@@ -132,23 +140,23 @@ START_TEST(test_linkedlist_pop)
 
 	LinkedList *list = linkedlist_create();
 
-	ck_assert(linkedlist_size(list) == 0);
+	assert_int_equal(linkedlist_size(list), 0);
 
 	linkedlist_push(&list, value3);
 	linkedlist_push(&list, value2);
 	linkedlist_push(&list, value1);
 
-	ck_assert(linkedlist_size(list) == 3);
+	assert_int_equal(linkedlist_size(list), 3);
 
 	pop1 = linkedlist_pop(&list);
 	pop2 = linkedlist_pop(&list);
 	pop3 = linkedlist_pop(&list);
 
-	ck_assert(linkedlist_size(list) == 0);
+	assert_int_equal(linkedlist_size(list), 0);
 
-	ck_assert(*pop1 == *value1);
-	ck_assert(*pop2 == *value2);
-	ck_assert(*pop3 == *value3);
+	assert_int_equal(*pop1, *value1);
+	assert_int_equal(*pop2, *value2);
+	assert_int_equal(*pop3, *value3);
 
 	linkedlist_destroy(&list);
 
@@ -156,12 +164,13 @@ START_TEST(test_linkedlist_pop)
 	free(pop2);
 	free(pop3);
 
-	ck_assert(list == NULL);
+	assert_null(list );
 }
-END_TEST
 
-START_TEST(test_linkedlist_get_index)
+static void test_linkedlist_get_index(void **state)
 {
+	(void) state;
+
 	int *value1, *value2, *get;
 
 	value1 = malloc(sizeof(int));
@@ -170,28 +179,26 @@ START_TEST(test_linkedlist_get_index)
 	*value1 = 1;
 	*value2 = 2;
 
-
 	LinkedList *list = linkedlist_create();
 
-	ck_assert(linkedlist_size(list) == 0);
+	assert_int_equal(linkedlist_size(list), 0);
 
 	linkedlist_push(&list, value2);
 	linkedlist_push(&list, value1);
 
-	ck_assert(linkedlist_size(list) == 2);
+	assert_int_equal(linkedlist_size(list), 2);
 
 	get = linkedlist_get(&list, 1);
 
-	ck_assert(linkedlist_size(list) == 2);
+	assert_int_equal(linkedlist_size(list), 2);
 
-	ck_assert(*get == *value2);
-	ck_assert(get == value2);
+	assert_int_equal(*get, *value2);
+	assert_int_equal(get, value2);
 
 	linkedlist_destroy(&list);
 
-	ck_assert(list == NULL);
+	assert_null(list);
 }
-END_TEST
 
 static void
 increase(int *number)
@@ -199,8 +206,10 @@ increase(int *number)
 	(*number)++;
 }
 
-START_TEST (test_linkedlist_each)
+static void test_linkedlist_each(void **state)
 {
+	(void) state;
+
 	LinkedList *list;
 	int i;
 
@@ -216,49 +225,25 @@ START_TEST (test_linkedlist_each)
 
 	for (i = 0; i < 10; ++i) {
 		int *pop = linkedlist_pop(&list);
-		ck_assert( i+1 == *pop );
+		assert_int_equal( i+1, *pop );
 		free(pop);
 		pop = NULL;
 	}
 
 	linkedlist_destroy(&list);
 }
-END_TEST
-
-static Suite*
-t_suite_create(void)
-{
-	Suite *s;
-	TCase *tc_core;
-
-	s = suite_create("LinkedList");
-	tc_core = tcase_create("Core");
-
-	tcase_add_test(tc_core, test_linkedlist_create);
-	tcase_add_test(tc_core, test_linkedlist_push);
-	tcase_add_test(tc_core, test_linkedlist_pop);
-	tcase_add_test(tc_core, test_linkedlist_append);
-	tcase_add_test(tc_core, test_linkedlist_poplast);
-	tcase_add_test(tc_core, test_linkedlist_get_index);
-	tcase_add_test(tc_core, test_linkedlist_each);
-	suite_add_tcase(s, tc_core);
-
-	return s;
-}
 
 int main(void)
 {
-	int number_failed;
-	Suite *s;
-	SRunner *sr;
+	const struct CMUnitTest tests[] = {
+		cmocka_unit_test(test_linkedlist_create),
+		cmocka_unit_test(test_linkedlist_push),
+		cmocka_unit_test(test_linkedlist_pop),
+		cmocka_unit_test(test_linkedlist_append),
+		cmocka_unit_test(test_linkedlist_poplast),
+		cmocka_unit_test(test_linkedlist_get_index),
+		cmocka_unit_test(test_linkedlist_each)
+	};
 
-	s = t_suite_create();
-	sr = srunner_create(s);
-
-	srunner_run_all(sr, CK_NORMAL);
-	number_failed = srunner_ntests_failed(sr);
-
-	srunner_free(sr);
-
-	return number_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+	return cmocka_run_group_tests(tests, NULL, NULL);
 }

@@ -16,22 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <check.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdarg.h>
+#include <stddef.h>
 #include <stdlib.h>
+#include <setjmp.h>
+#include <cmocka.h>
 #include "../src/hashtable.h"
 
-START_TEST(test_hashtable_create)
+static void test_hashtable_create(void **state)
 {
+	(void) state;
+
 	Hashtable *table = ht_create(10);
-	ck_assert( table != NULL && table->size == 10 );
+	assert_non_null( table );
+	assert_int_equal(table->size, 10 );
 	ht_destroy(table);
 }
-END_TEST
 
-START_TEST(test_hashtable_set_get)
+static void test_hashtable_set_get(void **state)
 {
+	(void) state;
+
 	int i;
 	int* values0[10];
 	int* values1[10];
@@ -63,7 +70,7 @@ START_TEST(test_hashtable_set_get)
 	}
 
 	for (i = 0; i < 10; ++i) {
-		ck_assert( *values0[i] == *((int*) ht_get(table, keys[i])) );
+		assert_int_equal( *values0[i], *((int*) ht_get(table, keys[i])) );
 	}
 
 	for (i = 0; i < 10; ++i) {
@@ -71,12 +78,11 @@ START_TEST(test_hashtable_set_get)
 	}
 
 	for (i = 0; i < 10; ++i) {
-		ck_assert( *values1[i] == *((int*) ht_get(table, keys[i])) );
+		assert_int_equal( *values1[i], *((int*) ht_get(table, keys[i])) );
 	}
 
 	ht_destroy(table);
 }
-END_TEST
 
 static bool checklist[] = {
 	false,
@@ -96,14 +102,16 @@ static void check_number(int *num)
 	checklist[*num] = true;
 }
 
-START_TEST(test_hashtable_foreach)
+static void test_hashtable_foreach(void **state)
 {
+	(void) state;
+
 	Hashtable *table = ht_create(10);
 
 	for (int i = 0; i < 10; i++) {
 		char str[4];
 		int *num = malloc(sizeof(int));
-		ck_assert( num != NULL );
+		assert_non_null( num );
 		*num = i;
 		sprintf(str, "%d", *num);
 		ht_set(table, str, num);
@@ -111,15 +119,16 @@ START_TEST(test_hashtable_foreach)
 
 	ht_foreach(table, (void (*)(void*)) check_number);
 	for (int i = 0; i < 10; i++) {
-		ck_assert(checklist[i]);
+		assert_non_null(checklist[i]);
 	}
 
 	ht_destroy(table);
 }
-END_TEST
 
-START_TEST(test_hashtable_remove)
+static void test_hashtable_remove(void **state)
 {
+	(void) state;
+
 	char key1[] = "key1";
 	char value1[] = "value1";
 	char key2[] = "key2";
@@ -133,45 +142,23 @@ START_TEST(test_hashtable_remove)
 	ht_set(table, key2, value2);
 	ht_set(table, key3, value3);
 	getVal = ht_remove(table, key2);
-	ck_assert(strcmp(value2, getVal) == 0);
-	ck_assert(ht_get(table, key2) == NULL);
+	assert_string_equal(value2, getVal);
+	assert_null(ht_get(table, key2));
 	ht_remove(table, key1);
 	ht_remove(table, key3);
 
 	ht_destroy(table);
 }
-END_TEST
-
-static Suite* t_suite_create(void)
-{
-	Suite *s;
-	TCase *tc_core;
-
-	s = suite_create("Hashtable");
-	tc_core = tcase_create("Core");
-
-	tcase_add_test(tc_core, test_hashtable_create);
-	tcase_add_test(tc_core, test_hashtable_set_get);
-	tcase_add_test(tc_core, test_hashtable_foreach);
-	tcase_add_test(tc_core, test_hashtable_remove);
-	suite_add_tcase(s, tc_core);
-
-	return s;
-}
 
 int main(void)
 {
-	int number_failed;
-	Suite *s;
-	SRunner *sr;
 
-	s = t_suite_create();
-	sr = srunner_create(s);
+	const struct CMUnitTest tests[] = {
+		cmocka_unit_test(test_hashtable_create),
+		cmocka_unit_test(test_hashtable_set_get),
+		cmocka_unit_test(test_hashtable_remove),
+		cmocka_unit_test(test_hashtable_foreach)
+	};
 
-	srunner_run_all(sr, CK_NORMAL);
-	number_failed = srunner_ntests_failed(sr);
-
-	srunner_free(sr);
-
-	return number_failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+	cmocka_run_group_tests(tests, NULL, NULL);
 }

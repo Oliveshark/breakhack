@@ -17,7 +17,7 @@ include(cmake/FindSDL2_image.cmake)
 include(cmake/FindSDL2_ttf.cmake)
 include(cmake/FindSDL2_mixer.cmake)
 include(cmake/FindCCache.cmake)
-include(cmake/FindCheck.cmake)
+include(cmake/FindCMocka.cmake)
 include(cmake/Findcppcheck.cmake)
 
 configure_file(
@@ -77,13 +77,13 @@ include_directories(
 	${SDL2_MIXER_INCLUDE_DIR}
 	)
 
-if (CHECK_FOUND)
+if (CMOCKA_FOUND)
 	include_directories(
-		${CHECK_INCLUDE_DIR}
+		${CMOCKA_INCLUDE_DIR}
 		)
-endif(CHECK_FOUND)
+endif(CMOCKA_FOUND)
 
-if (NOT WIN32)
+if (NOT MSVC)
 	add_definitions(-std=gnu11
 		-pedantic -Wall -Wextra -Wshadow
 		-Wpointer-arith -Wcast-qual
@@ -91,7 +91,7 @@ if (NOT WIN32)
 		-Wmissing-prototypes
 		-Wconversion -Wno-sign-conversion
 		)
-endif (NOT WIN32)
+endif (NOT MSVC)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 if (NOT MSVC)
@@ -176,21 +176,21 @@ if (MSVC)
 endif (MSVC)
 
 # TESTS:
-IF (CHECK_FOUND AND NOT WIN32)
+IF (CMOCKA_FOUND)
 	find_package(Threads REQUIRED)
 	enable_testing()
-	add_executable(test_util test/check_util src/util)
-	target_link_libraries(test_util ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	add_executable(test_util test/test_util src/util)
+	target_link_libraries(test_util ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_util test_util)
 
-	add_executable(test_linkedlist test/check_linkedlist src/linkedlist src/util)
-	target_link_libraries(test_linkedlist ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	add_executable(test_linkedlist test/test_linkedlist src/linkedlist src/util)
+	target_link_libraries(test_linkedlist ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_linkedlist test_linkedlist)
 
-	add_executable(test_hashtable test/check_hashtable src/hashtable src/util)
-	target_link_libraries(test_hashtable ${CHECK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	add_executable(test_hashtable test/test_hashtable src/hashtable src/util)
+	target_link_libraries(test_hashtable ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_hashtable test_hashtable)
-ENDIF (CHECK_FOUND AND NOT WIN32)
+ENDIF (CMOCKA_FOUND )
 
 # LINT:
 if (CPPCHECK_FOUND)
@@ -236,7 +236,7 @@ if (WIN32)
 		${CMAKE_SOURCE_DIR}/bin/libpng16-16.dll
 		${CMAKE_SOURCE_DIR}/bin/libvorbis-0.dll
 		${CMAKE_SOURCE_DIR}/bin/libvorbisfile-3.dll
-		${CMAKE_SOURCE_DIR}/bin/physfs.dll
+		${CMAKE_SOURCE_DIR}/bin/libphysfs.dll
 		${CMAKE_SOURCE_DIR}/bin/SDL2.dll
 		${CMAKE_SOURCE_DIR}/bin/SDL2_image.dll
 		${CMAKE_SOURCE_DIR}/bin/SDL2_mixer.dll
