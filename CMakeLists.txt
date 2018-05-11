@@ -93,7 +93,7 @@ if (NOT MSVC)
 		-Wstrict-prototypes
 		-Wmissing-prototypes
 		-Wconversion -Wno-sign-conversion
-		-static-libgcc
+		-static -static-libgcc -static-libstdc++
 		)
 endif (NOT MSVC)
 
