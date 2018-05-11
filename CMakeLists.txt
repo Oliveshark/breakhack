@@ -248,7 +248,7 @@ if (WIN32)
 	if (NOT PHYSFS_FOUND)
 		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
 			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-			${CMAKE_BINARY_DIR}/physfs/libphysfs.dll
+			${CMAKE_BINARY_DIR}/physfs-3.0.1/libphysfs.dll
 			)
 	endif ()
 endif (WIN32)
