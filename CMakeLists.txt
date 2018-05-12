@@ -31,11 +31,20 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 	set(GCC 1)
 endif()
 
+set (default_build_type "Release")
+if (NOT CMAKE_BUILD_TYPE AND default_build_type)
+	message( STATUS "Setting default buildtype to '${default_build_type}' as none was specified")
+	set(CMAKE_BUILD_TYPE "${default_build_type}")
+endif ()
+
 # Deal with travis compile issue
 if (CCACHE_FOUND AND CLANG)
 	add_definitions(-Qunused-arguments -fcolor-diagnostics)
 endif()
 
+if (CMAKE_BUILD_TYPE MATCHES "Debug")
+	set(DEBUG_BUILD TRUE)
+endif()
 
 IF ( MSVC )
     MESSAGE ( STATUS "Setting MSVC MT switches")
@@ -49,7 +58,16 @@ IF ( MSVC )
         "${CMAKE_CXX_FLAGS_RELEASE} /MT"
         CACHE STRING "MSVC MT flags " FORCE
     )
-ENDIF ( MSVC )
+ELSEIF ( WIN32 )
+    SET (
+      CMAKE_C_FLAGS_DEBUG
+        "${CMAKE_CXX_FLAGS_DEBUG} -mconsole"
+    )
+    SET (
+      CMAKE_C_FLAGS_RELEASE
+        "${CMAKE_CXX_FLAGS_RELEASE} -mwindows"
+    )
+ENDIF ()
 IF ( GCC OR CLANG )
     SET (
       CMAKE_C_FLAGS_DEBUG
@@ -205,7 +223,7 @@ if (CPPCHECK_FOUND)
 		)
 endif (CPPCHECK_FOUND)
 
-if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
+if (NOT DEBUG_BUILD)
 	add_custom_target(assets_pack ALL
 		COMMAND ${CMAKE_COMMAND} -E tar "-cf" "../assets.pack" "--format=zip" --
 			"${CMAKE_CURRENT_SOURCE_DIR}/assets/Characters"
@@ -226,7 +244,14 @@ if (NOT CMAKE_BUILD_TYPE MATCHES Debug)
 			"monstergen.lua"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
 		)
-endif (NOT CMAKE_BUILD_TYPE MATCHES Debug)
+	if (WIN32)
+		add_definitions(-mwindows)
+	endif()
+else()
+	if (WIN32)
+		add_definitions(-mconsole)
+	endif()
+endif ()
 
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT "Release")
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ".")
