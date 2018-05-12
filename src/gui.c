@@ -415,6 +415,7 @@ gui_create_frame(unsigned int width, unsigned int height, Camera *cam)
 	frame->destroyTextures = true;
 	frame->pos = (Position) { 0, 0 };
 	frame->dim = (Dimension) { width*16, height*16 };
+	frame->fixed = true;
 	texture_create_blank(texture,
 			     SDL_TEXTUREACCESS_TARGET,
 			     cam->renderer);
