@@ -3,7 +3,6 @@ os: Visual Studio 2015
 clone_depth: 1
 cache:
   - c:\usr -> .appveyor.yml
-  - %APPVEYOR_BUILD_FOLDER%/cmocka.dll -> .appveyor.yml
 before_build:
   - |-
     set PREFIX=C:\usr
@@ -61,7 +60,7 @@ before_build:
     %DEPENDS% copy cmocka-1.1.0\include\* %PREFIX%\include > nul
     %DEPENDS% copy cmocka-1.1.0\lib\*.a %PREFIX%\lib > nul
     %DEPENDS% copy cmocka-1.1.0\bin\*.dll %PREFIX%\lib > nul
-    %DEPENDS% copy cmocka-1.1.0\bin\*.dll %APPVEYOR_BUILD_FOLDER% > nul
+    copy cmocka-1.1.0\bin\*.dll %APPVEYOR_BUILD_FOLDER% > nul
 
   # Lua
   - |-
