@@ -3,6 +3,7 @@ os: Visual Studio 2015
 clone_depth: 1
 cache:
   - c:\usr -> .appveyor.yml
+  - %APPVEYOR_BUILD_FOLDER%/cmocka.dll -> .appveyor.yml
 before_build:
   - |-
     set PREFIX=C:\usr
@@ -85,7 +86,7 @@ build_script:
     cmake -DCMAKE_PREFIX_PATH="%PREFIX%" -DCMAKE_C_COMPILER=mingw32-gcc.exe -DCMAKE_MAKE_PROGRAM=mingw32-make.exe -G "MinGW Makefiles"
 
   - |-
-    mingw32-make VERBOSE=1
+    mingw32-make
     ctest -V
     mingw32-make package
 
