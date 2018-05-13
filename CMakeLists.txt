@@ -12,13 +12,13 @@ set(breakhack_RELEASE_TYPE "(early access)")
 
 include(FindLua)
 include(FindPhysFS)
-include(cmake/FindSDL2.cmake)
-include(cmake/FindSDL2_image.cmake)
-include(cmake/FindSDL2_ttf.cmake)
-include(cmake/FindSDL2_mixer.cmake)
-include(cmake/FindCCache.cmake)
-include(cmake/FindCMocka.cmake)
-include(cmake/Findcppcheck.cmake)
+include(build/cmake/FindSDL2.cmake)
+include(build/cmake/FindSDL2_image.cmake)
+include(build/cmake/FindSDL2_ttf.cmake)
+include(build/cmake/FindSDL2_mixer.cmake)
+include(build/cmake/FindCCache.cmake)
+include(build/cmake/FindCMocka.cmake)
+include(build/cmake/Findcppcheck.cmake)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/src/config.h.in"
@@ -111,8 +111,10 @@ if (NOT MSVC)
 		-Wstrict-prototypes
 		-Wmissing-prototypes
 		-Wconversion -Wno-sign-conversion
-		-static -static-libgcc -static-libstdc++
 		)
+	if (NOT CLANG)
+		add_definitions(-static -static-libgcc -static-libstdc++)
+	endif ()
 endif (NOT MSVC)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")

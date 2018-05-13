@@ -1,13 +1,13 @@
 all:
-	@make -sC build
+	@make -sC _build
 .PHONY: all
 
 clean:
-	@make clean -sC build
+	@make clean -sC _build
 .PHONY: clean
 
 test:
-	@make test -sC build
+	@make test -sC _build
 .PHONY: test
 
 run: $(all)
@@ -15,5 +15,5 @@ run: $(all)
 .PHONY: run
 
 lint:
-	@make lint -sC build
+	@make lint -sC _build
 .PHONY: lint
