@@ -91,7 +91,7 @@ monster_update_pos(Monster *m, Position pos)
 }
 
 static bool
-has_collided(Monster *monster, RoomMatrix *matrix)
+has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 {
 	if (!position_in_room(&monster->sprite->pos, &matrix->roomPos))
 		return true;
@@ -105,55 +105,27 @@ has_collided(Monster *monster, RoomMatrix *matrix)
 
 		player_hit(space->player, dmg);
 
-		if (dmg > 0)
-			gui_log("%s hit you for %u damage", monster->label, dmg);
-		else
+		if (dmg > 0) {
+			gui_log("%s hit you for %u damage",
+				monster->label, dmg);
+			camera_shake(direction, 300);
+		} else {
 			gui_log("%s missed you", monster->label);
+		}
 	}
 
 	return space->occupied || space->lethal;
 }
 
 static bool
-move_left(Monster *m, RoomMatrix *rm)
+move(Monster *m, RoomMatrix *rm, Vector2d direction)
 {
-	m->sprite->pos.x -= TILE_DIMENSION;
-	if (has_collided(m, rm)) {
-	    m->sprite->pos.x += TILE_DIMENSION;
-	    return false;
-	}
-	return true;
-}
-
-static bool
-move_right(Monster *m, RoomMatrix *rm)
-{
-	m->sprite->pos.x += TILE_DIMENSION;
-	if (has_collided(m, rm)) {
-	    m->sprite->pos.x -= TILE_DIMENSION;
-	    return false;
-	}
-	return true;
-}
-
-static bool
-move_up(Monster *m, RoomMatrix *rm)
-{
-	m->sprite->pos.y -= TILE_DIMENSION;
-	if (has_collided(m, rm)) {
-	    m->sprite->pos.y += TILE_DIMENSION;
-	    return false;
-	}
-	return true;
-}
-
-static bool
-move_down(Monster *m, RoomMatrix *rm)
-{
-	m->sprite->pos.y += TILE_DIMENSION;
-	if (has_collided(m, rm)) {
-	    m->sprite->pos.y -= TILE_DIMENSION;
-	    return false;
+	m->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
+	m->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
+	if (has_collided(m, rm, direction)) {
+		m->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;
+		m->sprite->pos.y -= TILE_DIMENSION * (int) direction.y;
+		return false;
 	}
 	return true;
 }
@@ -167,14 +139,14 @@ monster_drunk_walk(Monster *m, RoomMatrix *rm)
 		return;
 
 	for (i = 0; i < maxMoveAttempts; ++i) {
-		int move = get_random(3);
-		if (move == 0 && move_left(m, rm))
+		int moveDir = get_random(3);
+		if (moveDir == 0 && move(m, rm, VECTOR2D_LEFT))
 			break;
-		else if (move == 1 && move_right(m, rm))
+		else if (moveDir == 1 && move(m, rm, VECTOR2D_RIGHT))
 			break;
-		else if (move == 2 && move_up(m, rm))
+		else if (moveDir == 2 && move(m, rm, VECTOR2D_UP))
 			break;
-		else if (move == 3 && move_down(m, rm))
+		else if (moveDir == 3 && move(m, rm, VECTOR2D_DOWN))
 			break;
 	}
 }
@@ -233,16 +205,16 @@ monster_agressive_walk(Monster *m, RoomMatrix *rm)
 
 	switch (chosenDirection) {
 	case UP:
-		move_up(m, rm);
+		move(m, rm, VECTOR2D_UP);
 		break;
 	case DOWN:
-		move_down(m, rm);
+		move(m, rm, VECTOR2D_DOWN);
 		break;
 	case LEFT:
-		move_left(m, rm);
+		move(m, rm, VECTOR2D_LEFT);
 		break;
 	case RIGHT:
-		move_right(m, rm);
+		move(m, rm, VECTOR2D_RIGHT);
 		break;
 	}
 }
@@ -261,14 +233,14 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 
 	if (abs(x_dist) > abs(y_dist)) {
 		if (x_dist > 0)
-			move_right(m, rm);
+			move(m, rm, VECTOR2D_RIGHT);
 		else
-			move_left(m, rm);
+			move(m, rm, VECTOR2D_LEFT);
 	} else {
 		if (y_dist > 0)
-			move_down(m, rm);
+			move(m, rm, VECTOR2D_DOWN);
 		else
-			move_up(m, rm);
+			move(m, rm, VECTOR2D_UP);
 	}
 }
 

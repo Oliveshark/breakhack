@@ -22,14 +22,33 @@
 #include <SDL.h>
 
 #include "position.h"
+#include "timer.h"
+#include "vector2d.h"
 
 typedef struct {
 	Position pos;
+	Position basePos;
+	Vector2d velocity;
+	Timer *shakeTimer;
 	SDL_Renderer *renderer;
 } Camera;
 
-Position camera_to_camera_position(Camera *cam, Position *pos);
+Camera*
+camera_create(SDL_Renderer*);
 
-void camera_follow_position(Camera*, Position*);
+Position
+camera_to_camera_position(Camera *cam, Position *pos);
+
+void
+camera_follow_position(Camera*, Position*);
+
+void
+camera_update(Camera *, float deltatime);
+
+void
+camera_shake(Vector2d dir, int intensity);
+
+void
+camera_destroy(Camera *);
 
 #endif // CAMERA_H_

@@ -68,7 +68,7 @@ static Menu		*mainMenu	= NULL;
 static Menu		*inGameMenu	= NULL;
 static Timer		*menuTimer	= NULL;
 static GameState	gGameState;
-static Camera		gCamera;
+static Camera		*gCamera;
 static SDL_Rect		gameViewport;
 static SDL_Rect		skillBarViewport;
 static SDL_Rect		bottomGuiViewport;
@@ -188,9 +188,9 @@ initGame(void)
 {
 	initViewports();
 	texturecache_init(gRenderer);
-	gCamera.renderer = gRenderer;
+	gCamera = camera_create(gRenderer);
 	gRoomMatrix = roommatrix_create();
-	gGui = gui_create(&gCamera);
+	gGui = gui_create(gCamera);
 	gSkillBar = skillbar_create(gRenderer);
 	item_builder_init(gRenderer);
 	gPointer = pointer_create(gRenderer);
@@ -245,7 +245,7 @@ goToMainMenu(void *unused)
 	initMainMenu();
 	Position p = { 0, 0 };
 	map_set_current_room(gMap, &p);
-	camera_follow_position(&gCamera, &p);
+	camera_follow_position(gCamera, &p);
 }
 
 static void
@@ -334,7 +334,7 @@ resetGame(void)
 		TILE_DIMENSION, TILE_DIMENSION };
 
 	map_set_current_room(gMap, &gPlayer->sprite->pos);
-	camera_follow_position(&gCamera, &gPlayer->sprite->pos);
+	camera_follow_position(gCamera, &gPlayer->sprite->pos);
 }
 
 static bool
@@ -349,7 +349,7 @@ init(void)
 	settings_init();
 	initMainMenu();
 
-	gCamera.pos = (Position) { 0, 0 };
+	gCamera->pos = (Position) { 0, 0 };
 
 	gGameState = MENU;
 
@@ -408,7 +408,7 @@ handle_events(void)
 				gPlayer->handle_event(gPlayer,
 						      gRoomMatrix,
 						      &event);
-			camera_follow_position(&gCamera, &gPlayer->sprite->pos);
+			camera_follow_position(gCamera, &gPlayer->sprite->pos);
 			map_set_current_room(gMap, &gPlayer->sprite->pos);
 			roommatrix_handle_event(gRoomMatrix, &event);
 			skillbar_handle_event(gSkillBar, &event);
@@ -480,6 +480,7 @@ run_game(void)
 		skillbar_check_skill_activation(gSkillBar, gPlayer);
 	}
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
+	camera_update(gCamera, updateData.deltatime);
 	particle_engine_update(deltaTime);
 	player_update(&updateData);
 
@@ -499,43 +500,44 @@ run_game(void)
 	SDL_RenderClear(gRenderer);
 
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
-	map_render(gMap, &gCamera);
-	particle_engine_render_game(&gCamera);
+	map_render(gMap, gCamera);
+	particle_engine_render_game(gCamera);
 
 	if (!is_player_dead())
-		player_render(gPlayer, &gCamera);
+		player_render(gPlayer, gCamera);
 
 	if (gPlayer->class == MAGE || gPlayer->class == PALADIN)
-		roommatrix_render_mouse_square(gRoomMatrix, &gCamera);
+		roommatrix_render_mouse_square(gRoomMatrix, gCamera);
 
-	roommatrix_render_lightmap(gRoomMatrix, &gCamera);
-	gui_render_event_message(gGui, &gCamera);
+	roommatrix_render_lightmap(gRoomMatrix, gCamera);
+	gui_render_event_message(gGui, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &rightGuiViewport);
-	gui_render_panel(gGui, &gCamera);
+	gui_render_panel(gGui, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &skillBarViewport);
-	skillbar_render(gSkillBar, gPlayer, &gCamera);
+	skillbar_render(gSkillBar, gPlayer, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
-	gui_render_log(gGui, &gCamera);
+	gui_render_log(gGui, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, NULL);
-	particle_engine_render_global(&gCamera);
+	particle_engine_render_global(gCamera);
 	if (gGameState == IN_GAME_MENU) {
 		SDL_Rect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);
 		SDL_RenderFillRect(gRenderer, &dimmer);
-		menu_render(inGameMenu, &gCamera);
+		menu_render(inGameMenu, gCamera);
 	}
 	if (gGameState == GAME_OVER) {
 		// TODO(Linus): Render game over?
 	}
-	pointer_render(gPointer, &gCamera);
+	pointer_render(gPointer, gCamera);
 
 	SDL_RenderPresent(gRenderer);
 
 	if (gGameState == PLAYING && is_player_dead()) {
+		camera_shake(VECTOR2D_RIGHT, 800);
 		gui_log("The dungeon consumed you");
 		gui_event_message("You died!");
 		mixer_play_effect(SPLAT);
@@ -562,12 +564,12 @@ run_menu(void)
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
 	SDL_RenderSetViewport(gRenderer, &menuViewport);
-	map_render(gMap, &gCamera);
-	roommatrix_render_lightmap(gRoomMatrix, &gCamera);
+	map_render(gMap, gCamera);
+	roommatrix_render_lightmap(gRoomMatrix, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, NULL);
-	menu_render(mainMenu, &gCamera);
-	pointer_render(gPointer, &gCamera);
+	menu_render(mainMenu, gCamera);
+	pointer_render(gPointer, gCamera);
 
 	SDL_RenderPresent(gRenderer);
 }
@@ -632,6 +634,7 @@ void close(void)
 	if (inGameMenu)
 		menu_destroy(inGameMenu);
 
+	camera_destroy(gCamera);
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
 	skillbar_destroy(gSkillBar);

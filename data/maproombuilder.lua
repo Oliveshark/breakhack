@@ -157,7 +157,7 @@ local function add_pits_to_room(map)
 
 	if CURRENT_LEVEL < 2 then
 		return
-	elseif not random(4) ~= 1 then
+	elseif random(4) == 1 then
 		return
 	end
 

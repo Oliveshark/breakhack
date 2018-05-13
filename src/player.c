@@ -102,7 +102,7 @@ player_step(Player *p)
 }
 
 static bool 
-has_collided(Player *player, RoomMatrix *matrix)
+has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
 	bool collided = false;
 
@@ -125,17 +125,14 @@ has_collided(Player *player, RoomMatrix *matrix)
 		monster_hit(space->monster, hit);
 
 		if (hit > 0) {
+			gui_log("You hit %s for %u damage",
+				space->monster->lclabel, hit);
 			player->stat_data.hits += 1;
 			mixer_play_effect(SWORD_HIT);
 		} else {
+			gui_log("You missed %s", space->monster->lclabel);
 			player->stat_data.misses += 1;
 		}
-
-		if (hit > 0)
-			gui_log("You hit %s for %u damage",
-				space->monster->lclabel, hit);
-		else
-			gui_log("You missed %s", space->monster->lclabel);
 
 		player_monster_kill_check(player, space->monster);
 
@@ -143,6 +140,7 @@ has_collided(Player *player, RoomMatrix *matrix)
 
 	} else if (collided) {
 		mixer_play_effect(BONK);
+		camera_shake(direction, 100);
 		gui_log("Ouch! There is something in the way");
 	}
 
@@ -182,7 +180,7 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 	set_clip_for_direction(player, &direction);
 	player->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
 	player->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
-	if (has_collided(player, matrix)) {
+	if (has_collided(player, matrix, direction)) {
 		player->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;
 		player->sprite->pos.y -= TILE_DIMENSION * (int) direction.y;
 	} else {
