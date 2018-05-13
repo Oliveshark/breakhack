@@ -112,7 +112,7 @@ if (NOT MSVC)
 		-Wmissing-prototypes
 		-Wconversion -Wno-sign-conversion
 		)
-	if (NOT CLANG)
+	if (NOT APPLE)
 		add_definitions(-static -static-libgcc -static-libstdc++)
 	endif ()
 endif (NOT MSVC)

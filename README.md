@@ -33,8 +33,8 @@ Optionally you can also install **cppcheck** and **physfs**
 
 Once that is done run the following:
 ```bash
-mkdir build
-cd build
+mkdir _build
+cd _build
 cmake -DCMAKE_BUILD_TYPE=Debug .. # Build type flag is optional
 make
 ```
