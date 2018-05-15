@@ -506,7 +506,6 @@ run_game(void)
 
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
 	map_render(gMap, gCamera);
-	actiontextbuilder_render(gCamera);
 	particle_engine_render_game(gCamera);
 
 	if (!is_player_dead())
@@ -516,6 +515,7 @@ run_game(void)
 		roommatrix_render_mouse_square(gRoomMatrix, gCamera);
 
 	roommatrix_render_lightmap(gRoomMatrix, gCamera);
+	actiontextbuilder_render(gCamera);
 	gui_render_event_message(gGui, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &rightGuiViewport);
