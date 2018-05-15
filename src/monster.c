@@ -270,9 +270,6 @@ monster_update(Monster *m, UpdateData *data)
 void
 monster_hit(Monster *monster, unsigned int dmg)
 {
-	static SDL_Color c_red = { 255, 0, 0, 255 };
-	static SDL_Color c_yellow = { 255, 255, 0, 255 };
-
 	if (dmg > 0) {
 		Position p = monster->sprite->pos;
 		p.x += 8;
@@ -282,11 +279,11 @@ monster_hit(Monster *monster, unsigned int dmg)
 		char msg[10];
 		m_sprintf(msg, 10, "-%d", dmg);
 		actiontextbuilder_create_text(msg,
-					      c_red,
+					      C_RED,
 					      &monster->sprite->pos);
 	} else {
 		actiontextbuilder_create_text("Dodged",
-					      c_yellow,
+					      C_YELLOW,
 					      &monster->sprite->pos);
 	}
 

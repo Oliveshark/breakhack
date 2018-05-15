@@ -269,5 +269,7 @@ void texture_destroy(Texture *texture)
 		SDL_DestroyTexture(texture->texture);
 	if (texture->font)
 		TTF_CloseFont(texture->font);
+	if (texture->outlineFont)
+		TTF_CloseFont(texture->outlineFont);
 	free(texture);
 }

@@ -152,26 +152,22 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 void
 particle_engine_fire_explosion(Position pos, Dimension dim)
 {
-	static SDL_Color red = { 255, 0, 0, 255 };
-	static SDL_Color yellow = { 255, 255, 0, 255 };
-
 	check_engine();
-	create_explosion(pos, dim, 3, yellow, yellow, red);
+	create_explosion(pos, dim, 3, C_YELLOW, C_YELLOW, C_RED);
 }
 
 void
 particle_engine_eldritch_explosion(Position pos, Dimension dim)
 {
-	static SDL_Color green = { 0, 255, 0, 255 };
-
 	check_engine();
-	create_explosion(pos, dim, 1, green);
+	create_explosion(pos, dim, 1, C_GREEN);
 }
 
 void
 particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 {
 	static SDL_Color color = { 0, 0, 255, 200 };
+
 	unsigned int count = (unsigned int) (dim.width + dim.height) / 2;
 
 	if (dim.width == 0 || dim.height == 0)
@@ -235,7 +231,6 @@ particle_engine_sparkle(Position pos, Dimension dim)
 void
 particle_engine_wind(Vector2d direction)
 {
-	static SDL_Color color = { 0, 0, 255, 255 };
 	unsigned int count = 5;
 
 	Position pos = { 0, 0 };
@@ -266,7 +261,7 @@ particle_engine_wind(Vector2d direction)
 		p->movetime = lt;
 		p->lifetime = lt;
 		p->dim = (Dimension) { w, h };
-		p->color = color;
+		p->color = C_BLUE;
 		p->fixed = true;
 		linkedlist_append(&engine->game_particles, p);
 	}

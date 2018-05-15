@@ -74,17 +74,16 @@ next_level_threshold(unsigned int current_level)
 static void
 player_gain_xp(Player *player, unsigned int xp_gain)
 {
-	static SDL_Color c_green = { 0, 255, 0, 255 };
 	char msg[10];
 	m_sprintf(msg, 10, "+%dxp", xp_gain);
-	actiontextbuilder_create_text(msg, c_green, &player->sprite->pos);
+	actiontextbuilder_create_text(msg, C_GREEN, &player->sprite->pos);
 
 	player->xp += xp_gain;
 	if (player->xp >= next_level_threshold(player->stats.lvl)) {
 		player_levelup(player);
 		gui_log("You have reached level %u", player->stats.lvl);
 		gui_event_message("You reached level %u", player->stats.lvl);
-		actiontextbuilder_create_text("Level up", c_green, &player->sprite->pos);
+		actiontextbuilder_create_text("Level up", C_GREEN, &player->sprite->pos);
 	}
 }
 
@@ -203,6 +202,7 @@ player_sip_health(Player *player)
 		++player->stats.hp;
 		mixer_play_effect(BUBBLE0 + get_random(2));
 		gui_log("You take a sip of health potion");
+		actiontextbuilder_create_text("+1", C_GREEN, &player->sprite->pos);
 	} else {
 		gui_log("You have nothing to sip");
 	}
@@ -432,9 +432,6 @@ player_monster_kill_check(Player *player, Monster *monster)
 void
 player_hit(Player *p, unsigned int dmg)
 {
-	static SDL_Color c_red = { 255, 0, 0, 255 };
-	static SDL_Color c_yellow = { 255, 255, 0, 255 };
-
 	if (p->stats.hp <= 0) {
 		dmg = 200;
 	}
@@ -447,11 +444,11 @@ player_hit(Player *p, unsigned int dmg)
 		char msg[5];
 		m_sprintf(msg, 5, "-%d", dmg);
 		actiontextbuilder_create_text(msg,
-					      c_red,
+					      C_RED,
 					      &p->sprite->pos);
 	} else {
 		actiontextbuilder_create_text("Dodged",
-					      c_yellow,
+					      C_YELLOW,
 					      &p->sprite->pos);
 	}
 

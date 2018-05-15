@@ -11,7 +11,7 @@ test:
 .PHONY: test
 
 run: $(all)
-	@./build/breakhack
+	@./_build/breakhack
 .PHONY: run
 
 lint:

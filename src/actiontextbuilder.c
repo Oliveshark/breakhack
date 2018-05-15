@@ -34,13 +34,11 @@ actiontextbuilder_init(SDL_Renderer *renderer)
 void
 actiontextbuilder_create_text(const char *msg, SDL_Color color, Position *p)
 {
-	static SDL_Color o_color = { 0, 0, 0, 255 };
-
 	assert (gRenderer != NULL);
 	Sprite *sprite = sprite_create();
 	sprite->pos = *p;
 	sprite_load_text_texture(sprite, "GUI/SDS_8x8.ttf", 0, 11, 1);
-	texture_load_from_text(sprite->textures[0], msg, color, o_color, gRenderer);
+	texture_load_from_text(sprite->textures[0], msg, color, C_BLACK, gRenderer);
 	sprite->dim = sprite->textures[0]->dim;
 	linkedlist_append(&actiontexts, actiontext_create(sprite));
 }
