@@ -279,8 +279,8 @@ monster_hit(Monster *monster, unsigned int dmg)
 		p.y += 8;
 		Dimension d = { 8, 8 };
 		particle_engine_bloodspray(p, d, dmg);
-		char msg[5];
-		m_sprintf(msg, 5, "-%d", dmg);
+		char msg[10];
+		m_sprintf(msg, 10, "-%d", dmg);
 		actiontextbuilder_create_text(msg,
 					      c_red,
 					      &monster->sprite->pos);

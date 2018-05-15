@@ -33,6 +33,7 @@ texture_create(void)
 	t->dim.width = 0;
 	t->texture = NULL;
 	t->font = NULL;
+	t->outlineFont = NULL;
 	t->lastAccess = SDL_GetTicks();
 	t->path = "";
 	t->textureAccessType = SDL_TEXTUREACCESS_STATIC;
@@ -107,12 +108,18 @@ texture_load_from_file(Texture *texture,
 }
 
 void
-texture_load_font(Texture *t, const char *path, unsigned int size)
+texture_load_font(Texture *t, const char *path, unsigned int size, int outline)
 {
 	if (t->font)
 		TTF_CloseFont(t->font);
+	if (t->outlineFont)
+		TTF_CloseFont(t->outlineFont);
 
 	t->font = TTF_OpenFontRW(io_load_rwops(path), true, size);
+	if (outline) {
+		t->outlineFont = TTF_OpenFontRW(io_load_rwops(path), true, size);
+		TTF_SetFontOutline(t->outlineFont, outline);
+	}
 
 	if (t->font == NULL) {
 		error("Failed to load font %s: %s",
@@ -148,9 +155,28 @@ void
 texture_load_from_text(Texture *t,
 		       const char *text,
 		       SDL_Color c,
+		       SDL_Color oc,
 		       SDL_Renderer *renderer)
 {
-	SDL_Surface *surface = TTF_RenderText_Solid( t->font, text, c );
+	SDL_Surface *bg_surface = NULL;
+	SDL_Surface *fg_surface = NULL;
+	if (t->outlineFont) {
+		bg_surface = TTF_RenderText_Blended(t->outlineFont, text, oc);
+		fg_surface = TTF_RenderText_Blended(t->font, text, c);
+	}
+	else {
+		fg_surface = TTF_RenderText_Solid(t->font, text, c);
+	}
+	SDL_Surface *surface = fg_surface;
+	if (bg_surface) {
+		int outline = TTF_GetFontOutline(t->outlineFont);
+		SDL_Rect rect = { outline, outline, fg_surface->w, fg_surface->h };
+		SDL_SetSurfaceBlendMode(fg_surface, SDL_BLENDMODE_BLEND);
+		SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect);
+		surface = bg_surface;
+		SDL_FreeSurface(fg_surface);
+	}
+
 	if (surface == NULL)
 	{
 		error("Unable to create texture from rendered text: %s",

@@ -28,6 +28,7 @@
 typedef struct {
 	SDL_Texture *texture;
 	TTF_Font *font;
+	TTF_Font *outlineFont;
 	Dimension dim;
 	const char *path;
 	unsigned long lastAccess;
@@ -53,13 +54,14 @@ void
 texture_load_from_file(Texture*, const char *path, SDL_Renderer*);
 
 void
-texture_load_font(Texture*, const char *path, unsigned int size);
+texture_load_font(Texture*, const char *path, unsigned int size, int outline);
 
 void
 texture_load_from_text(Texture*,
-					   const char *text,
-					   SDL_Color,
-					   SDL_Renderer*);
+		       const char *text,
+		       SDL_Color,
+		       SDL_Color,
+		       SDL_Renderer*);
 
 void
 texture_load_from_text_shaded(Texture*,

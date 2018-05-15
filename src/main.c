@@ -77,8 +77,9 @@ static SDL_Rect		rightGuiViewport;
 static SDL_Rect		menuViewport;
 static Turn		currentTurn	= PLAYER;
 
-static SDL_Color C_MENU_DEFAULT	= { 255, 255, 0, 0 };
-static SDL_Color C_MENU_HOVER	= { 255, 0, 0, 0 };
+static SDL_Color C_MENU_DEFAULT		= { 255, 255, 0 };
+static SDL_Color C_MENU_OUTLINE_DEFAULT	= { 0, 0, 0, };
+static SDL_Color C_MENU_HOVER		= { 255, 0, 0 };
 
 struct MENU_ITEM {
 	char label[20];
@@ -260,9 +261,9 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 		unsigned int hcenter;
 
 		Sprite *s1 = sprite_create();
-		sprite_load_text_texture(s1, "GUI/SDS_8x8.ttf", 0, 25);
+		sprite_load_text_texture(s1, "GUI/SDS_8x8.ttf", 0, 25, 2);
 		texture_load_from_text(s1->textures[0], menu_items[i].label,
-				       C_MENU_DEFAULT, gRenderer);
+				       C_MENU_DEFAULT, C_MENU_OUTLINE_DEFAULT, gRenderer);
 
 		hcenter = (SCREEN_WIDTH/2) - (s1->textures[0]->dim.width/2);
 		s1->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
@@ -270,9 +271,9 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 		s1->fixed = true;
 
 		Sprite *s2 = sprite_create();
-		sprite_load_text_texture(s2, "GUI/SDS_8x8.ttf", 0, 25);
+		sprite_load_text_texture(s2, "GUI/SDS_8x8.ttf", 0, 25, 2);
 		texture_load_from_text(s2->textures[0], menu_items[i].label,
-				       C_MENU_HOVER, gRenderer);
+				       C_MENU_HOVER, C_MENU_OUTLINE_DEFAULT, gRenderer);
 
 		s2->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
 		s2->dim = s2->textures[0]->dim;

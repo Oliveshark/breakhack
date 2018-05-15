@@ -76,7 +76,7 @@ player_gain_xp(Player *player, unsigned int xp_gain)
 {
 	static SDL_Color c_green = { 0, 255, 0, 255 };
 	char msg[10];
-	m_sprintf(msg, 5, "+%dxp", xp_gain);
+	m_sprintf(msg, 10, "+%dxp", xp_gain);
 	actiontextbuilder_create_text(msg, c_green, &player->sprite->pos);
 
 	player->xp += xp_gain;
@@ -120,6 +120,11 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	Position matrixPos = position_to_matrix_coords(&player->sprite->pos);
 	RoomSpace *space = &matrix->spaces[matrixPos.x][matrixPos.y];
 	collided = space->occupied;
+
+	if (collided) {
+		player->sprite->pos.x -= TILE_DIMENSION * (int)direction.x;
+		player->sprite->pos.y -= TILE_DIMENSION * (int)direction.y;
+	}
 
 	if (space->monster != NULL) {
 		unsigned int hit = stats_fight(&player->stats,
@@ -185,10 +190,7 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 	set_clip_for_direction(player, &direction);
 	player->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
 	player->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
-	if (has_collided(player, matrix, direction)) {
-		player->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;
-		player->sprite->pos.y -= TILE_DIMENSION * (int) direction.y;
-	} else {
+	if (!has_collided(player, matrix, direction)) {
 		player_step(player);
 	}
 }

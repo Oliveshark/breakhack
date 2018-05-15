@@ -68,7 +68,7 @@ sprite_load_texture(Sprite *sprite,
 	sprite->destroyTextures = true;
 }
 
-void sprite_load_text_texture(Sprite *sprite, char * path, int index, int size)
+void sprite_load_text_texture(Sprite *sprite, char * path, int index, int size, int outline)
 {
 	if (index > 1)
 		fatal("in sprite_load_texture() index out of bounds");
@@ -79,7 +79,7 @@ void sprite_load_text_texture(Sprite *sprite, char * path, int index, int size)
 	}
 
 	sprite->textures[index] = texture_create();
-	texture_load_font(sprite->textures[index], path, size);
+	texture_load_font(sprite->textures[index], path, size, outline);
 	sprite->destroyTextures = true;
 }
 

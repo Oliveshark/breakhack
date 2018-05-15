@@ -29,7 +29,7 @@ actiontext_create(Sprite *sprite)
 	t->sprite = sprite;
 	t->timer = timer_create();
 	t->dead = false;
-	t->velocity = (Vector2d) { 100, -100 };
+	t->velocity = (Vector2d) { 0, -100 };
 	t->color = (SDL_Color) { 255, 255, 255, 255 };
 	return t;
 }

@@ -41,9 +41,9 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 		s->pos = (Position) { i * 32 + 20, 20 };
 		s->dim = (Dimension) { 8, 8 };
 		s->fixed = true;
-		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8);
+		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8, 0);
 		m_sprintf(buffer, 4, "%u", i+1 < 10 ? i+1 : 0);
-		texture_load_from_text(s->textures[0], buffer, c_yellow, renderer);
+		texture_load_from_text(s->textures[0], buffer, c_yellow, c_yellow, renderer);
 		linkedlist_append(&bar->sprites, s);
 	}
 }
@@ -53,7 +53,7 @@ load_countdown_sprites(SkillBar *bar)
 {
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		Sprite *s = sprite_create();
-		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 16);
+		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 16, 0);
 		s->fixed = true;
 		s->pos = (Position) { 8 + (32 * i), 8 };
 		s->dim = (Dimension) { 16, 16 };
@@ -151,7 +151,7 @@ render_skill_countdown(SkillBar *bar, int index, unsigned int count, Camera *cam
 	Sprite *s = bar->countdowns[index];
 
 	m_sprintf(buffer, 5, "%u", count);
-	texture_load_from_text(s->textures[0], buffer, color, cam->renderer);
+	texture_load_from_text(s->textures[0], buffer, color, color, cam->renderer);
 	sprite_render(s, cam);
 }
 
