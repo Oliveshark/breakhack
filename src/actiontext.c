@@ -19,54 +19,49 @@
 #include <stdlib.h>
 #include "actiontext.h"
 #include "util.h"
+#include "update_data.h"
 
 ActionText*
-actiontext_create()
+actiontext_create(Sprite *sprite)
 {
 	ActionText *t = ec_malloc(sizeof(ActionText));
 	t->pos = (Position) { 0, 0 };
-	t->texture = texture_create();
+	t->sprite = sprite;
 	t->timer = timer_create();
-	t->active = false;
+	t->dead = false;
+	t->velocity = (Vector2d) { 100, -100 };
 	t->color = (SDL_Color) { 255, 255, 255, 255 };
 	return t;
 }
 
 void
-actiontext_load_font(ActionText *t, const char *path, unsigned int size)
+actiontext_update(ActionText *t, UpdateData *data)
 {
-	texture_load_font(t->texture, path, size);
-}
-
-void
-actiontext_set_text(ActionText *t, const char *text, SDL_Renderer *renderer)
-{
-	texture_load_from_text(t->texture, text, t->color, renderer);
+	t->sprite->pos.x += (int) (t->velocity.x * data->deltatime);
+	t->sprite->pos.y += (int) (t->velocity.y * data->deltatime);
 }
 
 void
 actiontext_render(ActionText *t, Camera *cam)
 {
-	if (!t->active)
+	if (t->dead)
 		return;
 
-	if (t->active && !timer_started(t->timer))
+	if (!t->dead && !timer_started(t->timer))
 		timer_start(t->timer);
 
-	Position cameraPos = camera_to_camera_position(cam, &t->pos);
-	SDL_Rect box = { cameraPos.x, cameraPos.y, t->texture->dim.width, t->texture->dim.height };
-	if (timer_get_ticks(t->timer) < 300) {
-		texture_render(t->texture, &box, cam);
+	if (timer_get_ticks(t->timer) < 500) {
+		sprite_render(t->sprite, cam);
 	} else {
 		timer_stop(t->timer);
-		t->active = false;
+		t->dead = true;
 	}
 }
 
 void
 actiontext_destroy(ActionText *t)
 {
-	texture_destroy(t->texture);
+	sprite_destroy(t->sprite);
 	timer_destroy(t->timer);
 	free(t);
 }

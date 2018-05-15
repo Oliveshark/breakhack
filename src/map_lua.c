@@ -285,10 +285,8 @@ l_add_monster(lua_State *L)
 	const char *texture_path_1, *texture_path_2, *tmp_label;
 	char *label;
 	Texture *texture1, *texture2;
-	SDL_Renderer *renderer;
 	Stats stats;
 
-	renderer = luaL_checksdlrenderer(L);
 	map = luaL_checkmap(L, 1);
 	x = (int) luaL_checkinteger(L, 2);
 	y = (int) luaL_checkinteger(L, 3);
@@ -325,7 +323,7 @@ l_add_monster(lua_State *L)
 
 	lua_pop(L, 8);
 
-	monster = monster_create(renderer);
+	monster = monster_create();
 	monster->sprite->clip = (SDL_Rect) { clip_x, clip_y, 16, 16 };
 	monster_update_pos(monster, (Position) { x, y });
 	sprite_set_texture(monster->sprite, texture1, 0);

@@ -47,6 +47,7 @@
 #include "texturecache.h"
 #include "update_data.h"
 #include "settings.h"
+#include "actiontextbuilder.h"
 
 typedef enum Turn_t {
 	PLAYER,
@@ -196,6 +197,7 @@ initGame(void)
 	gPointer = pointer_create(gRenderer);
 	particle_engine_init();
 	menuTimer = timer_create();
+	actiontextbuilder_init(gRenderer);
 
 	return true;
 }
@@ -482,6 +484,9 @@ run_game(void)
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 	camera_update(gCamera, updateData.deltatime);
 	particle_engine_update(deltaTime);
+
+	actiontextbuilder_update(&updateData);
+	map_update(&updateData);
 	player_update(&updateData);
 
 	roommatrix_update_with_player(gRoomMatrix, gPlayer);
@@ -501,6 +506,7 @@ run_game(void)
 
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
 	map_render(gMap, gCamera);
+	actiontextbuilder_render(gCamera);
 	particle_engine_render_game(gCamera);
 
 	if (!is_player_dead())
@@ -639,6 +645,7 @@ void close(void)
 	gui_destroy(gGui);
 	skillbar_destroy(gSkillBar);
 	pointer_destroy(gPointer);
+	actiontextbuilder_close();
 	item_builder_close();
 	particle_engine_close();
 	timer_destroy(menuTimer);

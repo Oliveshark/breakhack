@@ -16,59 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MONSTER_H_
-#define	MONSTER_H_
+#ifndef ACTIONTEXTBUILDER_H_
+#define	ACTIONTEXTBUILDER_H_
 
 #include <SDL.h>
-#include "sprite.h"
-#include "stats.h"
 #include "actiontext.h"
-#include "player.h"
-#include "linkedlist.h"
-
-struct UpdateData_t;
-
-typedef enum { PASSIVE, AGRESSIVE, SCARED } StateType;
-
-typedef struct {
-	StateType current;
-	StateType normal;
-	StateType challenge;
-} State;
-
-typedef struct Monster_t {
-	char *label;
-	char *lclabel;
-	Sprite *sprite;
-	Stats stats;
-	State state;
-	unsigned int steps;
-} Monster;
-
-Monster* monster_create(void);
+#include "camera.h"
+#include "update_data.h"
 
 void
-monster_update_pos(Monster*, Position);
-
-bool
-monster_move(Monster*, RoomMatrix*);
+actiontextbuilder_init(SDL_Renderer*);
 
 void
-monster_render(Monster*, Camera*);
+actiontextbuilder_update(UpdateData*);
 
 void
-monster_hit(Monster*, unsigned int dmg);
+actiontextbuilder_render(Camera*);
 
 void
-monster_update_stats_for_level(Monster*, unsigned int level);
+actiontextbuilder_create_text(const char *msg, SDL_Color, Position*);
 
 void
-monster_update(Monster*, struct UpdateData_t*);
+actiontextbuilder_close(void);
 
-void
-monster_drop_loot(Monster*, Map*, Player*);
+#endif // ACTIONTEXTBUILDER_H_
 
-void
-monster_destroy(Monster*);
-
-#endif // MONSTER_H_

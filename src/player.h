@@ -52,8 +52,6 @@ typedef struct ExperienceData_t {
 
 typedef struct Player_t {
 	Sprite *sprite;
-	ActionText *hitText;
-	ActionText *missText;
 	Stats stats;
 	unsigned int daggers;
 	LinkedList *projectiles;

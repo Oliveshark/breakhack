@@ -30,27 +30,11 @@
 #include "map.h"
 #include "particle_engine.h"
 #include "defines.h"
-
-static void
-monster_load_texts(Monster *m, SDL_Renderer *renderer)
-{
-	ActionText *t = actiontext_create();
-	actiontext_load_font(t, "GUI/SDS_6x6.ttf", 14);
-	t->color = (SDL_Color) { 255, 100, 0, 255 };
-	actiontext_set_text(t, "HIT", renderer);
-	t->pos = m->sprite->pos;
-	m->hitText = t;
-
-	t = actiontext_create();
-	actiontext_load_font(t, "GUI/SDS_6x6.ttf", 14);
-	t->color = (SDL_Color) { 255, 255, 0, 255 };
-	actiontext_set_text(t, "MISS", renderer);
-	t->pos = m->sprite->pos;
-	m->missText = t;
-}
+#include "update_data.h"
+#include "actiontextbuilder.h"
 
 Monster*
-monster_create(SDL_Renderer *renderer)
+monster_create(void)
 {
 	Monster *m = ec_malloc(sizeof(Monster));
 	m->sprite = sprite_create();
@@ -74,8 +58,6 @@ monster_create(SDL_Renderer *renderer)
 	m->lclabel = NULL;
 	m->steps = 0;
 
-	monster_load_texts(m, renderer);
-
 	return m;
 }
 
@@ -86,8 +68,6 @@ monster_update_pos(Monster *m, Position pos)
 
 	Position textPos = pos;
 	textPos.y += 10;
-	m->hitText->pos = textPos;
-	m->missText->pos = textPos;
 }
 
 static bool
@@ -276,23 +256,38 @@ monster_move(Monster *m, RoomMatrix *rm)
 		m->steps = 0;
 		return true;
 	}
+
 	return false;
+}
+
+void
+monster_update(Monster *m, UpdateData *data)
+{
+	UNUSED(m);
+	UNUSED(data);
 }
 
 void
 monster_hit(Monster *monster, unsigned int dmg)
 {
+	static SDL_Color c_red = { 255, 0, 0, 255 };
+	static SDL_Color c_yellow = { 255, 255, 0, 255 };
+
 	if (dmg > 0) {
-		monster->hitText->active = true;
-		monster->missText->active = false;
 		Position p = monster->sprite->pos;
 		p.x += 8;
 		p.y += 8;
 		Dimension d = { 8, 8 };
 		particle_engine_bloodspray(p, d, dmg);
+		char msg[5];
+		m_sprintf(msg, 5, "-%d", dmg);
+		actiontextbuilder_create_text(msg,
+					      c_red,
+					      &monster->sprite->pos);
 	} else {
-		monster->missText->active = true;
-		monster->hitText->active = false;
+		actiontextbuilder_create_text("Dodged",
+					      c_yellow,
+					      &monster->sprite->pos);
 	}
 
 	monster->state.current = monster->state.challenge;
@@ -363,10 +358,6 @@ void
 monster_render(Monster *m, Camera *cam)
 {
 	sprite_render(m->sprite, cam);
-	if (m->hitText)
-		actiontext_render(m->hitText, cam);
-	if (m->missText)
-		actiontext_render(m->missText, cam);
 }
 
 void
@@ -377,9 +368,5 @@ monster_destroy(Monster *m)
 		free(m->label);
 	if (m->lclabel)
 		free(m->lclabel);
-	if (m->hitText)
-		actiontext_destroy(m->hitText);
-	if (m->missText)
-		actiontext_destroy(m->missText);
 	free(m);
 }

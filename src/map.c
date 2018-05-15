@@ -24,6 +24,7 @@
 #include "item_builder.h"
 #include "gui.h"
 #include "particle_engine.h"
+#include "update_data.h"
 
 static
 Room* create_room(void)
@@ -228,6 +229,18 @@ void map_tile_render(Map *map, MapTile *tile, Position *pos, Camera *cam)
 		       &draw_box
 		      );
 
+}
+
+void
+map_update(UpdateData *data)
+{
+	Map *map = data->map;
+	LinkedList *monster = map->monsters;
+	while (monster) {
+		Monster *m = monster->data;
+		monster = monster->next;
+		monster_update(m, data);
+	}
 }
 
 void map_render(Map *map, Camera *cam)

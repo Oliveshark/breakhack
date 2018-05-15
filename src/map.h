@@ -32,6 +32,8 @@
 #include "player.h"
 #include "map_room_modifiers.h"
 
+struct UpdateData_t;
+
 typedef struct MapTile_t {
 	int textureIndex0;
 	int textureIndex1;
@@ -85,6 +87,9 @@ map_clear_dead_monsters(Map*, Player*);
 
 void
 map_clear_collected_items(Map*);
+
+void
+map_update(struct UpdateData_t*);
 
 void
 map_render(Map*, Camera*);

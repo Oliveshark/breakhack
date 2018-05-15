@@ -32,6 +32,7 @@
 #include "projectile.h"
 #include "texturecache.h"
 #include "vector2d.h"
+#include "actiontextbuilder.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1 }
@@ -73,11 +74,17 @@ next_level_threshold(unsigned int current_level)
 static void
 player_gain_xp(Player *player, unsigned int xp_gain)
 {
+	static SDL_Color c_green = { 0, 255, 0, 255 };
+	char msg[10];
+	m_sprintf(msg, 5, "+%dxp", xp_gain);
+	actiontextbuilder_create_text(msg, c_green, &player->sprite->pos);
+
 	player->xp += xp_gain;
 	if (player->xp >= next_level_threshold(player->stats.lvl)) {
 		player_levelup(player);
 		gui_log("You have reached level %u", player->stats.lvl);
 		gui_event_message("You reached level %u", player->stats.lvl);
+		actiontextbuilder_create_text("Level up", c_green, &player->sprite->pos);
 	}
 }
 
@@ -97,8 +104,6 @@ static void
 player_step(Player *p)
 {
 	action_spent(p);
-	p->missText->pos = p->sprite->pos;
-	p->hitText->pos = p->sprite->pos;
 }
 
 static bool 
@@ -335,24 +340,6 @@ handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 		handle_movement_input(player, matrix, event);
 }
 
-static void
-player_load_texts(Player *p, SDL_Renderer *renderer)
-{
-	ActionText *t = actiontext_create();
-	actiontext_load_font(t, "GUI/SDS_6x6.ttf", 14);
-	t->color = (SDL_Color) { 255, 100, 0, 255 };
-	actiontext_set_text(t, "HIT", renderer);
-	t->pos = p->sprite->pos;
-	p->hitText = t;
-
-	t = actiontext_create();
-	actiontext_load_font(t, "GUI/SDS_6x6.ttf", 14);
-	t->color = (SDL_Color) { 255, 255, 0, 255 };
-	actiontext_set_text(t, "MISS", renderer);
-	t->pos = p->sprite->pos;
-	p->missText = t;
-}
-
 Player* 
 player_create(class_t class, SDL_Renderer *renderer)
 {
@@ -410,7 +397,6 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->sprite->dim = GAME_DIMENSION;
 	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
 	player->handle_event = &handle_player_input;
-	player_load_texts(player, renderer);
 
 	return player;
 }
@@ -444,35 +430,42 @@ player_monster_kill_check(Player *player, Monster *monster)
 void
 player_hit(Player *p, unsigned int dmg)
 {
+	static SDL_Color c_red = { 255, 0, 0, 255 };
+	static SDL_Color c_yellow = { 255, 255, 0, 255 };
+
 	if (p->stats.hp <= 0) {
 		dmg = 200;
 	}
 	if (dmg > 0) {
-		p->hitText->active = true;
-		p->missText->active = false;
 		Position pos = p->sprite->pos;
 		pos.x += 8;
 		pos.y += 8;
 		particle_engine_bloodspray(pos, (Dimension) { 8, 8 }, dmg);
 		mixer_play_effect(PLAYER_HIT0 + get_random(2));
+		char msg[5];
+		m_sprintf(msg, 5, "-%d", dmg);
+		actiontextbuilder_create_text(msg,
+					      c_red,
+					      &p->sprite->pos);
 	} else {
-		p->missText->active = true;
-		p->hitText->active = false;
+		actiontextbuilder_create_text("Dodged",
+					      c_yellow,
+					      &p->sprite->pos);
 	}
+
 }
 
 void
 player_render(Player *player, Camera *cam)
 {
 	sprite_render(player->sprite, cam);
-	actiontext_render(player->hitText, cam);
-	actiontext_render(player->missText, cam);
 
 	LinkedList *projectile = player->projectiles;
 	while (projectile) {
 		projectile_render(projectile->data, cam);
 		projectile = projectile->next;
 	}
+
 }
 
 void
@@ -506,11 +499,7 @@ void player_update(UpdateData *data)
 		}
 	}
 
-	if (!player->projectiles)
-		return;
-
 	LinkedList *remaining = linkedlist_create();
-
 	while (player->projectiles) {
 		Projectile *p = linkedlist_pop(&player->projectiles);
 		projectile_update(p, data);
@@ -531,8 +520,6 @@ player_destroy(Player *player)
 {
 	if (player->sprite)
 		sprite_destroy(player->sprite);
-	actiontext_destroy(player->hitText);
-	actiontext_destroy(player->missText);
 
 	timer_destroy(player->animationTimer);
 

@@ -23,22 +23,24 @@
 #include <stdbool.h>
 
 #include "position.h"
-#include "texture.h"
+#include "sprite.h"
 #include "timer.h"
+#include "vector2d.h"
+
+struct UpdateData_t;
 
 typedef struct {
 	Position pos;
-	Texture *texture;
-	bool active;
+	Sprite *sprite;
+	bool dead;
 	Timer *timer;
+	Vector2d velocity;
 	SDL_Color color;
 } ActionText;
 
-ActionText* actiontext_create(void);
+ActionText* actiontext_create(Sprite*);
 
-void actiontext_load_font(ActionText*, const char *path, unsigned int size);
-
-void actiontext_set_text(ActionText*, const char *text, SDL_Renderer*);
+void actiontext_update(ActionText*, struct UpdateData_t*);
 
 void actiontext_render(ActionText*, Camera*);
 
