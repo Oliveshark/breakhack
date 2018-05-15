@@ -56,9 +56,10 @@ deploy:
     provider: releases
     api_key:
         secure: "KeT/BC2ck2eqs1q4keoLe/Y9KIk+AR5shiAnA2oMQzbLWoZmxUx3Kol7rLPJ0Hfgb+aCpSpTM1njX6Kw7Nl8j4NrOkgadb3ZmfqRthFazzb93reRt+0dZZcurilHpWtMeteaZLWGWaG0j09xnI3CPPjmth6BB+/roGRsQyo1QKk0pZYsQD6ZKfGAUR1576dFyRzvsIrnfLd7rZVSNZ8HtPwN2rmSLD/cGxMCf+IafcBInPyv9p6bCoVLIDFnDdCr+kwBuSlGudT15EtDx3d9Abab3ZIS3NUpnXr2s0BmknCpyb59YsG9V0YXIQsIkwioEWiJskcAznXT/yB4XqDCq693b+0sxldsUVPw2JkMU+40V5ay2itH3SeP/LyXVFUARdWB+nn6avaFRVaZ1nHYP95CrBXC8JGB1bd7ejeEm9+cOvBOgvsZp71uRJ2OdEXN5Z3i373cyvWXPFHVbQRJS5l1dRBJR0sozYcPe8BMQ4Pv+xahFWIeyDAErUwJSiOf1Uv/x6PNxJaZTTZKCYGSRo6Ywb15bw4YnlOzDXllBxNg3IsJjJes1qFBJGR1eRMq/U9Ne+eHLk7cn2r7Fa77DtFsbONTDHftXDFHk46LDLF+HlL2wHIoTJVzLl/tXyBm3MJuaghGEvvZSwalWS3UnvMTQOBlDG0qC/ww6mlkv+Y="
+    skip_cleanup: true
+    file_glob: true
     file:
         - "package/breakhack*.tar.gz"
         - "package/breakhack*.tar.Z"
-    skip_cleanup: true
     on:
         tags: true
