@@ -50,8 +50,7 @@ addons:
         branch_pattern: coverity_scan
 
 before_deploy:
-    - mkdir package
-    - cmake package
+    - make package
 
 deploy:
     provider: releases
