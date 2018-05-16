@@ -93,4 +93,7 @@ player_render(Player*, Camera*);
 void
 player_destroy(Player*);
 
+bool
+player_turn_over(Player*);
+
 #endif // PLAYER_H_

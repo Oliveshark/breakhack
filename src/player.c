@@ -533,3 +533,9 @@ player_destroy(Player *player)
 
 	free(player);
 }
+
+bool
+player_turn_over(Player *player)
+{
+	return player->stat_data.steps >= player->stats.speed;
+}

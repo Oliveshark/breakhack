@@ -396,6 +396,7 @@ handle_events(void)
 {
 	static SDL_Event event;
 	bool quit = false;
+	int handleCount = 0;
 
 	while (SDL_PollEvent(&event) != 0) {
 		if (event.type == SDL_QUIT) {
@@ -407,7 +408,7 @@ handle_events(void)
 			continue;
 
 		if (gGameState == PLAYING) {
-			if (currentTurn == PLAYER)
+			if (currentTurn == PLAYER && !player_turn_over(gPlayer))
 				gPlayer->handle_event(gPlayer,
 						      gRoomMatrix,
 						      &event);
@@ -421,6 +422,14 @@ handle_events(void)
 			menu_handle_event(inGameMenu, &event);
 		}
 		pointer_handle_event(gPointer, &event);
+
+		handleCount++;
+		if (handleCount >= 5) {
+			debug("Flushing event queue");
+			SDL_PumpEvents();
+			SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+			break;
+		}
 	}
 
 	return quit;
@@ -492,7 +501,7 @@ run_game(void)
 
 	roommatrix_update_with_player(gRoomMatrix, gPlayer);
 	if (currentTurn == PLAYER) {
-		if (gPlayer->stat_data.steps >= gPlayer->stats.speed) {
+		if (player_turn_over(gPlayer)) {
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
 		}
