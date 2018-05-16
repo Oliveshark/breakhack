@@ -79,7 +79,8 @@ load_effects(void)
 	effects[PLAYER_HIT1] = load_effect("Sounds/FX/fistpunch_vocal_02.wav");
 	effects[PLAYER_HIT2] = load_effect("Sounds/FX/fistpunch_vocal_03.wav");
 	effects[DAGGER_PICKUP] = load_effect("Sounds/FX/dagger_pickup.wav");
-	effects[FALL] = load_effect("Sounds/FX/fall.wav");
+	effects[FALL0] = load_effect("Sounds/FX/fall0.wav");
+	effects[FALL1] = load_effect("Sounds/FX/fall1.wav");
 }
 
 void

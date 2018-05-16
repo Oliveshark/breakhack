@@ -163,7 +163,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	}
 
 	if (space->lethal && !collided) {
-		mixer_play_effect(FALL);
+		mixer_play_effect(FALL0 + get_random(2) - 1);
 		player->state = FALLING;
 	}
 
