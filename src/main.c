@@ -412,8 +412,6 @@ handle_events(void)
 				gPlayer->handle_event(gPlayer,
 						      gRoomMatrix,
 						      &event);
-			camera_follow_position(gCamera, &gPlayer->sprite->pos);
-			map_set_current_room(gMap, &gPlayer->sprite->pos);
 			roommatrix_handle_event(gRoomMatrix, &event);
 			skillbar_handle_event(gSkillBar, &event);
 		} else if (gGameState == MENU) {
@@ -496,8 +494,10 @@ run_game(void)
 	particle_engine_update(deltaTime);
 
 	actiontextbuilder_update(&updateData);
-	map_update(&updateData);
 	player_update(&updateData);
+	camera_follow_position(gCamera, &gPlayer->sprite->pos);
+	map_set_current_room(gMap, &gPlayer->sprite->pos);
+	map_update(&updateData);
 
 	roommatrix_update_with_player(gRoomMatrix, gPlayer);
 	if (currentTurn == PLAYER) {

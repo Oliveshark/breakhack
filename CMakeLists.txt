@@ -153,6 +153,7 @@ add_executable(breakhack
 	src/menu
 	src/collisions
 	src/keyboard
+	src/keyboardinput
 	src/mixer
 	src/io_util
 	src/physfsrwops
@@ -215,6 +216,10 @@ IF (CMOCKA_FOUND)
 	add_executable(test_hashtable test/test_hashtable src/hashtable src/util)
 	target_link_libraries(test_hashtable ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
 	add_test(test_hashtable test_hashtable)
+
+	add_executable(test_keyboardinput test/test_keyboardinput src/keyboardinput src/keyboard)
+	target_link_libraries(test_keyboardinput ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+	add_test(test_keyboardinput test_keyboardinput)
 ENDIF (CMOCKA_FOUND )
 
 # LINT:

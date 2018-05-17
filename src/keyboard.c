@@ -19,12 +19,9 @@
 #include "keyboard.h"
 #include "util.h"
 
-bool
-keyboard_direction_press(Direction dir, SDL_Event *event)
+static bool
+extract_key(Direction dir, SDL_Event *event)
 {
-	if (event->type != SDL_KEYDOWN)
-		return false;
-
 	Uint32 key = event->key.keysym.sym;
 	switch (dir) {
 		case UP:
@@ -49,9 +46,36 @@ keyboard_direction_press(Direction dir, SDL_Event *event)
 }
 
 bool
+keyboard_direction_press(Direction dir, SDL_Event *event)
+{
+	if (event->type != SDL_KEYDOWN)
+		return false;
+
+	return extract_key(dir, event);
+}
+
+bool
+keyboard_direction_release(Direction dir, SDL_Event *event)
+{
+	if (event->type != SDL_KEYUP)
+		return false;
+
+	return extract_key(dir, event);
+}
+
+bool
 keyboard_press(Uint32 key, SDL_Event *event)
 {
 	if (event->type != SDL_KEYDOWN)
+		return false;
+
+	return key == (Uint32) event->key.keysym.sym;
+}
+
+bool
+keyboard_release(Uint32 key, SDL_Event *event)
+{
+	if (event->type != SDL_KEYUP)
 		return false;
 
 	return key == (Uint32) event->key.keysym.sym;

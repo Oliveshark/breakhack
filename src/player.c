@@ -209,41 +209,21 @@ player_sip_health(Player *player)
 }
 
 static void
-handle_movement_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
+handle_next_move(Player *player, RoomMatrix *matrix)
 {
 	static unsigned int step = 1;
-	Vector2d direction = VECTOR2D_NODIR;
+	if (!vector2d_equals(player->nextDirection, VECTOR2D_NODIR))
+		move(player, matrix, player->nextDirection);
 
-	if (keyboard_direction_press(LEFT, event))
-		direction = VECTOR2D_LEFT;
-	if (keyboard_direction_press(RIGHT, event))
-		direction = VECTOR2D_RIGHT;
-	if (keyboard_direction_press(UP, event))
-		direction = VECTOR2D_UP;
-	if (keyboard_direction_press(DOWN, event))
-		direction = VECTOR2D_DOWN;
+	map_room_modifier_player_effect(player, matrix, &player->nextDirection, move);
 
-	if (!vector2d_equals(direction, VECTOR2D_NODIR))
-		move(player, matrix, direction);
-
-	map_room_modifier_player_effect(player, matrix, &direction, move);
-
-
-#ifdef DEBUG
-	if (keyboard_mod_press(SDLK_SPACE, KMOD_CTRL, event)) {
-		Position pos = player->sprite->pos;
-		pos.x += 8;
-		pos.y += 8;
-		particle_engine_bloodspray(pos, (Dimension) { 8, 8 }, 200);
-		player->stats.hp = 0;
-	}
-#endif // DEBUG
-
-	if (!vector2d_equals(VECTOR2D_NODIR, direction)) {
+	if (!vector2d_equals(VECTOR2D_NODIR, player->nextDirection)) {
 		player->sprite->clip.x = 16*step;
 		++step;
 		step = step % 4;
 	}
+
+	player->nextDirection = VECTOR2D_NODIR;
 }
 
 static void
@@ -293,8 +273,8 @@ check_skill_activation(Player *player, RoomMatrix *matrix, SDL_Event *event)
 	}
 }
 
-static bool
-check_skill_trigger(Player *player, RoomMatrix *matrix, SDL_Event *event)
+static void
+check_skill_trigger(Player *player, RoomMatrix *matrix)
 {
 	int activeSkill = -1;
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
@@ -305,25 +285,33 @@ check_skill_trigger(Player *player, RoomMatrix *matrix, SDL_Event *event)
 	}
 
 	if (activeSkill < 0)
-		return false;
+		return;
 
-	Vector2d dir;
-	if (keyboard_direction_press(UP, event))
-		dir = VECTOR2D_UP;
-	else if (keyboard_direction_press(DOWN, event))
-		dir = VECTOR2D_DOWN;
-	else if (keyboard_direction_press(LEFT, event))
-		dir = VECTOR2D_LEFT;
-	else if (keyboard_direction_press(RIGHT, event))
-		dir = VECTOR2D_RIGHT;
-	else
-		return false;
 
-	SkillData skillData = { player, matrix, dir };
+	if (vector2d_equals(player->nextDirection, VECTOR2D_NODIR))
+		return;
+
+	SkillData skillData = { player, matrix, player->nextDirection };
 	use_skill(player->skills[activeSkill], &skillData);
 
-	return true;
+	player->nextDirection = VECTOR2D_NODIR;
 }
+
+static void
+read_player_next_direction(Player *player, SDL_Event *event)
+{
+	player->nextDirection = VECTOR2D_NODIR;
+
+	if (keyboard_direction_press(LEFT, event))
+		player->nextDirection = VECTOR2D_LEFT;
+	if (keyboard_direction_press(RIGHT, event))
+		player->nextDirection = VECTOR2D_RIGHT;
+	if (keyboard_direction_press(UP, event))
+		player->nextDirection = VECTOR2D_UP;
+	if (keyboard_direction_press(DOWN, event))
+		player->nextDirection = VECTOR2D_DOWN;
+}
+
 
 static void
 handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
@@ -338,8 +326,7 @@ handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
 		return;
 
 	check_skill_activation(player, matrix, event);
-	if (!check_skill_trigger(player, matrix, event))
-		handle_movement_input(player, matrix, event);
+	read_player_next_direction(player, event);
 }
 
 Player* 
@@ -360,6 +347,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->state			= ALIVE;
 	player->projectiles		= linkedlist_create();
 	player->animationTimer		= timer_create();
+	player->nextDirection		= VECTOR2D_NODIR;
 
 	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		player->skills[i] = NULL;
@@ -476,6 +464,10 @@ player_reset_steps(Player *p)
 void player_update(UpdateData *data)
 {
 	Player *player = data->player;
+
+	check_skill_trigger(player, data->matrix);
+	handle_next_move(player, data->matrix);
+
 	if (player->state == FALLING && player->stats.hp > 0) {
 		if (!timer_started(player->animationTimer)) {
 			timer_start(player->animationTimer);

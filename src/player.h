@@ -63,6 +63,7 @@ typedef struct Player_t {
 	state_t state;
 	Skill *skills[PLAYER_SKILL_COUNT];
 	Timer *animationTimer;
+	Vector2d nextDirection;
 	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 

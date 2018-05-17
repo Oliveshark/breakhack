@@ -44,14 +44,7 @@ pointer_handle_event(Pointer *p, SDL_Event *event)
 		// Compensate for a small offset in the sprite
 		p->sprite->pos.x = event->motion.x - 6;
 		p->sprite->pos.y = event->motion.y - 6;
-		//debug("Pointer pos: %dx%d", p->sprite->pos.x, p->sprite->pos.y);
 	}
-#ifdef DEBUG
-	if (event->type == SDL_MOUSEBUTTONDOWN) {
-		Dimension dim = { 10, 10 };
-		particle_engine_sparkle(p->sprite->pos, dim);
-	}
-#endif // DEBUG
 }
 
 void

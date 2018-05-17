@@ -401,6 +401,9 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 void
 monster_render(Monster *m, Camera *cam)
 {
+	if (m->stats.hp <= 0)
+		return;
+
 	sprite_render(m->sprite, cam);
 	if (m->stateIndicator.displayCount > 0)
 		sprite_render(m->stateIndicator.sprite, cam);
