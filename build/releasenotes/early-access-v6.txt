@@ -1,0 +1,4 @@
+998501a Patch version raised to 6
+2813a57 Separate player movement from input event loop.
+c4dc838 Monsters now indicate their state with speech bubbles
+f049d66 Fixed releasenotes and script again
