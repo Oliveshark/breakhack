@@ -328,9 +328,7 @@ l_add_monster(lua_State *L)
 	monster_update_pos(monster, (Position) { x, y });
 	sprite_set_texture(monster->sprite, texture1, 0);
 	sprite_set_texture(monster->sprite, texture2, 1);
-	monster->state.normal = nstate;
-	monster->state.challenge = cstate;
-	monster->state.current = nstate;
+	monster_set_states(monster, nstate, cstate);
 	if (strlen(label)) {
 		monster->label = label;
 		monster->lclabel = to_lower(label);

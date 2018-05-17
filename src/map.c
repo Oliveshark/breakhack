@@ -246,8 +246,6 @@ map_update(UpdateData *data)
 void map_render(Map *map, Camera *cam)
 {
 	unsigned int i, j;
-	LinkedList *monsterItem;
-	LinkedList *items;
 	Room *room;
 
 	if (!timer_started(map->renderTimer)) {
@@ -278,14 +276,19 @@ void map_render(Map *map, Camera *cam)
 		particle_engine_wind(room->modifier.data.wind.direction);
 	}
 
-	monsterItem = map->monsters;
+}
+
+void
+map_render_top_layer(Map *map, Camera *cam)
+{
+	LinkedList *monsterItem = map->monsters;
 	while (monsterItem != NULL) {
 		Monster *monster = monsterItem->data;
 		monsterItem = monsterItem->next;
 		monster_render(monster, cam);
 	}
 
-	items = map->items;
+	LinkedList *items = map->items;
 	while (items != NULL) {
 		Item *item = items->data;
 		items = items->next;

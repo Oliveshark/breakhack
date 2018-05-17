@@ -32,6 +32,7 @@
 #include "defines.h"
 #include "update_data.h"
 #include "actiontextbuilder.h"
+#include "texturecache.h"
 
 Monster*
 monster_create(void)
@@ -51,12 +52,16 @@ monster_create(void)
 		1   // lvl
 	};
 
-	m->state.normal = PASSIVE;
-	m->state.challenge = AGRESSIVE;
-	m->state.current = m->state.normal;
 	m->label = NULL;
 	m->lclabel = NULL;
 	m->steps = 0;
+	m->stateIndicator.sprite = sprite_create();
+	sprite_set_texture(m->stateIndicator.sprite, texturecache_add("GUI/GUI0.png"), 0);
+	sprite_set_texture(m->stateIndicator.sprite, texturecache_add("GUI/GUI1.png"), 1);
+	m->stateIndicator.sprite->dim = GAME_DIMENSION;
+	m->stateIndicator.displayCount = 0;
+	m->stateIndicator.shownOnPlayerRoomEnter = false;
+	monster_set_states(m, PASSIVE, AGRESSIVE);
 
 	return m;
 }
@@ -66,8 +71,9 @@ monster_update_pos(Monster *m, Position pos)
 {
 	m->sprite->pos = pos;
 
-	Position textPos = pos;
-	textPos.y += 10;
+	Position indicatorPos = pos;
+	indicatorPos.y -= 32;
+	m->stateIndicator.sprite->pos = indicatorPos;
 }
 
 static bool
@@ -253,6 +259,8 @@ monster_move(Monster *m, RoomMatrix *rm)
 
 	m->steps++;
 	if (m->steps >= m->stats.speed) {
+		if (m->stateIndicator.displayCount > 0)
+			m->stateIndicator.displayCount -= 1;
 		m->steps = 0;
 		return true;
 	}
@@ -263,8 +271,47 @@ monster_move(Monster *m, RoomMatrix *rm)
 void
 monster_update(Monster *m, UpdateData *data)
 {
-	UNUSED(m);
-	UNUSED(data);
+	Position monsterRoomPos = position_to_room_coords(&m->sprite->pos);
+	if (position_equals(&data->matrix->roomPos, &monsterRoomPos)) {
+		if (m->stateIndicator.shownOnPlayerRoomEnter)
+			return;
+
+		m->stateIndicator.shownOnPlayerRoomEnter = true;
+		if (m->state.current != PASSIVE)
+			m->stateIndicator.displayCount = 5;
+	} else {
+		m->stateIndicator.shownOnPlayerRoomEnter = false;
+	}
+}
+
+static void
+monster_set_sprite_clip_for_current_state(Monster *m)
+{
+	switch (m->state.current) {
+		case AGRESSIVE:
+			m->stateIndicator.sprite->clip = CLIP16(16 * 11, 16 * 3);
+			break;
+		case PASSIVE:
+			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16);
+			break;
+		case SCARED:
+			m->stateIndicator.sprite->clip = CLIP16(16 * 12, 16 * 3);
+			break;
+		default:
+			break;
+	}
+}
+
+static void
+monster_state_change(Monster *m)
+{
+	if (m->state.current == m->state.challenge)
+		return;
+
+	m->state.current = m->state.challenge;
+	m->stateIndicator.displayCount = 5;
+
+	monster_set_sprite_clip_for_current_state(m);
 }
 
 void
@@ -287,7 +334,7 @@ monster_hit(Monster *monster, unsigned int dmg)
 					      &monster->sprite->pos);
 	}
 
-	monster->state.current = monster->state.challenge;
+	monster_state_change(monster);
 }
 
 void
@@ -355,6 +402,17 @@ void
 monster_render(Monster *m, Camera *cam)
 {
 	sprite_render(m->sprite, cam);
+	if (m->stateIndicator.displayCount > 0)
+		sprite_render(m->stateIndicator.sprite, cam);
+}
+
+void
+monster_set_states(Monster *m, StateType normal, StateType challenge)
+{
+	m->state.normal = normal;
+	m->state.current = normal;
+	m->state.challenge = challenge;
+	monster_set_sprite_clip_for_current_state(m);
 }
 
 void
@@ -365,5 +423,6 @@ monster_destroy(Monster *m)
 		free(m->label);
 	if (m->lclabel)
 		free(m->lclabel);
+	sprite_destroy(m->stateIndicator.sprite);
 	free(m);
 }

@@ -95,6 +95,9 @@ void
 map_render(Map*, Camera*);
 
 void
+map_render_top_layer(Map*, Camera*);
+
+void
 map_set_current_room(Map*, Position*);
 
 void

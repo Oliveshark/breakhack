@@ -36,12 +36,19 @@ typedef struct {
 	StateType challenge;
 } State;
 
+typedef struct MonsterStateIndicator {
+	Sprite *sprite;
+	bool shownOnPlayerRoomEnter;
+	int displayCount;
+} MonsterStateIndicator;
+
 typedef struct Monster_t {
 	char *label;
 	char *lclabel;
 	Sprite *sprite;
 	Stats stats;
 	State state;
+	MonsterStateIndicator stateIndicator;
 	unsigned int steps;
 } Monster;
 
@@ -67,6 +74,9 @@ monster_update(Monster*, struct UpdateData_t*);
 
 void
 monster_drop_loot(Monster*, Map*, Player*);
+
+void
+monster_set_states(Monster *, StateType normal, StateType challenge);
 
 void
 monster_destroy(Monster*);
