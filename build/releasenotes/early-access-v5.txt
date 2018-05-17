@@ -1,0 +1,8 @@
+769a659 Patch version raised to 5
+0fcc1d2 Last time now
+60750d7 Patch version raised to 5
+a551c52 More trickery
+fa0dbe2 Fixes miss in release script
+beb2e79 Patch version raised to 5
+7f09fbd Fiddled some more with release script
+d4f2514 Patch version raised to 5
