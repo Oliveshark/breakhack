@@ -6,7 +6,8 @@ NEXT_VERSION=$((LAST_VERSION + 1))
 
 # Update the version and create release notes
 sed -i -e "s/breakhack_PATCH_VERSION [0-9]\+/breakhack_PATCH_VERSION $NEXT_VERSION/" CMakeLists.txt
-git log --oneline early-access-v$LAST_VERSION..early-access-v$NEXT_VERSION >> build/releasenotes/early-access-$NEXT_VERSION
+git log --oneline early-access-v$LAST_VERSION..early-access-v$NEXT_VERSION > build/releasenotes/early-access-v$NEXT_VERSION
+git add build/releasenotes/early-access-v$NEXT_VERSION
 git commit -a -m"Patch version raised to $NEXT_VERSION"
 
 # Create the tag
