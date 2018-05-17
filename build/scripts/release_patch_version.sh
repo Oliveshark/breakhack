@@ -15,5 +15,5 @@ git push
 
 # Create the tag
 git tag early-access-v$NEXT_VERSION
-git push early-access-v$NEXT_VERSION
+git push origin early-access-v$NEXT_VERSION
 
