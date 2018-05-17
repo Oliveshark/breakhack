@@ -10,8 +10,10 @@ git log --oneline early-access-v$LAST_VERSION..early-access-v$NEXT_VERSION > bui
 git add build/releasenotes/early-access-v$NEXT_VERSION
 git commit -a -m"Patch version raised to $NEXT_VERSION"
 
+# Push to repo
+git push
+
 # Create the tag
 git tag early-access-v$NEXT_VERSION
+git push early-access-v$NEXT_VERSION
 
-# Push to repo
-git push --follow-tags
