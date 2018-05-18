@@ -210,19 +210,23 @@ IF (CMOCKA_FOUND AND NOT OSX AND NOT CLANG)
 	find_package(Threads REQUIRED)
 	enable_testing()
 	add_executable(test_util test/test_util src/util)
-	target_link_libraries(test_util ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(test_util ${CMOCKA_LIBRARY})
 	add_test(test_util test_util)
 
 	add_executable(test_linkedlist test/test_linkedlist src/linkedlist src/util)
-	target_link_libraries(test_linkedlist ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(test_linkedlist ${CMOCKA_LIBRARY})
 	add_test(test_linkedlist test_linkedlist)
 
 	add_executable(test_hashtable test/test_hashtable src/hashtable src/util)
-	target_link_libraries(test_hashtable ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(test_hashtable ${CMOCKA_LIBRARY})
 	add_test(test_hashtable test_hashtable)
 
 	add_executable(test_keyboardinput test/test_keyboardinput src/keyboardinput src/keyboard)
-	target_link_libraries(test_keyboardinput ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries(test_keyboardinput
+		${CMOCKA_LIBRARY}
+		${SDL2_LIBRARY}
+		${SDL2MAIN_LIBRARY}
+		)
 	set_target_properties(test_keyboardinput PROPERTIES
 		LINK_FLAGS "-Wl,--wrap,keyboard_direction_press -Wl,--wrap,keyboard_press")
 	add_test(test_keyboardinput test_keyboardinput)
