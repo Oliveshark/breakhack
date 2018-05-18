@@ -226,7 +226,7 @@ IF (CMOCKA_FOUND AND NOT OSX AND NOT CLANG)
 	set_target_properties(test_keyboardinput PROPERTIES
 		LINK_FLAGS "-Wl,--wrap,keyboard_direction_press -Wl,--wrap,keyboard_press")
 	add_test(test_keyboardinput test_keyboardinput)
-ENDIF (CMOCKA_FOUND )
+ENDIF ()
 
 # LINT:
 if (CPPCHECK_FOUND)
