@@ -19,7 +19,7 @@
 #ifndef KEYBOARD_H_
 #define	KEYBOARD_H_
 
-#include <SDL_events.h>
+#include <SDL.h>
 #include <stdbool.h>
 #include "defines.h"
 

@@ -31,6 +31,10 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 	set(GCC 1)
 endif()
 
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+	set(OSX 1)
+endif()
+
 set (default_build_type "Release")
 if (NOT CMAKE_BUILD_TYPE AND default_build_type)
 	message( STATUS "Setting default buildtype to '${default_build_type}' as none was specified")
@@ -202,7 +206,7 @@ if (MSVC)
 endif (MSVC)
 
 # TESTS:
-IF (CMOCKA_FOUND AND NOT CLANG)
+IF (CMOCKA_FOUND AND NOT OSX AND NOT CLANG)
 	find_package(Threads REQUIRED)
 	enable_testing()
 	add_executable(test_util test/test_util src/util)

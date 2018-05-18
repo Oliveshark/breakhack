@@ -98,8 +98,10 @@ test_keydown(void **state)
 	assert_true(key_is_down(&input, KEY_UP));
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
+	(void) argc;
+	(void) argv;
 
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_keypress),
