@@ -43,7 +43,7 @@ keyboardinput_handle_event(KeyboardInput *input, SDL_Event *event)
 	}
 	for (int i = SDLK_0; i <= SDLK_9; ++i) {
 		if (keyboard_press(i, event))
-			input->currentState |= (1 << i);
+			input->currentState |= (KEY_NUM0 << (i - SDLK_0));
 	}
 
 	if (keyboard_direction_release(UP, event)) {
@@ -59,7 +59,7 @@ keyboardinput_handle_event(KeyboardInput *input, SDL_Event *event)
 	}
 	for (int i = SDLK_0; i <= SDLK_9; ++i) {
 		if (keyboard_release(i, event))
-			input->currentState &= ~(1 << i);
+			input->currentState &= ~(KEY_NUM0 << (i - SDLK_0));
 	}
 }
 

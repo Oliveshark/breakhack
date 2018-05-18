@@ -219,6 +219,8 @@ IF (CMOCKA_FOUND)
 
 	add_executable(test_keyboardinput test/test_keyboardinput src/keyboardinput src/keyboard)
 	target_link_libraries(test_keyboardinput ${CMOCKA_LIBRARY} ${CMAKE_THREAD_LIBS_INIT})
+	set_target_properties(test_keyboardinput PROPERTIES
+		LINK_FLAGS "-Wl,--wrap,keyboard_direction_press -Wl,--wrap,keyboard_press")
 	add_test(test_keyboardinput test_keyboardinput)
 ENDIF (CMOCKA_FOUND )
 
