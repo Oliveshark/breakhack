@@ -63,7 +63,7 @@ before_build:
 
   # Copy dll's for test exec
   - |-
-    copy %PREFIX%\bin\SDL2.dll %APPVEYOR_BUILD_FOLDER% > nul
+    copy %PREFIX%\lib\SDL2.dll %APPVEYOR_BUILD_FOLDER% > nul
     copy %PREFIX%\lib\cmocka.dll %APPVEYOR_BUILD_FOLDER% > nul
 
   # Lua
