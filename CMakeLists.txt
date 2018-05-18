@@ -202,7 +202,7 @@ if (MSVC)
 endif (MSVC)
 
 # TESTS:
-IF (CMOCKA_FOUND)
+IF (CMOCKA_FOUND AND NOT CLANG)
 	find_package(Threads REQUIRED)
 	enable_testing()
 	add_executable(test_util test/test_util src/util)
