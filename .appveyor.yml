@@ -60,6 +60,10 @@ before_build:
     %DEPENDS% copy cmocka-1.1.0\include\* %PREFIX%\include > nul
     %DEPENDS% copy cmocka-1.1.0\lib\*.a %PREFIX%\lib > nul
     %DEPENDS% copy cmocka-1.1.0\bin\*.dll %PREFIX%\lib > nul
+
+  # Copy dll's for test exec
+  - |-
+    copy %PREFIX%\bin\SDL2.dll %APPVEYOR_BUILD_FOLDER% > nul
     copy %PREFIX%\lib\cmocka.dll %APPVEYOR_BUILD_FOLDER% > nul
 
   # Lua
