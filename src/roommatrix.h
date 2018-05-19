@@ -24,6 +24,7 @@
 #include "position.h"
 #include "camera.h"
 #include "map_room_modifiers.h"
+#include "input.h"
 
 typedef struct Sprite_t Sprite;
 typedef struct Map_t Map;
@@ -31,6 +32,8 @@ typedef struct Monster_t Monster;
 typedef struct Player_t Player;
 typedef struct Item_t Item;
 typedef struct Node LinkedList;
+
+struct UpdateData;
 
 typedef struct {
 	bool occupied;
@@ -52,11 +55,9 @@ typedef struct RoomMatrix_t {
 
 RoomMatrix* roommatrix_create(void);
 
-void roommatrix_handle_event(RoomMatrix*, SDL_Event*);
+void roommatrix_update(struct UpdateData*);
 
 void roommatrix_populate_from_map(RoomMatrix*, Map*);
-
-void roommatrix_update_with_player(RoomMatrix*, Player*);
 
 void roommatrix_add_lightsource(RoomMatrix*, Position*);
 

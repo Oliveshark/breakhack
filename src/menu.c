@@ -42,17 +42,17 @@ menu_create(void)
 }
 
 static void
-handle_keyboard_event(Menu *m, SDL_Event *event)
+handle_keyboard_input(Menu *m, Input *input)
 {
 	int lastSelect = -1;
 
-	if (keyboard_direction_press(UP, event)) {
+	if (input_key_is_pressed(input, KEY_UP)) {
 		lastSelect = m->selected;
 		m->selected--;
-	} else if (keyboard_direction_press(DOWN, event)) {
+	} else if (input_key_is_pressed(input, KEY_DOWN)) {
 		lastSelect = m->selected;
 		m->selected++;
-	} else if (keyboard_press(SDLK_RETURN, event)) {
+	} else if (input_key_is_pressed(input, KEY_ENTER)) {
 		MenuItem *item = linkedlist_get(&m->items, m->selected);
 		if (item->button->event)
 			item->button->event(item->button->usrdata);
@@ -69,55 +69,10 @@ handle_keyboard_event(Menu *m, SDL_Event *event)
 	((MenuItem*) linkedlist_get(&m->items, m->selected))->button->hover = true;
 }
 
-static void
-handle_mouse_motion_event(Menu *m, SDL_Event *event)
-{
-	LinkedList *items;
-	int current_select;
-	bool activeItemFound = false;
-
-	items = m->items;
-	current_select = 0;
-	while (items) {
-		MenuItem *item = items->data;
-		items = items->next;
-
-		item->button->hover = false;
-		gui_button_handle_event(item->button, event);
-		if (item->button->hover) {
-			if (current_select != m->selected) {
-				mixer_play_effect(CLICK);
-				m->selected = current_select;
-			}
-			activeItemFound = true;
-		}
-		current_select++;
-	}
-
-	if (!activeItemFound)
-		((MenuItem*) linkedlist_get(&m->items, m->selected))->button->hover = true;
-}
-
-static void
-handle_mouse_button_event(Menu *m, SDL_Event *event)
-{
-	/* NOTE: In some cases the button/item is destroyed by the click action
-	 * make sure you don't 'use' items after a click event has fired. It
-	 * might break. */
-
-	MenuItem *item = linkedlist_get(&m->items, m->selected);
-	gui_button_handle_event(item->button, event);
-}
-
 void
-menu_handle_event(Menu *m, SDL_Event *event)
+menu_update(Menu *m, Input *input)
 {
-	if (event->type == SDL_KEYDOWN)
-		handle_keyboard_event(m, event);
-	else if (event->type == SDL_MOUSEMOTION)
-		handle_mouse_motion_event(m, event);
-	else if (event->type == SDL_MOUSEBUTTONDOWN)
-		handle_mouse_button_event(m, event);
+	handle_keyboard_input(m, input);
 }
 
 void

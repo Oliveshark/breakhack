@@ -27,7 +27,7 @@
 #include "timer.h"
 #include "vector2d.h"
 
-struct UpdateData_t;
+struct UpdateData;
 
 typedef struct {
 	Position pos;
@@ -40,7 +40,7 @@ typedef struct {
 
 ActionText* actiontext_create(Sprite*);
 
-void actiontext_update(ActionText*, struct UpdateData_t*);
+void actiontext_update(ActionText*, struct UpdateData*);
 
 void actiontext_render(ActionText*, Camera*);
 

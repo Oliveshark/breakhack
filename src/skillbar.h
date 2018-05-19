@@ -24,6 +24,9 @@
 #include "camera.h"
 #include "timer.h"
 #include "player.h"
+#include "input.h"
+
+struct UpdateData;
 
 typedef struct SkillBar_t {
 	LinkedList *sprites;
@@ -43,7 +46,7 @@ void
 skillbar_render(SkillBar*, Player*, Camera*);
 
 void
-skillbar_handle_event(SkillBar*, SDL_Event*);
+skillbar_update(SkillBar*, struct UpdateData*);
 
 void
 skillbar_destroy(SkillBar*);

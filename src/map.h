@@ -32,7 +32,7 @@
 #include "player.h"
 #include "map_room_modifiers.h"
 
-struct UpdateData_t;
+struct UpdateData;
 
 typedef struct MapTile_t {
 	int textureIndex0;
@@ -89,7 +89,7 @@ void
 map_clear_collected_items(Map*);
 
 void
-map_update(struct UpdateData_t*);
+map_update(struct UpdateData*);
 
 void
 map_render(Map*, Camera*);

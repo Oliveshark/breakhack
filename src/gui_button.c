@@ -40,20 +40,14 @@ gui_button_check_pointer(GuiButton *button, Pointer *pointer)
 }
 
 void
-gui_button_handle_event(GuiButton *button, SDL_Event *event)
+gui_button_update(GuiButton *button, Input *input)
 {
-	if (event->type == SDL_MOUSEBUTTONDOWN) {
+	Position p = { input->mouseX, input->mouseY };
+	button->hover = position_in_rect(&p, &button->area);
 
-		if (event->button.button != SDL_BUTTON_LEFT)
-			return;
-
-		Position p = { event->button.x, event->button.y };
+	if (input_mousebutton_is_pressed(input, MBUTTON_LEFT)) {
 		if (position_in_rect(&p, &button->area) && button->event)
 			button->event(button->usrdata);
-
-	} else if (event->type == SDL_MOUSEMOTION) {
-		Position p = { event->motion.x, event->motion.y };
-		button->hover = position_in_rect(&p, &button->area);
 	}
 }
 

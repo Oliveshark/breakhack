@@ -157,7 +157,7 @@ add_executable(breakhack
 	src/menu
 	src/collisions
 	src/keyboard
-	src/keyboardinput
+	src/input
 	src/mixer
 	src/io_util
 	src/physfsrwops
@@ -221,15 +221,15 @@ IF (CMOCKA_FOUND AND NOT OSX AND NOT CLANG)
 	target_link_libraries(test_hashtable ${CMOCKA_LIBRARY})
 	add_test(test_hashtable test_hashtable)
 
-	add_executable(test_keyboardinput test/test_keyboardinput src/keyboardinput src/keyboard)
-	target_link_libraries(test_keyboardinput
+	add_executable(test_input test/test_input src/input src/keyboard)
+	target_link_libraries(test_input
 		${CMOCKA_LIBRARY}
 		${SDL2_LIBRARY}
 		${SDL2MAIN_LIBRARY}
 		)
-	set_target_properties(test_keyboardinput PROPERTIES
-		LINK_FLAGS "-Wl,--wrap,keyboard_direction_press -Wl,--wrap,keyboard_press")
-	add_test(test_keyboardinput test_keyboardinput)
+	#set_target_properties(test_input PROPERTIES
+	#LINK_FLAGS "-Wl,--wrap,keyboard_direction_press -Wl,--wrap,keyboard_press")
+	add_test(test_input test_input)
 ENDIF ()
 
 # LINT:

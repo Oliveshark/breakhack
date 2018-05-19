@@ -24,8 +24,9 @@
 #include "sprite.h"
 #include "linkedlist.h"
 #include "camera.h"
+#include "input.h"
 
-typedef struct GuiButton_t {
+typedef struct GuiButton {
 	SDL_Rect area;
 	bool hover;
 	void *usrdata;
@@ -39,7 +40,7 @@ void
 gui_button_check_pointer(GuiButton*, Pointer*);
 
 void
-gui_button_handle_event(GuiButton*, SDL_Event*);
+gui_button_update(GuiButton*, Input*);
 
 void
 gui_button_destroy(GuiButton*);

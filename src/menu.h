@@ -34,7 +34,7 @@ Menu *
 menu_create(void);
 
 void
-menu_handle_event(Menu*, SDL_Event*);
+menu_update(Menu*, Input*);
 
 void
 menu_item_add(Menu*, Sprite*, Sprite*, void (*)(void*));

@@ -26,7 +26,7 @@
 #include "player.h"
 #include "linkedlist.h"
 
-struct UpdateData_t;
+struct UpdateData;
 
 typedef enum {
 	PACIFIST,
@@ -83,13 +83,13 @@ void
 monster_update_stats_for_level(Monster*, unsigned int level);
 
 void
-monster_update(Monster*, struct UpdateData_t*);
+monster_update(Monster*, struct UpdateData*);
 
 void
 monster_drop_loot(Monster*, Map*, Player*);
 
 void
-monster_set_behaviour(Monster *, MonsterBehaviour m);
+monster_set_behaviour(Monster *, MonsterBehaviour behaviour);
 
 void
 monster_destroy(Monster*);

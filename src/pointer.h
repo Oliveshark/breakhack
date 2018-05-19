@@ -22,6 +22,7 @@
 #include <SDL.h>
 #include "sprite.h"
 #include "camera.h"
+#include "input.h"
 
 typedef struct Pointer_t {
 	Sprite *sprite;
@@ -31,7 +32,7 @@ Pointer *
 pointer_create(SDL_Renderer *renderer);
 
 void
-pointer_handle_event(Pointer*, SDL_Event *event);
+pointer_handle_input(Pointer*, Input *);
 
 void
 pointer_toggle_clickable_pointer(Pointer *, bool clickable);

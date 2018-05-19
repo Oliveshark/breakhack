@@ -38,13 +38,11 @@ pointer_create(SDL_Renderer *renderer)
 }
 
 void
-pointer_handle_event(Pointer *p, SDL_Event *event)
+pointer_handle_input(Pointer *p, Input *input)
 {
-	if (event->type == SDL_MOUSEMOTION) {
-		// Compensate for a small offset in the sprite
-		p->sprite->pos.x = event->motion.x - 6;
-		p->sprite->pos.y = event->motion.y - 6;
-	}
+	// Compensate for a small offset in the sprite
+	p->sprite->pos.x = input->mouseX - 6;
+	p->sprite->pos.y = input->mouseY - 6;
 }
 
 void

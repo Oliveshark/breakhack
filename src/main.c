@@ -48,6 +48,7 @@
 #include "update_data.h"
 #include "settings.h"
 #include "actiontextbuilder.h"
+#include "input.h"
 
 typedef enum Turn_t {
 	PLAYER,
@@ -61,7 +62,6 @@ static Map		*gMap		= NULL;
 static RoomMatrix	*gRoomMatrix	= NULL;
 static Gui		*gGui		= NULL;
 static SkillBar		*gSkillBar	= NULL;
-static Pointer		*gPointer	= NULL;
 static unsigned int	cLevel		= 1;
 static float		deltaTime	= 1.0;
 static double		renderScale	= 1.0;
@@ -76,6 +76,7 @@ static SDL_Rect		bottomGuiViewport;
 static SDL_Rect		rightGuiViewport;
 static SDL_Rect		menuViewport;
 static Turn		currentTurn	= PLAYER;
+static Input		input;
 
 static SDL_Color C_MENU_DEFAULT		= { 255, 255, 0, 255 };
 static SDL_Color C_MENU_OUTLINE_DEFAULT	= { 0, 0, 0, 255 };
@@ -189,13 +190,13 @@ static bool
 initGame(void)
 {
 	initViewports();
+	input_init(&input);
 	texturecache_init(gRenderer);
 	gCamera = camera_create(gRenderer);
 	gRoomMatrix = roommatrix_create();
 	gGui = gui_create(gCamera);
 	gSkillBar = skillbar_create(gRenderer);
 	item_builder_init(gRenderer);
-	gPointer = pointer_create(gRenderer);
 	particle_engine_init();
 	menuTimer = timer_create();
 	actiontextbuilder_init(gRenderer);
@@ -360,19 +361,20 @@ init(void)
 }
 
 static bool
-handle_main_events(SDL_Event *event)
+handle_main_input(void)
 {
 	if (gGameState == PLAYING
 		|| gGameState == IN_GAME_MENU
 		|| gGameState == GAME_OVER)
 	{
-		if (keyboard_press(SDLK_ESCAPE, event)) {
+		if (input_key_is_pressed(&input, KEY_ESC)) {
 			toggleInGameMenu(NULL);
 			return true;
 		}
 	}
 
-	if (keyboard_mod_press(SDLK_m, KMOD_CTRL, event)) {
+	if (input_key_is_down(&input, KEY_CTRL)
+	    && input_key_is_pressed(&input, SDLK_m)) {
 		if (mixer_toggle_music(&gGameState))
 			gui_log("Music enabled");
 		else
@@ -380,7 +382,8 @@ handle_main_events(SDL_Event *event)
 		return true;
 	}
 
-	if (keyboard_mod_press(SDLK_s, KMOD_CTRL, event)) {
+	if (input_key_is_down(&input, KEY_CTRL)
+	    && input_key_is_pressed(&input, SDLK_s)) {
 		if (mixer_toggle_sound())
 			gui_log("Sound enabled");
 		else
@@ -398,31 +401,17 @@ handle_events(void)
 	bool quit = false;
 	int handleCount = 0;
 
+	input_reset(&input);
 	while (SDL_PollEvent(&event) != 0) {
 		if (event.type == SDL_QUIT) {
 			quit = true;
 			continue;
 		}
 
-		if (handle_main_events(&event))
-			continue;
-
-		if (gGameState == PLAYING) {
-			if (currentTurn == PLAYER && !player_turn_over(gPlayer))
-				gPlayer->handle_event(gPlayer,
-						      gRoomMatrix,
-						      &event);
-			roommatrix_handle_event(gRoomMatrix, &event);
-			skillbar_handle_event(gSkillBar, &event);
-		} else if (gGameState == MENU) {
-			menu_handle_event(mainMenu, &event);
-		} else if (gGameState == IN_GAME_MENU) {
-			menu_handle_event(inGameMenu, &event);
-		}
-		pointer_handle_event(gPointer, &event);
+		input_handle_event(&input, &event);
 
 		handleCount++;
-		if (handleCount >= 5) {
+		if (handleCount >= 20) {
 			debug("Flushing event queue");
 			SDL_PumpEvents();
 			SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
@@ -467,6 +456,7 @@ populateUpdateData(UpdateData *data, float deltatime)
 	data->player = gPlayer;
 	data->map = gMap;
 	data->matrix = gRoomMatrix;
+	data->input = &input;
 	data->deltatime = deltatime;
 }
 
@@ -475,6 +465,11 @@ run_game(void)
 {
 	static UpdateData updateData;
 	static unsigned int playerLevel = 1;
+
+	if (gGameState == IN_GAME_MENU)
+		menu_update(inGameMenu, &input);
+	if (gGameState != PLAYING && gGameState != IN_GAME_MENU)
+		return;
 
 	map_clear_dead_monsters(gMap, gPlayer);
 	map_clear_collected_items(gMap);
@@ -489,17 +484,20 @@ run_game(void)
 		playerLevel = gPlayer->stats.lvl;
 		skillbar_check_skill_activation(gSkillBar, gPlayer);
 	}
+
+	if (gGameState == PLAYING && currentTurn == PLAYER)
+		player_update(&updateData);
+
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 	camera_update(gCamera, updateData.deltatime);
 	particle_engine_update(deltaTime);
-
+	roommatrix_update(&updateData);
 	actiontextbuilder_update(&updateData);
-	player_update(&updateData);
+	skillbar_update(gSkillBar, &updateData);
 	camera_follow_position(gCamera, &gPlayer->sprite->pos);
 	map_set_current_room(gMap, &gPlayer->sprite->pos);
 	map_update(&updateData);
 
-	roommatrix_update_with_player(gRoomMatrix, gPlayer);
 	if (currentTurn == PLAYER) {
 		if (player_turn_over(gPlayer)) {
 			currentTurn = MONSTER;
@@ -541,16 +539,13 @@ run_game(void)
 
 	SDL_RenderSetViewport(gRenderer, NULL);
 	particle_engine_render_global(gCamera);
+
 	if (gGameState == IN_GAME_MENU) {
 		SDL_Rect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);
 		SDL_RenderFillRect(gRenderer, &dimmer);
 		menu_render(inGameMenu, gCamera);
 	}
-	if (gGameState == GAME_OVER) {
-		// TODO(Linus): Render game over?
-	}
-	pointer_render(gPointer, gCamera);
 
 	SDL_RenderPresent(gRenderer);
 
@@ -579,6 +574,10 @@ run_menu(void)
 		map_move_monsters(gMap, gRoomMatrix);
 	}
 
+	menu_update(mainMenu, &input);
+	if (gGameState != MENU)
+		return;
+
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
 	SDL_RenderSetViewport(gRenderer, &menuViewport);
@@ -587,7 +586,6 @@ run_menu(void)
 
 	SDL_RenderSetViewport(gRenderer, NULL);
 	menu_render(mainMenu, gCamera);
-	pointer_render(gPointer, gCamera);
 
 	SDL_RenderPresent(gRenderer);
 }
@@ -606,6 +604,7 @@ void run(void)
 		timer_start(fpsTimer);
 
 		quit = handle_events();
+		handle_main_input();
 
 		switch (gGameState) {
 			case PLAYING:
@@ -656,7 +655,6 @@ void close(void)
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
 	skillbar_destroy(gSkillBar);
-	pointer_destroy(gPointer);
 	actiontextbuilder_close();
 	item_builder_close();
 	particle_engine_close();

@@ -25,6 +25,7 @@
 #include "keyboard.h"
 #include "texturecache.h"
 #include "particle_engine.h"
+#include "update_data.h"
 
 static void
 load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
@@ -250,17 +251,15 @@ skillbar_render(SkillBar *bar, Player *player, Camera *cam)
 }
 
 void
-skillbar_handle_event(SkillBar *bar, SDL_Event *event)
+skillbar_update(SkillBar *bar, UpdateData *data)
 {
-	if (event->type != SDL_KEYDOWN)
-		return;
+	Input *input = data->input;
 
 	unsigned int key = 0;
-	for (SDL_Keycode keysym = SDLK_0; keysym <= SDLK_9; ++keysym) {
-		if (!keyboard_press(keysym, event))
+	for (int i = 0; i < 10; ++i) {
+		if (!input_key_is_pressed(input, KEY_NUM0 << i))
 			continue;
-		key = (int)(keysym - SDLK_0);
-		if (key == 0) key = 10;
+		key = i;
 		break;
 	}
 

@@ -26,11 +26,12 @@
 #include "camera.h"
 #include "skill.h"
 #include "linkedlist.h"
+#include "input.h"
 
 #define PLAYER_SKILL_COUNT 5
 
 // Foward declare
-struct UpdateData_t;
+struct UpdateData;
 
 typedef enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR } class_t;
 typedef enum PlayerState { ALIVE, DEAD, FALLING } state_t;
@@ -63,8 +64,6 @@ typedef struct Player_t {
 	state_t state;
 	Skill *skills[PLAYER_SKILL_COUNT];
 	Timer *animationTimer;
-	Vector2d nextDirection;
-	void (*handle_event)(struct Player_t*, RoomMatrix*, SDL_Event*);
 } Player;
 
 Player*
@@ -86,7 +85,7 @@ void
 player_reset_steps(Player*);
 
 void
-player_update(struct UpdateData_t *);
+player_update(struct UpdateData *);
 
 void
 player_render(Player*, Camera*);

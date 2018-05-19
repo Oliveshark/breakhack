@@ -208,22 +208,39 @@ player_sip_health(Player *player)
 	}
 }
 
+static Vector2d
+read_direction_from(Input *input)
+{
+	if (input_key_is_pressed(input, KEY_LEFT))
+		return VECTOR2D_LEFT;
+	else if (input_key_is_pressed(input, KEY_RIGHT))
+		return VECTOR2D_RIGHT;
+	else if (input_key_is_pressed(input, KEY_UP))
+		return VECTOR2D_UP;
+	else if (input_key_is_pressed(input, KEY_DOWN))
+		return VECTOR2D_DOWN;
+	else
+		return VECTOR2D_NODIR;
+}
+
 static void
-handle_next_move(Player *player, RoomMatrix *matrix)
+handle_next_move(UpdateData *data)
 {
 	static unsigned int step = 1;
-	if (!vector2d_equals(player->nextDirection, VECTOR2D_NODIR))
-		move(player, matrix, player->nextDirection);
 
-	map_room_modifier_player_effect(player, matrix, &player->nextDirection, move);
+	Player *player = data->player;
+	RoomMatrix *matrix = data->matrix;
+	Vector2d nextDir = read_direction_from(data->input);
+	if (!vector2d_equals(nextDir, VECTOR2D_NODIR))
+		move(player, matrix, nextDir);
 
-	if (!vector2d_equals(VECTOR2D_NODIR, player->nextDirection)) {
+	map_room_modifier_player_effect(player, matrix, &nextDir, move);
+
+	if (!vector2d_equals(VECTOR2D_NODIR, nextDir)) {
 		player->sprite->clip.x = 16*step;
 		++step;
 		step = step % 4;
 	}
-
-	player->nextDirection = VECTOR2D_NODIR;
 }
 
 static void
@@ -237,19 +254,23 @@ use_skill(Skill *skill, SkillData *skillData)
 }
 
 static void
-check_skill_activation(Player *player, RoomMatrix *matrix, SDL_Event *event)
+check_skill_activation(UpdateData *data)
 {
 	// TODO(Linus): This could be "smarter"
+	Player *player = data->player;
+	Input *input = data->input;
+	RoomMatrix *matrix = data->matrix;
+
 	unsigned int selected = 0;
-	if (keyboard_press(SDLK_1, event)) {
+	if (input_key_is_pressed(input, KEY_NUM1)) {
 		selected = 1;
-	} else if (keyboard_press(SDLK_2, event)) {
+	} else if (input_key_is_pressed(input, KEY_NUM2)) {
 		selected = 2;
-	} else if (keyboard_press(SDLK_3, event)) {
+	} else if (input_key_is_pressed(input, KEY_NUM3)) {
 		selected = 3;
-	} else if (keyboard_press(SDLK_4, event)) {
+	} else if (input_key_is_pressed(input, KEY_NUM4)) {
 		selected = 4;
-	} else if (keyboard_press(SDLK_5, event)) {
+	} else if (input_key_is_pressed(input, KEY_NUM5)) {
 		selected = 5;
 	}
 
@@ -273,9 +294,13 @@ check_skill_activation(Player *player, RoomMatrix *matrix, SDL_Event *event)
 	}
 }
 
-static void
-check_skill_trigger(Player *player, RoomMatrix *matrix)
+static bool
+check_skill_trigger(UpdateData *data)
 {
+	Player *player = data->player;
+	RoomMatrix *matrix = data->matrix;
+	Input *input = data->input;
+
 	int activeSkill = -1;
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (player->skills[i] && player->skills[i]->active) {
@@ -285,48 +310,16 @@ check_skill_trigger(Player *player, RoomMatrix *matrix)
 	}
 
 	if (activeSkill < 0)
-		return;
+		return false;
 
+	Vector2d nextDir = read_direction_from(input);
+	if (vector2d_equals(nextDir, VECTOR2D_NODIR))
+		return false;
 
-	if (vector2d_equals(player->nextDirection, VECTOR2D_NODIR))
-		return;
-
-	SkillData skillData = { player, matrix, player->nextDirection };
+	SkillData skillData = { player, matrix, nextDir };
 	use_skill(player->skills[activeSkill], &skillData);
 
-	player->nextDirection = VECTOR2D_NODIR;
-}
-
-static void
-read_player_next_direction(Player *player, SDL_Event *event)
-{
-	player->nextDirection = VECTOR2D_NODIR;
-
-	if (keyboard_direction_press(LEFT, event))
-		player->nextDirection = VECTOR2D_LEFT;
-	if (keyboard_direction_press(RIGHT, event))
-		player->nextDirection = VECTOR2D_RIGHT;
-	if (keyboard_direction_press(UP, event))
-		player->nextDirection = VECTOR2D_UP;
-	if (keyboard_direction_press(DOWN, event))
-		player->nextDirection = VECTOR2D_DOWN;
-}
-
-
-static void
-handle_player_input(Player *player, RoomMatrix *matrix, SDL_Event *event)
-{
-	if (player->state != ALIVE)
-		return;
-
-	if (event->type != SDL_KEYDOWN)
-		return;
-
-	if (player->projectiles)
-		return;
-
-	check_skill_activation(player, matrix, event);
-	read_player_next_direction(player, event);
+	return true;
 }
 
 Player* 
@@ -347,7 +340,6 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->state			= ALIVE;
 	player->projectiles		= linkedlist_create();
 	player->animationTimer		= timer_create();
-	player->nextDirection		= VECTOR2D_NODIR;
 
 	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		player->skills[i] = NULL;
@@ -386,7 +378,6 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->sprite->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
 	player->sprite->dim = GAME_DIMENSION;
 	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	player->handle_event = &handle_player_input;
 
 	return player;
 }
@@ -465,8 +456,9 @@ void player_update(UpdateData *data)
 {
 	Player *player = data->player;
 
-	check_skill_trigger(player, data->matrix);
-	handle_next_move(player, data->matrix);
+	check_skill_activation(data);
+	if (!check_skill_trigger(data))
+		handle_next_move(data);
 
 	if (player->state == FALLING && player->stats.hp > 0) {
 		if (!timer_started(player->animationTimer)) {

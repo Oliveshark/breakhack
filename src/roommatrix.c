@@ -23,6 +23,7 @@
 #include "map.h"
 #include "player.h"
 #include "item.h"
+#include "update_data.h"
 
 RoomMatrix* roommatrix_create(void)
 {
@@ -37,18 +38,28 @@ RoomMatrix* roommatrix_create(void)
 	return m;
 }
 
-void
-roommatrix_handle_event(RoomMatrix *matrix, SDL_Event *event)
+static void
+roommatrix_update_with_player(RoomMatrix *rm, Player *p)
 {
-	if (event->type != SDL_MOUSEMOTION)
-		return;
+	Position rp = position_to_matrix_coords(&p->sprite->pos);
+	rm->spaces[rp.x][rp.y].occupied = true;
+	rm->spaces[rp.x][rp.y].player = p;
+	rm->playerRoomPos = rp;
+}
 
-	if (event->motion.x < GAME_VIEW_WIDTH
-	    && event->motion.y < GAME_VIEW_HEIGHT)
+void
+roommatrix_update(UpdateData *data)
+{
+	RoomMatrix *matrix = data->matrix;
+	Input *input = data->input;
+
+	if (input->mouseX < GAME_VIEW_WIDTH
+	    && input->mouseY < GAME_VIEW_HEIGHT)
 	{
-		matrix->mousePos.x = event->motion.x;
-		matrix->mousePos.y = event->motion.y;
+		matrix->mousePos.x = input->mouseX;
+		matrix->mousePos.y = input->mouseY;
 	}
+	roommatrix_update_with_player(matrix, data->player);
 }
 
 void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
@@ -135,15 +146,6 @@ max(int a, int b)
 	return a > b ? a : b;
 }
 #endif // max
-
-void
-roommatrix_update_with_player(RoomMatrix *rm, Player *p)
-{
-	Position rp = position_to_matrix_coords(&p->sprite->pos);
-	rm->spaces[rp.x][rp.y].occupied = true;
-	rm->spaces[rp.x][rp.y].player = p;
-	rm->playerRoomPos = rp;
-}
 
 void
 roommatrix_add_lightsource(RoomMatrix *matrix, Position *pos)

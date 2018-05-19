@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KEYBOARDINPUT_H_
-#define	KEYBOARDINPUT_H_
+#ifndef INPUT_H_
+#define	INPUT_H_
 
 #include <SDL.h>
 #include <stdbool.h>
@@ -36,33 +36,46 @@
 #define KEY_NUM7	2048
 #define KEY_NUM8	4096
 #define KEY_NUM9	8192
+#define KEY_ESC		16384
+#define KEY_ENTER	32768
+#define KEY_CTRL	65536
+#define KEY_ALT		131072
+#define KEY_M		262144
+#define KEY_S		524288
 
-typedef struct KeyboardState {
-	bool dir_left;
-	bool dir_right;
-	bool dir_up;
-	bool dir_down;
-} KeyboardState;
+#define MBUTTON_LEFT	1
+#define MBUTTON_MIDDLE	2
+#define MBUTTON_RIGHT	4
 
-typedef struct KeyboardInput {
-	Uint64 currentState;
-	Uint64 lastState;
-} KeyboardInput;
+typedef struct Input {
+	Uint64 keyState;
+	Uint64 lastKeyState;
+	Uint32 mouseButtonState;
+	Uint32 lastMouseButtonState;
+	Uint32 mouseX;
+	Uint32 mouseY;
+} Input;
 
 void
-keyboardinput_init(KeyboardInput *);
+input_init(Input *);
 
 void
-keyboardinput_handle_event(KeyboardInput *, SDL_Event*);
+input_reset(Input *);
+
+void
+input_handle_event(Input *, SDL_Event*);
 
 bool
-key_is_pressed(KeyboardInput *, Uint64 key);
+input_key_is_pressed(Input *, Uint64 key);
 
 bool
-key_is_released(KeyboardInput *, Uint64 key);
+input_key_is_released(Input *, Uint64 key);
 
 bool
-key_is_down(KeyboardInput *, Uint64 key);
+input_key_is_down(Input *, Uint64 key);
 
-#endif // KEYBOARDINPUT_H_
+bool
+input_mousebutton_is_pressed(Input *, Uint8 button);
+
+#endif // INPUT_H_
 
