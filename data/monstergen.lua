@@ -37,10 +37,12 @@ local texturePaths = {
 }
 
 
-local state = {
-	passive = 0,
-	agressive = 1,
-	scared = 2,
+local behaviour = {
+	pacifist = 0,
+	normal = 1,
+	hostile = 2,
+	guerilla = 3,
+	coward = 4
 }
 
 local stats = {
@@ -89,31 +91,31 @@ local pests = {
 	--{ texturePaths.pest0, texturePaths.pest1, stats.pest,  48, 0, "A Beetle" },
 	--{ texturePaths.pest0, texturePaths.pest1, stats.pest,  64, 0, "A Large Grub" },
 	--{ texturePaths.pest0, texturePaths.pest1, stats.pest,  80, 0, "A Small Grub" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  96, 0, "A Slim Worm" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 112, 0, "A Fat Worm" },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  96, 0, "A Slim Worm", behaviour.pacifist },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 112, 0, "A Fat Worm", behaviour.pacifist },
 
 	--{ texturePaths.pest0, texturePaths.pest1,  0, 16, "Female Dragonfly" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 16, "A Fly" },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 16, "A Fly", behaviour.pacifist },
 	--{ texturePaths.pest0, texturePaths.pest1, stats.pest, 32, 16, "A Larva" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 16, "A Moth" },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 16, "A Moth", behaviour.pacifist },
 	--{ texturePaths.pest0, texturePaths.pest1, stats.pest, 64, 16 },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 80, 16, "A Gnat" },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 80, 16, "A Gnat", behaviour.pacifist },
 
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  0, 32, "A Small Spider" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 32, "A Medium Spider" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 32, 32, "A Large Spider" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 32, "A Small Scorpion" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 64, 32, "A Medium Scorpion" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 80, 32, "A Large Scorpion" },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  0, 32, "A Small Spider", behaviour.pacifist },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 32, "A Medium Spider", behaviour.pacifist },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 32, 32, "A Large Spider", behaviour.pacifist },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 32, "A Small Scorpion", behaviour.pacifist },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 64, 32, "A Medium Scorpion", behaviour.pacifist },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 80, 32, "A Large Scorpion", behaviour.pacifist },
 
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  0, 48, "A Slug" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 48, "A Large Slug" },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  0, 48, "A Slug", behaviour.pacifist },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 48, "A Large Slug", behaviour.pacifist },
 	--{ texturePaths.pest0, texturePaths.pest1, 32, 48 },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 48, "A Red Slug" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 64, 48, "A Large Red Slug" },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 48, "A Red Slug", behaviour.pacifist },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 64, 48, "A Large Red Slug", behaviour.pacifist },
 
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  0, 64, "A Giant Brown Ant" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 64, "A Giant Black Ant" },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  0, 64, "A Giant Brown Ant", behaviour.pacifist },
+	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 64, "A Giant Black Ant", behaviour.pacifist },
 	--{ texturePaths.pest0, texturePaths.pest1, stats.pest, 32, 64, "A Giant Gold Ant" },
 	--{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 64, "A Giant Silver Ant" },
 
@@ -134,61 +136,61 @@ local pests = {
 
 local undead = {
 	-- UNDEAD
-	--{ texturePaths.undead0, texturePaths.undead1,   0,  0, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  16,  0, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  32,  0, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  48,  0, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  64,  0, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  80,  0, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  96,  0, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1, 112,  0, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,   0,  0, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  16,  0, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  32,  0, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  48,  0, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  64,  0, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  80,  0, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  96,  0, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1, 112,  0, "", behaviour.normal };
 
-	--{ texturePaths.undead0, texturePaths.undead1,   0, 16, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  16, 16, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  32, 16, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  48, 16, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  64, 16, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  80, 16, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  96, 16, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1, 112, 16, "", state.passive, state.agressive };
+	--{ texturePaths.undead0, texturePaths.undead1,   0, 16, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  16, 16, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  32, 16, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  48, 16, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  64, 16, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  80, 16, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  96, 16, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1, 112, 16, "", behaviour.normal };
 
-	{ texturePaths.undead0, texturePaths.undead1, stats.undead,   0, 32, "A Skeleton", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  16, 32, "An Umber Skeleton", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  32, 32, "A Caustic Skeleton", state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1, stats.undead,  48, 32, "A Black Skeleton", state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1, stats.undead,  64, 32, "A Zombie", state.passive, state.agressive };
-	{ texturePaths.undead0, texturePaths.undead1, stats.undead,  80, 32, "A Zombie", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1,  96, 32, "", state.passive, state.agressive };
-	--{ texturePaths.undead0, texturePaths.undead1, 112, 32, "", state.passive, state.scared };
+	{ texturePaths.undead0, texturePaths.undead1, stats.undead,   0, 32, "A Skeleton", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  16, 32, "An Umber Skeleton", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  32, 32, "A Caustic Skeleton", behaviour.normal };
+	{ texturePaths.undead0, texturePaths.undead1, stats.undead,  48, 32, "A Black Skeleton", behaviour.normal };
+	{ texturePaths.undead0, texturePaths.undead1, stats.undead,  64, 32, "A Zombie", behaviour.normal };
+	{ texturePaths.undead0, texturePaths.undead1, stats.undead,  80, 32, "A Zombie", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1,  96, 32, "", behaviour.normal };
+	--{ texturePaths.undead0, texturePaths.undead1, 112, 32, "", behaviour.normal };
 }
 
 local dogs = {
-	{ texturePaths.dog0, texturePaths.dog1, stats.dog,  0, 16, "A Rabid Dog", state.passive, state.agressive };
-	{ texturePaths.dog0, texturePaths.dog1, stats.dog,  16, 16, "An Angry Rabid Dog", state.agressive, state.agressive };
+	{ texturePaths.dog0, texturePaths.dog1, stats.dog,  0, 16, "A Rabid Dog", behaviour.normal };
+	{ texturePaths.dog0, texturePaths.dog1, stats.dog,  16, 16, "An Angry Rabid Dog", behaviour.hostile };
 }
 
 local reptile = {
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  0, 64, "A Small Brown Snake", state.passive, state.agressive };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  16, 64, "A Medium Brown Snake", state.passive, state.agressive };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  32, 64, "A Large Brown Snake", state.passive, state.agressive };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  48, 64, "A Small Black Snake", state.agressive, state.agressive };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  64, 64, "A Medium Black Snake", state.agressive, state.agressive };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  80, 64, "A Large Black Snake", state.agressive, state.agressive };
+	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  0, 64, "A Small Brown Snake", behaviour.coward };
+	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  16, 64, "A Medium Brown Snake", behaviour.guerilla };
+	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  32, 64, "A Large Brown Snake", behaviour.hostile };
+	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  48, 64, "A Small Black Snake", behaviour.coward };
+	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  64, 64, "A Medium Black Snake", behaviour.guerilla };
+	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  80, 64, "A Large Black Snake", behaviour.hostile };
 }
 
 local platino = {
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.platino,  48, 12*16, "Platino", state.agressive, state.agressive };
+	{ texturePaths.reptile0, texturePaths.reptile1, stats.platino,  48, 12*16, "Platino", behaviour.hostile };
 }
 
 local demon = {
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,   0,  0, "A Demon", state.agressive, state.agressive };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  16,  0, "A Demon", state.agressive, state.agressive };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  32,  0, "A Demon", state.agressive, state.agressive };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  48,  0, "A Demon", state.agressive, state.agressive };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  64,  0, "A Demon", state.agressive, state.agressive };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  80,  0, "A Demon", state.agressive, state.agressive };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  96,  0, "A Demon", state.agressive, state.agressive };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default, 112,  0, "A Demon", state.agressive, state.agressive };
+	{ texturePaths.demon0, texturePaths.demon1, stats.default,   0,  0, "A Demon", behaviour.hostile };
+	{ texturePaths.demon0, texturePaths.demon1, stats.default,  16,  0, "A Demon", behaviour.hostile };
+	{ texturePaths.demon0, texturePaths.demon1, stats.default,  32,  0, "A Demon", behaviour.hostile };
+	{ texturePaths.demon0, texturePaths.demon1, stats.default,  48,  0, "A Demon", behaviour.hostile };
+	{ texturePaths.demon0, texturePaths.demon1, stats.default,  64,  0, "A Demon", behaviour.hostile };
+	{ texturePaths.demon0, texturePaths.demon1, stats.default,  80,  0, "A Demon", behaviour.hostile };
+	{ texturePaths.demon0, texturePaths.demon1, stats.default,  96,  0, "A Demon", behaviour.hostile };
+	{ texturePaths.demon0, texturePaths.demon1, stats.default, 112,  0, "A Demon", behaviour.hostile };
 }
 
 local function concat(table1, table2)
@@ -206,8 +208,7 @@ local function repack(data)
 		clipX			= data[4],
 		clipY			= data[5],
 		label			= data[6] or "",
-		nstate			= data[7] or state.passive,
-		cstate			= data[8] or state.scared,
+		behaviour		= data[7] or behaviour.normal,
 	}
 end
 

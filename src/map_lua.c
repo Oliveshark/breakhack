@@ -281,7 +281,7 @@ l_add_monster(lua_State *L)
 {
 	Monster *monster;
 	Map *map;
-	int x, y, clip_x, clip_y, nstate, cstate;
+	int x, y, clip_x, clip_y, behaviour;
 	const char *texture_path_1, *texture_path_2, *tmp_label;
 	char *label;
 	Texture *texture1, *texture2;
@@ -301,17 +301,15 @@ l_add_monster(lua_State *L)
 	lua_getfield(L, 4, "stats");
 	lua_getfield(L, 4, "clipX");
 	lua_getfield(L, 4, "clipY");
-	lua_getfield(L, 4, "nstate");
-	lua_getfield(L, 4, "cstate");
+	lua_getfield(L, 4, "behaviour");
 
-	tmp_label = luaL_checkstring(L, -8);
-	texture_path_1 = luaL_checkstring(L, -7);
-	texture_path_2 = luaL_checkstring(L, -6);
-	stats = lua_checkstats(L, -5);
-	clip_x = (int) luaL_checkinteger(L, -4);
-	clip_y = (int) luaL_checkinteger(L, -3);
-	nstate = (int) luaL_checkinteger(L, -2);
-	cstate = (int) luaL_checkinteger(L, -1);
+	tmp_label = luaL_checkstring(L, -7);
+	texture_path_1 = luaL_checkstring(L, -6);
+	texture_path_2 = luaL_checkstring(L, -5);
+	stats = lua_checkstats(L, -4);
+	clip_x = (int) luaL_checkinteger(L, -3);
+	clip_y = (int) luaL_checkinteger(L, -2);
+	behaviour = (int) luaL_checkinteger(L, -1);
 
 	texture1 = texturecache_add(texture_path_1);
 	texture2 = texturecache_add(texture_path_2);
@@ -328,7 +326,7 @@ l_add_monster(lua_State *L)
 	monster_update_pos(monster, (Position) { x, y });
 	sprite_set_texture(monster->sprite, texture1, 0);
 	sprite_set_texture(monster->sprite, texture2, 1);
-	monster_set_states(monster, nstate, cstate);
+	monster_set_behaviour(monster, behaviour);
 	if (strlen(label)) {
 		monster->label = label;
 		monster->lclabel = to_lower(label);

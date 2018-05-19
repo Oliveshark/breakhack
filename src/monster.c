@@ -34,6 +34,82 @@
 #include "actiontextbuilder.h"
 #include "texturecache.h"
 
+static void
+monster_set_sprite_clip_for_current_state(Monster *m)
+{
+	switch (m->state.current) {
+		case AGRESSIVE:
+			m->stateIndicator.sprite->clip = CLIP16(16 * 11, 16 * 3);
+			break;
+		case STATIONARY:
+		case PASSIVE:
+			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16);
+			break;
+		case SCARED:
+			m->stateIndicator.sprite->clip = CLIP16(16 * 12, 16 * 3);
+			break;
+		default:
+			break;
+	}
+}
+
+static void
+monster_state_change(Monster *m, StateType newState)
+{
+	if (m->state.current == newState)
+		return;
+
+	m->state.current = newState;
+	m->state.stepsSinceChange = 0;
+	m->stateIndicator.displayCount = 5;
+
+	monster_set_sprite_clip_for_current_state(m);
+}
+
+static void
+monster_behaviour_check_post_hit(Monster *m)
+{
+	switch (m->behaviour) {
+		case NORMAL:
+			monster_state_change(m, AGRESSIVE);
+			break;
+		case PACIFIST:
+		case COWARD:
+			monster_state_change(m, SCARED);
+			break;
+		default:
+			break;
+	}
+}
+
+static void
+monster_behaviour_check_post_attack(Monster *m)
+{
+	switch (m->behaviour) {
+		case GUERILLA:
+			monster_state_change(m, SCARED);
+			break;
+		default:
+			break;
+	}
+}
+
+static void
+monster_behaviour_check(Monster *m, RoomMatrix *rm)
+{
+	UNUSED(rm);
+	switch (m->behaviour) {
+		case GUERILLA:
+			if (m->state.stepsSinceChange > 8
+			    && m->state.current == SCARED) {
+				monster_state_change(m, AGRESSIVE);
+			}
+			break;
+		default:
+			break;
+	}
+}
+
 Monster*
 monster_create(void)
 {
@@ -61,7 +137,7 @@ monster_create(void)
 	m->stateIndicator.sprite->dim = GAME_DIMENSION;
 	m->stateIndicator.displayCount = 0;
 	m->stateIndicator.shownOnPlayerRoomEnter = false;
-	monster_set_states(m, PASSIVE, AGRESSIVE);
+	monster_set_behaviour(m, NORMAL);
 
 	return m;
 }
@@ -98,6 +174,7 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 		} else {
 			gui_log("%s missed you", monster->label);
 		}
+		monster_behaviour_check_post_attack(monster);
 	}
 
 	return space->occupied || space->lethal;
@@ -239,6 +316,8 @@ monster_move(Monster *m, RoomMatrix *rm)
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = false;
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = NULL;
 
+	monster_behaviour_check(m, rm);
+
 	switch (m->state.current) {
 		case PASSIVE:
 			monster_drunk_walk(m, rm);
@@ -248,6 +327,9 @@ monster_move(Monster *m, RoomMatrix *rm)
 			break;
 		case SCARED:
 			monster_coward_walk(m, rm);
+			break;
+		case STATIONARY:
+		default:
 			break;
 	};
 
@@ -261,6 +343,7 @@ monster_move(Monster *m, RoomMatrix *rm)
 	if (m->steps >= m->stats.speed) {
 		if (m->stateIndicator.displayCount > 0)
 			m->stateIndicator.displayCount -= 1;
+		m->state.stepsSinceChange += 1;
 		m->steps = 0;
 		return true;
 	}
@@ -284,36 +367,6 @@ monster_update(Monster *m, UpdateData *data)
 	}
 }
 
-static void
-monster_set_sprite_clip_for_current_state(Monster *m)
-{
-	switch (m->state.current) {
-		case AGRESSIVE:
-			m->stateIndicator.sprite->clip = CLIP16(16 * 11, 16 * 3);
-			break;
-		case PASSIVE:
-			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16);
-			break;
-		case SCARED:
-			m->stateIndicator.sprite->clip = CLIP16(16 * 12, 16 * 3);
-			break;
-		default:
-			break;
-	}
-}
-
-static void
-monster_state_change(Monster *m)
-{
-	if (m->state.current == m->state.challenge)
-		return;
-
-	m->state.current = m->state.challenge;
-	m->stateIndicator.displayCount = 5;
-
-	monster_set_sprite_clip_for_current_state(m);
-}
-
 void
 monster_hit(Monster *monster, unsigned int dmg)
 {
@@ -333,8 +386,7 @@ monster_hit(Monster *monster, unsigned int dmg)
 					      C_YELLOW,
 					      &monster->sprite->pos);
 	}
-
-	monster_state_change(monster);
+	monster_behaviour_check_post_hit(monster);
 }
 
 void
@@ -410,11 +462,21 @@ monster_render(Monster *m, Camera *cam)
 }
 
 void
-monster_set_states(Monster *m, StateType normal, StateType challenge)
+monster_set_behaviour(Monster *m, MonsterBehaviour behaviour)
 {
-	m->state.normal = normal;
-	m->state.current = normal;
-	m->state.challenge = challenge;
+	m->behaviour = behaviour;
+	switch (behaviour) {
+		case HOSTILE:
+		case GUERILLA:
+		case COWARD:
+			m->state.current = AGRESSIVE;
+			break;
+		case PACIFIST:
+		case NORMAL:
+		default:
+			m->state.current = PASSIVE;
+			break;
+	}
 	monster_set_sprite_clip_for_current_state(m);
 }
 

@@ -28,12 +28,24 @@
 
 struct UpdateData_t;
 
-typedef enum { PASSIVE, AGRESSIVE, SCARED } StateType;
+typedef enum {
+	PACIFIST,
+	NORMAL,
+	HOSTILE,
+	GUERILLA,
+	COWARD
+} MonsterBehaviour;
+
+typedef enum {
+	PASSIVE,
+	AGRESSIVE,
+	SCARED,
+	STATIONARY
+} StateType;
 
 typedef struct {
 	StateType current;
-	StateType normal;
-	StateType challenge;
+	unsigned int stepsSinceChange;
 } State;
 
 typedef struct MonsterStateIndicator {
@@ -49,6 +61,7 @@ typedef struct Monster_t {
 	Stats stats;
 	State state;
 	MonsterStateIndicator stateIndicator;
+	MonsterBehaviour behaviour;
 	unsigned int steps;
 } Monster;
 
@@ -76,7 +89,7 @@ void
 monster_drop_loot(Monster*, Map*, Player*);
 
 void
-monster_set_states(Monster *, StateType normal, StateType challenge);
+monster_set_behaviour(Monster *, MonsterBehaviour m);
 
 void
 monster_destroy(Monster*);
