@@ -373,8 +373,7 @@ handle_main_input(void)
 		}
 	}
 
-	if (input_key_is_down(&input, KEY_CTRL)
-	    && input_key_is_pressed(&input, SDLK_m)) {
+	if (input_modkey_is_pressed(&input, KEY_CTRL_M)) {
 		if (mixer_toggle_music(&gGameState))
 			gui_log("Music enabled");
 		else
@@ -382,8 +381,7 @@ handle_main_input(void)
 		return true;
 	}
 
-	if (input_key_is_down(&input, KEY_CTRL)
-	    && input_key_is_pressed(&input, SDLK_s)) {
+	if (input_modkey_is_pressed(&input, KEY_CTRL_S)) {
 		if (mixer_toggle_sound())
 			gui_log("Sound enabled");
 		else

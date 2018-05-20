@@ -28,14 +28,22 @@ input_init(Input *input)
 	input->lastMouseButtonState = 0;
 	input->mouseX = 0;
 	input->mouseY = 0;
+	input->lastMouseX = 0;
+	input->lastMouseY = 0;
+	input->modKeyState = 0;
+	input->lastModKeyState = 0;
 }
 
 void input_reset(Input *input)
 {
 	input->lastKeyState = input->keyState;
 	input->lastMouseButtonState = input->mouseButtonState;
+	input->lastModKeyState = input->modKeyState;
 	input->keyState = 0;
 	input->mouseButtonState = 0;
+	input->modKeyState = 0;
+	input->lastMouseX = input->mouseX;
+	input->lastMouseY = input->mouseY;
 }
 
 static Uint64
@@ -48,9 +56,8 @@ get_event_key(SDL_Event *event)
 			return KEY_UP;
 		case SDLK_DOWN:
 		case SDLK_j:
-			return KEY_DOWN;
 		case SDLK_s:
-			return KEY_DOWN | KEY_S;
+			return KEY_DOWN;
 		case SDLK_LEFT:
 		case SDLK_h:
 		case SDLK_a:
@@ -83,17 +90,25 @@ get_event_key(SDL_Event *event)
 			return KEY_ESC;
 		case SDLK_RETURN:
 			return KEY_ENTER;
-		case SDLK_LALT:
-		case SDLK_RALT:
-			return KEY_ALT;
-		case SDLK_LCTRL:
-		case SDLK_RCTRL:
-			return KEY_CTRL;
-		case SDLK_m:
-			return KEY_M;
 		default:
 			return 0;
 	}
+}
+
+static Uint32
+get_event_modkey(SDL_Event *event)
+{
+	if (event->key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL)) {
+		switch (event->key.keysym.sym) {
+			case SDLK_s:
+				return KEY_CTRL_S;
+			case SDLK_m:
+				return KEY_CTRL_M;
+			default:
+				return 0;
+		}
+	}
+	return 0;
 }
 
 static Uint32
@@ -114,10 +129,20 @@ get_event_mousebutton(SDL_Event *event)
 void
 input_handle_event(Input *input, SDL_Event *event)
 {
-	if (event->type == SDL_KEYDOWN)
-		input->keyState |= get_event_key(event);
-	else if (event->type == SDL_KEYUP) 
-		input->keyState &= ~get_event_key(event);
+	if (event->type == SDL_KEYDOWN) {
+		Uint32 key;
+		if ((key = get_event_modkey(event)))
+			input->modKeyState |= key;
+		else
+			input->keyState |= get_event_key(event);
+	}
+	else if (event->type == SDL_KEYUP) {
+		Uint32 key;
+		if ((key = get_event_modkey(event)))
+			input->modKeyState &= ~key;
+		else
+			input->keyState &= ~get_event_key(event);
+	}
 	else if (event->type == SDL_MOUSEBUTTONDOWN)
 		input->mouseButtonState |= get_event_mousebutton(event);
 	else if (event->type == SDL_MOUSEBUTTONUP)
@@ -132,6 +157,13 @@ bool
 input_key_is_pressed(Input *input, Uint64 key)
 {
 	return (input->keyState & key) && !(input->lastKeyState & key);
+}
+
+bool
+input_modkey_is_pressed(Input *input, Uint32 key)
+{
+	return (input->modKeyState & key)
+		&& !(input->lastModKeyState & key);
 }
 
 bool
@@ -151,4 +183,11 @@ input_mousebutton_is_pressed(Input *input, Uint8 button)
 {
 	return (input->mouseButtonState & button)
 		&& !(input->lastMouseButtonState & button);
+}
+
+bool
+input_mouse_moved(Input *input)
+{
+	return (input->mouseX != input->lastMouseX)
+		|| (input->mouseY != input->lastMouseY);
 }

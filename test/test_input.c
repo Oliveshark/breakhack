@@ -109,6 +109,27 @@ test_mousebuttons(void **state)
 	assert_true(input_mousebutton_is_pressed(&input, MBUTTON_RIGHT));
 }
 
+static void
+test_mouse_moved(void **state)
+{
+	(void) state;
+
+	Input input;
+	input_init(&input);
+
+	input.mouseX = 30;
+	input.mouseY = 30;
+	input.lastMouseX = 30;
+	input.lastMouseY = 30;
+
+	assert_true(!input_mouse_moved(&input));
+
+	input.lastMouseX += 30;
+	input.lastMouseY += 30;
+
+	assert_true(input_mouse_moved(&input));
+}
+
 int main(int argc, char *argv[])
 {
 	(void) argc;
@@ -120,6 +141,7 @@ int main(int argc, char *argv[])
 		cmocka_unit_test(test_keydown),
 		cmocka_unit_test(test_event_parse),
 		cmocka_unit_test(test_mousebuttons),
+		cmocka_unit_test(test_mouse_moved),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

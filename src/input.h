@@ -38,10 +38,9 @@
 #define KEY_NUM9	8192
 #define KEY_ESC		16384
 #define KEY_ENTER	32768
-#define KEY_CTRL	65536
-#define KEY_ALT		131072
-#define KEY_M		262144
-#define KEY_S		524288
+
+#define KEY_CTRL_M		1
+#define KEY_CTRL_S		2
 
 #define MBUTTON_LEFT	1
 #define MBUTTON_MIDDLE	2
@@ -52,6 +51,10 @@ typedef struct Input {
 	Uint64 lastKeyState;
 	Uint32 mouseButtonState;
 	Uint32 lastMouseButtonState;
+	Uint32 modKeyState;
+	Uint32 lastModKeyState;
+	Uint32 lastMouseX;
+	Uint32 lastMouseY;
 	Uint32 mouseX;
 	Uint32 mouseY;
 } Input;
@@ -75,7 +78,13 @@ bool
 input_key_is_down(Input *, Uint64 key);
 
 bool
+input_modkey_is_pressed(Input *, Uint32 key);
+
+bool
 input_mousebutton_is_pressed(Input *, Uint8 button);
+
+bool
+input_mouse_moved(Input*);
 
 #endif // INPUT_H_
 
