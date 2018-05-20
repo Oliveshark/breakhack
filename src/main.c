@@ -62,6 +62,7 @@ static Map		*gMap		= NULL;
 static RoomMatrix	*gRoomMatrix	= NULL;
 static Gui		*gGui		= NULL;
 static SkillBar		*gSkillBar	= NULL;
+static Pointer		*gPointer	= NULL;
 static unsigned int	cLevel		= 1;
 static float		deltaTime	= 1.0;
 static double		renderScale	= 1.0;
@@ -197,6 +198,7 @@ initGame(void)
 	gGui = gui_create(gCamera);
 	gSkillBar = skillbar_create(gRenderer);
 	item_builder_init(gRenderer);
+	gPointer = pointer_create(gRenderer);
 	particle_engine_init();
 	menuTimer = timer_create();
 	actiontextbuilder_init(gRenderer);
@@ -544,6 +546,7 @@ run_game(void)
 		SDL_RenderFillRect(gRenderer, &dimmer);
 		menu_render(inGameMenu, gCamera);
 	}
+	pointer_render(gPointer, gCamera);
 
 	SDL_RenderPresent(gRenderer);
 
@@ -584,6 +587,7 @@ run_menu(void)
 
 	SDL_RenderSetViewport(gRenderer, NULL);
 	menu_render(mainMenu, gCamera);
+	pointer_render(gPointer, gCamera);
 
 	SDL_RenderPresent(gRenderer);
 }
@@ -603,6 +607,7 @@ void run(void)
 
 		quit = handle_events();
 		handle_main_input();
+		pointer_handle_input(gPointer, &input);
 
 		switch (gGameState) {
 			case PLAYING:
@@ -653,6 +658,7 @@ void close(void)
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
 	skillbar_destroy(gSkillBar);
+	pointer_destroy(gPointer);
 	actiontextbuilder_close();
 	item_builder_close();
 	particle_engine_close();

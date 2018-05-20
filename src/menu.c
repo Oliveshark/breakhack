@@ -25,6 +25,7 @@
 #include "gui_button.h"
 #include "keyboard.h"
 #include "mixer.h"
+#include "collisions.h"
 
 typedef struct MenuItems_t {
 	Sprite *sprite;
@@ -41,7 +42,7 @@ menu_create(void)
 	return menu;
 }
 
-static void
+static bool
 handle_keyboard_input(Menu *m, Input *input)
 {
 	int lastSelect = -1;
@@ -56,9 +57,9 @@ handle_keyboard_input(Menu *m, Input *input)
 		MenuItem *item = linkedlist_get(&m->items, m->selected);
 		if (item->button->event)
 			item->button->event(item->button->usrdata);
-		return;
+		return true;
 	} else {
-		return;
+		return false;
 	}
 	m->selected = m->selected % linkedlist_size(m->items);
 
@@ -67,12 +68,54 @@ handle_keyboard_input(Menu *m, Input *input)
 
 	((MenuItem*) linkedlist_get(&m->items, lastSelect))->button->hover = false;
 	((MenuItem*) linkedlist_get(&m->items, m->selected))->button->hover = true;
+
+	return false;
+}
+
+static void
+handle_mouse_motion(Menu *m, Input *input)
+{
+	if (!input_mouse_moved(input))
+		return;
+
+	Position p = { input->mouseX, input->mouseY };
+
+	LinkedList *items = m->items;
+	int index = 0;
+	while (items) {
+		MenuItem *item = items->data;
+		items = items->next;
+
+		if (position_in_rect(&p, &item->button->area)) {
+			m->selected = index;
+			break;
+		}
+		index++;
+	}
+
 }
 
 void
 menu_update(Menu *m, Input *input)
 {
-	handle_keyboard_input(m, input);
+	if (handle_keyboard_input(m, input)) {
+		return;
+	}
+	handle_mouse_motion(m, input);
+
+	LinkedList *items = m->items;
+	while (items) {
+		MenuItem *item = items->data;
+		items = items->next;
+
+		Position p = { input->mouseX, input->mouseY };
+		if (position_in_rect(&p, &item->button->area)
+		    && input_mousebutton_is_pressed(input, MBUTTON_LEFT))
+		{
+			item->button->event(NULL);
+			return;
+		}
+	}
 }
 
 void
@@ -99,13 +142,15 @@ menu_render(Menu *m, Camera *cam)
 {
 	LinkedList *items = m->items;
 
+	int index = 0;
 	while (items) {
 		MenuItem *item = items->data;
 		items = items->next;
-		if (item->button->hover)
+		if (m->selected == index)
 			sprite_render(item->hsprite, cam);
 		else
 			sprite_render(item->sprite, cam);
+		index++;
 	}
 
 }
