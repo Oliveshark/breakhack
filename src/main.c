@@ -468,8 +468,6 @@ run_game(void)
 
 	if (gGameState == IN_GAME_MENU)
 		menu_update(inGameMenu, &input);
-	if (gGameState != PLAYING && gGameState != IN_GAME_MENU)
-		return;
 
 	map_clear_dead_monsters(gMap, gPlayer);
 	map_clear_collected_items(gMap);
@@ -556,9 +554,9 @@ run_game(void)
 		gui_event_message("You died!");
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
+	} else {
+		check_next_level();
 	}
-
-	check_next_level();
 }
 
 static void

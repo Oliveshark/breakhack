@@ -411,9 +411,6 @@ player_monster_kill_check(Player *player, Monster *monster)
 void
 player_hit(Player *p, unsigned int dmg)
 {
-	if (p->stats.hp <= 0) {
-		dmg = 200;
-	}
 	if (dmg > 0) {
 		Position pos = p->sprite->pos;
 		pos.x += 8;
@@ -455,6 +452,8 @@ player_reset_steps(Player *p)
 void player_update(UpdateData *data)
 {
 	Player *player = data->player;
+	if (player->stats.hp <= 0)
+		return;
 
 	check_skill_activation(data);
 	if (!check_skill_trigger(data))

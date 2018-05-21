@@ -33,14 +33,17 @@ typedef enum {
 	NORMAL,
 	HOSTILE,
 	GUERILLA,
-	COWARD
+	COWARD,
+	SENTINEL
 } MonsterBehaviour;
 
 typedef enum {
 	PASSIVE,
 	AGRESSIVE,
 	SCARED,
-	STATIONARY
+	STATIONARY,
+	SLEEPING,
+	SCANNING
 } StateType;
 
 typedef struct {

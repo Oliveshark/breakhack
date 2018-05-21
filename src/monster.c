@@ -48,6 +48,11 @@ monster_set_sprite_clip_for_current_state(Monster *m)
 		case SCARED:
 			m->stateIndicator.sprite->clip = CLIP16(16 * 12, 16 * 3);
 			break;
+		case SLEEPING:
+			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16 * 4);
+			break;
+		case SCANNING:
+			m->stateIndicator.sprite->clip = CLIP16(16 * 13, 16 * 4);
 		default:
 			break;
 	}
@@ -70,14 +75,12 @@ static void
 monster_behaviour_check_post_hit(Monster *m)
 {
 	switch (m->behaviour) {
-		case NORMAL:
-			monster_state_change(m, AGRESSIVE);
-			break;
 		case PACIFIST:
 		case COWARD:
 			monster_state_change(m, SCARED);
 			break;
 		default:
+			monster_state_change(m, AGRESSIVE);
 			break;
 	}
 }
@@ -95,15 +98,39 @@ monster_behaviour_check_post_attack(Monster *m)
 }
 
 static void
+handle_sentinel_behaviour(Monster *m, RoomMatrix *rm)
+{
+	if (m->state.current == AGRESSIVE)
+		return;
+
+	Position monsterPos = m->sprite->pos;
+	if (!position_in_room(&monsterPos, &rm->roomPos))
+		return;
+
+	monsterPos = position_to_matrix_coords(&monsterPos);
+	Position playerPos = rm->playerRoomPos;
+	unsigned int dx = abs(playerPos.x - monsterPos.x);
+	unsigned int dy = abs(playerPos.y - monsterPos.y);
+	if (dx < 3 && dy < 3)
+		monster_state_change(m, AGRESSIVE);
+	else if (dx <= 3 && dy <= 3)
+		monster_state_change(m, SCANNING);
+	else
+		monster_state_change(m, SLEEPING);
+}
+
+static void
 monster_behaviour_check(Monster *m, RoomMatrix *rm)
 {
-	UNUSED(rm);
 	switch (m->behaviour) {
 		case GUERILLA:
 			if (m->state.stepsSinceChange > 8
 			    && m->state.current == SCARED) {
 				monster_state_change(m, AGRESSIVE);
 			}
+			break;
+		case SENTINEL:
+			handle_sentinel_behaviour(m, rm);
 			break;
 		default:
 			break;
@@ -312,11 +339,11 @@ monster_move(Monster *m, RoomMatrix *rm)
 {
 	Position monsterRoomPos;
 
+	monster_behaviour_check(m, rm);
+
 	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = false;
 	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = NULL;
-
-	monster_behaviour_check(m, rm);
 
 	switch (m->state.current) {
 		case PASSIVE:
@@ -329,6 +356,8 @@ monster_move(Monster *m, RoomMatrix *rm)
 			monster_coward_walk(m, rm);
 			break;
 		case STATIONARY:
+		case SLEEPING:
+		case SCANNING:
 		default:
 			break;
 	};
@@ -360,7 +389,7 @@ monster_update(Monster *m, UpdateData *data)
 			return;
 
 		m->stateIndicator.shownOnPlayerRoomEnter = true;
-		if (m->state.current != PASSIVE)
+		if (m->state.current != PASSIVE && m->state.current != STATIONARY)
 			m->stateIndicator.displayCount = 5;
 	} else {
 		m->stateIndicator.shownOnPlayerRoomEnter = false;
@@ -470,6 +499,9 @@ monster_set_behaviour(Monster *m, MonsterBehaviour behaviour)
 		case GUERILLA:
 		case COWARD:
 			m->state.current = AGRESSIVE;
+			break;
+		case SENTINEL:
+			m->state.current = SLEEPING;
 			break;
 		case PACIFIST:
 		case NORMAL:

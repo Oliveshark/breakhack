@@ -42,7 +42,8 @@ local behaviour = {
 	normal = 1,
 	hostile = 2,
 	guerilla = 3,
-	coward = 4
+	coward = 4,
+	sentinel = 5
 }
 
 local stats = {
@@ -56,6 +57,13 @@ local stats = {
 	pest = {
 		hp = 6,
 		dmg = 1,
+		atk = 0,
+		def = 0,
+		speed = 1
+	},
+	misc = {
+		hp = 18,
+		dmg = 2,
 		atk = 0,
 		def = 0,
 		speed = 1
@@ -134,6 +142,12 @@ local pests = {
 	--{ texturePaths.pest0, texturePaths.pest1, 48, 112 },
 }
 
+local misc = {
+	{ texturePaths.misc0, texturePaths.misc1, stats.misc,	0,	0, "A Giant Black Rat", behaviour.sentinel },
+	{ texturePaths.misc0, texturePaths.misc1, stats.misc,	16,	0, "A Giant White Rat", behaviour.sentinel },
+	{ texturePaths.misc0, texturePaths.misc1, stats.misc,	64,	0, "An Owl Bear", behaviour.sentinel },
+}
+
 local undead = {
 	-- UNDEAD
 	--{ texturePaths.undead0, texturePaths.undead1,   0,  0, "", behaviour.normal };
@@ -179,7 +193,7 @@ local reptile = {
 }
 
 local platino = {
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.platino,  48, 12*16, "Platino", behaviour.hostile };
+	{ texturePaths.reptile0, texturePaths.reptile1, stats.platino,  48, 12*16, "Platino", behaviour.sentinel };
 }
 
 local demon = {
@@ -217,26 +231,31 @@ local enemies = {}
 if(CURRENT_LEVEL > 0 and CURRENT_LEVEL < 10) then
 	if (CURRENT_LEVEL == 1) then
 		enemies = concat(enemies, pests)
+		enemies = concat(enemies, misc)
 		enemies = concat(enemies, dogs)
 	elseif (CURRENT_LEVEL > 5) then
 		enemies = {}
 		enemies = concat(enemies, demon)
 		enemies = concat(enemies, undead)
 		enemies = concat(enemies, reptile)
+		enemies = concat(enemies, misc)
 	elseif (CURRENT_LEVEL > 3) then
 		enemies = {}
 		enemies = concat(enemies, undead)
 		enemies = concat(enemies, reptile)
+		enemies = concat(enemies, misc)
 		enemies = concat(enemies, dogs)
 	elseif (CURRENT_LEVEL > 2) then
 		enemies = {}
 		enemies = concat(enemies, undead)
 		enemies = concat(enemies, reptile)
+		enemies = concat(enemies, misc)
 		enemies = concat(enemies, dogs)
 	elseif (CURRENT_LEVEL > 1) then
 		enemies = {}
 		enemies = concat(enemies, undead)
 		enemies = concat(enemies, reptile)
+		enemies = concat(enemies, misc)
 		enemies = concat(enemies, dogs)
 	end
 end
@@ -247,6 +266,9 @@ end
 
 function module.add_monster_to_room(map, roomx, roomy)
 	local count = random(3)
+	if (CURRENT_LEVEL > 3) then
+		count = random(4)
+	end
 	for i=0,count do
 		local x = (roomx * 512) + (random(13) + 1) * 32
 		local y = (roomy * 384) + (random(9) + 1) * 32
