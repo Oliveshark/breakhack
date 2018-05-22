@@ -56,6 +56,9 @@ void
 particle_engine_render_global(Camera*);
 
 void
+particle_engine_slash(Position, Dimension);
+
+void
 particle_engine_clear(void);
 
 void

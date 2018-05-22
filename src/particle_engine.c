@@ -82,6 +82,24 @@ create_rect_particle(void)
 	return p;
 }
 
+static Particle *
+create_line_particle(void)
+{
+	Particle *p = ec_malloc(sizeof(Particle));
+
+	p->type = LINE;
+	p->velocity = VECTOR2D_NODIR;
+	p->movetime = 100;
+	p->lifetime = 100;
+	p->fixed = false;
+	p->blend_mode = SDL_BLENDMODE_MOD;
+	p->color = C_WHITE;
+	p->particle.line.startPos = (Position) { 0, 0 };
+	p->particle.line.endPos = (Position) { 32, 32 };
+
+	return p;
+}
+
 static void
 check_engine(void)
 {
@@ -250,6 +268,24 @@ particle_engine_sparkle(Position pos, Dimension dim)
 		p->fixed = true;
 		linkedlist_append(&engine->global_particles, p);
 	}
+}
+
+void
+particle_engine_slash(Position pos, Dimension dim)
+{
+	Particle *p = create_line_particle();
+	p->particle.line.startPos = pos;
+	p->particle.line.endPos = (Position) {
+		dim.width + pos.x,
+		dim.height + pos.y
+	};
+	p->velocity = (Vector2d) { 0.0, 0.0 };
+	p->movetime = 0.0;
+	p->lifetime = 30;
+	p->blend_mode = SDL_BLENDMODE_BLEND;
+	p->color = C_WHITE;
+	p->fixed = false;
+	linkedlist_append(&engine->global_particles, p);
 }
 
 void
