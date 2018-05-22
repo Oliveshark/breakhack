@@ -54,7 +54,7 @@ create_particle(void)
 	p->lifetime = 100;
 	p->fixed = false;
 	p->blend_mode = SDL_BLENDMODE_MOD;
-	p->color = (SDL_Color) { 255, 255, 255, 255 };
+	p->color = C_WHITE;
 	return p;
 }
 
@@ -107,7 +107,7 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 		p->movetime = mt;
 		p->lifetime = lt;
 		p->dim = (Dimension) { w, h };
-		p->color = (SDL_Color) { 255, 0, 0, 255 };
+		p->color = C_RED;
 		linkedlist_append(&engine->game_particles, p);
 	}
 }

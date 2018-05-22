@@ -340,8 +340,6 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 	static int current_potion_sips = -1;
 	static int current_dagger_count = -1;
 
-	static SDL_Color color = { 255, 255, 255, 255 };
-
 	char buffer[200];
 
 	ExperienceData data = player_get_xp_data(player);
@@ -361,42 +359,42 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 
 	if (dungeon_level != (unsigned int) map->level) {
 		m_sprintf(buffer, 200, "Dungeon level: %d", map->level);
-		texture_load_from_text(gui->labels[DUNGEON_LEVEL_LABEL]->textures[0], buffer, color, color, renderer);
+		texture_load_from_text(gui->labels[DUNGEON_LEVEL_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
 		gui->labels[DUNGEON_LEVEL_LABEL]->dim = gui->labels[DUNGEON_LEVEL_LABEL]->textures[0]->dim;
 		dungeon_level = (unsigned int) map->level;
 	}
 
 	if (current_potion_sips != (int) player->potion_sips) {
 		m_sprintf(buffer, 200, "x %u", (unsigned int) player->potion_sips);
-		texture_load_from_text(gui->labels[HEALTH_POTION_LABEL]->textures[0], buffer, color, color, renderer);
+		texture_load_from_text(gui->labels[HEALTH_POTION_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
 		gui->labels[HEALTH_POTION_LABEL]->dim = gui->labels[HEALTH_POTION_LABEL]->textures[0]->dim;
 		current_potion_sips = player->potion_sips;
 	}
 
 	if (current_dagger_count != (int) player->daggers) {
 		m_sprintf(buffer, 200, "x %u", (unsigned int) player->daggers);
-		texture_load_from_text(gui->labels[DAGGER_LABEL]->textures[0], buffer, color, color, renderer);
+		texture_load_from_text(gui->labels[DAGGER_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
 		gui->labels[DAGGER_LABEL]->dim = gui->labels[DAGGER_LABEL]->textures[0]->dim;
 		current_dagger_count = (int) player->daggers;
 	}
 
 	if (last_gold != player->gold) {
 		m_sprintf(buffer, 200, "x %.2f", player->gold);
-		texture_load_from_text(gui->labels[GOLD_LABEL]->textures[0], buffer, color, color, renderer);
+		texture_load_from_text(gui->labels[GOLD_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
 		gui->labels[GOLD_LABEL]->dim = gui->labels[GOLD_LABEL]->textures[0]->dim;
 		last_gold = player->gold;
 	}
 
 	if (last_xp != (int) data.current) {
 		m_sprintf(buffer, 200, "XP: %u / %u", data.current, data.nextLevel);
-		texture_load_from_text(gui->labels[CURRENT_XP_LABEL]->textures[0], buffer, color, color, renderer);
+		texture_load_from_text(gui->labels[CURRENT_XP_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
 		gui->labels[CURRENT_XP_LABEL]->dim = gui->labels[CURRENT_XP_LABEL]->textures[0]->dim;
 		last_xp = data.current;
 	}
 
 	if (last_level != data.level) {
 		m_sprintf(buffer, 200, "Level: %u", data.level);
-		texture_load_from_text(gui->labels[LEVEL_LABEL]->textures[0], buffer, color, color, renderer);
+		texture_load_from_text(gui->labels[LEVEL_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
 		gui->labels[LEVEL_LABEL]->dim = gui->labels[LEVEL_LABEL]->textures[0]->dim;
 		last_level = data.level;
 	}
@@ -562,9 +560,6 @@ gui_event_message(const char *fmt, ...)
 void
 gui_render_log(Gui *gui, Camera *cam)
 {
-	static SDL_Color color = { 255, 255, 255, 255 };
-	static SDL_Color ocolor = { 0, 0, 0, 255 };
-
 	unsigned int i;
 	unsigned int render_count;
 	SDL_Rect box = { 16, 0, 16, 16 };
@@ -577,7 +572,7 @@ gui_render_log(Gui *gui, Camera *cam)
 		Texture *t;
 		box.y = 16 + ((LOG_FONT_SIZE+5) * i);
 		t = gui->log_lines[i];
-		texture_load_from_text(t, log_data.log[i], color, ocolor, cam->renderer);
+		texture_load_from_text(t, log_data.log[i], C_WHITE, C_BLACK, cam->renderer);
 		box.w = t->dim.width;
 		box.h = t->dim.height;
 		texture_render(t, &box, cam);
@@ -587,8 +582,6 @@ gui_render_log(Gui *gui, Camera *cam)
 void
 gui_render_event_message(Gui *gui, Camera *cam)
 {
-	static SDL_Color fg_color = { 255, 255, 255, 255 };
-	static SDL_Color o_color = { 0, 0, 0, 255 };
 	static SDL_Rect box = { 0, 0, 150, 50 };
 
 	if (timer_started(gui->event_message_timer)
@@ -601,8 +594,8 @@ gui_render_event_message(Gui *gui, Camera *cam)
 	if (event_messages.count > 0) {
 		texture_load_from_text(gui->event_message,
 				       event_messages.messages[0],
-				       fg_color,
-				       o_color,
+				       C_WHITE,
+				       C_BLACK,
 				       cam->renderer);
 
 		box.x = (GAME_VIEW_WIDTH/2) - (gui->event_message->dim.width/2);

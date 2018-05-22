@@ -201,7 +201,7 @@ player_sip_health(Player *player)
 		--player->potion_sips;
 		++player->stats.hp;
 		mixer_play_effect(BUBBLE0 + get_random(2));
-		gui_log("You take a sip of health potion");
+		gui_log("You take a sip from a health potion");
 		actiontextbuilder_create_text("+1", C_GREEN, &player->sprite->pos);
 	} else {
 		gui_log("You have nothing to sip");

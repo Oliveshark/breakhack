@@ -212,21 +212,6 @@ roommatrix_render_mouse_square(RoomMatrix *matrix, Camera *cam)
 	SDL_RenderFillRect(cam->renderer, &box);
 }
 
-#ifdef LIGHTMAPDEBUG
-static Texture *
-create_light_texture(int light, Camera *cam)
-{
-	static SDL_Color color = { 255, 255, 0, 0 };
-
-	char buffer[4];
-	Texture *t = texture_create();
-	texture_load_font(t, "GUI/SDS_8x8.ttf", 8);
-	m_sprintf(buffer, 4, "%d", light);
-	texture_load_from_text(t, buffer, color, cam->renderer);
-	return t;
-}
-#endif // LIGHTMAPDEBUG
-
 void
 roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 {

@@ -80,7 +80,7 @@ static Turn		currentTurn	= PLAYER;
 static Input		input;
 
 static SDL_Color C_MENU_DEFAULT		= { 255, 255, 0, 255 };
-static SDL_Color C_MENU_OUTLINE_DEFAULT	= { 0, 0, 0, 255 };
+static SDL_Color C_MENU_OUTLINE_DEFAULT	= { 0,	0, 0, 255 };
 static SDL_Color C_MENU_HOVER		= { 255, 0, 0, 255 };
 
 struct MENU_ITEM {

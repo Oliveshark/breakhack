@@ -30,8 +30,6 @@
 static void
 load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 {
-	static SDL_Color c_yellow = { 255, 255, 0, 255 };
-
 	Texture *t = texturecache_add(path);
 	t->dim.width = 16;
 	t->dim.height = 16;
@@ -44,7 +42,7 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 		s->fixed = true;
 		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8, 0);
 		m_sprintf(buffer, 4, "%u", i+1 < 10 ? i+1 : 0);
-		texture_load_from_text(s->textures[0], buffer, c_yellow, c_yellow, renderer);
+		texture_load_from_text(s->textures[0], buffer, C_YELLOW, C_BLACK, renderer);
 		linkedlist_append(&bar->sprites, s);
 	}
 }
@@ -147,12 +145,11 @@ render_activation_indicator(SkillBar *bar, Camera *cam)
 static void
 render_skill_countdown(SkillBar *bar, int index, unsigned int count, Camera *cam)
 {
-	static SDL_Color color = { 255, 255, 255, 255 };
 	char buffer[5];
 	Sprite *s = bar->countdowns[index];
 
 	m_sprintf(buffer, 5, "%u", count);
-	texture_load_from_text(s->textures[0], buffer, color, color, cam->renderer);
+	texture_load_from_text(s->textures[0], buffer, C_WHITE, C_BLACK, cam->renderer);
 	sprite_render(s, cam);
 }
 

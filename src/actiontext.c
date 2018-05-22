@@ -30,7 +30,7 @@ actiontext_create(Sprite *sprite)
 	t->timer = timer_create();
 	t->dead = false;
 	t->velocity = (Vector2d) { 0, -100 };
-	t->color = (SDL_Color) { 255, 255, 255, 255 };
+	t->color = C_WHITE;
 	return t;
 }
 
