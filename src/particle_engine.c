@@ -25,15 +25,36 @@
 #include "vector2d.h"
 #include "random.h"
 
-typedef struct Particle_t {
+typedef enum ParticleType {
+	RECT,
+	LINE
+} ParticleType;
+
+typedef struct RectParticle {
 	Position pos;
-	Vector2d velocity;
 	Dimension dim;
+} RectParticle;
+
+typedef struct LineParticle {
+	Position startPos;
+	Position endPos;
+} LineParticle;
+
+typedef union ParticleUnion {
+	ParticleType type;
+	RectParticle rect;
+	LineParticle line;
+} ParticleUnion;
+
+typedef struct Particle {
+	ParticleType type;
+	Vector2d velocity;
 	unsigned int movetime;
 	unsigned int lifetime;
 	bool fixed;
-	Uint8 blend_mode;
 	SDL_Color color;
+	Uint8 blend_mode;
+	ParticleUnion particle;
 } Particle;
 
 typedef struct Engine_t {
@@ -44,17 +65,20 @@ typedef struct Engine_t {
 static Engine		*engine		= NULL;
 
 static Particle*
-create_particle(void)
+create_rect_particle(void)
 {
 	Particle *p = ec_malloc(sizeof(Particle));
-	p->pos = (Position) { 0, 0 };
-	p->dim = (Dimension) { 1, 1 };
+
+	p->type = RECT;
 	p->velocity = VECTOR2D_NODIR;
 	p->movetime = 100;
 	p->lifetime = 100;
 	p->fixed = false;
 	p->blend_mode = SDL_BLENDMODE_MOD;
 	p->color = C_WHITE;
+	p->particle.rect.pos = (Position) { 0, 0 };
+	p->particle.rect.dim = (Dimension) { 1, 1 };
+
 	return p;
 }
 
@@ -101,12 +125,12 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 		w = get_random(3) + 2;
 		h = get_random(3) + 2;
 
-		p = create_particle();
-		p->pos = (Position) { x, y };
+		p = create_rect_particle();
+		p->particle.rect.pos = (Position) { x, y };
+		p->particle.rect.dim = (Dimension) { w, h };
 		p->velocity = (Vector2d) { (float) xv, (float) yv };
 		p->movetime = mt;
 		p->lifetime = lt;
-		p->dim = (Dimension) { w, h };
 		p->color = C_RED;
 		linkedlist_append(&engine->game_particles, p);
 	}
@@ -137,12 +161,12 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 
 		lt = get_random(10);
 
-		p = create_particle();
-		p->pos = (Position) { x, y };
+		p = create_rect_particle();
+		p->particle.rect.pos = (Position) { x, y };
+		p->particle.rect.dim = (Dimension) { 2, 2 };
 		p->velocity = (Vector2d) { (float) xv, (float) yv };
 		p->movetime = lt;
 		p->lifetime = lt;
-		p->dim = (Dimension) { 2, 2 };
 		p->color = colors[get_random((unsigned int) c_count-1)];
 		linkedlist_append(&engine->game_particles, p);
 	}
@@ -183,16 +207,16 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 
 		lt = get_random(10);
 
-		p = create_particle();
-		p->pos = (Position) { x, y };
+		p = create_rect_particle();
 		p->velocity = (Vector2d) { 0, 0 };
 		p->movetime = lt;
 		p->lifetime = lt;
-		if (horizontal)
-			p->dim = (Dimension) { 20, 1 };
-		else
-			p->dim = (Dimension) { 2, 20 };
 		p->color = color;
+		p->particle.rect.pos = (Position) { x, y };
+		if (horizontal)
+			p->particle.rect.dim = (Dimension) { 20, 1 };
+		else
+			p->particle.rect.dim = (Dimension) { 2, 20 };
 		linkedlist_append(&engine->game_particles, p);
 	}
 }
@@ -214,13 +238,13 @@ particle_engine_sparkle(Position pos, Dimension dim)
 
 		lt = get_random(20);
 
-		p = create_particle();
-		p->pos = (Position) { x, y };
+		p = create_rect_particle();
+		p->particle.rect.pos = (Position) { x, y };
+		p->particle.rect.dim = (Dimension) { 2, 2 };
 		p->velocity = (Vector2d) { (float) 0, (float) yv };
 		p->movetime = lt;
 		p->lifetime = lt;
 		p->blend_mode = SDL_BLENDMODE_BLEND;
-		p->dim = (Dimension) { 2, 2 };
 		p->color = C_WHITE;
 		p->color.a = (Uint8) alpha;
 		p->fixed = true;
@@ -255,12 +279,12 @@ particle_engine_wind(Vector2d direction)
 
 		lt = get_random(500);
 
-		p = create_particle();
-		p->pos = (Position) { x, y };
+		p = create_rect_particle();
+		p->particle.rect.pos = (Position) { x, y };
+		p->particle.rect.dim = (Dimension) { w, h };
 		p->velocity = (Vector2d) { direction.x * (float) velocity, direction.y * (float) velocity };
 		p->movetime = lt;
 		p->lifetime = lt;
-		p->dim = (Dimension) { w, h };
 		p->color = C_BLUE;
 		p->fixed = true;
 		linkedlist_append(&engine->game_particles, p);
@@ -272,9 +296,21 @@ move_particle(Particle *particle, float deltaTime)
 {
 	if (!particle->movetime)
 		return;
-
-	particle->pos.x += (int) (particle->velocity.x * deltaTime);
-	particle->pos.y += (int) (particle->velocity.y * deltaTime);
+	if (particle->type == RECT) {
+		particle->particle.rect.pos.x +=
+			(int) (particle->velocity.x * deltaTime);
+		particle->particle.rect.pos.y +=
+			(int) (particle->velocity.y * deltaTime);
+	} else if (particle->type == LINE) {
+		particle->particle.line.startPos.x +=
+			(int) (particle->velocity.x * deltaTime);
+		particle->particle.line.startPos.y +=
+			(int) (particle->velocity.y * deltaTime);
+		particle->particle.line.endPos.x +=
+			(int) (particle->velocity.x * deltaTime);
+		particle->particle.line.endPos.y +=
+			(int) (particle->velocity.y * deltaTime);
+	}
 }
 
 static void
@@ -308,23 +344,54 @@ particle_engine_update(float deltaTime)
 }
 
 static void
-render_particle(Particle *p, Camera *cam)
+render_rect_particle(Particle *p, Camera *cam)
 {
 	Position pos;
 	if (p->fixed)
-		pos = p->pos;
+		pos = p->particle.rect.pos;
 	else
-		pos = camera_to_camera_position(cam, &p->pos);
+		pos = camera_to_camera_position(cam, &p->particle.rect.pos);
 
 	SDL_SetRenderDrawBlendMode(cam->renderer, p->blend_mode);
 
-	SDL_Rect box = { pos.x, pos.y, p->dim.width, p->dim.height };
+	SDL_Rect box = {
+		pos.x,
+		pos.y,
+		p->particle.rect.dim.width,
+		p->particle.rect.dim.height
+	};
 	SDL_SetRenderDrawColor(cam->renderer,
 			       p->color.r,
 			       p->color.g,
 			       p->color.b,
 			       p->color.a);
 	SDL_RenderFillRect(cam->renderer, &box);
+
+	// Reset the blend mode
+	SDL_SetRenderDrawBlendMode(cam->renderer, SDL_BLENDMODE_BLEND);
+}
+
+static void
+render_line_particle(Particle *p, Camera *cam)
+{
+	Position spos, epos;
+	if (p->fixed) {
+		spos = p->particle.line.startPos;
+		epos = p->particle.line.endPos;
+	} else {
+		spos = camera_to_camera_position(cam,
+						 &p->particle.line.startPos);
+		epos = camera_to_camera_position(cam,
+						 &p->particle.line.endPos);
+	}
+
+	SDL_SetRenderDrawBlendMode(cam->renderer, p->blend_mode);
+	SDL_SetRenderDrawColor(cam->renderer,
+			       p->color.r,
+			       p->color.g,
+			       p->color.b,
+			       p->color.a);
+	SDL_RenderDrawLine(cam->renderer, spos.x, spos.y, epos.x, epos.y);
 
 	// Reset the blend mode
 	SDL_SetRenderDrawBlendMode(cam->renderer, SDL_BLENDMODE_BLEND);
@@ -338,7 +405,11 @@ render_particles(LinkedList *particles, Camera *cam)
 	LinkedList *render_list = particles;
 
 	while (render_list) {
-		render_particle(render_list->data, cam);
+		Particle *p = render_list->data;
+		if (p->type == RECT)
+			render_rect_particle(p, cam);
+		else
+			render_line_particle(p, cam);
 		render_list = render_list->next;
 	}
 }
@@ -361,16 +432,14 @@ particle_engine_clear(void)
 	check_engine();
 	while (engine->game_particles)
 		free(linkedlist_pop(&engine->game_particles));
+	while (engine->global_particles)
+		free(linkedlist_pop(&engine->global_particles));
 }
 
 void
 particle_engine_close(void)
 {
-	check_engine();
-
-	while (engine->game_particles)
-		free(linkedlist_pop(&engine->game_particles));
-
+	particle_engine_clear();
 	free(engine);
 	engine = NULL;
 }

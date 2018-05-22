@@ -267,11 +267,13 @@ roommatrix_reset(RoomMatrix *m)
 
 void roommatrix_destroy(RoomMatrix *m)
 {
+	// Clear the list but don't destroy the items
+	// The items are destroyed in the map destruction
 	for (int i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (int j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			RoomSpace *space = &m->spaces[i][j];
 			while (space->items)
-				item_destroy(linkedlist_pop(&space->items));
+				linkedlist_pop(&space->items);
 		}
 	}
 
