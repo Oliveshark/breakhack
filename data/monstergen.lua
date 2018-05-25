@@ -91,127 +91,104 @@ local stats = {
 	}
 }
 
-local pests = {
-	-- PESTS
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest,   0, 0, "A Beetle" },
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest,  16, 0, "A Beetle" },
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest,  32, 0, "A Beetle" },
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest,  48, 0, "A Beetle" },
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest,  64, 0, "A Large Grub" },
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest,  80, 0, "A Small Grub" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  96, 0, "A Slim Worm", behaviour.pacifist },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 112, 0, "A Fat Worm", behaviour.pacifist },
-
-	--{ texturePaths.pest0, texturePaths.pest1,  0, 16, "Female Dragonfly" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 16, "A Fly", behaviour.pacifist },
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest, 32, 16, "A Larva" },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 16, "A Moth", behaviour.pacifist },
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest, 64, 16 },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 80, 16, "A Gnat", behaviour.pacifist },
-
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  0, 32, "A Small Spider", behaviour.pacifist },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 32, "A Medium Spider", behaviour.pacifist },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 32, 32, "A Large Spider", behaviour.pacifist },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 32, "A Small Scorpion", behaviour.pacifist },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 64, 32, "A Medium Scorpion", behaviour.pacifist },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 80, 32, "A Large Scorpion", behaviour.pacifist },
-
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  0, 48, "A Slug", behaviour.pacifist },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 48, "A Large Slug", behaviour.pacifist },
-	--{ texturePaths.pest0, texturePaths.pest1, 32, 48 },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 48, "A Red Slug", behaviour.pacifist },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 64, 48, "A Large Red Slug", behaviour.pacifist },
-
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest,  0, 64, "A Giant Brown Ant", behaviour.pacifist },
-	{ texturePaths.pest0, texturePaths.pest1, stats.pest, 16, 64, "A Giant Black Ant", behaviour.pacifist },
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest, 32, 64, "A Giant Gold Ant" },
-	--{ texturePaths.pest0, texturePaths.pest1, stats.pest, 48, 64, "A Giant Silver Ant" },
-
-	--{ texturePaths.pest0, texturePaths.pest1,  0, 80 },
-	--{ texturePaths.pest0, texturePaths.pest1, 16, 80 },
-	--{ texturePaths.pest0, texturePaths.pest1, 32, 80 },
-	--{ texturePaths.pest0, texturePaths.pest1, 48, 80 },
-
-	--{ texturePaths.pest0, texturePaths.pest1,  0, 96 },
-	--{ texturePaths.pest0, texturePaths.pest1, 16, 96 },
-	--{ texturePaths.pest0, texturePaths.pest1, 32, 96 },
-
-	--{ texturePaths.pest0, texturePaths.pest1,  0, 112 },
-	--{ texturePaths.pest0, texturePaths.pest1, 16, 112 },
-	--{ texturePaths.pest0, texturePaths.pest1, 32, 112 },
-	--{ texturePaths.pest0, texturePaths.pest1, 48, 112 },
-}
-
-local misc = {
-	{ texturePaths.misc0, texturePaths.misc1, stats.misc,	0,	0, "A Giant Black Rat", behaviour.sentinel },
-	{ texturePaths.misc0, texturePaths.misc1, stats.misc,	16,	0, "A Giant White Rat", behaviour.sentinel },
-	{ texturePaths.misc0, texturePaths.misc1, stats.misc,	64,	0, "An Owl Bear", behaviour.sentinel },
-}
-
-local undead = {
-	-- UNDEAD
-	--{ texturePaths.undead0, texturePaths.undead1,   0,  0, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  16,  0, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  32,  0, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  48,  0, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  64,  0, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  80,  0, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  96,  0, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1, 112,  0, "", behaviour.normal };
-
-	--{ texturePaths.undead0, texturePaths.undead1,   0, 16, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  16, 16, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  32, 16, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  48, 16, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  64, 16, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  80, 16, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  96, 16, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1, 112, 16, "", behaviour.normal };
-
-	{ texturePaths.undead0, texturePaths.undead1, stats.undead,   0, 32, "A Skeleton", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  16, 32, "An Umber Skeleton", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  32, 32, "A Caustic Skeleton", behaviour.normal };
-	{ texturePaths.undead0, texturePaths.undead1, stats.undead,  48, 32, "A Black Skeleton", behaviour.normal };
-	{ texturePaths.undead0, texturePaths.undead1, stats.undead,  64, 32, "A Zombie", behaviour.normal };
-	{ texturePaths.undead0, texturePaths.undead1, stats.undead,  80, 32, "A Zombie", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1,  96, 32, "", behaviour.normal };
-	--{ texturePaths.undead0, texturePaths.undead1, 112, 32, "", behaviour.normal };
-}
-
-local dogs = {
-	{ texturePaths.dog0, texturePaths.dog1, stats.dog,  0, 16, "A Rabid Dog", behaviour.normal };
-	{ texturePaths.dog0, texturePaths.dog1, stats.dog,  16, 16, "An Angry Rabid Dog", behaviour.hostile };
-}
-
-local reptile = {
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  0, 64, "A Small Brown Snake", behaviour.coward };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  16, 64, "A Medium Brown Snake", behaviour.guerilla };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  32, 64, "A Large Brown Snake", behaviour.hostile };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  48, 64, "A Small Black Snake", behaviour.coward };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  64, 64, "A Medium Black Snake", behaviour.guerilla };
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.default,  80, 64, "A Large Black Snake", behaviour.hostile };
-}
-
-local platino = {
-	{ texturePaths.reptile0, texturePaths.reptile1, stats.platino,  48, 12*16, "Platino", behaviour.sentinel };
-}
-
-local demon = {
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,   0,  0, "A Demon", behaviour.hostile };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  16,  0, "A Demon", behaviour.hostile };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  32,  0, "A Demon", behaviour.hostile };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  48,  0, "A Demon", behaviour.hostile };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  64,  0, "A Demon", behaviour.hostile };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  80,  0, "A Demon", behaviour.hostile };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default,  96,  0, "A Demon", behaviour.hostile };
-	{ texturePaths.demon0, texturePaths.demon1, stats.default, 112,  0, "A Demon", behaviour.hostile };
-}
-
 local function concat(table1, table2)
 	for i=1,#table2 do
 		table1[#table1+1] = table2[i]
 	end
 	return table1
+end
+
+local pests = {
+	{ stats.pest,  96, 0, "A Slim Worm", behaviour.pacifist },
+	{ stats.pest, 112, 0, "A Fat Worm", behaviour.pacifist },
+
+	{ stats.pest, 16, 16, "A Fly", behaviour.pacifist },
+	{ stats.pest, 48, 16, "A Moth", behaviour.pacifist },
+	{ stats.pest, 80, 16, "A Gnat", behaviour.pacifist },
+
+	{ stats.pest,  0, 32, "A Small Spider", behaviour.pacifist },
+	{ stats.pest, 16, 32, "A Medium Spider", behaviour.pacifist },
+	{ stats.pest, 32, 32, "A Large Spider", behaviour.pacifist },
+	{ stats.pest, 48, 32, "A Small Scorpion", behaviour.pacifist },
+	{ stats.pest, 64, 32, "A Medium Scorpion", behaviour.pacifist },
+	{ stats.pest, 80, 32, "A Large Scorpion", behaviour.pacifist },
+
+	{ stats.pest,  0, 48, "A Slug", behaviour.pacifist },
+	{ stats.pest, 16, 48, "A Large Slug", behaviour.pacifist },
+	{ stats.pest, 48, 48, "A Red Slug", behaviour.pacifist },
+	{ stats.pest, 64, 48, "A Large Red Slug", behaviour.pacifist },
+
+	{ stats.pest,  0, 64, "A Giant Brown Ant", behaviour.pacifist },
+	{ stats.pest, 16, 64, "A Giant Black Ant", behaviour.pacifist },
+}
+for i=1,#pests do
+	pests[i] = concat({ texturePaths.pest0, texturePaths.pest1 }, pests[i])
+end
+
+local misc = {
+	{ stats.misc,	0,	0, "A Giant Black Rat", behaviour.sentinel },
+	{ stats.misc,	16,	0, "A Giant White Rat", behaviour.sentinel },
+	{ stats.misc,	64,	0, "An Owl Bear", behaviour.sentinel },
+}
+for i=1,#misc do
+	misc[i] = concat({ texturePaths.misc0, texturePaths.misc1 }, misc[i])
+end
+
+local undead = {
+	-- UNDEAD
+	{ stats.undead,   0, 32, "A Skeleton", behaviour.normal };
+	{ stats.undead,  48, 32, "A Black Skeleton", behaviour.normal };
+	{ stats.undead,  64, 32, "A Zombie", behaviour.normal };
+	{ stats.undead,  80, 32, "A Zombie", behaviour.normal };
+}
+for i=1,#undead do
+	undead[i] = concat({ texturePaths.undead0, texturePaths.undead1 }, undead[i])
+end
+
+local dogs = {
+	{ stats.dog,  0, 16, "A Rabid Dog", behaviour.normal };
+	{ stats.dog,  16, 16, "An Angry Rabid Dog", behaviour.hostile };
+}
+for i=1,#dogs do
+	dogs[i] = concat({ texturePaths.dogs0, texturePaths.dogs1 }, dogs[i])
+end
+
+local reptile = {
+	{ stats.default,  0, 64, "A Small Brown Snake", behaviour.coward };
+	{ stats.default,  16, 64, "A Medium Brown Snake", behaviour.guerilla };
+	{ stats.default,  32, 64, "A Large Brown Snake", behaviour.hostile };
+	{ stats.default,  48, 64, "A Small Black Snake", behaviour.coward };
+	{ stats.default,  64, 64, "A Medium Black Snake", behaviour.guerilla };
+	{ stats.default,  80, 64, "A Large Black Snake", behaviour.hostile };
+}
+for i=1,#reptile do
+	reptile[i] = concat({ texturePaths.reptile0, texturePaths.reptile1 }, reptile[i])
+end
+
+local platino = {
+	{
+		texturePaths.reptile0,
+		texturePaths.reptile1,
+		stats.platino,
+		48,
+		12*16,
+		"Platino",
+		behaviour.sentinel
+	}
+}
+
+local demon = {
+	{ stats.default,   0,  0, "A Demon", behaviour.hostile };
+	{ stats.default,  16,  0, "A Demon", behaviour.hostile };
+	{ stats.default,  32,  0, "A Demon", behaviour.hostile };
+	{ stats.default,  48,  0, "A Demon", behaviour.hostile };
+	{ stats.default,  64,  0, "A Demon", behaviour.hostile };
+	{ stats.default,  80,  0, "A Demon", behaviour.hostile };
+	{ stats.default,  96,  0, "A Demon", behaviour.hostile };
+	{ stats.default, 112,  0, "A Demon", behaviour.hostile };
+}
+for i=1,#demon do
+	demon[i] = concat({ texturePaths.demon0, texturePaths.demon1 }, demon[i])
 end
 
 local function repack(data)
