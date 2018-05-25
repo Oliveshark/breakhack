@@ -188,19 +188,6 @@ local function add_pits_to_room(map)
 		end
 	end
 	
-	print(#matrix)
-	matrix = matrix[random(#matrix)]
-	for i=0, 11 do
-		for j=0, 15 do
-			if matrix[j][i] then
-				io.write("#")
-			else
-				io.write("-")
-			end
-		end
-		io.write("\n")
-	end
-
 	for i=2,13 do
 		for j=2,10 do
 			if not tile_occupied(map, (i), (j)) and matrix[i][j] then
