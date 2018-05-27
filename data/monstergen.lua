@@ -150,7 +150,7 @@ local dogs = {
 	{ stats.dog,  16, 16, "An Angry Rabid Dog", behaviour.hostile };
 }
 for i=1,#dogs do
-	dogs[i] = concat({ texturePaths.dogs0, texturePaths.dogs1 }, dogs[i])
+	dogs[i] = concat({ texturePaths.dog0, texturePaths.dog1 }, dogs[i])
 end
 
 local reptile = {
@@ -165,18 +165,6 @@ for i=1,#reptile do
 	reptile[i] = concat({ texturePaths.reptile0, texturePaths.reptile1 }, reptile[i])
 end
 
-local platino = {
-	{
-		texturePaths.reptile0,
-		texturePaths.reptile1,
-		stats.platino,
-		48,
-		12*16,
-		"Platino",
-		behaviour.sentinel
-	}
-}
-
 local demon = {
 	{ stats.default,   0,  0, "A Demon", behaviour.hostile };
 	{ stats.default,  16,  0, "A Demon", behaviour.hostile };
@@ -190,6 +178,18 @@ local demon = {
 for i=1,#demon do
 	demon[i] = concat({ texturePaths.demon0, texturePaths.demon1 }, demon[i])
 end
+
+local platino = {
+	{
+		texturePaths.reptile0,
+		texturePaths.reptile1,
+		stats.platino,
+		48,
+		12*16,
+		"Platino",
+		behaviour.sentinel
+	}
+}
 
 local function repack(data)
 	return {
