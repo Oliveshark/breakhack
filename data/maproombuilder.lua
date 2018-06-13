@@ -188,6 +188,7 @@ local function add_pits_to_room(map)
 		end
 	end
 	
+	matrix = matrix[random(#matrix)]
 	for i=2,13 do
 		for j=2,10 do
 			if not tile_occupied(map, (i), (j)) and matrix[i][j] then

@@ -250,6 +250,7 @@ goToMainMenu(void *unused)
 	inGameMenu = NULL;
 	initMainMenu();
 	Position p = { 0, 0 };
+	gPlayer->sprite->pos = (Position) { 32, 32 };
 	map_set_current_room(gMap, &p);
 	camera_follow_position(gCamera, &p);
 }
