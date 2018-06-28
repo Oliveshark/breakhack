@@ -1,0 +1,18 @@
+f36a9dd Sleeping state indicator is always visible.
+53dc7e2 Possibly more accurate scaling.
+dff55a1 Fixes some buggs
+6a9a3bd Removed some old debug output from pitlayouts.
+cc229c8 Prepares pengine for more particle types.
+bbe4526 Fixes colors to use defines.
+2462e4c Adds sentinel monster behaviour.
+a66f16d Reintroduces the pointer and mouse menu operation.
+123ae90 Better mod key logic in input and mouse motion check.
+821cac2 Completely separates input handling and game logic.
+186cc7b Replaced state logic with behaviours instead.
+b905232 ....and once again...
+8573bad ...and include the SDL dll
+8c58c6e And once again for windows!
+6788e3c Another trywq
+60114ed Hopefully fixes the build issues
+e222e51 Don't test on clang and fix include problem in appveyor
+138cba1 Mock test for keyboardinput and fixed the found issues
