@@ -66,7 +66,11 @@ monster_state_change(Monster *m, StateType newState)
 
 	m->state.current = newState;
 	m->state.stepsSinceChange = 0;
-	m->stateIndicator.displayCount = 5;
+
+	if (newState == SLEEPING)
+		m->stateIndicator.displayCount = -1;
+	else
+		m->stateIndicator.displayCount = 5;
 
 	monster_set_sprite_clip_for_current_state(m);
 }
@@ -389,7 +393,9 @@ monster_update(Monster *m, UpdateData *data)
 			return;
 
 		m->stateIndicator.shownOnPlayerRoomEnter = true;
-		if (m->state.current != PASSIVE && m->state.current != STATIONARY)
+		if (m->state.current == SLEEPING)
+			m->stateIndicator.displayCount = -1; // Sleeping state is always shown
+		else if (m->state.current != PASSIVE && m->state.current != STATIONARY)
 			m->stateIndicator.displayCount = 5;
 	} else {
 		m->stateIndicator.shownOnPlayerRoomEnter = false;
@@ -486,7 +492,7 @@ monster_render(Monster *m, Camera *cam)
 		return;
 
 	sprite_render(m->sprite, cam);
-	if (m->stateIndicator.displayCount > 0)
+	if (m->stateIndicator.displayCount != 0)
 		sprite_render(m->stateIndicator.sprite, cam);
 }
 
