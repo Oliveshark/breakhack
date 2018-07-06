@@ -229,6 +229,11 @@ handle_next_move(UpdateData *data)
 	static unsigned int step = 1;
 
 	Player *player = data->player;
+
+	// Don't move when projectiles are still moving
+	if (linkedlist_size(player->projectiles) > 0)
+		return;
+
 	RoomMatrix *matrix = data->matrix;
 	Vector2d nextDir = read_direction_from(data->input);
 	if (!vector2d_equals(nextDir, VECTOR2D_NODIR))
@@ -327,7 +332,11 @@ player_create(class_t class, SDL_Renderer *renderer)
 {
 	Player *player = malloc(sizeof(Player));
 	player->sprite = sprite_create();
+#ifdef DEBUG
+	player->daggers			= 10;
+#else
 	player->daggers			= 0;
+#endif
 	player->stat_data.total_steps	= 0;
 	player->stat_data.steps		= 0;
 	player->stat_data.hits		= 0;
@@ -440,7 +449,6 @@ player_render(Player *player, Camera *cam)
 		projectile_render(projectile->data, cam);
 		projectile = projectile->next;
 	}
-
 }
 
 void
