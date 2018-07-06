@@ -42,6 +42,5 @@ void linkedlist_each(LinkedList **head, void (*fun)(void*));
 void linkedlist_destroy(LinkedList **head);
 
 unsigned int linkedlist_size(LinkedList *head);
-	
 
 #endif // LINKEDLIST_H_
