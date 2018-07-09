@@ -296,6 +296,21 @@ initInGameMenu(void)
 }
 
 static void
+createInGameGameOverMenu(void)
+{
+	struct MENU_ITEM menu_items[] = {
+		{ "MAIN MENU", goToMainMenu },
+		{ "QUIT", exitGame },
+	};
+
+	if (inGameMenu) {
+		menu_destroy(inGameMenu);
+		inGameMenu = NULL;
+	}
+	createMenu(&inGameMenu, menu_items, 2);
+}
+
+static void
 initMainMenu(void)
 {
 	struct MENU_ITEM menu_items[] = {
@@ -553,6 +568,7 @@ run_game(void)
 		gui_event_message("You died!");
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
+		createInGameGameOverMenu();
 	} else {
 		check_next_level();
 	}
