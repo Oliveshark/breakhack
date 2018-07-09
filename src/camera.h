@@ -25,7 +25,7 @@
 #include "timer.h"
 #include "vector2d.h"
 
-typedef struct {
+typedef struct Camera {
 	Position pos;
 	Position basePos;
 	Vector2d velocity;

@@ -516,6 +516,8 @@ run_game(void)
 
 	map_render_top_layer(gMap, gCamera);
 
+	player_render_toplayer(gPlayer, gCamera);
+
 	if (gPlayer->class == MAGE || gPlayer->class == PALADIN)
 		roommatrix_render_mouse_square(gRoomMatrix, gCamera);
 

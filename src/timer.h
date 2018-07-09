@@ -21,7 +21,7 @@
 
 #include <stdbool.h>
 
-typedef struct {
+typedef struct Timer {
 	unsigned int startTime;
 } Timer;
 

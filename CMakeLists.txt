@@ -171,6 +171,7 @@ add_executable(breakhack
 	src/db
 	src/settings
 	src/actiontextbuilder
+	src/animation
 	)
 
 # Sqlite has some warnings that I we don't need to see

@@ -51,7 +51,7 @@ sprite_create(void)
 
 void 
 sprite_load_texture(Sprite *sprite,
-		    char *path,
+		    const char *path,
 		    int index,
 		    SDL_Renderer *renderer)
 {
@@ -68,7 +68,7 @@ sprite_load_texture(Sprite *sprite,
 	sprite->destroyTextures = true;
 }
 
-void sprite_load_text_texture(Sprite *sprite, char * path, int index, int size, int outline)
+void sprite_load_text_texture(Sprite *sprite, const char * path, int index, int size, int outline)
 {
 	if (index > 1)
 		fatal("in sprite_load_texture() index out of bounds");
@@ -122,7 +122,7 @@ sprite_render(Sprite *s, Camera *cam)
 		cameraPos.x, cameraPos.y, s->dim.width, s->dim.height
 	};
 
-	if ((s->clip.w && s->clip.h) || s->angle != 0 || s->flip != SDL_FLIP_NONE) {
+	if (s->angle != 0 || s->flip != SDL_FLIP_NONE) {
 		texture_render_clip_ex(s->textures[s->texture_index],
 			&box,
 			&s->clip,

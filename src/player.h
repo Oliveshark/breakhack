@@ -31,7 +31,8 @@
 #define PLAYER_SKILL_COUNT 5
 
 // Foward declare
-struct UpdateData;
+typedef struct UpdateData UpdateData;
+typedef struct Animation Animation;
 
 typedef enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR } class_t;
 typedef enum PlayerState { ALIVE, DEAD, FALLING } state_t;
@@ -64,6 +65,7 @@ typedef struct Player_t {
 	state_t state;
 	Skill *skills[PLAYER_SKILL_COUNT];
 	Timer *animationTimer;
+	Animation *swordAnimation;
 } Player;
 
 Player*
@@ -89,6 +91,9 @@ player_update(struct UpdateData *);
 
 void
 player_render(Player*, Camera*);
+
+void
+player_render_toplayer(Player*, Camera*);
 
 void
 player_destroy(Player*);

@@ -26,7 +26,7 @@
 #include "map_room_modifiers.h"
 #include "input.h"
 
-typedef struct Sprite_t Sprite;
+typedef struct Sprite Sprite;
 typedef struct Map_t Map;
 typedef struct Monster_t Monster;
 typedef struct Player_t Player;

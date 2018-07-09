@@ -33,6 +33,7 @@
 #include "texturecache.h"
 #include "vector2d.h"
 #include "actiontextbuilder.h"
+#include "animation.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1 }
 #define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1 }
@@ -132,6 +133,8 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 		mixer_play_effect(SWING0 + get_random(2));
 
 		monster_hit(space->monster, hit);
+
+		animation_run(player->swordAnimation);
 
 		if (hit > 0) {
 			gui_log("You hit %s for %u damage",
@@ -246,6 +249,27 @@ handle_next_move(UpdateData *data)
 		++step;
 		step = step % 4;
 	}
+
+	if (!vector2d_equals(nextDir, VECTOR2D_NODIR))
+		player->swordAnimation->sprite->pos = player->sprite->pos;
+
+	if (vector2d_equals(nextDir, VECTOR2D_UP)) {
+		player->swordAnimation->sprite->pos.y -= 32;
+		player->swordAnimation->sprite->angle = -90;
+		player->swordAnimation->sprite->flip = SDL_FLIP_NONE;
+	} else if (vector2d_equals(nextDir, VECTOR2D_DOWN)) {
+		player->swordAnimation->sprite->pos.y += 32;
+		player->swordAnimation->sprite->angle = 90;
+		player->swordAnimation->sprite->flip = SDL_FLIP_NONE;
+	} else if (vector2d_equals(nextDir, VECTOR2D_LEFT)) {
+		player->swordAnimation->sprite->pos.x -= 32;
+		player->swordAnimation->sprite->angle = 0;
+		player->swordAnimation->sprite->flip = SDL_FLIP_HORIZONTAL;
+	} else if (vector2d_equals(nextDir, VECTOR2D_RIGHT)) {
+		player->swordAnimation->sprite->pos.x += 32;
+		player->swordAnimation->sprite->angle = 0;
+		player->swordAnimation->sprite->flip = SDL_FLIP_NONE;
+	}
 }
 
 static void
@@ -327,6 +351,24 @@ check_skill_trigger(UpdateData *data)
 	return true;
 }
 
+static void
+build_sword_animation(Player *p, SDL_Renderer *renderer)
+{
+	animation_load_texture(p->swordAnimation, "Extras/SwordSwing.png", renderer);
+	animation_set_frames(p->swordAnimation, (AnimationClip[]) {
+			     {  0, 0, 16, 16, 20 },
+			     { 16, 0, 16, 16, 20 },
+			     { 32, 0, 16, 16, 20 },
+			     { 48, 0, 16, 16, 20 },
+			     { 64, 0, 16, 16, 20 }
+			     });
+
+	p->swordAnimation->loop = false;
+	p->swordAnimation->sprite->dim = GAME_DIMENSION;
+	p->swordAnimation->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	p->swordAnimation->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+}
+
 Player* 
 player_create(class_t class, SDL_Renderer *renderer)
 {
@@ -349,6 +391,9 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->state			= ALIVE;
 	player->projectiles		= linkedlist_create();
 	player->animationTimer		= timer_create();
+	player->swordAnimation		= animation_create(5);
+
+	build_sword_animation(player, renderer);
 
 	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		player->skills[i] = NULL;
@@ -452,6 +497,12 @@ player_render(Player *player, Camera *cam)
 }
 
 void
+player_render_toplayer(Player *player, Camera *camera)
+{
+	animation_render(player->swordAnimation, camera);
+}
+
+void
 player_reset_steps(Player *p)
 {
 	p->stat_data.steps = 0;
@@ -503,6 +554,8 @@ void player_update(UpdateData *data)
 
 	linkedlist_destroy(&player->projectiles);
 	player->projectiles = remaining;
+
+	animation_update(player->swordAnimation);
 }
 
 void
@@ -511,6 +564,7 @@ player_destroy(Player *player)
 	if (player->sprite)
 		sprite_destroy(player->sprite);
 
+	animation_destroy(player->swordAnimation);
 	timer_destroy(player->animationTimer);
 
 	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
