@@ -473,7 +473,7 @@ populateUpdateData(UpdateData *data, float deltatime)
 }
 
 static void
-run_game(void)
+run_game_update(void)
 {
 	static UpdateData updateData;
 	static unsigned int playerLevel = 1;
@@ -518,7 +518,11 @@ run_game(void)
 			currentTurn = PLAYER;
 		}
 	}
+}
 
+static void
+run_game_render(void)
+{
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
 
@@ -531,7 +535,8 @@ run_game(void)
 
 	map_render_top_layer(gMap, gCamera);
 
-	player_render_toplayer(gPlayer, gCamera);
+	if (!is_player_dead())
+		player_render_toplayer(gPlayer, gCamera);
 
 	if (gPlayer->class == MAGE || gPlayer->class == PALADIN)
 		roommatrix_render_mouse_square(gRoomMatrix, gCamera);
@@ -561,6 +566,14 @@ run_game(void)
 	pointer_render(gPointer, gCamera);
 
 	SDL_RenderPresent(gRenderer);
+}
+
+static void
+run_game(void)
+{
+	run_game_update();
+
+	run_game_render();
 
 	if (gGameState == PLAYING && is_player_dead()) {
 		camera_shake(VECTOR2D_RIGHT, 800);
