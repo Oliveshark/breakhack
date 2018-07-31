@@ -32,6 +32,7 @@
 #include "projectile.h"
 #include "linkedlist.h"
 #include "item.h"
+#include "animation.h"
 
 static void
 set_player_clip_for_direction(Player *player, Vector2d *direction)
@@ -81,6 +82,7 @@ skill_use_flurry(Skill *skill, SkillData *data)
 
 	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
 	mixer_play_effect(TRIPPLE_SWING);
+	animation_run(data->player->swordAnimation);
 	if (monster) {
 		gui_log("You attack %s with a flurry of strikes", monster->lclabel);
 		unsigned int hitCount = 0;
@@ -294,6 +296,7 @@ skill_charge(Skill *skill, SkillData *data)
 			data->player->stat_data.hits += 1;
 		}
 		monster_hit(monster, dmg);
+		player_monster_kill_check(data->player, monster);
 	}
 
 	return true;
