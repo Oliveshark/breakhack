@@ -186,12 +186,41 @@ set_clip_for_direction(Player *player, Vector2d *direction)
 		player->sprite->clip.y = 0;
 }
 
+void
+player_turn(Player *player, Vector2d *direction)
+{
+	set_clip_for_direction(player, direction);
+
+	if (!vector2d_equals(*direction, VECTOR2D_NODIR))
+		player->swordAnimation->sprite->pos = player->sprite->pos;
+
+	if (vector2d_equals(*direction, VECTOR2D_UP)) {
+		player->swordAnimation->sprite->pos.y -= 32;
+		player->swordAnimation->sprite->angle = -90;
+		player->swordAnimation->sprite->flip = SDL_FLIP_NONE;
+	} else if (vector2d_equals(*direction, VECTOR2D_DOWN)) {
+		player->swordAnimation->sprite->pos.y += 32;
+		player->swordAnimation->sprite->angle = 90;
+		player->swordAnimation->sprite->flip = SDL_FLIP_NONE;
+	} else if (vector2d_equals(*direction, VECTOR2D_LEFT)) {
+		player->swordAnimation->sprite->pos.x -= 32;
+		player->swordAnimation->sprite->angle = 0;
+		player->swordAnimation->sprite->flip = SDL_FLIP_HORIZONTAL;
+	} else if (vector2d_equals(*direction, VECTOR2D_RIGHT)) {
+		player->swordAnimation->sprite->pos.x += 32;
+		player->swordAnimation->sprite->angle = 0;
+		player->swordAnimation->sprite->flip = SDL_FLIP_NONE;
+	}
+}
+
 static void
 move(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
-	set_clip_for_direction(player, &direction);
+	player_turn(player, &direction);
+
 	player->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
 	player->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
+
 	if (!has_collided(player, matrix, direction)) {
 		player_step(player);
 	}
@@ -248,27 +277,6 @@ handle_next_move(UpdateData *data)
 		player->sprite->clip.x = 16*step;
 		++step;
 		step = step % 4;
-	}
-
-	if (!vector2d_equals(nextDir, VECTOR2D_NODIR))
-		player->swordAnimation->sprite->pos = player->sprite->pos;
-
-	if (vector2d_equals(nextDir, VECTOR2D_UP)) {
-		player->swordAnimation->sprite->pos.y -= 32;
-		player->swordAnimation->sprite->angle = -90;
-		player->swordAnimation->sprite->flip = SDL_FLIP_NONE;
-	} else if (vector2d_equals(nextDir, VECTOR2D_DOWN)) {
-		player->swordAnimation->sprite->pos.y += 32;
-		player->swordAnimation->sprite->angle = 90;
-		player->swordAnimation->sprite->flip = SDL_FLIP_NONE;
-	} else if (vector2d_equals(nextDir, VECTOR2D_LEFT)) {
-		player->swordAnimation->sprite->pos.x -= 32;
-		player->swordAnimation->sprite->angle = 0;
-		player->swordAnimation->sprite->flip = SDL_FLIP_HORIZONTAL;
-	} else if (vector2d_equals(nextDir, VECTOR2D_RIGHT)) {
-		player->swordAnimation->sprite->pos.x += 32;
-		player->swordAnimation->sprite->angle = 0;
-		player->swordAnimation->sprite->flip = SDL_FLIP_NONE;
 	}
 }
 

@@ -96,6 +96,9 @@ void
 player_render_toplayer(Player*, Camera*);
 
 void
+player_turn(Player*, Vector2d *dir);
+
+void
 player_destroy(Player*);
 
 bool

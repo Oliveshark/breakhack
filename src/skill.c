@@ -34,19 +34,6 @@
 #include "item.h"
 #include "animation.h"
 
-static void
-set_player_clip_for_direction(Player *player, Vector2d *direction)
-{
-	if (direction->y > 0) // Down
-		player->sprite->clip.y = 0;
-	else if (direction->y < 0)  // Up
-		player->sprite->clip.y = 48;
-	else if (direction->x < 0)  // Left
-		player->sprite->clip.y = 16;
-	else if (direction->x > 0)  // Right
-		player->sprite->clip.y = 32;
-}
-
 static Skill *
 create_default(const char *s_label, Sprite *s)
 {
@@ -74,15 +61,15 @@ skill_use_flurry(Skill *skill, SkillData *data)
 	targetPos.x += (int) data->direction.x;
 	targetPos.y += (int) data->direction.y;
 
-	set_player_clip_for_direction(data->player, &data->direction);
+	player_turn(data->player, &data->direction);
 
 	if (!position_in_roommatrix(&targetPos)) {
 		return false;
 	}
 
+	animation_run(data->player->swordAnimation);
 	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
 	mixer_play_effect(TRIPPLE_SWING);
-	animation_run(data->player->swordAnimation);
 	if (monster) {
 		gui_log("You attack %s with a flurry of strikes", monster->lclabel);
 		unsigned int hitCount = 0;
@@ -162,7 +149,7 @@ skill_throw_dagger(Skill *skill, SkillData *data)
 		p->sprite->angle = -270;
 	}
 
-	set_player_clip_for_direction(data->player, &data->direction);
+	player_turn(data->player, &data->direction);
 
 	mixer_play_effect(SWOOSH);
 	p->sprite->pos = data->player->sprite->pos;
@@ -265,7 +252,7 @@ skill_charge(Skill *skill, SkillData *data)
 	player->sprite->pos.x += (steps * TILE_DIMENSION) * (int) data->direction.x;
 	player->sprite->pos.y += (steps * TILE_DIMENSION) * (int) data->direction.y;
 	Position playerDestinationPos = player->sprite->pos;
-	set_player_clip_for_direction(data->player, &data->direction);
+	player_turn(data->player, &data->direction);
 
 	// Add motion particles
 	bool horizontal = data->direction.x != 0;

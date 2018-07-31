@@ -67,8 +67,6 @@ void roommatrix_render_mouse_square(RoomMatrix*, Camera*);
 
 void roommatrix_render_lightmap(RoomMatrix*, Camera*);
 
-void roommatrix_reset(RoomMatrix*);
-
 void roommatrix_destroy(RoomMatrix*);
 
 #endif // ROOMMATRIX_H_

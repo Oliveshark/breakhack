@@ -329,6 +329,15 @@ initMainMenu(void)
 }
 
 static void
+repopulate_roommatrix(void)
+{
+	roommatrix_populate_from_map(gRoomMatrix, gMap);
+	roommatrix_add_lightsource(gRoomMatrix,
+		&gPlayer->sprite->pos);
+	roommatrix_build_lightmap(gRoomMatrix);
+}
+
+static void
 resetGame(void)
 {
 	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
@@ -354,6 +363,7 @@ resetGame(void)
 
 	map_set_current_room(gMap, &gPlayer->sprite->pos);
 	camera_follow_position(gCamera, &gPlayer->sprite->pos);
+	repopulate_roommatrix();
 }
 
 static bool
@@ -484,11 +494,6 @@ run_game_update(void)
 
 	map_clear_dead_monsters(gMap, gPlayer);
 	map_clear_collected_items(gMap);
-	roommatrix_populate_from_map(gRoomMatrix, gMap);
-	roommatrix_add_lightsource(gRoomMatrix,
-		&gPlayer->sprite->pos);
-
-	roommatrix_build_lightmap(gRoomMatrix);
 
 	populateUpdateData(&updateData, deltaTime);
 	if (playerLevel != gPlayer->stats.lvl) {
@@ -513,10 +518,12 @@ run_game_update(void)
 		if (player_turn_over(gPlayer)) {
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
+			repopulate_roommatrix();
 		}
 	} else if (currentTurn == MONSTER) {
 		if (map_move_monsters(gMap, gRoomMatrix)) {
 			currentTurn = PLAYER;
+			repopulate_roommatrix();
 		}
 	}
 }
