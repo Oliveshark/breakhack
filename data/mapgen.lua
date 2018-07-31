@@ -17,7 +17,7 @@ local function matrix_coverage (matrix)
 	local cov = 0
 	for i=1,10 do
 		for j=1,10 do
-			if matrix[i][j].active then cov = cov + 1 end
+			if matrix[i][j] then cov = cov + 1 end
 		end
 	end
 	return cov
@@ -36,7 +36,7 @@ local function generate_path ()
 	for i=1,10 do
 		map_matrix[i] = {}
 		for j=1,10 do
-			map_matrix[i][j] = room_builder.create_room()
+			map_matrix[i][j] = nil
 		end
 	end
 
@@ -47,7 +47,10 @@ local function generate_path ()
 	local direction = 0
 	local lastDirection = 0
 	local coridoor_count = 0
-	local coverage = 10
+	local coverage = 9 + CURRENT_LEVEL
+
+	-- Create the first room
+	map_matrix[cx][cy] = room_builder.create_empty_room()
 
 	while matrix_coverage(map_matrix) < coverage do
 		local direction = random(4)
@@ -60,8 +63,6 @@ local function generate_path ()
 			direction = random(4)
 		end
 
-		map_matrix[cx][cy].active = true
-
 		if coridoor_count < coverage/3 then
 			if random(3) == 1 and (cx > 1 or cy > 1) then
 				map_matrix[cx][cy].type = "coridoor"
@@ -69,49 +70,56 @@ local function generate_path ()
 			end
 		end
 
+		valid_direction = false
 		if direction == UP and cy > 1 then -- UP
-			table.insert(map_matrix[cx][cy].exits, direction)
+			room_builder.add_exit(map_matrix[cx][cy], direction)
 			map_matrix[cx][cy].path_dir = direction
-			cy = cy - 1;
-			table.insert(map_matrix[cx][cy].exits, reverse_direction(direction))
+			cy = cy - 1
+			valid_direction = true
 		elseif direction == LEFT and cx > 1 then -- LEFT
-			table.insert(map_matrix[cx][cy].exits, direction)
+			room_builder.add_exit(map_matrix[cx][cy], direction)
 			map_matrix[cx][cy].path_dir = direction
-			cx = cx - 1;
-			table.insert(map_matrix[cx][cy].exits, reverse_direction(direction))
+			cx = cx - 1
+			valid_direction = true
 		elseif direction == RIGHT and cx < 10 then -- RIGHT
-			table.insert(map_matrix[cx][cy].exits, direction)
+			room_builder.add_exit(map_matrix[cx][cy], direction)
 			map_matrix[cx][cy].path_dir = direction
-			cx = cx + 1;
-			table.insert(map_matrix[cx][cy].exits, reverse_direction(direction))
+			cx = cx + 1
+			valid_direction = true
 		elseif direction == DOWN and cy < 10 then -- DOWN
-			table.insert(map_matrix[cx][cy].exits, direction)
+			room_builder.add_exit(map_matrix[cx][cy], direction)
 			map_matrix[cx][cy].path_dir = direction
-			cy = cy + 1;
-			table.insert(map_matrix[cx][cy].exits, reverse_direction(direction))
+			cy = cy + 1
+			valid_direction = true
+		end
+
+		-- Create the next room and add the reverse exit
+		-- if a valid direction was found
+		if valid_direction then
+			if not map_matrix[cx][cy] then
+				map_matrix[cx][cy] = room_builder.create_empty_room()
+			end
+			room_builder.add_exit(map_matrix[cx][cy], reverse_direction(direction))
 		end
 		lastDirection = direction
 	end
 
 	-- Last room rules
-	map_matrix[cx][cy].active = true
 	map_matrix[cx][cy].goal = true
 	map_matrix[cx][cy].type = "room"
 
-	return map_matrix;
-end
-
-local function print_matrix(matrix)
+	-- Build all the rooms
 	for i=1,10 do
 		for j=1,10 do
-			if not map_matrix[j][i].goal then
-				io.write(map_matrix[j][i].path_dir .. " ")
-			else
-				io.write("G ")
+			room = map_matrix[i][j]
+			if room then
+				room_builder.build_room(room)
+				monster_gen.add_monsters_to_room(room, i-1, j-1)
 			end
 		end
-		io.write("\n")
 	end
+
+	return map_matrix;
 end
 -- END FUNCTIONS
 
@@ -126,14 +134,10 @@ local map_matrix = generate_path()
 for i=1,10 do
 	for j=1,10 do
 		local room = map_matrix[i][j]
-		if room.active then
+		if room then
 			set_current_room(map, i-1, j-1);
-			if room.type == "room" then
-				room_builder.build_square_room(map, room)
-				monster_gen.add_monster_to_room(map, i-1, j-1);
-			elseif room.type == "coridoor" then
-				room_builder.build_coridoor_room(map, room)
-			end
+			room_builder.load_room(map, room)
+			monster_gen.load_monsters(map, room.monsters)
 		end
 	end
 end

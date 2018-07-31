@@ -61,23 +61,23 @@ local function load_decor_textures()
 	table.insert(floorDecor, { td0, td1,     48, 13 * 16, false, false })
 
 	-- Urns
-	table.insert(floorDecor, { td0, td1, 0 * 16,      48, true, false })
-	table.insert(floorDecor, { td0, td1, 1 * 16,      48, true, false })
-	table.insert(floorDecor, { td0, td1, 2 * 16,      48, true, false })
-	table.insert(floorDecor, { td0, td1, 3 * 16,      48, true, false })
-	table.insert(floorDecor, { td0, td1, 4 * 16,      48, true, false })
-	table.insert(floorDecor, { td0, td1, 5 * 16,      48, true, false })
-	table.insert(floorDecor, { td0, td1, 6 * 16,      48, false, false })
-	table.insert(floorDecor, { td0, td1, 7 * 16,      48, false, false })
+	--table.insert(floorDecor, { td0, td1, 0 * 16,      48, true, false })
+	--table.insert(floorDecor, { td0, td1, 1 * 16,      48, true, false })
+	--table.insert(floorDecor, { td0, td1, 2 * 16,      48, true, false })
+	--table.insert(floorDecor, { td0, td1, 3 * 16,      48, true, false })
+	--table.insert(floorDecor, { td0, td1, 4 * 16,      48, true, false })
+	--table.insert(floorDecor, { td0, td1, 5 * 16,      48, true, false })
+	--table.insert(floorDecor, { td0, td1, 6 * 16,      48, false, false })
+	--table.insert(floorDecor, { td0, td1, 7 * 16,      48, false, false })
 
 	-- Racks
-	table.insert(floorDecor, { td0, td1, 0 * 16, 11 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 1 * 16, 11 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 2 * 16, 11 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 3 * 16, 11 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 4 * 16, 11 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 5 * 16, 11 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 6 * 16, 11 * 16, true, false })
+	--table.insert(floorDecor, { td0, td1, 0 * 16, 11 * 16, true, false })
+	--table.insert(floorDecor, { td0, td1, 1 * 16, 11 * 16, true, false })
+	--table.insert(floorDecor, { td0, td1, 2 * 16, 11 * 16, true, false })
+	--table.insert(floorDecor, { td0, td1, 3 * 16, 11 * 16, true, false })
+	--table.insert(floorDecor, { td0, td1, 4 * 16, 11 * 16, true, false })
+	--table.insert(floorDecor, { td0, td1, 5 * 16, 11 * 16, true, false })
+	--table.insert(floorDecor, { td0, td1, 6 * 16, 11 * 16, true, false })
 
 	-- Headstones
 	table.insert(floorDecor, { td0, td1, 0 * 16, 17 * 16, true, false })
@@ -117,6 +117,20 @@ local function load_special_tiles()
 	special.level_exit = { tt, -1, 16, 16, false, true, true }
 end
 
+local function print_room(room)
+	print("ROOM:")
+	for j=0, 11 do
+		for i=0, 15 do
+			if room.tiles[i][j] then
+				io.write("o ")
+			else
+				io.write(". ")
+			end
+		end
+		print("")
+	end
+end
+
 local function repack(data)
 	return {
 		textureIndex0	= data[1],
@@ -138,22 +152,31 @@ local function check_add_decoration(map, x, y, data)
 	return true
 end
 
-local function check_add_tile(map, x, y, data)
-	if tile_occupied(map, x, y) then
-		return false
-	end
-	add_tile(map, x, y, repack(data))
-	return true
-end
-
-local function add_random_decor_to_room(map)
+local function add_random_decor_to_room(room)
 	local decor_count = random(4) - 1
 	for i=1,decor_count do
-		check_add_decoration(map, random(11)+1, random(8)+1, floorDecor[random(#floorDecor)])
+		x = random(11) + 1
+		y = random(8) + 1
+		if not room.decor[x][y] then
+			room.decor[x][y] = floorDecor[random(#floorDecor)]
+		end
+	end
+
+	if random(2) == 1 then
+		room.decor[4][3] = lightDecor.candle2
+	end
+	if random(2) == 1 then
+		room.decor[11][3] = lightDecor.candle2
+	end
+	if random(2) == 1 then
+		room.decor[4][9] = lightDecor.candle2
+	end
+	if random(2) == 1 then
+		room.decor[11][9] = lightDecor.candle2
 	end
 end
 
-local function add_pits_to_room(map)
+local function add_pits_to_room(room)
 
 	if CURRENT_LEVEL < 2 then
 		return
@@ -170,7 +193,6 @@ local function add_pits_to_room(map)
 			cleanData = cleanData .. c
 		end
 	end
-
 
 	local matrix = {}
 	for i=0, #cleanData-1 do
@@ -191,207 +213,175 @@ local function add_pits_to_room(map)
 	matrix = matrix[random(#matrix)]
 	for i=2,13 do
 		for j=2,10 do
-			if not tile_occupied(map, (i), (j)) and matrix[i][j] then
+			if matrix[i][j] then
+				room.decor[i][j] = nil
 				if not matrix[i-1][j-1] and not matrix[i+1][j-1] and matrix[i-1][j] and matrix[i+1][j] and matrix[i][j-1] then
-					add_tile(map, i, j, repack(pits.innermid))
+					room.tiles[i][j] = pits.innermid
 				elseif not matrix[i-1][j-1] and matrix[i-1][j] and matrix[i][j-1] then
-					add_tile(map, i, j, repack(pits.innerleft))
+					room.tiles[i][j] = pits.innerleft
 				elseif not matrix[i+1][j-1] and matrix[i+1][j] and matrix[i][j-1] then
-					add_tile(map, i, j, repack(pits.innerright))
+					room.tiles[i][j] = pits.innerright
 				elseif not matrix[i-1][j] and not matrix[i][j-1] and not matrix[i+1][j] then
-					add_tile(map, i, j, repack(pits.topcrevice))
+					room.tiles[i][j] = pits.topcrevice
 				elseif not matrix[i-1][j] and not matrix[i+1][j] then
-					add_tile(map, i, j, repack(pits.bottomcrevice))
+					room.tiles[i][j] = pits.bottomcrevice
 				elseif not matrix[i-1][j] and not matrix[i][j-1] then
-					add_tile(map, i, j, repack(pits.topleft))
+					room.tiles[i][j] = pits.topleft
 				elseif not matrix[i+1][j] and not matrix[i][j-1] then
-					add_tile(map, i, j, repack(pits.topright))
+					room.tiles[i][j] = pits.topright
 				elseif not matrix[i-1][j] then
-					add_tile(map, i, j, repack(pits.left))
+					room.tiles[i][j] = pits.left
 				elseif not matrix[i+1][j] then
-					add_tile(map, i, j, repack(pits.right))
+					room.tiles[i][j] = pits.right
 				elseif not matrix[i][j-1] then
-					add_tile(map, i, j, repack(pits.top))
+					room.tiles[i][j] = pits.top
 				else
-					add_tile(map, i, j, repack(pits.center))
+					room.tiles[i][j] = pits.center
 				end
 			end
 		end
 	end
 end
 
-local function add_tiles_to_room (map)
+local function add_tiles_to_room (room)
 	for i=0,15 do
 		for j=0,11 do
 			if (i >= 1 and i <= 14 and j >= 1 and j <= 10) then
 				if (i == 1 and j == 1) then
-					add_tile(map, i, j, repack(floor.topleft))
+					room.tiles[i][j] = floor.topleft
 				elseif (i == 14 and j == 1) then
-					add_tile(map, i, j, repack(floor.topright))
+					room.tiles[i][j] = floor.topright
 				elseif (i == 1 and j == 10) then
-					add_tile(map, i, j, repack(floor.bottomleft))
+					room.tiles[i][j] = floor.bottomleft
 				elseif (i == 14 and j == 10) then
-					add_tile(map, i, j, repack(floor.bottomright))
+					room.tiles[i][j] = floor.bottomright
 				elseif (i == 1) then
-					add_tile(map, i, j, repack(floor.left))
+					room.tiles[i][j] = floor.left
 				elseif (i == 14) then
-					add_tile(map, i, j, repack(floor.right))
+					room.tiles[i][j] = floor.right
 				elseif (j == 1) then
-					add_tile(map, i, j, repack(floor.top))
+					room.tiles[i][j] = floor.top
 				elseif (j == 10) then
-					add_tile(map, i, j, repack(floor.bottom))
+					room.tiles[i][j] = floor.bottom
 				else
-					add_tile(map, i, j, repack(floor.center))
+					room.tiles[i][j] = floor.center
 				end
 			end
 		end
 	end
-
-	add_random_decor_to_room(map)
-	add_pits_to_room(map)
 end
 
-local function add_walls_to_room (map)
+local function add_walls_to_room (room)
 	for i=0,15 do
 		for j=0,11 do
 			if (i == 0 and j == 0) then
-				add_tile(map, i, j, repack(wall.topleft))
+				room.tiles[i][j] = wall.topleft
 			elseif (i == 15 and j == 0) then
-				add_tile(map, i, j, repack(wall.topright))
+				room.tiles[i][j] = wall.topright
 			elseif (i == 0 and j == 11) then
-				add_tile(map, i, j, repack(wall.bottomleft))
+				room.tiles[i][j] = wall.bottomleft
 			elseif (i == 15 and j == 11) then
-				add_tile(map, i, j, repack(wall.bottomright))
+				room.tiles[i][j] = wall.bottomright
 			elseif (i == 0 or i == 15) then
-				add_tile(map, i, j, repack(wall.vertical))
+				room.tiles[i][j] = wall.vertical
 			elseif (j == 0 or j == 11) then
-				add_tile(map, i, j, repack(wall.horizontal))
+				room.tiles[i][j] = wall.horizontal
 			end
 		end
 	end
-
-	if random(2) == 1 then
-		check_add_decoration(map, 4, 3, lightDecor.candle2)
-	end
-	if random(2) == 1 then
-		check_add_decoration(map, 11, 3, lightDecor.candle2)
-	end
-	if random(2) == 1 then
-		check_add_decoration(map, 4, 9, lightDecor.candle2)
-	end
-	if random(2) == 1 then
-		check_add_decoration(map, 11, 9, lightDecor.candle2)
-	end
 end
 
-local function add_exit(map, direction)
-	if direction > 4 then return end
-
-	if direction == UP then
-		add_tile(map, 6, 0, repack(wall.bottomright))
-		add_tile(map, 7, 0, repack(floor.singleleft))
-		add_tile(map, 8, 0, repack(floor.singleright))
-		add_tile(map, 9, 0, repack(wall.bottomleft))
-	elseif direction == LEFT then
-		add_tile(map, 0, 4, repack(wall.bottomright))
-		add_tile(map, 0, 5, repack(floor.singletop))
-		add_tile(map, 0, 6, repack(floor.singlebottom))
-		add_tile(map, 0, 7, repack(wall.topright))
-	elseif direction == RIGHT then
-		add_tile(map, 15, 4, repack(wall.bottomleft))
-		add_tile(map, 15, 5, repack(floor.singletop))
-		add_tile(map, 15, 6, repack(floor.singlebottom))
-		add_tile(map, 15, 7, repack(wall.topleft))
-	elseif direction == DOWN then
-		add_tile(map, 6, 11, repack(wall.topright))
-		add_tile(map, 7, 11, repack(floor.singleleft))
-		add_tile(map, 8, 11, repack(floor.singleright))
-		add_tile(map, 9, 11, repack(wall.topleft))
-	end
-end
-
-local function add_level_exit(map)
-	success = false
-	while not success do
-		x = random(14)
-		y = random(10)
-		success = check_add_tile(map, x, y, special.level_exit)
-	end
-end
-
-local function build_vert_center_coridoor(map, offset)
-	for j=0,4 do
-		add_tile(map, 6, offset+j, repack(wall.vertical));
-		add_tile(map, 7, offset+j, repack(floor.center));
-		add_tile(map, 8, offset+j, repack(floor.center));
-		add_tile(map, 9, offset+j, repack(wall.vertical));
+local function build_vert_center_coridoor(room, offset)
+	for i=0,4 do
+		room.tiles[6][offset+i] = wall.vertical
+		room.tiles[7][offset+i] = floor.center
+		room.tiles[8][offset+i] = floor.center
+		room.tiles[9][offset+i] = wall.vertical
 	end
 	if random(2) == 1 then
-		add_decoration(map, 6, offset + 2, repack(lightDecor.candle1))
+		room.decor[6][offset+2] = lightDecor.candle1
 	end
 	if random(2) == 1 then 
-		add_decoration(map, 9, offset + 2, repack(lightDecor.candle1))
+		room.decor[6][offset+2] = lightDecor.candle1
 	end
 end
 
-local function build_horiz_center_coridoor(map, offset)
+local function build_horiz_center_coridoor(room, offset)
+	info("Building horizontal corrdior: " .. offset)
 	for i=0,6 do
-		add_tile(map, offset+i, 4, repack(wall.horizontal));
-		add_tile(map, offset+i, 5, repack(floor.center));
-		add_tile(map, offset+i, 6, repack(floor.center));
-		add_tile(map, offset+i, 7, repack(wall.horizontal));
+		room.tiles[offset+i][4] = wall.horizontal
+		room.tiles[offset+i][5] = floor.center
+		room.tiles[offset+i][6] = floor.center
+		room.tiles[offset+i][7] = wall.horizontal
 	end
 	if random(2) == 1 then
-		check_add_decoration(map, offset+3, 4, lightDecor.candle1)
+		room.decor[offset+3][4] = lightDecor.candle1
 	end
 	if random(2) == 1 then 
-		check_add_decoration(map, offset+3, 7, lightDecor.candle1)
+		room.decor[offset+3][7] = lightDecor.candle1
 	end
 end
 
-local function build_center_corner_walls(map, exits)
+local function build_center_corner_walls(room, exits)
 	if exits.down then
 		if exits.left then
-			add_tile(map, 6, 7, repack(wall.topright))
+			room.tiles[6][7] = wall.topright
 		end
 		if exits.right then
-			add_tile(map, 9, 7, repack(wall.topleft))
+			room.tiles[9][7] = wall.topleft
 		end
 	else
 		if not exits.left then
-			add_tile(map, 6, 7, repack(wall.bottomleft))
+			room.tiles[6][7] = wall.bottomleft
 		end
 		if not exits.right then
-			add_tile(map, 9, 7, repack(wall.bottomright))
+			room.tiles[9][7] = wall.bottomright
 		end
 	end
 	if exits.up then
 		if exits.left then
-			add_tile(map, 6, 4, repack(wall.bottomright))
+			room.tiles[6][4] = wall.bottomright
 		end
 		if exits.right then
-			add_tile(map, 9, 4, repack(wall.bottomleft))
+			room.tiles[9][4] = wall.bottomleft
 		end
 	else
 		if not exits.left then
-			add_tile(map, 6, 4, repack(wall.topleft))
+			room.tiles[6][4] = wall.topleft
 		end
 		if not exits.right then
-			add_tile(map, 9, 4, repack(wall.topright))
+			room.tiles[9][4] = wall.topright
 		end
 	end
 end
 
-local module = {}
-
-function module.add_full_lighting(map)
-		check_add_decoration(map, 4, 3, lightDecor.candle2)
-		check_add_decoration(map, 11, 3, lightDecor.candle2)
-		check_add_decoration(map, 4, 9, lightDecor.candle2)
-		check_add_decoration(map, 11, 9, lightDecor.candle2)
+local function add_exits_to_room(room)
+	for _,direction in ipairs(room.exits) do
+		if direction == UP then
+			room.tiles[6][0] = wall.bottomright
+			room.tiles[7][0] = floor.singleleft
+			room.tiles[8][0] = floor.singleright
+			room.tiles[9][0] = wall.bottomleft
+		elseif direction == LEFT then
+			room.tiles[0][4] = wall.bottomright
+			room.tiles[0][5] = floor.singletop
+			room.tiles[0][6] = floor.singlebottom
+			room.tiles[0][7] = wall.topright
+		elseif direction == RIGHT then
+			room.tiles[15][4] = wall.bottomleft
+			room.tiles[15][5] = floor.singletop
+			room.tiles[15][6] = floor.singlebottom
+			room.tiles[15][7] = wall.topleft
+		elseif direction == DOWN then
+			room.tiles[6][11] = wall.topright
+			room.tiles[7][11] = floor.singleleft
+			room.tiles[8][11] = floor.singleright
+			room.tiles[9][11] = wall.topleft
+		end
+	end
 end
 
-function module.build_coridoor_room(map, room)
+local function build_coridoor_room(room)
 	local exits = {
 		up = false,
 		down = false,
@@ -408,51 +398,126 @@ function module.build_coridoor_room(map, room)
 	end
 
 	-- Fill the center
-	add_tile(map, 6, 5, repack(wall.vertical))
-	add_tile(map, 6, 6, repack(wall.vertical))
-	add_tile(map, 7, 4, repack(wall.horizontal))
-	add_tile(map, 7, 5, repack(floor.center))
-	add_tile(map, 7, 6, repack(floor.center))
-	add_tile(map, 7, 7, repack(wall.horizontal))
-	add_tile(map, 8, 4, repack(wall.horizontal))
-	add_tile(map, 8, 5, repack(floor.center))
-	add_tile(map, 8, 6, repack(floor.center))
-	add_tile(map, 8, 7, repack(wall.horizontal))
-	add_tile(map, 9, 5, repack(wall.vertical))
-	add_tile(map, 9, 6, repack(wall.vertical))
+	room.tiles[6][5] = wall.vertical
+	room.tiles[6][6] = wall.vertical
+	room.tiles[7][4] = wall.horizontal
+	room.tiles[7][5] = floor.center
+	room.tiles[7][6] = floor.center
+	room.tiles[7][7] = wall.horizontal
+	room.tiles[8][4] = wall.horizontal
+	room.tiles[8][5] = floor.center
+	room.tiles[8][6] = floor.center
+	room.tiles[8][7] = wall.horizontal
+	room.tiles[9][5] = wall.vertical
+	room.tiles[9][6] = wall.vertical
 
 	-- Build the coridoors
-	if exits.down then build_vert_center_coridoor(map, 7) end
-	if exits.up then build_vert_center_coridoor(map, 0) end
-	if exits.left then build_horiz_center_coridoor(map, 0) end
-	if exits.right then build_horiz_center_coridoor(map, 9) end
+	if exits.down then build_vert_center_coridoor(room, 7) end
+	if exits.up then build_vert_center_coridoor(room, 0) end
+	if exits.left then build_horiz_center_coridoor(room, 0) end
+	if exits.right then build_horiz_center_coridoor(room, 9) end
 
-	build_center_corner_walls(map, exits)
+	build_center_corner_walls(room, exits)
 end
 
-function module.create_room ()
-	return {
-		exits = {},
-		active = false,
-		goal = false,
-		path_dir = 0,
-		type = "room"
-	}
-end
-
-function module.build_square_room(map, room)
-	add_tiles_to_room(map);
-	add_walls_to_room(map);
-	for exit=1, #room.exits do
-		add_exit(map, room.exits[exit]);
+local function add_level_exit(room)
+	success = false
+	while not success do
+		x = random(14)
+		y = random(10)
+		if not room.decor[x][y] then
+			success = true
+			room.tiles[x][y] = special.level_exit
+		end
 	end
+end
+
+local function build_normal_room(room)
+	add_tiles_to_room(room)
+	add_random_decor_to_room(room)
+	add_walls_to_room(room)
+	add_exits_to_room(room)
+	add_pits_to_room(room)
+
 	if room.goal then
-		add_level_exit(map);
+		add_level_exit(room)
 	end
 
 	if CURRENT_LEVEL > 3 and random(10) == 1 then
 		directions = { "LEFT", "RIGHT", "UP", "DOWN" }
-		set_modifier(map, "WINDY", directions[random(#directions)]);
+		room.modifier.type = "WINDY"
+		room.modifier.arg = directions[random(#directions)]
+	end
+
+	return room
+end
+
+local module = {}
+
+function module.add_exit(room, direction)
+	if direction > 4 then
+		return
+	end
+
+	table.insert(room.exits, direction)
+end
+
+function module.add_full_lighting(room)
+		room.decor[4][3] = lightDecor.candle2
+		room.decor[11][3] = lightDecor.candle2
+		room.decor[4][9] = lightDecor.candle2
+		room.decor[11][9] = lightDecor.candle2
+end
+
+function module.create_empty_room()
+	room = {
+		exits = {},
+		active = false,
+		goal = false,
+		path_dir = 0,
+		type = "room",
+		tiles = {},
+		decor = {},
+		modifier = {
+			type = nil,
+			arg = nil
+		},
+		monsters = {}
+	}
+	for i=0,15 do
+		room.tiles[i] = {}
+		room.decor[i] = {}
+		room.monsters[i] = {}
+		for j=0,11 do
+			room.tiles[i][j] = nil
+			room.decor[i][j] = nil
+			room.monsters[i][j] = nil
+		end
+	end
+	return room
+end
+
+function module.build_room(room)
+	if room.type == "coridoor" then
+		build_coridoor_room(room)
+	else
+		build_normal_room(room)
+	end
+end
+
+function module.load_room(map, room)
+	for i=0, 15 do
+		for j=0, 11 do
+			if room.tiles[i][j] then
+				add_tile(map, i, j, repack(room.tiles[i][j]))
+			end
+			if room.decor[i][j] then
+				add_decoration(map, i, j, repack(room.decor[i][j]))
+			end
+		end
+	end
+	if room.modifier.type then
+		set_modifier(map, room.modifier.type, room.modifier.arg)
 	end
 end
 
