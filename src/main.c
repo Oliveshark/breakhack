@@ -299,6 +299,7 @@ static void
 createInGameGameOverMenu(void)
 {
 	struct MENU_ITEM menu_items[] = {
+		{ "NEW GAME", startGame },
 		{ "MAIN MENU", goToMainMenu },
 		{ "QUIT", exitGame },
 	};
@@ -307,7 +308,7 @@ createInGameGameOverMenu(void)
 		menu_destroy(inGameMenu);
 		inGameMenu = NULL;
 	}
-	createMenu(&inGameMenu, menu_items, 2);
+	createMenu(&inGameMenu, menu_items, 3);
 }
 
 static void
@@ -582,6 +583,7 @@ run_game(void)
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
+		toggleInGameMenu(NULL);
 	} else {
 		check_next_level();
 	}

@@ -27,7 +27,7 @@
 #include "mixer.h"
 #include "collisions.h"
 
-typedef struct MenuItems_t {
+typedef struct MenuItems {
 	Sprite *sprite;
 	Sprite *hsprite;
 	GuiButton *button;
