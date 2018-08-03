@@ -7,7 +7,7 @@ project(breakhack C)
 set(breakhack_GAME_TITLE "BreakHack")
 set(breakhack_MAJOR_VERSION 0)
 set(breakhack_MINOR_VERSION 1)
-set(breakhack_PATCH_VERSION 6)
+set(breakhack_PATCH_VERSION 7)
 set(breakhack_RELEASE_TYPE "(early access)")
 
 include(FindLua)
@@ -171,6 +171,7 @@ add_executable(breakhack
 	src/db
 	src/settings
 	src/actiontextbuilder
+	src/animation
 	)
 
 # Sqlite has some warnings that I we don't need to see

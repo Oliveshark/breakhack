@@ -100,6 +100,7 @@ projectile_update(Projectile *p, UpdateData *data)
 			linkedlist_append(&data->map->items, item);
 		}
 		monster_hit(space->monster, dmg);
+		player_monster_kill_check(data->player, space->monster);
 	}
 	mixer_play_effect(SWORD_HIT);
 	p->alive = false;

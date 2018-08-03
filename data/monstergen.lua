@@ -241,15 +241,42 @@ if random(100) == 1 then
 	enemies = concat(enemies, platino);
 end
 
-function module.add_monster_to_room(map, roomx, roomy)
+function module.add_monsters_to_room(room, roomx, roomy)
 	local count = random(3)
 	if (CURRENT_LEVEL > 3) then
 		count = random(4)
 	end
-	for i=0,count do
-		local x = (roomx * 512) + (random(13) + 1) * 32
-		local y = (roomy * 384) + (random(9) + 1) * 32
-		add_monster(map, x, y, repack(enemies[random(#enemies)]));
+	local i = 0
+	while i < count do
+		local rx = random(13) + 1
+		local ry = random(9) + 1
+		if not room.decor[rx][ry]
+			and not room.monsters[rx][ry]
+			and (room.tiles[rx][ry]
+				and not room.tiles[rx][ry][5]
+				and not room.tiles[rx][ry][8])
+			then
+
+			local x = (roomx * 512) + rx * 32
+			local y = (roomy * 384) + ry * 32
+			room.monsters[rx][ry] = {
+				x,
+				y,
+				enemies[random(#enemies)]
+			}
+			i = i + 1
+		end
+	end
+end
+
+function module.load_monsters(map, monsters)
+	for i=0,15 do
+		for j=0,11 do
+			monster = monsters[i][j]
+			if monster then
+				add_monster(map, monster[1], monster[2], repack(monster[3]))
+			end
+		end
 	end
 end
 

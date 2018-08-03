@@ -26,7 +26,7 @@
 #include "map_room_modifiers.h"
 #include "input.h"
 
-typedef struct Sprite_t Sprite;
+typedef struct Sprite Sprite;
 typedef struct Map_t Map;
 typedef struct Monster_t Monster;
 typedef struct Player_t Player;
@@ -66,8 +66,6 @@ void roommatrix_build_lightmap(RoomMatrix*);
 void roommatrix_render_mouse_square(RoomMatrix*, Camera*);
 
 void roommatrix_render_lightmap(RoomMatrix*, Camera*);
-
-void roommatrix_reset(RoomMatrix*);
 
 void roommatrix_destroy(RoomMatrix*);
 

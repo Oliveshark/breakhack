@@ -25,6 +25,29 @@
 #include "item.h"
 #include "update_data.h"
 
+static void
+roommatrix_reset(RoomMatrix *m)
+{
+	RoomSpace *space;
+	int i, j;
+
+	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
+			space = &m->spaces[i][j];
+			space->occupied = false;
+			space->lethal = false;
+			space->lightsource = false;
+			space->light = 0;
+			space->monster = NULL;
+			space->player = NULL;
+			while (space->items != NULL)
+				linkedlist_pop(&space->items);
+		}
+	}
+	m->roomPos = (Position) { 0, 0 };
+	m->playerRoomPos = (Position) { 1, 1 };
+}
+
 RoomMatrix* roommatrix_create(void)
 {
 	int i, j;
@@ -240,29 +263,6 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 #endif // LIGHTMAPDEBUG
 		}
 	}
-}
-
-void
-roommatrix_reset(RoomMatrix *m)
-{
-	RoomSpace *space;
-	int i, j;
-
-	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
-		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			space = &m->spaces[i][j];
-			space->occupied = false;
-			space->lethal = false;
-			space->lightsource = false;
-			space->light = 0;
-			space->monster = NULL;
-			space->player = NULL;
-			while (space->items != NULL)
-				linkedlist_pop(&space->items);
-		}
-	}
-	m->roomPos = (Position) { 0, 0 };
-	m->playerRoomPos = (Position) { 1, 1 };
 }
 
 void roommatrix_destroy(RoomMatrix *m)

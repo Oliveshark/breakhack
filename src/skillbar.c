@@ -222,6 +222,10 @@ render_skill_sparkles(SkillBar *bar, Player *player)
 		return;
 	}
 
+	if (player->stats.lvl == 1) {
+		return;
+	}
+
 	Position pos = { 0, GAME_VIEW_HEIGHT };
 	Dimension dim = { 32, 32 };
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {

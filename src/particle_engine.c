@@ -252,7 +252,7 @@ particle_engine_sparkle(Position pos, Dimension dim)
 
 		alpha = get_random(155) + 100;
 
-		yv = (get_random(100) + 100) * -1;
+		yv = -(get_random(100) + 100);
 
 		lt = get_random(20);
 

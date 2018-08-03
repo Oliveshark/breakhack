@@ -108,10 +108,6 @@ bool initSDL(void)
 	if (dim.height > 1080) {
 		info("Hi resolution screen detected (%u x %u)", dim.width, dim.height);
 		renderScale = ((double) dim.height)/1080;
-		if (renderScale > 2)
-			renderScale = 3;
-		else if (renderScale > 1)
-			renderScale = 2;
 		info("Scaling by %f", renderScale);
 	}
 
@@ -250,6 +246,7 @@ goToMainMenu(void *unused)
 	inGameMenu = NULL;
 	initMainMenu();
 	Position p = { 0, 0 };
+	gPlayer->sprite->pos = (Position) { 32, 32 };
 	map_set_current_room(gMap, &p);
 	camera_follow_position(gCamera, &p);
 }
@@ -299,6 +296,22 @@ initInGameMenu(void)
 }
 
 static void
+createInGameGameOverMenu(void)
+{
+	struct MENU_ITEM menu_items[] = {
+		{ "NEW GAME", startGame },
+		{ "MAIN MENU", goToMainMenu },
+		{ "QUIT", exitGame },
+	};
+
+	if (inGameMenu) {
+		menu_destroy(inGameMenu);
+		inGameMenu = NULL;
+	}
+	createMenu(&inGameMenu, menu_items, 3);
+}
+
+static void
 initMainMenu(void)
 {
 	struct MENU_ITEM menu_items[] = {
@@ -313,6 +326,15 @@ initMainMenu(void)
 
 	createMenu(&mainMenu, menu_items, 2);
 	mixer_play_music(MENU_MUSIC);
+}
+
+static void
+repopulate_roommatrix(void)
+{
+	roommatrix_populate_from_map(gRoomMatrix, gMap);
+	roommatrix_add_lightsource(gRoomMatrix,
+		&gPlayer->sprite->pos);
+	roommatrix_build_lightmap(gRoomMatrix);
 }
 
 static void
@@ -341,6 +363,7 @@ resetGame(void)
 
 	map_set_current_room(gMap, &gPlayer->sprite->pos);
 	camera_follow_position(gCamera, &gPlayer->sprite->pos);
+	repopulate_roommatrix();
 }
 
 static bool
@@ -461,7 +484,7 @@ populateUpdateData(UpdateData *data, float deltatime)
 }
 
 static void
-run_game(void)
+run_game_update(void)
 {
 	static UpdateData updateData;
 	static unsigned int playerLevel = 1;
@@ -471,11 +494,6 @@ run_game(void)
 
 	map_clear_dead_monsters(gMap, gPlayer);
 	map_clear_collected_items(gMap);
-	roommatrix_populate_from_map(gRoomMatrix, gMap);
-	roommatrix_add_lightsource(gRoomMatrix,
-		&gPlayer->sprite->pos);
-
-	roommatrix_build_lightmap(gRoomMatrix);
 
 	populateUpdateData(&updateData, deltaTime);
 	if (playerLevel != gPlayer->stats.lvl) {
@@ -500,13 +518,19 @@ run_game(void)
 		if (player_turn_over(gPlayer)) {
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
+			repopulate_roommatrix();
 		}
 	} else if (currentTurn == MONSTER) {
 		if (map_move_monsters(gMap, gRoomMatrix)) {
 			currentTurn = PLAYER;
+			repopulate_roommatrix();
 		}
 	}
+}
 
+static void
+run_game_render(void)
+{
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
 
@@ -518,6 +542,9 @@ run_game(void)
 		player_render(gPlayer, gCamera);
 
 	map_render_top_layer(gMap, gCamera);
+
+	if (!is_player_dead())
+		player_render_toplayer(gPlayer, gCamera);
 
 	if (gPlayer->class == MAGE || gPlayer->class == PALADIN)
 		roommatrix_render_mouse_square(gRoomMatrix, gCamera);
@@ -547,6 +574,14 @@ run_game(void)
 	pointer_render(gPointer, gCamera);
 
 	SDL_RenderPresent(gRenderer);
+}
+
+static void
+run_game(void)
+{
+	run_game_update();
+
+	run_game_render();
 
 	if (gGameState == PLAYING && is_player_dead()) {
 		camera_shake(VECTOR2D_RIGHT, 800);
@@ -554,6 +589,8 @@ run_game(void)
 		gui_event_message("You died!");
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
+		createInGameGameOverMenu();
+		toggleInGameMenu(NULL);
 	} else {
 		check_next_level();
 	}

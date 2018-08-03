@@ -66,7 +66,11 @@ monster_state_change(Monster *m, StateType newState)
 
 	m->state.current = newState;
 	m->state.stepsSinceChange = 0;
-	m->stateIndicator.displayCount = 5;
+
+	if (newState == SLEEPING)
+		m->stateIndicator.displayCount = -1;
+	else
+		m->stateIndicator.displayCount = 5;
 
 	monster_set_sprite_clip_for_current_state(m);
 }
@@ -241,8 +245,8 @@ monster_drunk_walk(Monster *m, RoomMatrix *rm)
 	}
 }
 
-static void
-monster_agressive_walk(Monster *m, RoomMatrix *rm)
+static Direction
+get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position *dest)
 {
 	int x_dist, y_dist;
 	Position mPos;
@@ -257,21 +261,21 @@ monster_agressive_walk(Monster *m, RoomMatrix *rm)
 		unsigned int nextScore = 0;
 
 		switch (i) {
-		case UP:
-			next.y -= 1;
-			break;
-		case DOWN:
-			next.y += 1;
-			break;
-		case LEFT:
-			next.x -= 1;
-			break;
-		case RIGHT:
-			next.x += 1;
-			break;
+			case UP:
+				next.y -= 1;
+				break;
+			case DOWN:
+				next.y += 1;
+				break;
+			case LEFT:
+				next.x -= 1;
+				break;
+			case RIGHT:
+				next.x += 1;
+				break;
 		}
 
-		if (position_equals(&next, &rm->playerRoomPos)) {
+		if (position_equals(&next, dest)) {
 			chosenDirection = (Direction) i;
 			break;
 		}
@@ -279,8 +283,8 @@ monster_agressive_walk(Monster *m, RoomMatrix *rm)
 		if (!position_in_roommatrix(&next))
 			continue;
 
-		x_dist = abs(next.x - rm->playerRoomPos.x);
-		y_dist = abs(next.y - rm->playerRoomPos.y);
+		x_dist = abs(next.x - dest->x);
+		y_dist = abs(next.y - dest->y);
 
 		if (rm->spaces[next.x][next.y].occupied || rm->spaces[next.x][next.y].lethal) {
 			nextScore += 50;
@@ -289,23 +293,31 @@ monster_agressive_walk(Monster *m, RoomMatrix *rm)
 		nextScore += x_dist > y_dist ? x_dist : y_dist;
 		if (nextScore < currentScore) {
 			currentScore = nextScore;
-			chosenDirection = (Direction)i;
+			chosenDirection = (Direction) i;
 		}
 	}
 
+	return chosenDirection;
+}
+
+static void
+monster_agressive_walk(Monster *m, RoomMatrix *rm)
+{
+	unsigned int chosenDirection = get_optimal_move_towards(m, rm, &rm->playerRoomPos);
+
 	switch (chosenDirection) {
-	case UP:
-		move(m, rm, VECTOR2D_UP);
-		break;
-	case DOWN:
-		move(m, rm, VECTOR2D_DOWN);
-		break;
-	case LEFT:
-		move(m, rm, VECTOR2D_LEFT);
-		break;
-	case RIGHT:
-		move(m, rm, VECTOR2D_RIGHT);
-		break;
+		case UP:
+			move(m, rm, VECTOR2D_UP);
+			break;
+		case DOWN:
+			move(m, rm, VECTOR2D_DOWN);
+			break;
+		case LEFT:
+			move(m, rm, VECTOR2D_LEFT);
+			break;
+		case RIGHT:
+			move(m, rm, VECTOR2D_RIGHT);
+			break;
 	}
 }
 
@@ -319,7 +331,6 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 
 	x_dist = mPos.x - rm->playerRoomPos.x;
 	y_dist = mPos.y - rm->playerRoomPos.y;
-
 
 	if (abs(x_dist) > abs(y_dist)) {
 		if (x_dist > 0)
@@ -389,7 +400,9 @@ monster_update(Monster *m, UpdateData *data)
 			return;
 
 		m->stateIndicator.shownOnPlayerRoomEnter = true;
-		if (m->state.current != PASSIVE && m->state.current != STATIONARY)
+		if (m->state.current == SLEEPING)
+			m->stateIndicator.displayCount = -1; // Sleeping state is always shown
+		else if (m->state.current != PASSIVE && m->state.current != STATIONARY)
 			m->stateIndicator.displayCount = 5;
 	} else {
 		m->stateIndicator.shownOnPlayerRoomEnter = false;
@@ -486,7 +499,7 @@ monster_render(Monster *m, Camera *cam)
 		return;
 
 	sprite_render(m->sprite, cam);
-	if (m->stateIndicator.displayCount > 0)
+	if (m->stateIndicator.displayCount != 0)
 		sprite_render(m->stateIndicator.sprite, cam);
 }
 
