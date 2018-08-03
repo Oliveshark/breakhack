@@ -82,6 +82,8 @@ create_rect_particle(void)
 	return p;
 }
 
+/*
+ * Not used right now, hide for now
 static Particle *
 create_line_particle(void)
 {
@@ -99,6 +101,7 @@ create_line_particle(void)
 
 	return p;
 }
+*/
 
 static void
 check_engine(void)
