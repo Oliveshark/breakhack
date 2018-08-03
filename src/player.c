@@ -145,14 +145,6 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 			gui_log("You missed %s", space->monster->lclabel);
 			player->stat_data.misses += 1;
 		}
-
-		particle_engine_slash((Position) {
-				      player->sprite->pos.x + ((int) direction.x * 32),
-				      player->sprite->pos.y + ((int) direction.y * 32)
-				      }, (Dimension) {
-				      32, 32
-				      });
-
 		player_monster_kill_check(player, space->monster);
 
 		action_spent(player);

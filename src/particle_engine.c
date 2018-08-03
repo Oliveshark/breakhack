@@ -271,24 +271,6 @@ particle_engine_sparkle(Position pos, Dimension dim)
 }
 
 void
-particle_engine_slash(Position pos, Dimension dim)
-{
-	Particle *p = create_line_particle();
-	p->particle.line.startPos = pos;
-	p->particle.line.endPos = (Position) {
-		dim.width + pos.x,
-		dim.height + pos.y
-	};
-	p->velocity = (Vector2d) { 0.0, 0.0 };
-	p->movetime = 0.0;
-	p->lifetime = 30;
-	p->blend_mode = SDL_BLENDMODE_BLEND;
-	p->color = C_WHITE;
-	p->fixed = false;
-	linkedlist_append(&engine->global_particles, p);
-}
-
-void
 particle_engine_wind(Vector2d direction)
 {
 	unsigned int count = 5;
