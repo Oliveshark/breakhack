@@ -185,6 +185,7 @@ target_link_libraries(breakhack
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}
+	m # We need the math library
 	)
 
 if (NOT PHYSFS_FOUND)

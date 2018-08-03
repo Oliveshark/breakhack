@@ -39,7 +39,7 @@ typedef struct {
 	bool occupied;
 	bool lethal;
 	bool lightsource;
-	unsigned int light;
+	int light;
 	Monster *monster;
 	Player *player;
 	LinkedList *items;
@@ -66,6 +66,10 @@ void roommatrix_build_lightmap(RoomMatrix*);
 void roommatrix_render_mouse_square(RoomMatrix*, Camera*);
 
 void roommatrix_render_lightmap(RoomMatrix*, Camera*);
+
+#ifdef DEBUG
+void roommatrix_render_debug(RoomMatrix*, Camera*);
+#endif
 
 void roommatrix_destroy(RoomMatrix*);
 

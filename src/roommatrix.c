@@ -17,6 +17,7 @@
  */
 
 #include <stdlib.h>
+#include <math.h>
 #include "defines.h"
 #include "roommatrix.h"
 #include "util.h"
@@ -264,6 +265,51 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 		}
 	}
 }
+
+#ifdef DEBUG
+static void
+draw_raycasts_from(int x, int y, Camera *cam)
+{
+	double length = 4*32;
+	double x1 = x * 32 + 16;
+	double y1 = y * 32 + 16;
+	double angle = 0;
+
+	while (angle < 360) {
+		double x2 = x1 + length * cos(angle);
+		double y2 = y1 + length * sin(angle);
+		//printf("Drawing line: %fx%f -> %fx%f\n", x1, y1, x2, y2);
+		SDL_RenderDrawLine(cam->renderer,
+				   (int) x1,
+				   (int) y1,
+				   (int) x2,
+				   (int) y2);
+		angle += 7.5;
+	}
+}
+
+void
+roommatrix_render_debug(RoomMatrix *rm, Camera *cam)
+{
+	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	for (int i = 0; i < MAP_ROOM_HEIGHT; ++i) {
+		SDL_RenderDrawLine(cam->renderer, 0, i*32, MAP_ROOM_WIDTH*32, i*32);
+	}
+	for (int i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		SDL_RenderDrawLine(cam->renderer, i*32, 0, i*32, MAP_ROOM_HEIGHT*32);
+	}
+
+	// Draw raycasts
+	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 255, 100);
+	for (int i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (int j = 0; j < MAP_ROOM_HEIGHT; ++j) {
+			if (rm->spaces[i][j].lightsource) {
+				draw_raycasts_from(i, j, cam);
+			}
+		}
+	}
+}
+#endif
 
 void roommatrix_destroy(RoomMatrix *m)
 {

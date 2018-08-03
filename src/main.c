@@ -573,6 +573,10 @@ run_game_render(void)
 	}
 	pointer_render(gPointer, gCamera);
 
+#ifdef DEBUG
+	roommatrix_render_debug(gRoomMatrix, gCamera);
+#endif
+
 	SDL_RenderPresent(gRenderer);
 }
 
