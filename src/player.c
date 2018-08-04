@@ -35,11 +35,11 @@
 #include "actiontextbuilder.h"
 #include "animation.h"
 
-#define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1 }
-#define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1 }
-#define PALADIN_STATS	{ 12, 12, 8, 9, 3, 1, 1 }
-#define ROGUE_STATS	{ 12, 12, 5, 7, 1, 2, 1 }
-#define WARRIOR_STATS	{ 12, 12, 8, 9, 3, 1, 1 }
+#define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1, false, false }
+#define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1, false, false }
+#define PALADIN_STATS	{ 12, 12, 8, 9, 3, 1, 1, false, false }
+#define ROGUE_STATS	{ 12, 12, 5, 7, 1, 2, 1, false, false }
+#define WARRIOR_STATS	{ 12, 12, 8, 9, 3, 1, 1, false, false }
 
 static void
 player_levelup(Player *player)
@@ -428,8 +428,9 @@ player_create(class_t class, SDL_Renderer *renderer)
 			m_strcpy(asset, 100, "Commissions/Warrior.png");
 			player->stats = (Stats) WARRIOR_STATS;
 			player->skills[0] = skill_create(FLURRY);
-			player->skills[1] = skill_create(CHARGE);
-			player->skills[2] = skill_create(DAGGER_THROW);
+			player->skills[1] = skill_create(BASH);
+			player->skills[2] = skill_create(CHARGE);
+			player->skills[3] = skill_create(DAGGER_THROW);
 			break;
 	}
 

@@ -25,6 +25,7 @@
 #include "stats.h"
 #include "random.h"
 #include "util.h"
+#include "defines.h"
 
 unsigned int
 stats_fight(Stats *attacker, Stats *defender)
@@ -32,11 +33,23 @@ stats_fight(Stats *attacker, Stats *defender)
 	int atkRoll, defRoll, dmgRoll;
 	bool critical = false;
 
-	atkRoll = get_random(19) + 1;
+	if (attacker->advantage)
+		atkRoll = max(get_random(19), get_random(19)) + 1;
+	else if (attacker->disadvantage)
+		atkRoll = min(get_random(19), get_random(19)) + 1;
+	else
+		atkRoll = get_random(19) + 1;
+
 	if (atkRoll == 20)
 		critical = true;
 	atkRoll += attacker->atk;
-	defRoll = (get_random(19) + 1) + defender->def;
+
+	if (defender->advantage)
+		defRoll = max(get_random(19), get_random(19)) + 1 + defender->def;
+	else if (defender->disadvantage)
+		defRoll = min(get_random(19), get_random(19)) + 1 + defender->def;
+	else
+		defRoll = get_random(19) + 1 + defender->def;
 	dmgRoll = 0;
 
 	if (atkRoll >= defRoll) {

@@ -27,6 +27,8 @@ typedef struct Stats_t {
 	int def;			/* Defence rating */
 	unsigned int speed;	/* Speed */
 	unsigned int lvl;	/* Level */
+	bool advantage;
+	bool disadvantage;
 } Stats;
 
 unsigned int

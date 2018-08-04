@@ -43,11 +43,13 @@ typedef enum {
 	SCARED,
 	STATIONARY,
 	SLEEPING,
-	SCANNING
+	SCANNING,
+	STUNNED
 } StateType;
 
-typedef struct {
+typedef struct State {
 	StateType current;
+	StateType last;
 	unsigned int stepsSinceChange;
 } State;
 
@@ -93,6 +95,9 @@ monster_drop_loot(Monster*, Map*, Player*);
 
 void
 monster_set_behaviour(Monster *, MonsterBehaviour behaviour);
+
+void
+monster_set_stunned(Monster *m);
 
 void
 monster_destroy(Monster*);

@@ -231,7 +231,7 @@ lua_checkstats(lua_State *L, int index)
 	// Reset the stack
 	lua_pop(L, 6);
 
-	Stats stats = { hp, hp, dmg, atk, def, speed, 1 };
+	Stats stats = { hp, hp, dmg, atk, def, speed, 1, false, false };
 	return stats;
 }
 

@@ -178,6 +178,67 @@ create_throw_dagger(void)
 }
 
 static bool
+skill_bash(Skill *skill, SkillData *data)
+{
+	UNUSED (skill);
+
+	Position playerPos = position_to_matrix_coords(&data->player->sprite->pos);
+	Position targetPos = playerPos;
+	targetPos.x += (int) data->direction.x;
+	targetPos.y += (int) data->direction.y;
+
+	player_turn(data->player, &data->direction);
+
+	if (!position_in_roommatrix(&targetPos)) {
+		return false;
+	}
+
+	animation_run(data->player->swordAnimation);
+	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
+	mixer_play_effect(SWING1);
+	if (monster) {
+		gui_log("You bash %s with your shield", monster->lclabel);
+		unsigned int dmg = stats_fight(&data->player->stats, &monster->stats);
+		if (dmg > 0) {
+			gui_log("You hit for %u damage", dmg);
+			if (monster->stats.hp > 0) {
+				gui_log("%s seems dazed and confused", monster->label);
+				monster_set_stunned(monster);
+			}
+			mixer_play_effect(SWORD_HIT);
+			data->player->stat_data.hits += 1;
+		} else {
+			gui_log("You missed %s", monster->lclabel);
+		}
+		monster_hit(monster, dmg);
+	} else {
+		gui_log("You bash your shield at nothing");
+	}
+	player_monster_kill_check(data->player, monster);
+
+	return true;
+}
+
+static Skill *
+create_bash(void)
+{
+	Texture *t = texturecache_add("Extras/Skills.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(96, 0);
+	s->fixed = true;
+	Skill *skill = create_default("Bash", s);
+	skill->levelcap = 3;
+	skill->instantUse = false;
+	skill->resetTime = 2;
+	skill->available = NULL;
+	skill->use = skill_bash;
+	skill->actionRequired = true;
+	return skill;
+}
+
+static bool
 skill_sip_health_available(Player *player)
 {
 	return player->potion_sips > 0 && player->stats.hp != player->stats.maxhp;
@@ -316,6 +377,8 @@ skill_create(enum SkillType t)
 			return create_charge();
 		case DAGGER_THROW:
 			return create_throw_dagger();
+		case BASH:
+			return create_bash();
 		default:
 			fatal("Unknown SkillType %u", (unsigned int) t);
 			return NULL;

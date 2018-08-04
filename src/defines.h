@@ -68,6 +68,9 @@
 #define C_YELLOW (SDL_Color)	{	255, 255,   0, 255 }
 #define C_BLACK (SDL_Color)		{	  0,   0,   0, 255 }
 
+#define max(a, b) (a > b ? a : b)
+#define min(a, b) (a < b ? a : b)
+
 typedef enum Direction_t {
 	UP, DOWN, LEFT, RIGHT
 } Direction;

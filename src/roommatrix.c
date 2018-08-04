@@ -25,6 +25,7 @@
 #include "player.h"
 #include "item.h"
 #include "update_data.h"
+#include "defines.h"
 
 static void
 roommatrix_reset(RoomMatrix *m)
@@ -151,25 +152,6 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 		linkedlist_push(&rm->spaces[position.x][position.y].items, item);
 	}
 }
-
-// TODO(Linus): These should probably be macros
-#undef min
-#ifndef min
-static int
-min(int a, int b)
-{
-	return a > b ? b : a;
-}
-#endif // min
-
-#undef max
-#ifndef max
-static int
-max(int a, int b)
-{
-	return a > b ? a : b;
-}
-#endif // max
 
 void
 roommatrix_add_lightsource(RoomMatrix *matrix, Position *pos)

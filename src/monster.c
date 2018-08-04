@@ -51,6 +51,9 @@ monster_set_sprite_clip_for_current_state(Monster *m)
 		case SLEEPING:
 			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16 * 4);
 			break;
+		case STUNNED:
+			m->stateIndicator.sprite->clip = CLIP16(16 * 13, 16 * 3);
+			break;
 		case SCANNING:
 			m->stateIndicator.sprite->clip = CLIP16(16 * 13, 16 * 4);
 		default:
@@ -64,6 +67,7 @@ monster_state_change(Monster *m, StateType newState)
 	if (m->state.current == newState)
 		return;
 
+	m->state.last = m->state.current;
 	m->state.current = newState;
 	m->state.stepsSinceChange = 0;
 
@@ -72,12 +76,19 @@ monster_state_change(Monster *m, StateType newState)
 	else
 		m->stateIndicator.displayCount = 5;
 
+	if (newState == STUNNED)
+		m->stats.disadvantage = true;
+	else if (m->state.last == STUNNED)
+		m->stats.disadvantage = false;
+
 	monster_set_sprite_clip_for_current_state(m);
 }
 
 static void
 monster_behaviour_check_post_hit(Monster *m)
 {
+	if (m->state.current == STUNNED)
+		return;
 	switch (m->behaviour) {
 		case PACIFIST:
 		case COWARD:
@@ -156,7 +167,9 @@ monster_create(void)
 		0,  // atk
 		0,  // def
 		1,  // speed
-		1   // lvl
+		1,   // lvl
+		false, // advantage
+		false // disadvantage
 	};
 
 	m->label = NULL;
@@ -350,6 +363,16 @@ monster_move(Monster *m, RoomMatrix *rm)
 {
 	Position monsterRoomPos;
 
+	if (m->state.current == STUNNED) {
+		if (m->state.stepsSinceChange < 3) {
+			m->state.stepsSinceChange += 1;
+			return true;
+		} else {
+			monster_state_change(m, m->state.last);
+			monster_behaviour_check_post_hit(m);
+		}
+	}
+
 	monster_behaviour_check(m, rm);
 
 	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
@@ -523,6 +546,12 @@ monster_set_behaviour(Monster *m, MonsterBehaviour behaviour)
 			break;
 	}
 	monster_set_sprite_clip_for_current_state(m);
+}
+
+void
+monster_set_stunned(Monster *m)
+{
+	monster_state_change(m, STUNNED);
 }
 
 void
