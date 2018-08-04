@@ -1,0 +1,23 @@
+56af37e Removing natural lighting debug.
+c16caf3 Comments out unused function
+353b4ed Adds raycasting debug
+68cf24d Dropps the particle line slash effect.
+2aee360 Merge branch 'master' into dev
+1491dfb Minor dev-env change
+1124e88 Minor fixes
+4819eda Adds "NEW GAME" menu option to game over menu
+4612cab Adds sword animation to flurry
+b9a4a80 Fixes: #27 Suspicious code: sign conversion
+58e9c7e Fixes: #21 Complex method issue in monster.c
+b12e5d4 Fixes: #26 Dagger kills should now give XP
+b3b8208 Adds complete rewrite of lua scripts
+18e7022 Restructured main game loop a bit. Reduced function size
+252955b Removes "resume" option from menu when game over.
+988d6c5 Implemented the sword swing effect.
+79b0869 Adds sword swing effect that isn't horrible
+c96d0b6 Removes bug that made it possible to move with daggers in air.
+c6b6438 Added codefactor badge and fixed blank line issue.
+be42981 Fixed errors and adapted to new vim 8.1
+60052af Merge branch 'master' into dev
+4684e04 Minor cleaning of lua scripts
+ec67221 Adds an idea for slash animations that didn't look very good.
