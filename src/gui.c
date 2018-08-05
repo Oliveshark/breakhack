@@ -27,7 +27,7 @@
 #include "map.h"
 #include "texturecache.h"
 
-#define DEFAULT_LOG { NULL, 50, 0, 200 }
+#define DEFAULT_LOG { NULL, LOG_LINES_COUNT, 0, 200 }
 #define DEFAULT_EVENT_MESSAGES { NULL, 5, 0, 200 }
 
 #define POS_Y_COLLECTABLES	 64
@@ -529,13 +529,14 @@ gui_log(const char *fmt, ...)
 	log_data.count++;
 	if (log_data.count > log_data.len) {
 		log_data.count = log_data.len;
-		free(log_data.log[log_data.count-1]);
-		log_data.log[log_data.count-1] = NULL;
+		free(log_data.log[0]);
+		log_data.log[0] = NULL;
+		for (i = 0; i < log_data.count - 1; ++i) {
+			log_data.log[i] = log_data.log[i+1];
+			log_data.log[i+1] = NULL;
+		}
 	}
-	for (i = log_data.count - 1; i > 0; --i) {
-		log_data.log[i] = log_data.log[i-1];
-	}
-	log_data.log[0] = new_message;
+	log_data.log[log_data.count-1] = new_message;
 }
 
 void
@@ -560,15 +561,11 @@ gui_event_message(const char *fmt, ...)
 void
 gui_render_log(Gui *gui, Camera *cam)
 {
-	unsigned int i;
-	unsigned int render_count;
 	SDL_Rect box = { 16, 0, 16, 16 };
 	
-	render_count = LOG_LINES_COUNT > log_data.count ? log_data.count : LOG_LINES_COUNT;
-
 	sprite_render(gui->bottomFrame, cam);
 
-	for (i = 0; i < render_count; ++i) {
+	for (Uint32 i = 0; i < log_data.count; ++i) {
 		Texture *t;
 		box.y = 16 + ((LOG_FONT_SIZE+5) * i);
 		t = gui->log_lines[i];
