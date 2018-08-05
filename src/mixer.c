@@ -81,6 +81,7 @@ load_effects(void)
 	effects[DAGGER_PICKUP] = load_effect("Sounds/FX/dagger_pickup.wav");
 	effects[FALL0] = load_effect("Sounds/FX/fall0.wav");
 	effects[FALL1] = load_effect("Sounds/FX/fall1.wav");
+	effects[SLAM] = load_effect("Sounds/FX/slam.wav");
 }
 
 void

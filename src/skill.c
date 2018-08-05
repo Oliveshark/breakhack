@@ -195,7 +195,7 @@ skill_bash(Skill *skill, SkillData *data)
 
 	animation_run(data->player->swordAnimation);
 	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
-	mixer_play_effect(SWING1);
+	mixer_play_effect(SWING0);
 	if (monster) {
 		gui_log("You bash %s with your shield", monster->lclabel);
 		unsigned int dmg = stats_fight(&data->player->stats, &monster->stats);
@@ -205,7 +205,7 @@ skill_bash(Skill *skill, SkillData *data)
 				gui_log("%s seems dazed and confused", monster->label);
 				monster_set_stunned(monster);
 			}
-			mixer_play_effect(SWORD_HIT);
+			mixer_play_effect(SLAM);
 			data->player->stat_data.hits += 1;
 		} else {
 			gui_log("You missed %s", monster->lclabel);
@@ -368,21 +368,32 @@ create_charge(void)
 Skill*
 skill_create(enum SkillType t)
 {
+	Skill *skill;
 	switch (t) {
 		case FLURRY:
-			return create_flurry();
+			skill = create_flurry();
+			break;
 		case SIP_HEALTH:
-			return create_sip_health();
+			skill = create_sip_health();
+			break;
 		case CHARGE:
-			return create_charge();
+			skill = create_charge();
+			break;
 		case DAGGER_THROW:
-			return create_throw_dagger();
+			skill = create_throw_dagger();
+			break;
 		case BASH:
-			return create_bash();
+			skill = create_bash();
+			break;
 		default:
 			fatal("Unknown SkillType %u", (unsigned int) t);
 			return NULL;
 	}
+
+#ifdef DEBUG
+	skill->levelcap = 1;
+#endif
+	return skill;
 }
 
 void
