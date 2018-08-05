@@ -4,10 +4,10 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/liquidityc/breakhack/badge/master)](https://www.codefactor.io/repository/github/liquidityc/breakhack/overview/master)
 <!--[![Coverity Scan](https://scan.coverity.com/projects/15218/badge.svg)](https://scan.coverity.com/projects/liquidityc-breakhack)-->
 
-Something in the ways of NETHACK
+Something in the ways of a roguelike
 ================================
 
-A simple nethack similar game written in C using SDL2.
+A simple roguelike written in C using SDL2.
 
 Idea
 ----
