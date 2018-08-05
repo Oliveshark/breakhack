@@ -32,6 +32,7 @@ typedef struct Monster_t Monster;
 typedef struct Player_t Player;
 typedef struct Item_t Item;
 typedef struct Node LinkedList;
+typedef struct Trap Trap;
 
 struct UpdateData;
 
@@ -42,6 +43,7 @@ typedef struct {
 	int light;
 	Monster *monster;
 	Player *player;
+	Trap *trap;
 	LinkedList *items;
 } RoomSpace;
 

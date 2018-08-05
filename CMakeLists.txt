@@ -172,6 +172,7 @@ add_executable(breakhack
 	src/settings
 	src/actiontextbuilder
 	src/animation
+	src/trap
 	)
 
 # Sqlite has some warnings that I we don't need to see
@@ -261,6 +262,7 @@ if (NOT DEBUG_BUILD)
 			"maproombuilder.lua"
 			"menumapgen.lua"
 			"monstergen.lua"
+			"trapgen.lua"
 			"pitlayouts.dat"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
 		)

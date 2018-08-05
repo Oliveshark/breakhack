@@ -32,6 +32,7 @@
 #include "stats.h"
 #include "io_util.h"
 #include "texturecache.h"
+#include "trap.h"
 
 static
 lua_State* load_lua_state(void)
@@ -235,44 +236,64 @@ lua_checkstats(lua_State *L, int index)
 	return stats;
 }
 
-static
-int l_tile_occupied(lua_State *L)
-{
-	Map *map;
-	Room *room;
-	MapTile *tile, *decor;
-	Position *rPos;
-	int x, y;
-	bool response = false;
-
-	map = luaL_checkmap(L, 1);
-	x = (int) luaL_checkinteger(L, 2);
-	y = (int) luaL_checkinteger(L, 3);
-
-	rPos = &map->currentRoom;
-	room = map->rooms[rPos->x][rPos->y];
-
-	tile = room->tiles[x][y];
-	decor = room->decorations[x][y];
-
-	response = response || (tile && (tile->collider || tile->levelExit || tile->lethal));
-	response = response || (decor && (decor->collider || decor->levelExit));
-
-	lua_pushboolean(L, response);
-	return 1;
-}
-
-static
-int l_add_tile(lua_State *L)
+static int
+l_add_tile(lua_State *L)
 {
 	extract_tile_data(L, &map_add_tile);
 	return 0;
 }
 
-static
-int l_add_decoration(lua_State *L)
+static int
+l_add_decoration(lua_State *L)
 {
 	extract_tile_data(L, &map_add_decoration);
+	return 0;
+}
+
+static int
+l_add_trap(lua_State *L)
+{
+	Map *map = luaL_checkmap(L, 1);
+	int xpos = (int) luaL_checkinteger(L, 2);
+	int ypos = (int) luaL_checkinteger(L, 3);
+
+	// Read the table
+	lua_settop(L, 4);
+	luaL_checktype(L, 4, LUA_TTABLE);
+
+	// Get the fields from the table
+	lua_getfield(L, 4, "texturePath1");
+	lua_getfield(L, 4, "texturePath2");
+	lua_getfield(L, 4, "clipX");
+	lua_getfield(L, 4, "clipY");
+	lua_getfield(L, 4, "damage");
+
+	const char *texturePath1 = luaL_checkstring(L, -5);
+	const char *texturePath2 = luaL_checkstring(L, -4);
+	int clipx = (int) luaL_checkinteger(L, -3);
+	int clipy = (int) luaL_checkinteger(L, -2);
+	int damage = (int) luaL_checkinteger(L, -1);
+
+	Texture *t0 = texturecache_add(texturePath1);
+	Texture *t1 = texturecache_add(texturePath2);
+
+	lua_pop(L, 5);
+
+	const Position *cr = &map->currentRoom;
+
+	Trap *trap = trap_create();
+	sprite_set_texture(trap->sprite, t0, 0);
+	sprite_set_texture(trap->sprite, t1, 1);
+	trap->sprite->clip = CLIP16(clipx, clipy);
+	trap->sprite->pos = (Position) {
+		cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + xpos * TILE_DIMENSION,
+		cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + ypos * TILE_DIMENSION
+	};
+	trap->damage = damage;
+
+	Position trapPos = { xpos, ypos };
+	map_add_trap(map, &trapPos, trap);
+
 	return 0;
 }
 
@@ -315,9 +336,6 @@ l_add_monster(lua_State *L)
 	texture2 = texturecache_add(texture_path_2);
 
 	label = strdup(tmp_label);
-
-	texture1->dim = GAME_DIMENSION;
-	texture2->dim = GAME_DIMENSION;
 
 	lua_pop(L, 8);
 
@@ -419,6 +437,9 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 	lua_pushcfunction(L, l_add_decoration);
 	lua_setglobal(L, "add_decoration");
 
+	lua_pushcfunction(L, l_add_trap);
+	lua_setglobal(L, "add_trap");
+
 	lua_pushcfunction(L, l_add_texture);
 	lua_setglobal(L, "add_texture");
 
@@ -433,9 +454,6 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_add_monster);
 	lua_setglobal(L, "add_monster");
-
-	lua_pushcfunction(L, l_tile_occupied);
-	lua_setglobal(L, "tile_occupied");
 
 	lua_pushinteger(L, level);
 	lua_setglobal(L, "CURRENT_LEVEL");

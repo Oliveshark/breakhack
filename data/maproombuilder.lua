@@ -294,7 +294,6 @@ local function build_vert_center_coridoor(room, offset)
 end
 
 local function build_horiz_center_coridoor(room, offset)
-	info("Building horizontal corrdior: " .. offset)
 	for i=0,6 do
 		room.tiles[offset+i][4] = wall.horizontal
 		room.tiles[offset+i][5] = floor.center
@@ -412,7 +411,12 @@ local function add_level_exit(room)
 	while not success do
 		x = random(14)
 		y = random(10)
-		if not room.decor[x][y] then
+		if not room.decor[x][y]
+			and not room.traps[x][y]
+			and (room.tiles[x][y]
+				and not room.tiles[x][y][5]
+				and not room.tiles[x][y][8])
+			then
 			success = true
 			room.tiles[x][y] = special.level_exit
 		end
@@ -469,16 +473,19 @@ function module.create_empty_room()
 			type = nil,
 			arg = nil
 		},
-		monsters = {}
+		monsters = {},
+		traps = {}
 	}
 	for i=0,15 do
 		room.tiles[i] = {}
 		room.decor[i] = {}
 		room.monsters[i] = {}
+		room.traps[i] = {}
 		for j=0,11 do
 			room.tiles[i][j] = nil
 			room.decor[i][j] = nil
 			room.monsters[i][j] = nil
+			room.traps[i][j] = nil
 		end
 	end
 	return room

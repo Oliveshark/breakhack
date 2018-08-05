@@ -32,7 +32,8 @@
 #include "player.h"
 #include "map_room_modifiers.h"
 
-struct UpdateData;
+typedef struct UpdateData UpdateData;
+typedef struct Trap Trap;
 
 typedef struct MapTile_t {
 	int textureIndex0;
@@ -47,6 +48,7 @@ typedef struct MapTile_t {
 typedef struct Room_t {
 	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	Trap* traps[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	RoomModifierData modifier;
 } Room;
 
@@ -77,6 +79,9 @@ void
 map_add_decoration(Map *map, Position *tile_pos, MapTile*);
 
 void
+map_add_trap(Map*, Position*, Trap*);
+
+void
 map_add_monster(Map*, Monster*);
 
 bool
@@ -89,7 +94,7 @@ void
 map_clear_collected_items(Map*);
 
 void
-map_update(struct UpdateData*);
+map_update(UpdateData*);
 
 void
 map_render(Map*, Camera*);

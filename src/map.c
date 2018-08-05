@@ -25,6 +25,7 @@
 #include "gui.h"
 #include "particle_engine.h"
 #include "update_data.h"
+#include "trap.h"
 
 static
 Room* create_room(void)
@@ -38,6 +39,7 @@ Room* create_room(void)
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			room->tiles[i][j] = NULL;
 			room->decorations[i][j] = NULL;
+			room->traps[i][j] = NULL;
 		}
 	}
 	return room;
@@ -111,6 +113,17 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 		*oldTile = NULL;
 	}
 	*oldTile = tile;
+}
+
+void
+map_add_trap(Map *map, Position *pos, Trap *trap)
+{
+	const Position *cr = &map->currentRoom;
+	Trap **oldTrap = &map->rooms[cr->x][cr->y]->traps[pos->x][pos->y];
+	if (*oldTrap)
+		trap_destroy(*oldTrap);
+
+	*oldTrap = trap;
 }
 
 void
@@ -270,6 +283,8 @@ void map_render(Map *map, Camera *cam)
 					room->decorations[i][j],
 					&tilePos,
 					cam);
+			if (room->traps[i][j])
+				trap_render(room->traps[i][j], cam);
 		}
 	}
 	if (room->modifier.type == RMOD_TYPE_WINDY) {
@@ -334,6 +349,9 @@ void map_room_destroy(Room *room)
 			}
 			if (room->decorations[i][j]) {
 				free(room->decorations[i][j]);
+			}
+			if (room->traps[i][j]) {
+				trap_destroy(room->traps[i][j]);
 			}
 		}
 	}

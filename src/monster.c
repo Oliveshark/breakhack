@@ -221,7 +221,7 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 		monster_behaviour_check_post_attack(monster);
 	}
 
-	return space->occupied || space->lethal;
+	return space->occupied || space->lethal || space->trap;
 }
 
 static bool
@@ -299,7 +299,9 @@ get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position *dest)
 		x_dist = abs(next.x - dest->x);
 		y_dist = abs(next.y - dest->y);
 
-		if (rm->spaces[next.x][next.y].occupied || rm->spaces[next.x][next.y].lethal) {
+		if (rm->spaces[next.x][next.y].occupied
+		    || rm->spaces[next.x][next.y].lethal
+		    || rm->spaces[next.x][next.y].trap) {
 			nextScore += 50;
 		}
 

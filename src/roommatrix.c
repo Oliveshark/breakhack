@@ -26,6 +26,7 @@
 #include "item.h"
 #include "update_data.h"
 #include "defines.h"
+#include "trap.h"
 
 static void
 roommatrix_reset(RoomMatrix *m)
@@ -42,6 +43,7 @@ roommatrix_reset(RoomMatrix *m)
 			space->light = 0;
 			space->monster = NULL;
 			space->player = NULL;
+			space->trap = NULL;
 			while (space->items != NULL)
 				linkedlist_pop(&space->items);
 		}
@@ -120,6 +122,7 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 				space->lightsource |=
 					r->decorations[i][j]->lightsource;
 			}
+			space->trap = r->traps[i][j];
 		}
 	}
 

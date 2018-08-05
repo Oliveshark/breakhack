@@ -34,6 +34,7 @@
 #include "vector2d.h"
 #include "actiontextbuilder.h"
 #include "animation.h"
+#include "trap.h"
 
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1, false, false }
 #define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1, false, false }
@@ -167,6 +168,10 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	if (space->lethal && !collided) {
 		mixer_play_effect(FALL0 + get_random(2) - 1);
 		player->state = FALLING;
+	}
+
+	if (space->trap && !collided) {
+		trap_activate(space->trap, player);
 	}
 
 	return collided;
