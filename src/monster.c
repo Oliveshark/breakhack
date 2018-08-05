@@ -52,7 +52,7 @@ monster_set_sprite_clip_for_current_state(Monster *m)
 			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16 * 4);
 			break;
 		case STUNNED:
-			m->stateIndicator.sprite->clip = CLIP16(16 * 13, 16 * 3);
+			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16 * 1);
 			break;
 		case SCANNING:
 			m->stateIndicator.sprite->clip = CLIP16(16 * 13, 16 * 4);

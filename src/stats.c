@@ -27,31 +27,51 @@
 #include "util.h"
 #include "defines.h"
 
+static int
+get_attack_roll(Stats *attacker)
+{
+	int roll;
+	int firstRoll = get_random(19) + 1;
+	int secondRoll = get_random(19) + 1;
+
+	if (attacker->advantage)
+		roll = max(firstRoll, secondRoll);
+	else if (attacker->disadvantage)
+		roll = min(firstRoll, secondRoll);
+	else
+		roll = firstRoll;
+
+	return roll + attacker->atk;
+}
+
+static int
+get_defence_roll(Stats *defender)
+{
+	int roll;
+	int firstRoll = get_random(19) + 1;
+	int secondRoll = get_random(19) + 1;
+
+	if (defender->advantage)
+		roll = max(firstRoll, secondRoll);
+	else if (defender->disadvantage)
+		roll = min(firstRoll, secondRoll);
+	else
+		roll = firstRoll;
+
+	return roll + defender->def;
+}
+
 unsigned int
 stats_fight(Stats *attacker, Stats *defender)
 {
-	int atkRoll, defRoll, dmgRoll;
 	bool critical = false;
 
-	if (attacker->advantage)
-		atkRoll = max(get_random(19), get_random(19)) + 1;
-	else if (attacker->disadvantage)
-		atkRoll = min(get_random(19), get_random(19)) + 1;
-	else
-		atkRoll = get_random(19) + 1;
-
-	if (atkRoll == 20)
+	int atkRoll = get_attack_roll(attacker);
+	if (atkRoll - attacker->atk == 20)
 		critical = true;
-	atkRoll += attacker->atk;
+	int defRoll = get_defence_roll(defender);
 
-	if (defender->advantage)
-		defRoll = max(get_random(19), get_random(19)) + 1 + defender->def;
-	else if (defender->disadvantage)
-		defRoll = min(get_random(19), get_random(19)) + 1 + defender->def;
-	else
-		defRoll = get_random(19) + 1 + defender->def;
-	dmgRoll = 0;
-
+	int dmgRoll = 0;
 	if (atkRoll >= defRoll) {
 		if (attacker->dmg > 0)
 			dmgRoll = get_random(attacker->dmg) + 1;
