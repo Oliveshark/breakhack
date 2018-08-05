@@ -264,7 +264,7 @@ if (NOT DEBUG_BUILD)
 			"pitlayouts.dat"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
 		)
-	if (WIN32)
+	if (WIN32 AND NOT MSVC)
 		add_definitions(-mwindows)
 	endif()
 else()

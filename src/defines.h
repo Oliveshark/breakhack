@@ -68,8 +68,12 @@
 #define C_YELLOW (SDL_Color)	{	255, 255,   0, 255 }
 #define C_BLACK (SDL_Color)		{	  0,   0,   0, 255 }
 
+// MSVC seems to have min/max defined.
+// Haven't looked into it further.
+#ifndef _MSC_VER
 #define max(a, b) (a > b ? a : b)
 #define min(a, b) (a < b ? a : b)
+#endif // _MSC_VER
 
 typedef enum Direction_t {
 	UP, DOWN, LEFT, RIGHT

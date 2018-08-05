@@ -24,6 +24,7 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include "../src/hashtable.h"
+#include "../src/util.h"
 
 static void test_hashtable_create(void **state)
 {
@@ -113,7 +114,7 @@ static void test_hashtable_foreach(void **state)
 		int *num = malloc(sizeof(int));
 		assert_non_null( num );
 		*num = i;
-		sprintf(str, "%d", *num);
+		m_sprintf(str, 4, "%d", *num);
 		ht_set(table, str, num);
 	}
 
