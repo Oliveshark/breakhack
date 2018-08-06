@@ -98,10 +98,13 @@ monster_behaviour_check_post_hit(Monster *m)
 {
 	if (m->state.current == STUNNED)
 		return;
+
 	switch (m->behaviour) {
 		case PACIFIST:
 		case COWARD:
 			monster_state_change(m, SCARED);
+			break;
+		case GUERILLA:
 			break;
 		default:
 			monster_state_change(m, AGRESSIVE);
