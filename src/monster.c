@@ -41,23 +41,33 @@ monster_set_sprite_clip_for_current_state(Monster *m)
 		case AGRESSIVE:
 			m->stateIndicator.sprite->clip = CLIP16(16 * 11, 16 * 3);
 			break;
-		case STATIONARY:
-		case PASSIVE:
-			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16);
-			break;
 		case SCARED:
 			m->stateIndicator.sprite->clip = CLIP16(16 * 12, 16 * 3);
 			break;
 		case SLEEPING:
 			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16 * 4);
 			break;
-		case STUNNED:
-			m->stateIndicator.sprite->clip = CLIP16(16 * 10, 16 * 1);
-			break;
 		case SCANNING:
 			m->stateIndicator.sprite->clip = CLIP16(16 * 13, 16 * 4);
 		default:
 			break;
+	}
+}
+
+static void
+monster_set_state_display_time(Monster *m)
+{
+	switch (m->state.current) {
+		case SLEEPING:
+			m->stateIndicator.displayCount = -1;
+			break;
+		case PASSIVE:
+		case STATIONARY:
+		case STUNNED:
+			m->stateIndicator.displayCount = 0;
+			break;
+		default:
+			m->stateIndicator.displayCount = 5;
 	}
 }
 
@@ -71,15 +81,14 @@ monster_state_change(Monster *m, StateType newState)
 	m->state.current = newState;
 	m->state.stepsSinceChange = 0;
 
-	if (newState == SLEEPING)
-		m->stateIndicator.displayCount = -1;
-	else
-		m->stateIndicator.displayCount = 5;
+	monster_set_state_display_time(m);
 
-	if (newState == STUNNED)
+	if (newState == STUNNED) {
 		m->stats.disadvantage = true;
-	else if (m->state.last == STUNNED)
+	} else if (m->state.last == STUNNED) {
 		m->stats.disadvantage = false;
+		m->sprite->angle = 0;
+	}
 
 	monster_set_sprite_clip_for_current_state(m);
 }
@@ -159,6 +168,7 @@ monster_create(void)
 	m->sprite = sprite_create();
 	m->sprite->dim = GAME_DIMENSION;
 	m->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	m->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 
 	m->stats = (Stats) {
 		12, // Max HP
@@ -420,17 +430,26 @@ void
 monster_update(Monster *m, UpdateData *data)
 {
 	Position monsterRoomPos = position_to_room_coords(&m->sprite->pos);
-	if (position_equals(&data->matrix->roomPos, &monsterRoomPos)) {
-		if (m->stateIndicator.shownOnPlayerRoomEnter)
-			return;
-
+	if (position_equals(&data->matrix->roomPos, &monsterRoomPos)
+	    && !m->stateIndicator.shownOnPlayerRoomEnter)
+	{
 		m->stateIndicator.shownOnPlayerRoomEnter = true;
-		if (m->state.current == SLEEPING)
-			m->stateIndicator.displayCount = -1; // Sleeping state is always shown
-		else if (m->state.current != PASSIVE && m->state.current != STATIONARY)
-			m->stateIndicator.displayCount = 5;
+		monster_set_state_display_time(m);
 	} else {
 		m->stateIndicator.shownOnPlayerRoomEnter = false;
+	}
+
+	if (m->state.current == STUNNED) {
+		Sprite *s = m->sprite;
+		if (s->angle > 30)
+			s->angle = -1;
+		else if (s->angle < -30)
+			s->angle = 0;
+
+		if (s->angle >= 0)
+			s->angle += 2;
+		else
+			s->angle -= 2;
 	}
 }
 

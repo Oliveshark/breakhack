@@ -130,16 +130,8 @@ local function repack(data)
 	}
 end
 
-local function check_add_decoration(map, x, y, data)
-	if tile_occupied(map, x, y) then
-		return false
-	end
-	add_decoration(map, x, y, repack(data))
-	return true
-end
-
 local function add_random_decor_to_room(room)
-	local decor_count = random(4) - 1
+	local decor_count = random(10) - 1
 	for i=1,decor_count do
 		x = random(11) + 1
 		y = random(8) + 1
