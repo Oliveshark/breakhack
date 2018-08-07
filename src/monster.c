@@ -493,8 +493,8 @@ void
 monster_drop_loot(Monster *monster, Map *map, Player *player)
 {
 	static unsigned int treasure_drop_chance = 1;
-
 	unsigned int item_drop_chance = 1;
+
 	Item *item;
 	Item *items[3];
 	unsigned int item_count = 0;
@@ -537,6 +537,10 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		}
 		linkedlist_append(&map->items, container);
 	}
+
+	Artifact *a = artifact_create(PIERCING_DAGGERS);
+	a->sprite->pos = monster->sprite->pos;
+	linkedlist_append(&map->artifacts, a);
 }
 
 void

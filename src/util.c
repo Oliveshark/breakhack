@@ -127,13 +127,23 @@ log_print(FILE *out,
 	printf("\n");
 }
 
-void
-*ec_malloc(unsigned long size)
+void *
+ec_malloc(unsigned long size)
 {
 	void *ptr;
 	ptr = malloc(size);
 	if (ptr == NULL)
 		fatal("in ec_malloc() on memory allocation");
+	return ptr;
+}
+
+void *
+ec_calloc(size_t count, unsigned long size)
+{
+	void *ptr;
+	ptr = calloc(count, size);
+	if (ptr == NULL)
+		fatal("in ec_calloc() on memory allocation");
 	return ptr;
 }
 

@@ -25,7 +25,7 @@
 #include "vector2d.h"
 
 // Forward declaration
-struct Player_t;
+struct Player;
 
 enum SkillType {
 	FLURRY,
@@ -36,7 +36,7 @@ enum SkillType {
 };
 
 typedef struct SkillData_t {
-	struct Player_t *player;
+	struct Player *player;
 	RoomMatrix *matrix;
 	Vector2d direction;
 } SkillData;

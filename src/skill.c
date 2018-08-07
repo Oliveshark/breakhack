@@ -33,6 +33,7 @@
 #include "linkedlist.h"
 #include "item.h"
 #include "animation.h"
+#include "artifact.h"
 
 static Skill *
 create_default(const char *s_label, Sprite *s)
@@ -297,6 +298,12 @@ skill_charge(Skill *skill, SkillData *data)
 				Item *item = items->data;
 				items = items->next;
 				item_collected(item, player);
+			}
+			LinkedList *artifacts = space->artifacts;
+			while (artifacts != NULL) {
+				Artifact *artifact = artifacts->data;
+				artifacts = artifacts->next;
+				player_add_artifact(player, artifact);
 			}
 		}
 		space = &matrix->spaces[destination.x][destination.y];

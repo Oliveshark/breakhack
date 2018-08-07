@@ -44,16 +44,22 @@ typedef struct Sprite {
 	void (*onRender)(Sprite*);
 } Sprite;
 
-Sprite* sprite_create(void);
+Sprite*
+sprite_create(void);
 
-void sprite_load_texture(Sprite *, const char *path, int index, SDL_Renderer *);
+void
+sprite_load_texture(Sprite *, const char *path, int index, SDL_Renderer *);
 
-void sprite_load_text_texture(Sprite *, const char *path, int index, int size, int outline);
+void
+sprite_load_text_texture(Sprite *, const char *path, int index, int size, int outline);
 
-void sprite_set_texture(Sprite *, Texture *, int index);
+void
+sprite_set_texture(Sprite *, Texture *, int index);
 
-void sprite_render(Sprite*, Camera*);
+void
+sprite_render(Sprite*, Camera*);
 
-void sprite_destroy(Sprite *);
+void
+sprite_destroy(Sprite *);
 
 #endif // SPRITE_H_

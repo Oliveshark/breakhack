@@ -494,6 +494,7 @@ run_game_update(void)
 
 	map_clear_dead_monsters(gMap, gPlayer);
 	map_clear_collected_items(gMap);
+	map_clear_collected_artifacts(gMap);
 
 	populateUpdateData(&updateData, deltaTime);
 	if (playerLevel != gPlayer->stats.lvl) {

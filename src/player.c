@@ -165,6 +165,14 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 		}
 	}
 
+	if (space->artifacts != NULL && !collided) {
+		LinkedList *artifacts = space->artifacts;
+		while (artifacts) {
+			player_add_artifact(player, artifacts->data);
+			artifacts = artifacts->next;
+		}
+	}
+
 	if (space->lethal && !collided) {
 		mixer_play_effect(FALL0 + get_random(2) - 1);
 		player->state = FALLING;
@@ -407,9 +415,11 @@ player_create(class_t class, SDL_Renderer *renderer)
 
 	build_sword_animation(player, renderer);
 
-	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
-		player->skills[i] = NULL;
-	}
+	memset(&player->skills,
+	       0, PLAYER_SKILL_COUNT * sizeof(Skill*));
+
+	for (size_t i = 0; i < LAST_ARTIFACT_EFFECT; ++i)
+		player->equipment.artifacts[i].level = 0;
 
 	char asset[100];
 	switch (class) {
@@ -571,9 +581,21 @@ void player_update(UpdateData *data)
 	animation_update(player->swordAnimation);
 }
 
+static void
+player_reset(Player *player)
+{
+	for (size_t i = 0; i < LAST_ARTIFACT_EFFECT; ++i)
+		player->equipment.artifacts[i].level = 0;
+
+	while (player->projectiles)
+		projectile_destroy(linkedlist_pop(&player->projectiles));
+}
+
 void
 player_destroy(Player *player)
 {
+	player_reset(player);
+
 	if (player->sprite)
 		sprite_destroy(player->sprite);
 
@@ -586,9 +608,6 @@ player_destroy(Player *player)
 		player->skills[i] = NULL;
 	}
 
-	while (player->projectiles)
-		projectile_destroy(linkedlist_pop(&player->projectiles));
-
 	free(player);
 }
 
@@ -596,4 +615,27 @@ bool
 player_turn_over(Player *player)
 {
 	return player->stat_data.steps >= player->stats.speed;
+}
+
+Uint32
+player_has_artifact(Player *p, MagicalEffect effect)
+{
+	return p->equipment.artifacts[effect].level;
+}
+
+void
+player_add_artifact(Player *p, Artifact *a)
+{
+	if (a->collected)
+		return;
+
+	a->collected = true;
+
+	ArtifactData *ad = &p->equipment.artifacts[a->effect];
+	ad->name = a->info.name;
+	ad->desc = a->info.desc;
+	ad->level += a->level;
+
+	gui_log("You pick an ancient %s", ad->name);
+	gui_log("%s (%u)", ad->desc, ad->level);
 }

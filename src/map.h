@@ -57,6 +57,7 @@ typedef struct Map_t {
 	LinkedList *textures;
 	LinkedList *monsters;
 	LinkedList *items;
+	LinkedList *artifacts;
 	Position currentRoom;
 	Timer *renderTimer;
 	Timer *monsterMoveTimer;
@@ -92,6 +93,9 @@ map_clear_dead_monsters(Map*, Player*);
 
 void
 map_clear_collected_items(Map*);
+
+void
+map_clear_collected_artifacts(Map*);
 
 void
 map_update(UpdateData*);

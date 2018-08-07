@@ -47,6 +47,10 @@ projectile_dagger_create(void)
 	p->sprite->clip = CLIP16(0, 0);
 	p->sprite->dim = (Dimension) { 32, 32 };
 	p->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+	p->collisionCount = 0;
+	memset(&p->processedSpaces,
+	       false,
+	       sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
 	return p;
 }
 
@@ -66,6 +70,8 @@ projectile_create(void)
 void
 projectile_update(Projectile *p, UpdateData *data)
 {
+	bool alive = false;
+
 	p->sprite->pos.x += (int) (p->velocity.x * data->deltatime);
 	p->sprite->pos.y += (int) (p->velocity.y * data->deltatime);
 
@@ -78,7 +84,16 @@ projectile_update(Projectile *p, UpdateData *data)
 	if(p->velocity.y > 0)
 		collisionPos.y += TILE_DIMENSION;
 
+	if (!position_in_room(&collisionPos, &data->map->currentRoom)) {
+		p->alive = false;
+		return;
+	}
+
 	Position roomPos = position_to_matrix_coords(&collisionPos);
+	if (p->processedSpaces[roomPos.x][roomPos.y])
+		return;
+	p->processedSpaces[roomPos.x][roomPos.y] = true;
+
 	RoomSpace *space = &data->matrix->spaces[roomPos.x][roomPos.y];
 	if (!space->occupied)
 		return;
@@ -94,16 +109,20 @@ projectile_update(Projectile *p, UpdateData *data)
 			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, dmg);
 			data->player->stat_data.hits += 1;
 		}
-		if (get_random(2) >= 1) {
+		if (get_random(5) == 0
+		    || get_random(5) < player_has_artifact(data->player, DAGGER_RECOVERY)) {
 			Item *item = item_builder_build_item(DAGGER, 1);
 			item->sprite->pos = space->monster->sprite->pos;
 			linkedlist_append(&data->map->items, item);
 		}
 		monster_hit(space->monster, dmg);
 		player_monster_kill_check(data->player, space->monster);
+
+		alive = player_has_artifact(data->player, PIERCING_DAGGERS) > p->collisionCount;
 	}
 	mixer_play_effect(SWORD_HIT);
-	p->alive = false;
+	p->alive = alive;
+	p->collisionCount++;
 }
 
 void

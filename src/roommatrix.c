@@ -46,6 +46,8 @@ roommatrix_reset(RoomMatrix *m)
 			space->trap = NULL;
 			while (space->items != NULL)
 				linkedlist_pop(&space->items);
+			while (space->artifacts != NULL)
+				linkedlist_pop(&space->artifacts);
 		}
 	}
 	m->roomPos = (Position) { 0, 0 };
@@ -58,7 +60,8 @@ RoomMatrix* roommatrix_create(void)
 	RoomMatrix *m = ec_malloc(sizeof(RoomMatrix));
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			m->spaces[i][j].items = NULL;
+			m->spaces[i][j].items = linkedlist_create();;
+			m->spaces[i][j].artifacts = linkedlist_create();;
 		}
 	}
 	roommatrix_reset(m);
@@ -97,7 +100,6 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 	Monster *monster;
 	LinkedList *monsterItem;
 	Item *item;
-	LinkedList *items;
 
 	roommatrix_reset(rm);
 
@@ -143,7 +145,7 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 			.monster = monster;
 	}
 
-	items = m->items;
+	LinkedList *items = m->items;
 	while (items) {
 		item = items->data;
 		items = items->next;
@@ -153,6 +155,18 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 
 		position = position_to_matrix_coords(&item->sprite->pos);
 		linkedlist_push(&rm->spaces[position.x][position.y].items, item);
+	}
+
+	LinkedList *artifacts = m->artifacts;
+	while (artifacts) {
+		Artifact *a = artifacts->data;
+		artifacts = artifacts->next;
+
+		if (!position_in_room(&a->sprite->pos, &m->currentRoom))
+			continue;
+
+		position = position_to_matrix_coords(&a->sprite->pos);
+		linkedlist_push(&rm->spaces[position.x][position.y].artifacts, a);
 	}
 }
 
@@ -259,6 +273,8 @@ void roommatrix_destroy(RoomMatrix *m)
 			RoomSpace *space = &m->spaces[i][j];
 			while (space->items)
 				linkedlist_pop(&space->items);
+			while (space->artifacts)
+				linkedlist_pop(&space->artifacts);
 		}
 	}
 

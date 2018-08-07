@@ -15,38 +15,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#ifndef MAP_ROOM_MODIFIERS_H_
-#define	MAP_ROOM_MODIFIERS_H_
+#include "sprite.h"
+#include "camera.h"
 
-#include "vector2d.h"
+typedef enum MagicalEffect {
+	IMPROVED_HEARING,
+	TRAP_AVOIDANCE,
+	PIERCING_DAGGERS,
+	CHARGE_THROUGH,
+	PUSH_BACK,
+	DAGGER_RECOVERY,
+	INCREASED_STUN,
+	FEAR_INDUCING,
+	LAST_ARTIFACT_EFFECT // Sentinel
+} MagicalEffect;
 
-// Forward declares
-typedef struct Player Player;
-typedef struct RoomMatrix_t RoomMatrix;
+typedef struct ArtifactInfo {
+	const char *name;
+	const char *desc;
+} ArtifactInfo;
 
-typedef enum RoomModifierType_e {
-	RMOD_TYPE_NONE,
-	RMOD_TYPE_WINDY
-} RoomModifierType;
+typedef struct Artifact {
+	Sprite *sprite;
+	MagicalEffect effect;
+	ArtifactInfo info;
+	bool collected;
+	int level;
+} Artifact;
 
-typedef struct WindData_t {
-	Vector2d direction;
-} WindData;
+Artifact *
+artifact_create(MagicalEffect);
 
-typedef union RoomModifierDataContainer_t {
-	WindData wind;
-} RoomModifierDataContainer;
-
-typedef struct RoomModifierData_t {
-	RoomModifierType type;
-	RoomModifierDataContainer data;
-} RoomModifierData;
+Artifact *
+artifact_copy(Artifact*);
 
 void
-map_room_modifier_player_effect(Player*,
-								RoomMatrix*,
-								Vector2d *direction,
-								void (*)(Player*, RoomMatrix*, Vector2d));
+artifact_render(Artifact*, Camera*);
 
-#endif // MAP_ROOM_MODIFIERS_H_
+void
+artifact_destroy(Artifact*);

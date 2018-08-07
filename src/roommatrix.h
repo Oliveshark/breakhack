@@ -29,7 +29,7 @@
 typedef struct Sprite Sprite;
 typedef struct Map_t Map;
 typedef struct Monster_t Monster;
-typedef struct Player_t Player;
+typedef struct Player Player;
 typedef struct Item_t Item;
 typedef struct Node LinkedList;
 typedef struct Trap Trap;
@@ -45,6 +45,7 @@ typedef struct {
 	Player *player;
 	Trap *trap;
 	LinkedList *items;
+	LinkedList *artifacts;
 } RoomSpace;
 
 typedef struct RoomMatrix_t {

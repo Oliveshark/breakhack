@@ -26,18 +26,18 @@
 #include "timer.h"
 #include "roommatrix.h"
 #include "update_data.h"
+#include "defines.h"
 
 #define DAGGER_VELOCITY 500
 
-// Forward declare
-struct Player_t;
-
-typedef struct Projectile_t {
+typedef struct Projectile {
 	Sprite *sprite;
 	Vector2d velocity;
 	Timer *lifetime;
 	bool alive;
-	void (*onRender)(struct Projectile_t*);
+	Uint32 collisionCount;
+	bool processedSpaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	void (*onRender)(struct Projectile*);
 } Projectile;
 
 Projectile *

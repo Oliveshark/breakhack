@@ -15,9 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef PLAYER_H_
-#define	PLAYER_H_
+#pragma once
 
 #include <SDL.h>
 #include "sprite.h"
@@ -27,6 +25,7 @@
 #include "skill.h"
 #include "linkedlist.h"
 #include "input.h"
+#include "artifact.h"
 
 #define PLAYER_SKILL_COUNT 5
 
@@ -37,7 +36,7 @@ typedef struct Animation Animation;
 typedef enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR } class_t;
 typedef enum PlayerState { ALIVE, DEAD, FALLING } state_t;
 
-typedef struct PlayerStatData_t {
+typedef struct PlayerStatData {
 	unsigned int total_steps;
 	unsigned int steps;
 	unsigned int hits;
@@ -45,14 +44,24 @@ typedef struct PlayerStatData_t {
 	unsigned int misses;
 } PlayerStatData;
 
-typedef struct ExperienceData_t {
+typedef struct ExperienceDatat {
 	unsigned int previousLevel;
 	unsigned int current;
 	unsigned int nextLevel;
 	unsigned int level;
 } ExperienceData;
 
-typedef struct Player_t {
+typedef struct ArtifactData {
+	const char *name;
+	const char *desc;
+	Uint32 level;
+} ArtifactData;
+
+typedef struct PlayerEquipment {
+	ArtifactData artifacts[LAST_ARTIFACT_EFFECT];
+} PlayerEquipment;
+
+typedef struct Player {
 	Sprite *sprite;
 	Stats stats;
 	unsigned int daggers;
@@ -66,6 +75,7 @@ typedef struct Player_t {
 	Skill *skills[PLAYER_SKILL_COUNT];
 	Timer *animationTimer;
 	Animation *swordAnimation;
+	PlayerEquipment equipment;
 } Player;
 
 Player*
@@ -104,4 +114,8 @@ player_destroy(Player*);
 bool
 player_turn_over(Player*);
 
-#endif // PLAYER_H_
+Uint32
+player_has_artifact(Player *, MagicalEffect);
+
+void
+player_add_artifact(Player*, Artifact*);

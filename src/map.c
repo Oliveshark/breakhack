@@ -54,6 +54,7 @@ map_create(void)
 	map->textures = linkedlist_create();
 	map->monsters = linkedlist_create();
 	map->items = linkedlist_create();
+	map->artifacts = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
 	map->renderTimer = timer_create();
 	map->monsterMoveTimer = timer_create();
@@ -156,6 +157,20 @@ map_clear_collected_items(Map *map)
 			linkedlist_append(&filtered, item);
 	}
 	map->items = filtered;
+}
+
+void
+map_clear_collected_artifacts(Map *map)
+{
+	LinkedList *filtered = linkedlist_create();
+	while (map->artifacts) {
+		Artifact *a = linkedlist_pop(&map->artifacts);
+		if (!a->collected)
+			linkedlist_append(&filtered, a);
+		else
+			artifact_destroy(a);
+	}
+	map->artifacts = filtered;
 }
 
 void
@@ -305,9 +320,14 @@ map_render_top_layer(Map *map, Camera *cam)
 
 	LinkedList *items = map->items;
 	while (items != NULL) {
-		Item *item = items->data;
+		item_render(items->data, cam);
 		items = items->next;
-		item_render(item, cam);
+	}
+
+	LinkedList *artifacts = map->artifacts;
+	while (artifacts != NULL) {
+		artifact_render(artifacts->data, cam);
+		artifacts = artifacts->next;
 	}
 }
 
@@ -375,6 +395,9 @@ void map_destroy(Map *map)
 
 	while (map->items != NULL)
 		item_destroy(linkedlist_pop(&map->items));
+
+	while (map->artifacts != NULL)
+		artifact_destroy(linkedlist_pop(&map->artifacts));
 
 	timer_destroy(map->renderTimer);
 	timer_destroy(map->monsterMoveTimer);
