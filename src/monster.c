@@ -376,7 +376,6 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 bool
 monster_move(Monster *m, RoomMatrix *rm)
 {
-	Position monsterRoomPos;
 
 	if (m->state.current == STUNNED) {
 		if (m->state.stepsSinceChange < 3) {
@@ -390,9 +389,10 @@ monster_move(Monster *m, RoomMatrix *rm)
 
 	monster_behaviour_check(m, rm);
 
-	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
-	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = false;
-	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = NULL;
+	Position originalPosition =
+		position_to_matrix_coords(&m->sprite->pos);
+	rm->spaces[originalPosition.x][originalPosition.y].occupied = false;
+	rm->spaces[originalPosition.x][originalPosition.y].monster = NULL;
 
 	switch (m->state.current) {
 		case PASSIVE:
@@ -413,9 +413,25 @@ monster_move(Monster *m, RoomMatrix *rm)
 
 	monster_update_pos(m, m->sprite->pos);
 
-	monsterRoomPos = position_to_matrix_coords(&m->sprite->pos);
-	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].occupied = true;
-	rm->spaces[monsterRoomPos.x][monsterRoomPos.y].monster = m;
+	Position newPos = position_to_matrix_coords(&m->sprite->pos);
+	rm->spaces[newPos.x][newPos.y].occupied = true;
+	rm->spaces[newPos.x][newPos.y].monster = m;
+
+	if (!position_equals(&originalPosition, &newPos)) {
+		Player *p = rm->spaces[rm->playerRoomPos.x][rm->playerRoomPos.y].player;
+		if (p) {
+			Uint32 range = 3 + player_has_artifact(p, IMPROVED_HEARING) * 2;
+			bool withinHearingDist =
+				range > 3 && position_proximity(range,
+								&newPos,
+								&rm->playerRoomPos);
+
+			RoomSpace *space = &rm->spaces[newPos.x][newPos.y];
+			if (space->light < 100 && withinHearingDist) {
+				actiontextbuilder_create_text("!", C_WHITE, &m->sprite->pos);
+			}
+		}
+	}
 
 	m->steps++;
 	if (m->steps >= m->stats.speed) {
@@ -538,7 +554,9 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		linkedlist_append(&map->items, container);
 	}
 
-	Artifact *a = artifact_create(PIERCING_DAGGERS);
+	// TODO: This should not occur every time
+	// Debug code.
+	Artifact *a = artifact_create(TRAP_AVOIDANCE);
 	a->sprite->pos = monster->sprite->pos;
 	linkedlist_append(&map->artifacts, a);
 }

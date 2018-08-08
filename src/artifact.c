@@ -19,46 +19,70 @@
 #include "artifact.h"
 #include "util.h"
 #include "texturecache.h"
+#include "particle_engine.h"
 
 static void
 artifact_set_effect(Artifact *a, MagicalEffect effect)
 {
+	Texture *t;
+
 	a->effect = effect;
 	switch (effect) {
 		case IMPROVED_HEARING:
 			a->info.name = "Potion of ear juice";
 			a->info.desc = "Your hearing is slightly improved";
+			t = texturecache_add("Items/Potion.png");
+			sprite_set_texture(a->sprite, t, 0);
+			a->sprite->clip = CLIP16(7*16, 4*16);
 			break;
 		case TRAP_AVOIDANCE:
 			a->info.name = "Boot with nails inside";
 			a->info.desc = "You are lighter on your feet";
+			t = texturecache_add("Items/Boot.png");
+			sprite_set_texture(a->sprite, t, 0);
+			a->sprite->clip = CLIP16(5*16, 0);
 			break;
 		case PIERCING_DAGGERS:
 			a->info.name = "Whetstone";
 			a->info.desc = "Your daggers are sharper";
-			Texture *t = texturecache_add("Items/Rock.png");
+			t = texturecache_add("Items/Rock.png");
 			sprite_set_texture(a->sprite, t, 0);
 			a->sprite->clip = CLIP16(0, 0);
 			break;
 		case CHARGE_THROUGH:
 			a->info.name = "Greasy shield";
 			a->info.desc = "You glide through obstructions";
+			t = texturecache_add("Items/Shield.png");
+			sprite_set_texture(a->sprite, t, 0);
+			a->sprite->clip = CLIP16(16, 0);
 			break;
 		case PUSH_BACK:
 			a->info.name = "Glove of strength";
 			a->info.desc = "Your arm is stronger";
+			t = texturecache_add("Items/Glove.png");
+			sprite_set_texture(a->sprite, t, 0);
+			a->sprite->clip = CLIP16(0, 0);
 			break;
 		case DAGGER_RECOVERY:
 			a->info.name = "Forging hammer";
 			a->info.desc = "Your daggers are more durable";
+			t = texturecache_add("Items/LongWep.png");
+			sprite_set_texture(a->sprite, t, 0);
+			a->sprite->clip = CLIP16(0, 6*16);
 			break;
 		case INCREASED_STUN:
 			a->info.name = "Solid shield";
 			a->info.desc = "Your shield is harder";
+			t = texturecache_add("Items/Shield.png");
+			sprite_set_texture(a->sprite, t, 0);
+			a->sprite->clip = CLIP16(4*16, 0);
 			break;
 		case FEAR_INDUCING:
 			a->info.name = "Ugly shirt";
 			a->info.desc = "You look disgusting";
+			t = texturecache_add("Items/Armor.png");
+			sprite_set_texture(a->sprite, t, 0);
+			a->sprite->clip = CLIP16(6*16, 8*16);
 			break;
 		default:
 			break;
@@ -89,6 +113,10 @@ void
 artifact_render(Artifact *a, Camera *cam)
 {
 	sprite_render(a->sprite, cam);
+	Position pos = a->sprite->pos;
+	pos.x += 4;
+	pos.y += 4;
+	particle_engine_sparkle(pos, (Dimension) { 24, 24 }, C_PURPLE, false);
 }
 
 void

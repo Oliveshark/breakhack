@@ -108,17 +108,18 @@ projectile_update(Projectile *p, UpdateData *data)
 		if (dmg > 0) {
 			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, dmg);
 			data->player->stat_data.hits += 1;
+		} else {
+			gui_log("%s dodged your dagger", space->monster->label);
 		}
-		if (get_random(5) == 0
-		    || get_random(5) < player_has_artifact(data->player, DAGGER_RECOVERY)) {
+		monster_hit(space->monster, dmg);
+		player_monster_kill_check(data->player, space->monster);
+		alive = player_has_artifact(data->player, PIERCING_DAGGERS) > p->collisionCount;
+		if (!alive && (get_random(5) == 0
+		    || get_random(5) < player_has_artifact(data->player, DAGGER_RECOVERY))) {
 			Item *item = item_builder_build_item(DAGGER, 1);
 			item->sprite->pos = space->monster->sprite->pos;
 			linkedlist_append(&data->map->items, item);
 		}
-		monster_hit(space->monster, dmg);
-		player_monster_kill_check(data->player, space->monster);
-
-		alive = player_has_artifact(data->player, PIERCING_DAGGERS) > p->collisionCount;
 	}
 	mixer_play_effect(SWORD_HIT);
 	p->alive = alive;

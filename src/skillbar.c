@@ -235,7 +235,7 @@ render_skill_sparkles(SkillBar *bar, Player *player)
 			continue;
 
 		pos.x += 32 * i;
-		particle_engine_sparkle(pos, dim);
+		particle_engine_sparkle(pos, dim, C_WHITE, true);
 	}
 }
 

@@ -41,7 +41,7 @@ void
 particle_engine_speed_lines(Position, Dimension, bool horizontal);
 
 void
-particle_engine_sparkle(Position, Dimension);
+particle_engine_sparkle(Position, Dimension, SDL_Color, bool global);
 
 void
 particle_engine_wind(Vector2d direction);

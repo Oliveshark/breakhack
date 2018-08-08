@@ -82,27 +82,6 @@ create_rect_particle(void)
 	return p;
 }
 
-/*
- * Not used right now, hide for now
-static Particle *
-create_line_particle(void)
-{
-	Particle *p = ec_malloc(sizeof(Particle));
-
-	p->type = LINE;
-	p->velocity = VECTOR2D_NODIR;
-	p->movetime = 100;
-	p->lifetime = 100;
-	p->fixed = false;
-	p->blend_mode = SDL_BLENDMODE_MOD;
-	p->color = C_WHITE;
-	p->particle.line.startPos = (Position) { 0, 0 };
-	p->particle.line.endPos = (Position) { 32, 32 };
-
-	return p;
-}
-*/
-
 static void
 check_engine(void)
 {
@@ -243,7 +222,7 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 }
 
 void
-particle_engine_sparkle(Position pos, Dimension dim)
+particle_engine_sparkle(Position pos, Dimension dim, SDL_Color color, bool global)
 {
 	for (unsigned int i = 0; i < 10; ++i) {
 		int x, y, yv, alpha;
@@ -266,10 +245,13 @@ particle_engine_sparkle(Position pos, Dimension dim)
 		p->movetime = lt;
 		p->lifetime = lt;
 		p->blend_mode = SDL_BLENDMODE_BLEND;
-		p->color = C_WHITE;
+		p->color = color;
 		p->color.a = (Uint8) alpha;
-		p->fixed = true;
-		linkedlist_append(&engine->global_particles, p);
+		p->fixed = global;
+		if (global)
+			linkedlist_append(&engine->global_particles, p);
+		else
+			linkedlist_append(&engine->game_particles, p);
 	}
 }
 

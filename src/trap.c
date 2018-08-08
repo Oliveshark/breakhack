@@ -20,6 +20,8 @@
 #include "trap.h"
 #include "util.h"
 #include "gui.h"
+#include "random.h"
+#include "actiontextbuilder.h"
 
 Trap *
 trap_create()
@@ -35,13 +37,19 @@ trap_create()
 void
 trap_activate(Trap *trap, Player *player)
 {
-	player->stats.hp -= trap->damage;
-	player_hit(player, trap->damage);
 	if (!trap->sprite->animate) {
 		gui_log("A trap is sprung!");
 		trap->sprite->animate = true;
 	} else {
 		gui_log("You step in a trap!");
+	}
+
+	if (get_random(10) > 2 * player_has_artifact(player, TRAP_AVOIDANCE)) {
+		player->stats.hp -= trap->damage;
+		player_hit(player, trap->damage);
+	} else {
+		actiontextbuilder_create_text("Dodged", C_YELLOW, &player->sprite->pos);
+		gui_log("You nimbly avoid getting hurt by the trap");
 	}
 }
 

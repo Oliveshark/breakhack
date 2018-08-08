@@ -619,6 +619,7 @@ run_menu(void)
 	SDL_RenderClear(gRenderer);
 	SDL_RenderSetViewport(gRenderer, &menuViewport);
 	map_render(gMap, gCamera);
+	map_render_top_layer(gMap, gCamera);
 	roommatrix_render_lightmap(gRoomMatrix, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, NULL);
