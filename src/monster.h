@@ -97,7 +97,10 @@ void
 monster_set_behaviour(Monster *, MonsterBehaviour behaviour);
 
 void
-monster_set_stunned(Monster *m);
+monster_set_state(Monster *m, StateType state);
+
+void
+monster_push(Monster *, RoomMatrix*, Vector2d dir);
 
 void
 monster_destroy(Monster*);

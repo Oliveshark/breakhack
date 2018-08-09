@@ -205,7 +205,7 @@ skill_bash(Skill *skill, SkillData *data)
 			gui_log("You hit for %u damage", dmg);
 			if (monster->stats.hp > 0) {
 				gui_log("%s seems dazed and confused", monster->label);
-				monster_set_stunned(monster);
+				monster_set_state(monster, STUNNED);
 			}
 			mixer_play_effect(SLAM);
 			data->player->stat_data.hits += 1;

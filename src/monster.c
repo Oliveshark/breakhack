@@ -556,7 +556,7 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 
 	// TODO: This should not occur every time
 	// Debug code.
-	Artifact *a = artifact_create(CHARGE_THROUGH);
+	Artifact *a = artifact_create(FEAR_INDUCING);
 	a->sprite->pos = monster->sprite->pos;
 	linkedlist_append(&map->artifacts, a);
 }
@@ -595,9 +595,15 @@ monster_set_behaviour(Monster *m, MonsterBehaviour behaviour)
 }
 
 void
-monster_set_stunned(Monster *m)
+monster_set_state(Monster *m, StateType state)
 {
-	monster_state_change(m, STUNNED);
+	monster_state_change(m, state);
+}
+
+void
+monster_push(Monster *m, RoomMatrix *rm, Vector2d dir)
+{
+	move(m, rm, dir);
 }
 
 void

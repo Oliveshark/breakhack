@@ -148,6 +148,20 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 		}
 		player_monster_kill_check(player, space->monster);
 
+		if (space->monster->stats.hp > 0) {
+			if (get_random(10) < player_has_artifact(player, PUSH_BACK)) {
+				gui_log("The force of your blow sends %s reeling",
+					space->monster->lclabel);
+				monster_push(space->monster, matrix, direction);
+			}
+
+			if (get_random(10) < player_has_artifact(player, FEAR_INDUCING)) {
+				gui_log("%s shivers with fear at the sight of you",
+					space->monster->label);
+				monster_set_state(space->monster, SCARED);
+			}
+		}
+
 		action_spent(player);
 
 	} else if (collided) {

@@ -120,11 +120,11 @@ get_event_mousebutton(SDL_Event *event)
 	Uint32 key = 0;
 	switch (event->button.button) {
 		case SDL_BUTTON_LEFT:
-			key = MBUTTON_LEFT;
+			key = MBUTTON_LEFT; break;
 		case SDL_BUTTON_MIDDLE:
-			key = MBUTTON_MIDDLE;
+			key = MBUTTON_MIDDLE; break;
 		case SDL_BUTTON_RIGHT:
-			key = MBUTTON_RIGHT;
+			key = MBUTTON_RIGHT; break;
 		default:
 			key = 0;
 	}
