@@ -49,81 +49,86 @@ void input_reset(Input *input)
 static Uint64
 get_event_key(SDL_Event *event)
 {
+	Uint64 key;
 	switch (event->key.keysym.sym) {
 		case SDLK_UP:
 		case SDLK_k:
 		case SDLK_w:
-			return KEY_UP;
+			key = KEY_UP; break;
 		case SDLK_DOWN:
 		case SDLK_j:
 		case SDLK_s:
-			return KEY_DOWN;
+			key = KEY_DOWN; break;
 		case SDLK_LEFT:
 		case SDLK_h:
 		case SDLK_a:
-			return KEY_LEFT;
+			key = KEY_LEFT; break;
 		case SDLK_RIGHT:
 		case SDLK_l:
 		case SDLK_d:
-			return KEY_RIGHT;
+			key = KEY_RIGHT; break;
 		case SDLK_0:
-			return KEY_NUM0;
+			key = KEY_NUM0; break;
 		case SDLK_1:
-			return KEY_NUM1;
+			key = KEY_NUM1; break;
 		case SDLK_2:
-			return KEY_NUM2;
+			key = KEY_NUM2; break;
 		case SDLK_3:
-			return KEY_NUM3;
+			key = KEY_NUM3; break;
 		case SDLK_4:
-			return KEY_NUM4;
+			key = KEY_NUM4; break;
 		case SDLK_5:
-			return KEY_NUM5;
+			key = KEY_NUM5; break;
 		case SDLK_6:
-			return KEY_NUM6;
+			key = KEY_NUM6; break;
 		case SDLK_7:
-			return KEY_NUM7;
+			key = KEY_NUM7; break;
 		case SDLK_8:
-			return KEY_NUM8;
+			key = KEY_NUM8; break;
 		case SDLK_9:
-			return KEY_NUM9;
+			key = KEY_NUM9; break;
 		case SDLK_ESCAPE:
-			return KEY_ESC;
+			key = KEY_ESC; break;
 		case SDLK_RETURN:
-			return KEY_ENTER;
+			key = KEY_ENTER; break;
 		default:
-			return 0;
+			key = 0; break;
 	}
+	return key;
 }
 
 static Uint32
 get_event_modkey(SDL_Event *event)
 {
+	Uint32 key = 0;
 	if (event->key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL)) {
 		switch (event->key.keysym.sym) {
 			case SDLK_s:
-				return KEY_CTRL_S;
+				key = KEY_CTRL_S; break;
 			case SDLK_m:
-				return KEY_CTRL_M;
+				key = KEY_CTRL_M; break;
 			default:
-				return 0;
+				key = 0; break;
 		}
 	}
-	return 0;
+	return key;
 }
 
 static Uint32
 get_event_mousebutton(SDL_Event *event)
 {
+	Uint32 key = 0;
 	switch (event->button.button) {
 		case SDL_BUTTON_LEFT:
-			return MBUTTON_LEFT;
+			key = MBUTTON_LEFT;
 		case SDL_BUTTON_MIDDLE:
-			return MBUTTON_MIDDLE;
+			key = MBUTTON_MIDDLE;
 		case SDL_BUTTON_RIGHT:
-			return MBUTTON_RIGHT;
+			key = MBUTTON_RIGHT;
 		default:
-			return 0;
+			key = 0;
 	}
+	return key;
 }
 
 void
