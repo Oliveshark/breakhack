@@ -95,5 +95,8 @@ position_in_room(Position *pos, Position *roomPos)
 bool
 position_in_roommatrix(const Position *pos)
 {
-	return pos->x >= 0 && pos->x < MAP_ROOM_WIDTH && pos->y >= 0 && pos->y < MAP_ROOM_HEIGHT;
+	return pos->x >= 0
+		&& pos->x < MAP_ROOM_WIDTH
+		&& pos->y >= 0
+		&& pos->y < MAP_ROOM_HEIGHT;
 }

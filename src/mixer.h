@@ -58,6 +58,7 @@ typedef enum Fx_t {
 	PLAYER_HIT2,
 	DAGGER_PICKUP,
 	SLAM,
+	MAGIC_PICKUP,
 	LAST_EFFECT
 } Fx;
 

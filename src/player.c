@@ -629,6 +629,7 @@ player_add_artifact(Player *p, Artifact *a)
 	if (a->collected)
 		return;
 
+	mixer_play_effect(MAGIC_PICKUP);
 	a->collected = true;
 
 	ArtifactData *ad = &p->equipment.artifacts[a->effect];

@@ -556,7 +556,7 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 
 	// TODO: This should not occur every time
 	// Debug code.
-	Artifact *a = artifact_create(TRAP_AVOIDANCE);
+	Artifact *a = artifact_create(CHARGE_THROUGH);
 	a->sprite->pos = monster->sprite->pos;
 	linkedlist_append(&map->artifacts, a);
 }

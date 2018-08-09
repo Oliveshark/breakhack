@@ -1,15 +1,4 @@
-o Make things less difficult and more interesting
-	o Interesting items
-		x Daggers
-		- Bombs?
-		- Magical permanent items would be nice
-			- Piercing daggers
-			- Charge passthrough
-			- +1 atk / +1 def items
-
 o Creat some nice room modifiers
-	x Windy room
-	x Liquid in rooms
 	- Falling floor tiles
 
 - Credit screen showing music and graphics guys:

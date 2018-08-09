@@ -34,6 +34,7 @@
 #include "item.h"
 #include "animation.h"
 #include "artifact.h"
+#include "trap.h"
 
 static Skill *
 create_default(const char *s_label, Sprite *s)
@@ -271,6 +272,60 @@ create_sip_health(void)
 	return skill;
 }
 
+static void
+skill_charge_check_path(SkillData *data,
+			Position origin,
+			Position dest)
+{
+	RoomMatrix *matrix = data->matrix;
+	Player *player = data->player;
+
+	Position itPos = origin;
+	Position lastPos = dest;
+	lastPos.x += (int) data->direction.x * 2;
+	lastPos.y += (int) data->direction.y * 2;
+	Uint8 steps = 1;
+	while (position_in_roommatrix(&itPos) && !position_equals(&itPos, &lastPos)) {
+		RoomSpace *space = &matrix->spaces[itPos.x][itPos.y];
+		if (space->monster) {
+			Monster *monster = matrix->spaces[itPos.x][itPos.y].monster;
+			Stats tmpStats = player->stats;
+			tmpStats.dmg *= steps > 0 ? steps : 1;
+			mixer_play_effect(SWING0 + get_random(3) - 1);
+			unsigned int dmg = stats_fight(&tmpStats, &monster->stats);
+			if (dmg > 0) {
+				gui_log("You charged %s for %u damage", monster->lclabel, dmg);
+				mixer_play_effect(SWORD_HIT);
+				data->player->stat_data.hits += 1;
+			}
+			monster_hit(monster, dmg);
+			player_monster_kill_check(data->player, monster);
+		}
+
+		// Pick up items in the path
+		LinkedList *items = space->items;
+		while (items != NULL) {
+			Item *item = items->data;
+			items = items->next;
+			item_collected(item, player);
+		}
+		LinkedList *artifacts = space->artifacts;
+		while (artifacts != NULL) {
+			Artifact *artifact = artifacts->data;
+			artifacts = artifacts->next;
+			player_add_artifact(player, artifact);
+		}
+
+		if (space->trap)
+			space->trap->sprite->animate = true;
+
+		itPos.x += (int) data->direction.x;
+		itPos.y += (int) data->direction.y;
+
+		steps++;
+	}
+}
+
 static bool
 skill_charge(Skill *skill, SkillData *data)
 {
@@ -279,46 +334,40 @@ skill_charge(Skill *skill, SkillData *data)
 	Player *player = data->player;
 	RoomMatrix *matrix = data->matrix;
 
-	Position playerPos = position_to_matrix_coords(&player->sprite->pos);
-	Position destination = playerPos;
-
-	unsigned int steps = 0;
+	Position playerStartPos = position_to_matrix_coords(&player->sprite->pos);
+	Position destination = playerStartPos;
 
 	// Find collider
 	destination.x += (int) data->direction.x;
 	destination.y += (int) data->direction.y;
 	RoomSpace *space = &matrix->spaces[destination.x][destination.y];
-	while (position_in_roommatrix(&destination) && !space->occupied)
+	Uint32 passThroughCount = 0;
+	Uint32 chargeThroughLvl = player_has_artifact(data->player, CHARGE_THROUGH);
+	Position lastAvailableDest = playerStartPos;
+	while (position_in_roommatrix(&destination))
 	{
+		if (space->occupied) {
+			if (!space->monster || passThroughCount >= chargeThroughLvl)
+				break;
+			else
+				passThroughCount++;
+		} else {
+			lastAvailableDest = destination;
+		}
+
 		destination.x += (int) data->direction.x;
 		destination.y += (int) data->direction.y;
-		if (space->items != NULL) {
-			LinkedList *items = space->items;
-			while (items != NULL) {
-				Item *item = items->data;
-				items = items->next;
-				item_collected(item, player);
-			}
-			LinkedList *artifacts = space->artifacts;
-			while (artifacts != NULL) {
-				Artifact *artifact = artifacts->data;
-				artifacts = artifacts->next;
-				player_add_artifact(player, artifact);
-			}
-		}
 		space = &matrix->spaces[destination.x][destination.y];
-		steps++;
 	}
 
-	if (!position_in_roommatrix(&destination)) {
-		destination.x -= (int) data->direction.x;
-		destination.y -= (int) data->direction.y;
-	}
+	destination = lastAvailableDest;
 
 	// Move player
 	Position playerOriginPos = player->sprite->pos;
-	player->sprite->pos.x += (steps * TILE_DIMENSION) * (int) data->direction.x;
-	player->sprite->pos.y += (steps * TILE_DIMENSION) * (int) data->direction.y;
+	Sint32 xdiff = destination.x - playerStartPos.x;
+	Sint32 ydiff = destination.y - playerStartPos.y;
+	player->sprite->pos.x += xdiff * TILE_DIMENSION;
+	player->sprite->pos.y += ydiff * TILE_DIMENSION;
 	Position playerDestinationPos = player->sprite->pos;
 	player_turn(data->player, &data->direction);
 
@@ -326,9 +375,9 @@ skill_charge(Skill *skill, SkillData *data)
 	bool horizontal = data->direction.x != 0;
 	Dimension particleArea;
 	if (horizontal)
-		particleArea = (Dimension) { steps * TILE_DIMENSION, TILE_DIMENSION };
+		particleArea = (Dimension) { abs(xdiff) * TILE_DIMENSION, TILE_DIMENSION };
 	else
-		particleArea = (Dimension) { TILE_DIMENSION, steps * TILE_DIMENSION };
+		particleArea = (Dimension) { TILE_DIMENSION, abs(ydiff) * TILE_DIMENSION };
 
 	Position speedLinePos;
 	if (playerOriginPos.x < playerDestinationPos.x || playerOriginPos.y < playerDestinationPos.y)
@@ -339,20 +388,7 @@ skill_charge(Skill *skill, SkillData *data)
 	particle_engine_speed_lines(speedLinePos, particleArea, horizontal);
 	mixer_play_effect(SWOOSH);
 
-	if (matrix->spaces[destination.x][destination.y].monster) {
-		Monster *monster = matrix->spaces[destination.x][destination.y].monster;
-		Stats tmpStats = player->stats;
-		tmpStats.dmg *= steps > 0 ? steps : 1;
-		mixer_play_effect(SWING0 + get_random(3) - 1);
-		unsigned int dmg = stats_fight(&tmpStats, &monster->stats);
-		if (dmg > 0) {
-			gui_log("You charged %s for %u damage", monster->lclabel, dmg);
-			mixer_play_effect(SWORD_HIT);
-			data->player->stat_data.hits += 1;
-		}
-		monster_hit(monster, dmg);
-		player_monster_kill_check(data->player, monster);
-	}
+	skill_charge_check_path(data, playerStartPos, destination);
 
 	return true;
 }
