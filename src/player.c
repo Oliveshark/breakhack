@@ -158,7 +158,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 			if (get_random(10) < player_has_artifact(player, FEAR_INDUCING)) {
 				gui_log("%s shivers with fear at the sight of you",
 					space->monster->label);
-				monster_set_state(space->monster, SCARED);
+				monster_set_state(space->monster, SCARED, 3);
 			}
 		}
 

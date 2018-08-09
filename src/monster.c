@@ -80,6 +80,7 @@ monster_state_change(Monster *m, StateType newState)
 	m->state.last = m->state.current;
 	m->state.current = newState;
 	m->state.stepsSinceChange = 0;
+	m->state.forceCount = 0;
 
 	monster_set_state_display_time(m);
 
@@ -96,7 +97,7 @@ monster_state_change(Monster *m, StateType newState)
 static void
 monster_behaviour_check_post_hit(Monster *m)
 {
-	if (m->state.current == STUNNED)
+	if (m->state.stepsSinceChange < m->state.forceCount)
 		return;
 
 	switch (m->behaviour) {
@@ -194,6 +195,7 @@ monster_create(void)
 	m->stateIndicator.sprite->dim = GAME_DIMENSION;
 	m->stateIndicator.displayCount = 0;
 	m->stateIndicator.shownOnPlayerRoomEnter = false;
+	m->state.forceCount = 0;
 	monster_set_behaviour(m, NORMAL);
 
 	return m;
@@ -376,15 +378,16 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 bool
 monster_move(Monster *m, RoomMatrix *rm)
 {
-
-	if (m->state.current == STUNNED) {
-		if (m->state.stepsSinceChange < 3) {
-			m->state.stepsSinceChange += 1;
-			return true;
-		} else {
+	if (m->state.forceCount) {
+		if (m->state.stepsSinceChange >= m->state.forceCount) {
 			monster_state_change(m, m->state.last);
 			monster_behaviour_check_post_hit(m);
 		}
+	}
+
+	if (m->state.current == STUNNED) {
+		m->state.stepsSinceChange += 1;
+		return true;
 	}
 
 	monster_behaviour_check(m, rm);
@@ -595,9 +598,10 @@ monster_set_behaviour(Monster *m, MonsterBehaviour behaviour)
 }
 
 void
-monster_set_state(Monster *m, StateType state)
+monster_set_state(Monster *m, StateType state, Uint8 forceCount)
 {
 	monster_state_change(m, state);
+	m->state.forceCount = forceCount;
 }
 
 void

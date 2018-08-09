@@ -51,6 +51,7 @@ typedef struct State {
 	StateType current;
 	StateType last;
 	unsigned int stepsSinceChange;
+	Uint8 forceCount;
 } State;
 
 typedef struct MonsterStateIndicator {
@@ -59,7 +60,7 @@ typedef struct MonsterStateIndicator {
 	int displayCount;
 } MonsterStateIndicator;
 
-typedef struct Monster_t {
+typedef struct Monster {
 	char *label;
 	char *lclabel;
 	Sprite *sprite;
@@ -97,7 +98,7 @@ void
 monster_set_behaviour(Monster *, MonsterBehaviour behaviour);
 
 void
-monster_set_state(Monster *m, StateType state);
+monster_set_state(Monster *m, StateType state, Uint8 forceCount);
 
 void
 monster_push(Monster *, RoomMatrix*, Vector2d dir);
