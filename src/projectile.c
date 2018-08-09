@@ -114,8 +114,7 @@ projectile_update(Projectile *p, UpdateData *data)
 		monster_hit(space->monster, dmg);
 		player_monster_kill_check(data->player, space->monster);
 		alive = player_has_artifact(data->player, PIERCING_DAGGERS) > p->collisionCount;
-		if (!alive && (get_random(5) == 0
-		    || get_random(5) < player_has_artifact(data->player, DAGGER_RECOVERY))) {
+		if (!alive && get_random(5) <= player_has_artifact(data->player, DAGGER_RECOVERY)) {
 			Item *item = item_builder_build_item(DAGGER, 1);
 			item->sprite->pos = space->monster->sprite->pos;
 			linkedlist_append(&data->map->items, item);

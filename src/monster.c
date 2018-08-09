@@ -559,7 +559,7 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 
 	// TODO: This should not occur every time
 	// Debug code.
-	Artifact *a = artifact_create(FEAR_INDUCING);
+	Artifact *a = artifact_create(DAGGER_RECOVERY);
 	a->sprite->pos = monster->sprite->pos;
 	linkedlist_append(&map->artifacts, a);
 }
