@@ -588,10 +588,10 @@ run_game(void)
 		camera_shake(VECTOR2D_RIGHT, 800);
 		gui_log("The dungeon consumed you");
 		gui_event_message("You died!");
+		gui_event_message("Press ESC to open menu");
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
-		toggleInGameMenu(NULL);
 	} else {
 		check_next_level();
 	}
