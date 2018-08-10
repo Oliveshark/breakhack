@@ -20,6 +20,8 @@
 #include "util.h"
 #include "texturecache.h"
 #include "particle_engine.h"
+#include "player.h"
+#include "random.h"
 
 static void
 artifact_set_effect(Artifact *a, MagicalEffect effect)
@@ -87,6 +89,29 @@ artifact_set_effect(Artifact *a, MagicalEffect effect)
 		default:
 			break;
 	}
+}
+
+Artifact *
+artifact_create_random(Player *p, Uint8 level)
+{
+	int option = -1;
+	switch (p->stats.lvl) {
+		case 4:
+			option = get_random(CHARGE_THROUGH);
+			break;
+		case 3:
+			option = get_random(INCREASED_STUN);
+			break;
+		case 1:
+			option = get_random(FEAR_INDUCING);
+			break;
+		default:
+			option = get_random(LAST_ARTIFACT_EFFECT) - 1;
+			break;
+	}
+	Artifact *a = artifact_create(option);
+	a->level = level;
+	return a;
 }
 
 Artifact *

@@ -519,6 +519,12 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 	unsigned int item_count = 0;
 	bool player_full_health = player->stats.hp >= player->stats.maxhp;
 
+	if (get_random(19) == 0) {
+		Artifact *a = artifact_create_random(player, 1);
+		a->sprite->pos = monster->sprite->pos;
+		linkedlist_append(&map->artifacts, a);
+	}
+
 	if (player->stats.hp < player->stats.maxhp / 2)
 		item_drop_chance = 0;
 
@@ -556,12 +562,6 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		}
 		linkedlist_append(&map->items, container);
 	}
-
-	// TODO: This should not occur every time
-	// Debug code.
-	Artifact *a = artifact_create(DAGGER_RECOVERY);
-	a->sprite->pos = monster->sprite->pos;
-	linkedlist_append(&map->artifacts, a);
 }
 
 void

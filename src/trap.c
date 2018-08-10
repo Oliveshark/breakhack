@@ -47,6 +47,7 @@ trap_activate(Trap *trap, Player *player)
 	if (get_random(10) > 2 * player_has_artifact(player, TRAP_AVOIDANCE)) {
 		player->stats.hp -= trap->damage;
 		player_hit(player, trap->damage);
+		gui_log("The trap damages you for %d damage", trap->damage);
 	} else {
 		actiontextbuilder_create_text("Dodged", C_YELLOW, &player->sprite->pos);
 		gui_log("You nimbly avoid getting hurt by the trap");

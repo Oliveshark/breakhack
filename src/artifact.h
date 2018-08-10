@@ -24,11 +24,11 @@ typedef enum MagicalEffect {
 	IMPROVED_HEARING,
 	TRAP_AVOIDANCE,
 	PIERCING_DAGGERS,
-	CHARGE_THROUGH,
-	PUSH_BACK,
 	DAGGER_RECOVERY,
-	INCREASED_STUN,
+	PUSH_BACK,
 	FEAR_INDUCING,
+	INCREASED_STUN,
+	CHARGE_THROUGH,
 	LAST_ARTIFACT_EFFECT // Sentinel
 } MagicalEffect;
 
@@ -44,6 +44,9 @@ typedef struct Artifact {
 	bool collected;
 	int level;
 } Artifact;
+
+Artifact *
+artifact_create_random(Player*, Uint8 level);
 
 Artifact *
 artifact_create(MagicalEffect);
