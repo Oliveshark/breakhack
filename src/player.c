@@ -107,6 +107,48 @@ player_step(Player *p)
 	action_spent(p);
 }
 
+static void
+on_monster_collision(Player *player,
+		     Monster *monster,
+		     RoomMatrix *matrix,
+		     Vector2d direction)
+{
+	unsigned int hit = stats_fight(&player->stats,
+				       &monster->stats);
+
+	mixer_play_effect(SWING0 + get_random(2));
+	monster_hit(monster, hit);
+	animation_run(player->swordAnimation);
+
+	if (hit > 0) {
+		gui_log("You hit %s for %u damage",
+			monster->lclabel, hit);
+		player->stat_data.hits += 1;
+		mixer_play_effect(SWORD_HIT);
+	} else {
+		gui_log("You missed %s", monster->lclabel);
+		player->stat_data.misses += 1;
+	}
+	player_monster_kill_check(player, monster);
+
+	if (monster->stats.hp > 0) {
+		if (get_random(10) < player_has_artifact(player, PUSH_BACK)) {
+			gui_log("The force of your blow sends %s reeling",
+				monster->lclabel);
+			monster_push(monster, matrix, direction);
+		}
+
+		if (get_random(10) < player_has_artifact(player, FEAR_INDUCING)) {
+			gui_log("%s shivers with fear at the sight of you",
+				monster->label);
+			monster_set_state(monster, SCARED, 3);
+		}
+	}
+
+	action_spent(player);
+
+}
+
 static bool 
 has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
@@ -128,42 +170,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	}
 
 	if (space->monster != NULL) {
-		unsigned int hit = stats_fight(&player->stats,
-					       &space->monster->stats);
-
-		mixer_play_effect(SWING0 + get_random(2));
-
-		monster_hit(space->monster, hit);
-
-		animation_run(player->swordAnimation);
-
-		if (hit > 0) {
-			gui_log("You hit %s for %u damage",
-				space->monster->lclabel, hit);
-			player->stat_data.hits += 1;
-			mixer_play_effect(SWORD_HIT);
-		} else {
-			gui_log("You missed %s", space->monster->lclabel);
-			player->stat_data.misses += 1;
-		}
-		player_monster_kill_check(player, space->monster);
-
-		if (space->monster->stats.hp > 0) {
-			if (get_random(10) < player_has_artifact(player, PUSH_BACK)) {
-				gui_log("The force of your blow sends %s reeling",
-					space->monster->lclabel);
-				monster_push(space->monster, matrix, direction);
-			}
-
-			if (get_random(10) < player_has_artifact(player, FEAR_INDUCING)) {
-				gui_log("%s shivers with fear at the sight of you",
-					space->monster->label);
-				monster_set_state(space->monster, SCARED, 3);
-			}
-		}
-
-		action_spent(player);
-
+		on_monster_collision(player, space->monster, matrix, direction);
 	} else if (collided) {
 		mixer_play_effect(BONK);
 		camera_shake(direction, 100);
