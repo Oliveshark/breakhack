@@ -20,6 +20,7 @@
 #include "item.h"
 #include "util.h"
 #include "mixer.h"
+#include "gui.h"
 
 Item *
 item_create(void)
@@ -48,21 +49,22 @@ item_collected(Item *item, Player *player)
 	if (item->collected || item->opened)
 		return;
 
-	while (item->items) {
-		Item *subitem = linkedlist_pop(&item->items);
-		item_collected(subitem, player);
-		item_destroy(subitem);
+	if (!item->openable) {
+		item->collected = true;
+	} else {
+		mixer_play_effect(CHEST_OPEN);
+		gui_log("You open a container");
+		item->opened = true;
+		item->sprite->texture_index = 1;
 	}
 
 	if (item->effect != NULL)
 		item->effect(item, player);
 
-	if (!item->openable) {
-		item->collected = true;
-	} else {
-		mixer_play_effect(CHEST_OPEN);
-		item->opened = true;
-		item->sprite->texture_index = 1;
+	while (item->items) {
+		Item *subitem = linkedlist_pop(&item->items);
+		item_collected(subitem, player);
+		item_destroy(subitem);
 	}
 }
 

@@ -115,7 +115,7 @@ create_treasure(int current_level)
 	unsigned int highest_treasure;
 	unsigned int value;
 
-	amt = (unsigned int) get_random(5*current_level) % 40;
+	amt = (unsigned int) 1 + get_random(5*current_level) % 40;
 
 	if (current_level > 9) {
 		highest_treasure = TREASURE_COUNT;
@@ -125,7 +125,7 @@ create_treasure(int current_level)
 		highest_treasure = GOLD;
 	}
 
-	value = get_random(highest_treasure) - 1;
+	value = get_random(highest_treasure);
 
 	SDL_Rect clip = CLIP16(0, 0);
 	switch (value) {

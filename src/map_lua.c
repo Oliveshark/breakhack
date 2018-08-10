@@ -333,11 +333,11 @@ l_add_chest(lua_State *L)
 	lua_pop(L, 4);
 
 	if (get_random(1) == 0)
-		linkedlist_append(&chest->items, item_builder_build_item(level, TREASURE));
+		linkedlist_append(&chest->items, item_builder_build_item(TREASURE, level));
 	if (get_random(4) == 0)
-		linkedlist_append(&chest->items, item_builder_build_item(level, HEALTH));
+		linkedlist_append(&chest->items, item_builder_build_item(HEALTH, level));
 	if (get_random(4) == 0)
-		linkedlist_append(&chest->items, item_builder_build_item(level, DAGGER));
+		linkedlist_append(&chest->items, item_builder_build_item(DAGGER, level));
 
 	linkedlist_append(&map->items, chest);
 

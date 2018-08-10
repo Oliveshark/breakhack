@@ -95,20 +95,13 @@ Artifact *
 artifact_create_random(Player *p, Uint8 level)
 {
 	int option = -1;
-	switch (p->stats.lvl) {
-		case 4:
-			option = get_random(CHARGE_THROUGH);
-			break;
-		case 3:
-			option = get_random(INCREASED_STUN);
-			break;
-		case 1:
-			option = get_random(FEAR_INDUCING);
-			break;
-		default:
-			option = get_random(LAST_ARTIFACT_EFFECT) - 1;
-			break;
-	}
+	if (p->stats.lvl >= 4)
+		option = get_random(LAST_ARTIFACT_EFFECT);
+	else if (p->stats.lvl >= 3)
+		option = get_random(INCREASED_STUN);
+	else
+		option = get_random(FEAR_INDUCING);
+
 	Artifact *a = artifact_create(option);
 	a->level = level;
 	return a;
