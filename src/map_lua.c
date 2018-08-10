@@ -33,6 +33,9 @@
 #include "io_util.h"
 #include "texturecache.h"
 #include "trap.h"
+#include "item.h"
+#include "item_builder.h"
+#include "random.h"
 
 static
 lua_State* load_lua_state(void)
@@ -298,6 +301,50 @@ l_add_trap(lua_State *L)
 }
 
 static int
+l_add_chest(lua_State *L)
+{
+	Map *map = luaL_checkmap(L, 1);
+	int x = (int) luaL_checkinteger(L, 2);
+	int y = (int) luaL_checkinteger(L, 3);
+	int level = (int) luaL_checkinteger(L, 4);
+
+	// Read the table
+	lua_settop(L, 5);
+	luaL_checktype(L, 5, LUA_TTABLE);
+
+	lua_getfield(L, 5, "texturePath1");
+	lua_getfield(L, 5, "texturePath2");
+	lua_getfield(L, 5, "clipX");
+	lua_getfield(L, 5, "clipY");
+
+	const char *texture_path_1 = luaL_checkstring(L, -4);
+	const char *texture_path_2 = luaL_checkstring(L, -3);
+	int clip_x = (int) luaL_checkinteger(L, -2);
+	int clip_y = (int) luaL_checkinteger(L, -1);
+
+	Item *chest = item_builder_build_container(texture_path_1,
+						   texture_path_2,
+						   CLIP16(clip_x, clip_y));
+	const Position *cr = &map->currentRoom;
+	chest->sprite->pos = (Position) {
+		cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + x * TILE_DIMENSION,
+		cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + y * TILE_DIMENSION
+	};
+	if (get_random(2) == 0)
+		linkedlist_append(&chest->items, item_builder_build_item(level, TREASURE));
+	if (get_random(4) == 0)
+		linkedlist_append(&chest->items, item_builder_build_item(level, HEALTH));
+	if (get_random(4) == 0)
+		linkedlist_append(&chest->items, item_builder_build_item(level, DAGGER));
+
+	lua_pop(L, 4);
+
+	linkedlist_append(&map->items, chest);
+
+	return 0;
+}
+
+static int
 l_add_monster(lua_State *L)
 {
 	Monster *monster;
@@ -439,6 +486,9 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 
 	lua_pushcfunction(L, l_add_trap);
 	lua_setglobal(L, "add_trap");
+
+	lua_pushcfunction(L, l_add_chest);
+	lua_setglobal(L, "add_chest");
 
 	lua_pushcfunction(L, l_add_texture);
 	lua_setglobal(L, "add_texture");

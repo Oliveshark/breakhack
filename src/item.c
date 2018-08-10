@@ -26,6 +26,8 @@ item_create(void)
 	Item *item = ec_malloc(sizeof(Item));
 	item->sprite = NULL;
 	item->collected = false;
+	item->openable = false;
+	item->opened = false;
 	m_strcpy(item->label, 50, "");
 	item->value = 0.0;
 	item->items = NULL;
@@ -42,18 +44,24 @@ item_render(Item *item, Camera *cam)
 void
 item_collected(Item *item, Player *player)
 {
-	LinkedList *items = item->items;
+	if (item->collected || item->opened)
+		return;
 
-	while (items != NULL) {
-		Item *subitem = items->data;
-		items = items->next;
+	while (item->items) {
+		Item *subitem = linkedlist_pop(&item->items);
 		item_collected(subitem, player);
+		item_destroy(subitem);
 	}
 
 	if (item->effect != NULL)
 		item->effect(item, player);
 
-	item->collected = true;
+	if (!item->openable) {
+		item->collected = true;
+	} else {
+		item->opened = true;
+		item->sprite->texture_index = 1;
+	}
 }
 
 void

@@ -25,7 +25,8 @@
 #include "gui.h"
 #include "mixer.h"
 #include "random.h"
-#include"texturecache.h"
+#include "texturecache.h"
+#include "sprite.h"
 
 static ItemBuilder *builder = NULL;
 
@@ -78,16 +79,19 @@ pickup_dagger(Item *item, Player *player)
 }
 
 static Item *
-create_item(const char *path, SDL_Rect clip, void (*cb)(Item*, Player*))
+create_item(const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item*, Player*))
 {
-	Texture *t;
+	Texture *t0 = NULL, *t1 = NULL;
 	Item *item;
 
 	item = item_create();
-	t = texturecache_add(path);
+	t0 = texturecache_add(path0);
+	if (path1)
+		t1 = texturecache_add(path1);
 
 	item->sprite = sprite_create();
-	sprite_set_texture(item->sprite, t, 0);
+	sprite_set_texture(item->sprite, t0, 0);
+	sprite_set_texture(item->sprite, t1, 1);
 	item->sprite->dim = GAME_DIMENSION;
 	item->sprite->clip = clip;
 	item->effect = cb;
@@ -153,7 +157,7 @@ create_treasure(int current_level)
 	else if (amt <= 15)
 		clip.x += 32;
 
-	Item *item = create_item("Items/Money.png", clip, &pickup_gold);
+	Item *item = create_item("Items/Money.png", NULL, clip, &pickup_gold);
 	m_strcpy(item->label, 50, label);
 	item->value = amt;
 	return item;
@@ -175,18 +179,21 @@ item_builder_build_item(ItemKey key, int level)
 			break;
 		case FLESH:
 			item = create_item(path_flesh,
+					   NULL,
 					   CLIP16(get_random(7) * 16, get_random(1) * 16),
 					   &eat_flesh);
 			item->value = 1 + get_random(level);
 			break;
 		case HEALTH:
 			item = create_item(path_potion,
+					   NULL,
 					   CLIP16(0, 0),
 					   &drink_health);
 			item->value = 1 + get_random(level);
 			break;
 		case DAGGER:
 			item = create_item(path_short_wep,
+					   NULL,
 					   CLIP16(0, 0),
 					   &pickup_dagger);
 			item->value = 1;
@@ -203,8 +210,21 @@ Item *
 item_builder_build_sack(void)
 {
 	return create_item("Items/Chest0.png",
+			   NULL,
 			   CLIP16(0, 32),
 			   NULL);
+}
+
+Item *
+item_builder_build_container(const char *path0, const char *path1, SDL_Rect clip)
+{
+	Item *chest = create_item(path0,
+				  path1,
+				  clip,
+				  NULL);
+	chest->openable = true;
+	chest->sprite->animate = false;
+	return chest;
 }
 
 void

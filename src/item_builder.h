@@ -50,6 +50,9 @@ item_builder_build_item(ItemKey key, int level);
 Item *
 item_builder_build_sack(void);
 
+Item *
+item_builder_build_container(const char *path0, const char *path1, SDL_Rect clip);
+
 void
 item_builder_close(void);
 

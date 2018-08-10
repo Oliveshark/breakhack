@@ -30,6 +30,8 @@
 typedef struct Item_t {
 	Sprite *sprite;
 	bool collected;
+	bool openable;
+	bool opened;
 	char label[50];
 	double value;
 	LinkedList *items;

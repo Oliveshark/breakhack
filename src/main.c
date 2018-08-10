@@ -538,14 +538,12 @@ run_game_render(void)
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
 	map_render(gMap, gCamera);
 	particle_engine_render_game(gCamera);
-
-	if (!is_player_dead())
-		player_render(gPlayer, gCamera);
-
 	map_render_top_layer(gMap, gCamera);
 
-	if (!is_player_dead())
+	if (!is_player_dead()) {
+		player_render(gPlayer, gCamera);
 		player_render_toplayer(gPlayer, gCamera);
+	}
 
 	if (gPlayer->class == MAGE || gPlayer->class == PALADIN)
 		roommatrix_render_mouse_square(gRoomMatrix, gCamera);
