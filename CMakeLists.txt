@@ -264,6 +264,7 @@ if (NOT DEBUG_BUILD)
 			"menumapgen.lua"
 			"monstergen.lua"
 			"trapgen.lua"
+			"chestgen.lua"
 			"pitlayouts.dat"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
 		)

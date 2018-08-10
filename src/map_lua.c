@@ -330,14 +330,14 @@ l_add_chest(lua_State *L)
 		cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + x * TILE_DIMENSION,
 		cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + y * TILE_DIMENSION
 	};
-	if (get_random(2) == 0)
+	lua_pop(L, 4);
+
+	if (get_random(1) == 0)
 		linkedlist_append(&chest->items, item_builder_build_item(level, TREASURE));
 	if (get_random(4) == 0)
 		linkedlist_append(&chest->items, item_builder_build_item(level, HEALTH));
 	if (get_random(4) == 0)
 		linkedlist_append(&chest->items, item_builder_build_item(level, DAGGER));
-
-	lua_pop(L, 4);
 
 	linkedlist_append(&map->items, chest);
 

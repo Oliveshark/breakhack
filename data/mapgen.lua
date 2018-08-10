@@ -1,6 +1,7 @@
 local room_builder = require "maproombuilder"
 local monster_gen = require "monstergen"
 local trap_gen = require "trapgen"
+local chest_gen = require "chestgen"
 
 -- Setting up some functions
 local time = os.time
@@ -117,6 +118,7 @@ local function generate_path ()
 				room_builder.build_room(room)
 				monster_gen.add_monsters_to_room(room, i-1, j-1)
 				trap_gen.add_traps_to_room(room, i-1, j-1)
+				chest_gen.add_chests_to_room(room, i-1, j-1)
 			end
 		end
 	end
@@ -141,6 +143,7 @@ for i=1,10 do
 			room_builder.load_room(map, room)
 			monster_gen.load_monsters(map, room.monsters)
 			trap_gen.load_traps(map, room.traps)
+			chest_gen.load_chests(map, room.chests)
 		end
 	end
 end

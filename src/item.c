@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include "item.h"
 #include "util.h"
+#include "mixer.h"
 
 Item *
 item_create(void)
@@ -59,6 +60,7 @@ item_collected(Item *item, Player *player)
 	if (!item->openable) {
 		item->collected = true;
 	} else {
+		mixer_play_effect(CHEST_OPEN);
 		item->opened = true;
 		item->sprite->texture_index = 1;
 	}

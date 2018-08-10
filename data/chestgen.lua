@@ -3,14 +3,24 @@ local module = {}
 local random = math.random
 
 local textures = {
-	"Objects/Trap1.png",
-	"Objects/Trap0.png"
+	"Items/Chest0.png",
+	"Items/Chest1.png"
 }
 
-local traps = {}
-for i=1,7 do
-	trap = { textures[1], textures[2], i*16, 3*16, CURRENT_LEVEL * 4 }
-	table.insert(traps, trap)
+local chests = {}
+for i=0,1 do
+	table.insert(chests, {
+		textures[1],
+		textures[2],
+		0,
+		i * 16
+	});
+	table.insert(chests, {
+		textures[1],
+		textures[2],
+		16,
+		i * 16
+	});
 end
 
 local function repack(data)
@@ -18,36 +28,33 @@ local function repack(data)
 		texturePath1	= data[1],
 		texturePath2	= data[2],
 		clipX			= data[3],
-		clipY			= data[4],
-		damage			= data[5]
+		clipY			= data[4]
 	}
 end
 
-function module.add_traps_to_room(room)
+function module.add_chests_to_room(room)
 	if room.type == "coridoor" then
-		if random(2) ~= 1 then return end
-	else
-		if random(4) ~= 1 then return end
+		return
 	end
 
-	local count = random(4)
+	local count = random(3) - 1
 	local i = 0
 	while i < count do
 		local rx = random(13) + 1
 		local ry = random(9) + 1
 		if room_builder.is_tile_avilable(room, rx, ry) then
-			room.traps[rx][ry] = traps[random(#traps)]
+			room.chests[rx][ry] = chests[random(#chests)]
 			i = i + 1
 		end
 	end
 end
 
-function module.load_traps(map, traps)
+function module.load_chests(map, chests)
 	for i=0,15 do
 		for j=0,11 do
-			trap = traps[i][j]
-			if trap then
-				add_trap(map, i, j, repack(trap))
+			chest = chests[i][j]
+			if chest then
+				add_chest(map, i, j, CURRENT_LEVEL, repack(chest))
 			end
 		end
 	end

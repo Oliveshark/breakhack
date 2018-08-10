@@ -131,7 +131,7 @@ local function repack(data)
 end
 
 local function add_random_decor_to_room(room)
-	local decor_count = random(10) - 1
+	local decor_count = random(8)
 	for i=1,decor_count do
 		x = random(11) + 1
 		y = random(8) + 1
@@ -452,6 +452,16 @@ function module.add_full_lighting(room)
 		room.decor[11][9] = lightDecor.candle2
 end
 
+function module.is_tile_avilable(room, rx, ry)
+	return not room.chests[rx][ry]
+		and not room.traps[rx][ry]
+		and not room.monsters[rx][ry]
+		and not room.decor[rx][ry]
+		and (room.tiles[rx][ry]
+			and not room.tiles[rx][ry][5]
+			and not room.tiles[rx][ry][8])
+end
+
 function module.create_empty_room()
 	room = {
 		exits = {},
@@ -466,6 +476,7 @@ function module.create_empty_room()
 			arg = nil
 		},
 		monsters = {},
+		chests = {},
 		traps = {}
 	}
 	for i=0,15 do
@@ -473,11 +484,13 @@ function module.create_empty_room()
 		room.decor[i] = {}
 		room.monsters[i] = {}
 		room.traps[i] = {}
+		room.chests[i] = {}
 		for j=0,11 do
 			room.tiles[i][j] = nil
 			room.decor[i][j] = nil
 			room.monsters[i][j] = nil
 			room.traps[i][j] = nil
+			room.chests[i][j] = nil
 		end
 	end
 	return room

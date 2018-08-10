@@ -83,6 +83,7 @@ load_effects(void)
 	effects[FALL1] = load_effect("Sounds/FX/fall1.wav");
 	effects[SLAM] = load_effect("Sounds/FX/slam.wav");
 	effects[MAGIC_PICKUP] = load_effect("Sounds/FX/magic_pickup.wav");
+	effects[CHEST_OPEN] = load_effect("Sounds/FX/chest_open.wav");
 }
 
 void

@@ -1,3 +1,4 @@
+local room_builder = require "maproombuilder"
 local module = {}
 local random = math.random
 
@@ -250,13 +251,7 @@ function module.add_monsters_to_room(room, roomx, roomy)
 	while i < count do
 		local rx = random(13) + 1
 		local ry = random(9) + 1
-		if not room.decor[rx][ry]
-			and not room.monsters[rx][ry]
-			and (room.tiles[rx][ry]
-				and not room.tiles[rx][ry][5]
-				and not room.tiles[rx][ry][8])
-			then
-
+		if room_builder.is_tile_avilable(room, rx, ry) then
 			local x = (roomx * 512) + rx * 32
 			local y = (roomy * 384) + ry * 32
 			room.monsters[rx][ry] = {
