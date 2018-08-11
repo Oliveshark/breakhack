@@ -309,15 +309,8 @@ void map_render(Map *map, Camera *cam)
 }
 
 void
-map_render_top_layer(Map *map, Camera *cam)
+map_render_mid_layer(Map *map, Camera *cam)
 {
-	LinkedList *monsterItem = map->monsters;
-	while (monsterItem != NULL) {
-		Monster *monster = monsterItem->data;
-		monsterItem = monsterItem->next;
-		monster_render(monster, cam);
-	}
-
 	LinkedList *items = map->items;
 	while (items != NULL) {
 		item_render(items->data, cam);
@@ -328,6 +321,24 @@ map_render_top_layer(Map *map, Camera *cam)
 	while (artifacts != NULL) {
 		artifact_render(artifacts->data, cam);
 		artifacts = artifacts->next;
+	}
+
+	LinkedList *monsterItem = map->monsters;
+	while (monsterItem != NULL) {
+		Monster *monster = monsterItem->data;
+		monsterItem = monsterItem->next;
+		monster_render(monster, cam);
+	}
+}
+
+void
+map_render_top_layer(Map *map, Camera *cam)
+{
+	LinkedList *monsterItem = map->monsters;
+	while (monsterItem != NULL) {
+		Monster *monster = monsterItem->data;
+		monsterItem = monsterItem->next;
+		monster_render_top_layer(monster, cam);
 	}
 }
 

@@ -104,6 +104,9 @@ void
 map_render(Map*, Camera*);
 
 void
+map_render_mid_layer(Map*, Camera*);
+
+void
 map_render_top_layer(Map*, Camera*);
 
 void

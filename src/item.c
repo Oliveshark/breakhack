@@ -56,6 +56,8 @@ item_collected(Item *item, Player *player)
 		gui_log("You open a container");
 		item->opened = true;
 		item->sprite->texture_index = 1;
+		if (!item->items)
+			gui_log("You find nothing inside");
 	}
 
 	if (item->effect != NULL)

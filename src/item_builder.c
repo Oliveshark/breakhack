@@ -48,7 +48,7 @@ static void
 eat_flesh(Item *item, Player *player)
 {
 	int original_hp = player->stats.hp;
-	player->stats.hp += (int) item->value * player->stats.lvl;
+	player->stats.hp += (int) item->value;
 	if (player->stats.hp > player->stats.maxhp)
 		player->stats.hp = player->stats.maxhp;
 

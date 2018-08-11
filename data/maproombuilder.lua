@@ -398,17 +398,22 @@ local function build_coridoor_room(room)
 	build_center_corner_walls(room, exits)
 end
 
+local function room_tile_available(room, rx, ry)
+	return not room.chests[rx][ry]
+		and not room.traps[rx][ry]
+		and not room.monsters[rx][ry]
+		and not room.decor[rx][ry]
+		and (room.tiles[rx][ry]
+			and not room.tiles[rx][ry][5]
+			and not room.tiles[rx][ry][8])
+end
+
 local function add_level_exit(room)
 	success = false
 	while not success do
 		x = random(14)
 		y = random(10)
-		if not room.decor[x][y]
-			and not room.traps[x][y]
-			and (room.tiles[x][y]
-				and not room.tiles[x][y][5]
-				and not room.tiles[x][y][8])
-			then
+		if room_tile_available(room, x, y) then
 			success = true
 			room.tiles[x][y] = special.level_exit
 		end
@@ -453,13 +458,7 @@ function module.add_full_lighting(room)
 end
 
 function module.is_tile_avilable(room, rx, ry)
-	return not room.chests[rx][ry]
-		and not room.traps[rx][ry]
-		and not room.monsters[rx][ry]
-		and not room.decor[rx][ry]
-		and (room.tiles[rx][ry]
-			and not room.tiles[rx][ry][5]
-			and not room.tiles[rx][ry][8])
+	return room_tile_available(room, rx, ry);
 end
 
 function module.create_empty_room()

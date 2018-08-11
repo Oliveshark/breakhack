@@ -336,8 +336,11 @@ l_add_chest(lua_State *L)
 		linkedlist_append(&chest->items, item_builder_build_item(TREASURE, level));
 	if (get_random(4) == 0)
 		linkedlist_append(&chest->items, item_builder_build_item(HEALTH, level));
-	if (get_random(4) == 0)
-		linkedlist_append(&chest->items, item_builder_build_item(DAGGER, level));
+	if (get_random(4) == 0) {
+		Item *dagger = item_builder_build_item(DAGGER, level);
+		dagger->value = get_random(4) + 1;
+		linkedlist_append(&chest->items, dagger);
+	}
 
 	linkedlist_append(&map->items, chest);
 

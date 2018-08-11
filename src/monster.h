@@ -83,6 +83,9 @@ void
 monster_render(Monster*, Camera*);
 
 void
+monster_render_top_layer(Monster*, Camera*);
+
+void
 monster_hit(Monster*, unsigned int dmg);
 
 void

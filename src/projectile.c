@@ -17,6 +17,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "projectile.h"
 #include "util.h"
 #include "texturecache.h"

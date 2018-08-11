@@ -571,6 +571,11 @@ monster_render(Monster *m, Camera *cam)
 		return;
 
 	sprite_render(m->sprite, cam);
+}
+
+void
+monster_render_top_layer(Monster *m, Camera *cam)
+{
 	if (m->stateIndicator.displayCount != 0)
 		sprite_render(m->stateIndicator.sprite, cam);
 }
