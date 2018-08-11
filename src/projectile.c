@@ -68,6 +68,24 @@ projectile_create(void)
 	return p;
 }
 
+static Position
+get_collision_pos_for(Projectile *p)
+{
+	Position collisionPos = p->sprite->pos;
+	if (p->velocity.x > 0) collisionPos.x += TILE_DIMENSION;
+	if(p->velocity.y > 0) collisionPos.y += TILE_DIMENSION;
+	return collisionPos;
+}
+
+static Position
+get_projectile_pos_for(Projectile *p)
+{
+	Position projectilePos = p->sprite->pos;
+	if (p->velocity.x < 0) projectilePos.x += TILE_DIMENSION;
+	if (p->velocity.y < 0) projectilePos.y += TILE_DIMENSION;
+	return projectilePos;
+}
+
 void
 projectile_update(Projectile *p, UpdateData *data)
 {
@@ -79,12 +97,7 @@ projectile_update(Projectile *p, UpdateData *data)
 	if (timer_get_ticks(p->lifetime) > 2000)
 		p->alive = false;
 
-	Position collisionPos = p->sprite->pos;
-	if (p->velocity.x > 0)
-		collisionPos.x += TILE_DIMENSION;
-	if(p->velocity.y > 0)
-		collisionPos.y += TILE_DIMENSION;
-
+	Position collisionPos = get_collision_pos_for(p);
 	if (!position_in_room(&collisionPos, &data->map->currentRoom)) {
 		p->alive = false;
 		return;
@@ -102,6 +115,7 @@ projectile_update(Projectile *p, UpdateData *data)
 	if (space->player)
 		return;
 
+	Position projectilePos = get_projectile_pos_for(p);
 	if (space->monster) {
 		Stats tmpStats = data->player->stats;
 		tmpStats.dmg *= 2;
@@ -115,13 +129,15 @@ projectile_update(Projectile *p, UpdateData *data)
 		monster_hit(space->monster, dmg);
 		player_monster_kill_check(data->player, space->monster);
 		alive = player_has_artifact(data->player, PIERCING_DAGGERS) > p->collisionCount;
-		if (!alive && get_random(5) <= player_has_artifact(data->player, DAGGER_RECOVERY)) {
-			Item *item = item_builder_build_item(DAGGER, 1);
-			item->sprite->pos = space->monster->sprite->pos;
-			linkedlist_append(&data->map->items, item);
-		}
+		projectilePos = space->monster->sprite->pos;
 	}
+
 	mixer_play_effect(SWORD_HIT);
+	if (!alive && get_random(5) <= player_has_artifact(data->player, DAGGER_RECOVERY)) {
+		Item *item = item_builder_build_item(DAGGER, 1);
+		item->sprite->pos = position_to_tile_pos(&projectilePos);
+		linkedlist_append(&data->map->items, item);
+	}
 	p->alive = alive;
 	p->collisionCount++;
 }

@@ -100,3 +100,12 @@ position_in_roommatrix(const Position *pos)
 		&& pos->y >= 0
 		&& pos->y < MAP_ROOM_HEIGHT;
 }
+
+Position
+position_to_tile_pos(const Position *p)
+{
+	return (Position) {
+		p->x - (p->x % TILE_DIMENSION),
+		p->y - (p->y % TILE_DIMENSION)
+	};
+}
