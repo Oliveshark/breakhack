@@ -1,0 +1,22 @@
+69e5ff9 Fixes #35
+b4a6c4b Fixes some render layer issues
+4ba3017 Fixes: #30
+62d1bbd Completes #31 Adds chests to game
+1c7631c Starts #31 Items: Chests
+83aa929 Don't open menu immidiately upon death.
+5e3815a Fixes: #34 hopefully
+71c1279 Completes #2 artifacts
+8dd774b Continues #2 Completed impl of INCREASED_STUN
+ba1d09a Continues #2 completed impl of DAGGER_RECOVERY
+19e7583 Continues #2 FEAR_INDUCING impl
+0aacdd2 Continues #2 Adds PUSH_BACK impl
+ac7dada Fixes #23 possibly
+a04f131 Continues #2: Adds charge skill impl
+736eb79 Continues #2: Artifacts
+095c93e Began #2: Added artifacts and the PIERCING_DAGGERS modifier
+611d8ef Fixes a minor bug in the guerilla behaviour
+aaa8e8c Makes stunned enemies "wobble" instead of having an indicator.
+ffde079 Fixes: #4 Room stuff: Traps
+a3c3c63 Adds the bash sound effect
+41a9021 Fixes a bunch of msvc warnings
+3720eb1 Minor READM change
