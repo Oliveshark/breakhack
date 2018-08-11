@@ -82,11 +82,11 @@ position_in_room(Position *pos, Position *roomPos)
 
 	if (pos->x < room_x_px)
 		return false;
-	else if (pos->x > room_x_px + room_px_width)
+	else if (pos->x >= room_x_px + room_px_width)
 		return false;
 	else if (pos->y < room_y_px)
 		return false;
-	else if (pos->y > room_y_px + room_px_height)
+	else if (pos->y >= room_y_px + room_px_height)
 		return false;
 
 	return true;
