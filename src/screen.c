@@ -33,7 +33,7 @@ create_text_sprite(const char *msg, int x, int y, SDL_Renderer *renderer)
 {
 	Sprite *s = sprite_create();
 	sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 14, 1);
-	texture_load_from_text(s->textures[0], msg, C_BLUE, C_WHITE, renderer);
+	texture_load_from_text(s->textures[0], msg, C_WHITE, C_BLACK, renderer);
 	s->pos = (Position) { x, y };
 	s->fixed = true;
 	s->dim = s->textures[0]->dim;
