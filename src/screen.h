@@ -15,18 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#ifndef GAMESTATE_H_
-#define	GAMESTATE_H_
+#include "texture.h"
+#include "linkedlist.h"
+#include "sprite.h"
+#include "camera.h"
 
-typedef enum GameState_t {
-	MENU,
-	CREDITS,
-	SCORE_SCREEN,
-	PLAYING,
-	IN_GAME_MENU,
-	GAME_OVER,
-	QUIT
-} GameState;
+typedef struct Screen {
+	LinkedList *sprites;
+	LinkedList *textures;
+} Screen;
 
-#endif // GAMESTATE_H_
+Screen *
+screen_create_credits(SDL_Renderer*);
+
+void
+screen_render(Screen *screen, Camera *cam);
+
+void
+screen_destroy(Screen *screen);

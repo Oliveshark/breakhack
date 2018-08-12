@@ -81,11 +81,11 @@ pickup_dagger(Item *item, Player *player)
 static Item *
 create_item(const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item*, Player*))
 {
-	Texture *t0 = NULL, *t1 = NULL;
 	Item *item;
 
 	item = item_create();
-	t0 = texturecache_add(path0);
+	Texture *t0 = texturecache_add(path0);
+	Texture *t1 = NULL;
 	if (path1)
 		t1 = texturecache_add(path1);
 

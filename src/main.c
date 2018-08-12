@@ -49,6 +49,7 @@
 #include "settings.h"
 #include "actiontextbuilder.h"
 #include "input.h"
+#include "screen.h"
 
 typedef enum Turn_t {
 	PLAYER,
@@ -63,14 +64,15 @@ static RoomMatrix	*gRoomMatrix	= NULL;
 static Gui		*gGui		= NULL;
 static SkillBar		*gSkillBar	= NULL;
 static Pointer		*gPointer	= NULL;
-static unsigned int	cLevel		= 1;
-static float		deltaTime	= 1.0;
-static double		renderScale	= 1.0;
 static Menu		*mainMenu	= NULL;
 static Menu		*inGameMenu	= NULL;
 static Timer		*menuTimer	= NULL;
+static Camera		*gCamera	= NULL;
+static Screen		*creditsScreen	= NULL;
+static unsigned int	cLevel		= 1;
+static float		deltaTime	= 1.0;
+static double		renderScale	= 1.0;
 static GameState	gGameState;
-static Camera		*gCamera;
 static SDL_Rect		gameViewport;
 static SDL_Rect		skillBarViewport;
 static SDL_Rect		bottomGuiViewport;
@@ -312,10 +314,18 @@ createInGameGameOverMenu(void)
 }
 
 static void
+viewCredits(void *unused)
+{
+	UNUSED(unused);
+	gGameState = CREDITS;
+}
+
+static void
 initMainMenu(void)
 {
 	struct MENU_ITEM menu_items[] = {
 		{ "PLAY", startGame },
+		{ "CREDITS", viewCredits },
 		{ "QUIT", exitGame },
 	};
 
@@ -324,8 +334,9 @@ initMainMenu(void)
 
 	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
 
-	createMenu(&mainMenu, menu_items, 2);
+	createMenu(&mainMenu, menu_items, 3);
 	mixer_play_music(MENU_MUSIC);
+	creditsScreen = screen_create_credits(gRenderer);
 }
 
 static void
@@ -342,10 +353,13 @@ resetGame(void)
 {
 	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 
-	if (mainMenu) {
+	if (mainMenu)
 		menu_destroy(mainMenu);
-		mainMenu = NULL;
-	}
+	mainMenu = NULL;
+
+	if (creditsScreen)
+		screen_destroy(creditsScreen);
+	creditsScreen = NULL;
 
 	if (!inGameMenu)
 		initInGameMenu();
@@ -385,25 +399,27 @@ init(void)
 	return true;
 }
 
-static bool
+static void
 handle_main_input(void)
 {
 	if (gGameState == PLAYING
 		|| gGameState == IN_GAME_MENU
 		|| gGameState == GAME_OVER)
 	{
-		if (input_key_is_pressed(&input, KEY_ESC)) {
+		if (input_key_is_pressed(&input, KEY_ESC))
 			toggleInGameMenu(NULL);
-			return true;
-		}
 	}
+
+	if (gGameState == CREDITS && input_key_is_pressed(&input, KEY_ESC))
+		gGameState = MENU;
+	else if (gGameState == MENU && input_key_is_pressed(&input, KEY_ESC))
+		gGameState = QUIT;
 
 	if (input_modkey_is_pressed(&input, KEY_CTRL_M)) {
 		if (mixer_toggle_music(&gGameState))
 			gui_log("Music enabled");
 		else
 			gui_log("Music disabled");
-		return true;
 	}
 
 	if (input_modkey_is_pressed(&input, KEY_CTRL_S)) {
@@ -411,10 +427,7 @@ handle_main_input(void)
 			gui_log("Sound enabled");
 		else
 			gui_log("Sound disabled");
-		return true;
 	}
-
-	return false;
 }
 
 static bool
@@ -612,7 +625,7 @@ run_menu(void)
 	}
 
 	menu_update(mainMenu, &input);
-	if (gGameState != MENU)
+	if (gGameState != MENU && gGameState != CREDITS)
 		return;
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
@@ -623,7 +636,12 @@ run_menu(void)
 	roommatrix_render_lightmap(gRoomMatrix, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, NULL);
-	menu_render(mainMenu, gCamera);
+
+	if (gGameState == MENU)
+		menu_render(mainMenu, gCamera);
+	else if (gGameState == CREDITS)
+		screen_render(creditsScreen, gCamera);
+
 	pointer_render(gPointer, gCamera);
 
 	SDL_RenderPresent(gRenderer);
@@ -653,6 +671,7 @@ void run(void)
 				run_game();
 				break;
 			case MENU:
+			case CREDITS:
 				run_menu();
 				break;
 			case QUIT:
@@ -688,6 +707,8 @@ void close(void)
 		map_destroy(gMap);
 	if (mainMenu)
 		menu_destroy(mainMenu);
+	if (creditsScreen)
+		screen_destroy(creditsScreen);
 	if (inGameMenu)
 		menu_destroy(inGameMenu);
 

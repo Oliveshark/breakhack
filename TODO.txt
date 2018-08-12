@@ -1,9 +1,0 @@
-o Creat some nice room modifiers
-	- Falling floor tiles
-
-- Credit screen showing music and graphics guys:
-	- Music: http://soundimage.org/ (Eric Matyas)
-	- SFX (Eric Matyas & https://opengameart.org/users/artisticdude & ZapSplat.com)
-	- Graphics: (see README)
-
-Legend: ( '-' = future) ( 'x' = completed ) ( 'o' = begun )

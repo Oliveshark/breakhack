@@ -513,7 +513,6 @@ gui_log(const char *fmt, ...)
 {
 	char buffer[200];
 	char *new_message;
-	unsigned int i;
 	char tstamp[10];
 
 	va_list args;
@@ -531,7 +530,7 @@ gui_log(const char *fmt, ...)
 		log_data.count = log_data.len;
 		free(log_data.log[0]);
 		log_data.log[0] = NULL;
-		for (i = 0; i < log_data.count - 1; ++i) {
+		for (size_t i = 0; i < log_data.count - 1; ++i) {
 			log_data.log[i] = log_data.log[i+1];
 			log_data.log[i+1] = NULL;
 		}
