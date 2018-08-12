@@ -24,27 +24,25 @@
 #include "defines.h"
 #include "db.h"
 
-#define SETTINGS_DB_FILE ".data.db"
-
 static sqlite3 *db = NULL;
 static Settings settings;
 
 static const char *KEY_MUSIC_ENABLED = "music_enabled";
 static const char *KEY_SOUND_ENABLED = "sound_enabled";
 
-typedef struct db_query {
-	char *stmt;
-	int (*cb)(void*, int, char**, char**);
-	void *cb_arg;
-} db_query;
-
-db_query MIGRATE_COMMANDS[] = {
-	{ "CREATE TABLE IF NOT EXISTS settings_int(key TEXT PRIMARY KEY, value INTEGER)", NULL, NULL },
-	{ NULL, NULL, NULL } // Sentinel
+static
+DbQuery MIGRATE_COMMANDS[] = {
+	{
+		"CREATE TABLE IF NOT EXISTS settings_int("
+			"key TEXT PRIMARY KEY, "
+			"value INTEGER)",
+		NULL, NULL
+	},
+	{ NULL } // Sentinel
 };
 
 static int load_settings_cb(void *unused, int count, char **values, char **colNames);
-db_query LOAD_SETTINGS = { "SELECT * FROM settings_int", load_settings_cb, NULL };
+DbQuery LOAD_SETTINGS = { "SELECT * FROM settings_int", load_settings_cb, NULL };
 
 static void
 set_default_settings(void)
@@ -54,23 +52,14 @@ set_default_settings(void)
 }
 
 static void
-execute_statement(db_query *query)
-{
-	if (!db_execute_stmnt(query->stmt, db, query->cb, query->cb_arg)) {
-		db_close(&db);
-		fatal("Exiting");
-	}
-}
-
-static void
 create_tables(void)
 {
 	for (unsigned int i = 0;; ++i) {
-		db_query *query = &MIGRATE_COMMANDS[i];
+		DbQuery *query = &MIGRATE_COMMANDS[i];
 		if (query->stmt == NULL)
 			break;
 
-		execute_statement(query);
+		db_execute(db, query);
 	}
 }
 
@@ -100,13 +89,13 @@ load_settings_cb(void *unused, int count, char **values, char **colNames)
 static void
 load_settings(void)
 {
-	execute_statement(&LOAD_SETTINGS);
+	db_execute(db, &LOAD_SETTINGS);
 }
 
 void
 settings_init(void)
 {
-	if (!db_open(SETTINGS_DB_FILE, &db)) {
+	if (!db_open(DB_FILE, &db)) {
 		db_close(&db);
 		fatal("Exiting");
 	}
@@ -118,29 +107,19 @@ settings_init(void)
 static void
 save_setting_int(const char *key, int value)
 {
-	// TODO(Linus): Move this into db.c, probably using varargs
-
 	const char *stmtStr = "INSERT OR REPLACE INTO settings_int(key, value) values (?, ?)";
-	const char *pzTest;
-	sqlite3_stmt *stmt;
-	int result;
-
-	result = sqlite3_prepare_v2(db, stmtStr, (int) strlen(stmtStr), &stmt, &pzTest);
+	sqlite3_stmt *stmt = db_prepare(db, stmtStr);
 
 	debug("Saving setting: %s = %d", key, value);
-	if (result == SQLITE_OK) {
-		sqlite3_bind_text(stmt,
-				  1,
-				  key,
-				  (int) strlen(key),
-				  NULL);
+	sqlite3_bind_text(stmt,
+			  1,
+			  key,
+			  (int) strlen(key),
+			  NULL);
 
-		sqlite3_bind_int(stmt, 2, value);
-		sqlite3_step(stmt);
-		sqlite3_finalize(stmt);
-	} else {
-		error("Failed to prepare storage statement for: %s", key);
-	}
+	sqlite3_bind_int(stmt, 2, value);
+	sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
 }
 
 static void

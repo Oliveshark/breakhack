@@ -15,24 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#pragma once
 
-#ifndef SETTINGS_H_
-#define	SETTINGS_H_
+#include <stdlib.h>
+#include "linkedlist.h"
+#include "player.h"
 
-#include <stdbool.h>
-
-typedef struct Settings {
-	bool music_enabled;
-	bool sound_enabled;
-} Settings;
-
-void
-settings_init(void);
-
-Settings *
-settings_get(void);
+typedef struct HiScore {
+	char *timestamp;
+	double gold;
+	unsigned int playerLevel;
+	unsigned int dungeonLevel;
+	LinkedList *artifacts;
+} HiScore;
 
 void
-settings_close(void);
+hiscore_init(void);
 
-#endif // SETTINGS_H_
+void
+hiscore_register(Player *p, unsigned int dungeonLevel);
+
+LinkedList *
+hiscore_get_top10(void);
+
+void
+hiscore_close(void);
+
+void
+hiscore_destroy(HiScore *);

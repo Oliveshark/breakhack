@@ -50,6 +50,7 @@
 #include "actiontextbuilder.h"
 #include "input.h"
 #include "screen.h"
+#include "hiscore.h"
 
 typedef enum Turn_t {
 	PLAYER,
@@ -390,6 +391,7 @@ init(void)
 	}
 
 	settings_init();
+	hiscore_init();
 	initMainMenu();
 
 	gCamera->pos = (Position) { 0, 0 };
@@ -605,6 +607,7 @@ run_game(void)
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
+		hiscore_register(gPlayer, cLevel);
 	} else {
 		check_next_level();
 	}
@@ -702,6 +705,7 @@ void run(void)
 static
 void close(void)
 {
+
 	if (gPlayer)
 		player_destroy(gPlayer);
 	if (gMap)
@@ -725,6 +729,7 @@ void close(void)
 	mixer_close();
 	texturecache_close();
 	settings_close();
+	hiscore_close();
 
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
