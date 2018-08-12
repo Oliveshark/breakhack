@@ -44,18 +44,29 @@ DbQuery MIGRATE_COMMANDS[] = {
 };
 
 static int
-load_hiscore_cb(void *unused, int count, char **values, char **colNames);
+load_hiscore_cb(void *, int count, char **values, char **colNames);
 
 static
-DbQuery GET_COMMANDS[] = {
-	{
-		"SELECT datetime(time, 'localtime') as time, gold, playerLevel, dungeonLevel "
-			"FROM hiscore "
-			"ORDER BY gold DESC "
-			"LIMIT 10",
-		load_hiscore_cb, NULL
-	},
-	{ NULL }
+DbQuery GET_TOP_10_COMMAND = {
+	"SELECT datetime(time, 'localtime') as time, gold, playerLevel, dungeonLevel "
+		"FROM hiscore "
+		"ORDER BY gold DESC "
+		"LIMIT 10",
+	load_hiscore_cb,
+	NULL
+};
+
+static int
+load_top_gold_cb(void *, int count, char **values, char **colNames);
+
+static
+DbQuery GET_TOP_GOLD_COMMAND = {
+	"SELECT gold "
+		"FROM hiscore "
+		"ORDER BY gold DESC "
+		"LIMIT 1",
+	load_top_gold_cb,
+	NULL
 };
 
 static sqlite3 *db = NULL;
@@ -152,16 +163,34 @@ LinkedList *
 hiscore_get_top10(void)
 {
 	LinkedList *scores = linkedlist_create();
-	for (unsigned int i = 0;; ++i) {
-		DbQuery *query = &GET_COMMANDS[i];
-		query->cb_arg = &scores;
-		if (query->stmt == NULL)
-			break;
-
-		db_execute(db, query);
-	}
+	DbQuery *query = &GET_TOP_10_COMMAND;
+	query->cb_arg = &scores;
+	db_execute(db, query);
 
 	return scores;
+}
+
+
+static int
+load_top_gold_cb(void *result, int count, char **values, char **colNames)
+{
+	UNUSED(count);
+	UNUSED(colNames);
+
+	double *gold = result;
+	*gold = atof(values[0]);
+	return 0;
+}
+
+double
+hiscore_get_top_gold(void)
+{
+	double result;
+	DbQuery *query = &GET_TOP_GOLD_COMMAND;
+	query->cb_arg = &result;
+	db_execute(db, query);
+
+	return result;
 }
 
 void

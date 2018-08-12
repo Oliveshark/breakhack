@@ -18,6 +18,7 @@
 
 #include "screen.h"
 #include "util.h"
+#include "hiscore.h"
 
 static Screen *
 screen_create(void)
@@ -29,11 +30,23 @@ screen_create(void)
 }
 
 static Sprite *
-create_text_sprite(const char *msg, int x, int y, SDL_Renderer *renderer)
+credit_txt(const char *msg, SDL_Color color, int x, int y, SDL_Renderer *renderer)
 {
 	Sprite *s = sprite_create();
 	sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 14, 1);
-	texture_load_from_text(s->textures[0], msg, C_WHITE, C_BLACK, renderer);
+	texture_load_from_text(s->textures[0], msg, color, C_BLACK, renderer);
+	s->pos = (Position) { x, y };
+	s->fixed = true;
+	s->dim = s->textures[0]->dim;
+	return s;
+}
+
+static Sprite *
+score_txt(const char *msg, SDL_Color color, int x, int y, SDL_Renderer *renderer)
+{
+	Sprite *s = sprite_create();
+	sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 10, 1);
+	texture_load_from_text(s->textures[0], msg, color, C_BLACK, renderer);
 	s->pos = (Position) { x, y };
 	s->fixed = true;
 	s->dim = s->textures[0]->dim;
@@ -48,37 +61,106 @@ screen_create_credits(SDL_Renderer *renderer)
 	unsigned int columnOffset = 160;
 
 	Screen *screen = screen_create();
-	linkedlist_push(&screen->sprites, create_text_sprite("- Game -", x, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("- Game -", C_BLUE, x, y, renderer));
 	y += 30;
-	linkedlist_push(&screen->sprites, create_text_sprite("Code:", x, y, renderer));
-	linkedlist_push(&screen->sprites, create_text_sprite("Linus Probert", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("Code:", C_YELLOW, x, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("Linus Probert", C_WHITE, x + columnOffset, y, renderer));
 	y += 20;
-	linkedlist_push(&screen->sprites, create_text_sprite("liquidityc.github.io", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("liquidityc.github.io", C_WHITE, x + columnOffset, y, renderer));
 	y += 20;
-	linkedlist_push(&screen->sprites, create_text_sprite("@LiquidityC", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("@LiquidityC", C_WHITE, x + columnOffset, y, renderer));
 
 	y += 60;
-	linkedlist_push(&screen->sprites, create_text_sprite(" - Graphics -", x, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt(" - Graphics -", C_BLUE, x, y, renderer));
 	y += 30;
-	linkedlist_push(&screen->sprites, create_text_sprite("Palette:", x, y, renderer));
-	linkedlist_push(&screen->sprites, create_text_sprite("DawnBringer", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("Palette:", C_YELLOW, x, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("DawnBringer", C_WHITE, x + columnOffset, y, renderer));
 
 	y += 60;
-	linkedlist_push(&screen->sprites, create_text_sprite(" - Music and Sound -", x, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt(" - Music and Sound -", C_BLUE, x, y, renderer));
 	y += 30;
-	linkedlist_push(&screen->sprites, create_text_sprite("Music:", x, y, renderer));
-	linkedlist_push(&screen->sprites, create_text_sprite("Eric Matyas", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("Music:", C_YELLOW, x, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("Eric Matyas", C_WHITE, x + columnOffset, y, renderer));
 	y += 20;
-	linkedlist_push(&screen->sprites, create_text_sprite("www.soundimage.org", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("www.soundimage.org", C_WHITE, x + columnOffset, y, renderer));
 	y += 30;
-	linkedlist_push(&screen->sprites, create_text_sprite("Sound:", x, y, renderer));
-	linkedlist_push(&screen->sprites, create_text_sprite("Eric Matyas", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("Sound:", C_YELLOW, x, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("Eric Matyas", C_WHITE, x + columnOffset, y, renderer));
 	y += 20;
-	linkedlist_push(&screen->sprites, create_text_sprite("www.soundimage.org", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("www.soundimage.org", C_WHITE, x + columnOffset, y, renderer));
 	y += 30;
-	linkedlist_push(&screen->sprites, create_text_sprite("ArtisticDuded", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("ArtisticDuded", C_WHITE, x + columnOffset, y, renderer));
 	y += 20;
-	linkedlist_push(&screen->sprites, create_text_sprite("opengameart.org/users/artisticdude", x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("opengameart.org/users/artisticdude", C_WHITE, x + columnOffset, y, renderer));
+	return screen;
+}
+
+Screen *
+screen_create_hiscore(SDL_Renderer *renderer)
+{
+	Screen *screen = screen_create();
+	int y = 40;
+	int dateCol = 50;
+	int goldCol = 250;
+	int lvlCol = 400;
+	int dlvlCol = 550;
+
+	linkedlist_push(&screen->sprites, score_txt("Date",
+						    C_GREEN,
+						    dateCol,
+						    y,
+						    renderer));
+	linkedlist_push(&screen->sprites, score_txt("Gold",
+						    C_GREEN,
+						    goldCol,
+						    y,
+						    renderer));
+	linkedlist_push(&screen->sprites, score_txt("Level",
+						    C_GREEN,
+						    lvlCol,
+						    y,
+						    renderer));
+	linkedlist_push(&screen->sprites, score_txt("Depth",
+						    C_GREEN,
+						    dlvlCol,
+						    y,
+						    renderer));
+
+	LinkedList *scores = hiscore_get_top10();
+	while (scores) {
+		y += 30;
+		HiScore *score = linkedlist_pop(&scores);
+		char content[80];
+		m_sprintf(content, 80, "%s", score->timestamp);
+		linkedlist_push(&screen->sprites,
+				score_txt(content,
+					  C_WHITE,
+					  dateCol,
+					  y,
+					  renderer));
+		m_sprintf(content, 80, "%.2lf", score->gold);
+		linkedlist_push(&screen->sprites,
+				score_txt(content,
+					  C_YELLOW,
+					  goldCol,
+					  y,
+					  renderer));
+		m_sprintf(content, 80, "%d", score->playerLevel);
+		linkedlist_push(&screen->sprites,
+				score_txt(content,
+					  C_BLUE,
+					  lvlCol,
+					  y,
+					  renderer));
+		m_sprintf(content, 80, "%d", score->dungeonLevel);
+		linkedlist_push(&screen->sprites,
+				score_txt(content,
+					  C_RED,
+					  dlvlCol,
+					  y,
+					  renderer));
+		hiscore_destroy(score);
+	}
 	return screen;
 }
 

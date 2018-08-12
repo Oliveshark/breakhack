@@ -70,6 +70,7 @@ static Menu		*inGameMenu	= NULL;
 static Timer		*menuTimer	= NULL;
 static Camera		*gCamera	= NULL;
 static Screen		*creditsScreen	= NULL;
+static Screen		*scoreScreen	= NULL;
 static unsigned int	cLevel		= 1;
 static float		deltaTime	= 1.0;
 static double		renderScale	= 1.0;
@@ -322,10 +323,18 @@ viewCredits(void *unused)
 }
 
 static void
+viewScoreScreen(void *unused)
+{
+	UNUSED(unused);
+	gGameState = SCORE_SCREEN;
+}
+
+static void
 initMainMenu(void)
 {
 	struct MENU_ITEM menu_items[] = {
 		{ "PLAY", startGame },
+		{ "SCORES", viewScoreScreen },
 		{ "CREDITS", viewCredits },
 		{ "QUIT", exitGame },
 	};
@@ -335,9 +344,10 @@ initMainMenu(void)
 
 	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
 
-	createMenu(&mainMenu, menu_items, 3);
+	createMenu(&mainMenu, menu_items, 4);
 	mixer_play_music(MENU_MUSIC);
 	creditsScreen = screen_create_credits(gRenderer);
+	scoreScreen = screen_create_hiscore(gRenderer);
 }
 
 static void
@@ -361,6 +371,10 @@ resetGame(void)
 	if (creditsScreen)
 		screen_destroy(creditsScreen);
 	creditsScreen = NULL;
+
+	if (scoreScreen)
+		screen_destroy(scoreScreen);
+	scoreScreen = NULL;
 
 	if (!inGameMenu)
 		initInGameMenu();
@@ -413,6 +427,8 @@ handle_main_input(void)
 	}
 
 	if (gGameState == CREDITS && input_key_is_pressed(&input, KEY_ESC))
+		gGameState = MENU;
+	else if (gGameState == SCORE_SCREEN && input_key_is_pressed(&input, KEY_ESC))
 		gGameState = MENU;
 	else if (gGameState == MENU && input_key_is_pressed(&input, KEY_ESC))
 		gGameState = QUIT;
@@ -602,12 +618,19 @@ run_game(void)
 	if (gGameState == PLAYING && is_player_dead()) {
 		camera_shake(VECTOR2D_RIGHT, 800);
 		gui_log("The dungeon consumed you");
+		gui_log("You earned %.2f gold", gPlayer->gold);
 		gui_event_message("You died!");
+		gui_event_message("You earned %.2f gold", gPlayer->gold);
+		if (hiscore_get_top_gold() < gPlayer->gold) {
+			gui_event_message("NEW HIGHSCORE");
+			gui_log("NEW HIGHSCORE");
+		}
 		gui_event_message("Press ESC to open menu");
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
 		hiscore_register(gPlayer, cLevel);
+
 	} else {
 		check_next_level();
 	}
@@ -628,7 +651,7 @@ run_menu(void)
 	}
 
 	menu_update(mainMenu, &input);
-	if (gGameState != MENU && gGameState != CREDITS)
+	if (gGameState != MENU && gGameState != CREDITS && gGameState != SCORE_SCREEN)
 		return;
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
@@ -645,6 +668,8 @@ run_menu(void)
 		menu_render(mainMenu, gCamera);
 	else if (gGameState == CREDITS)
 		screen_render(creditsScreen, gCamera);
+	else if (gGameState == SCORE_SCREEN)
+		screen_render(scoreScreen, gCamera);
 
 	pointer_render(gPointer, gCamera);
 
@@ -676,6 +701,7 @@ void run(void)
 				break;
 			case MENU:
 			case CREDITS:
+			case SCORE_SCREEN:
 				run_menu();
 				break;
 			case QUIT:
@@ -714,6 +740,8 @@ void close(void)
 		menu_destroy(mainMenu);
 	if (creditsScreen)
 		screen_destroy(creditsScreen);
+	if (scoreScreen)
+		screen_destroy(scoreScreen);
 	if (inGameMenu)
 		menu_destroy(inGameMenu);
 

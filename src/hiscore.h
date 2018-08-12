@@ -38,6 +38,9 @@ hiscore_register(Player *p, unsigned int dungeonLevel);
 LinkedList *
 hiscore_get_top10(void);
 
+double
+hiscore_get_top_gold(void);
+
 void
 hiscore_close(void);
 
