@@ -1,0 +1,2 @@
+3f1cdf8 Fixes: #5 Creates a creditscreen
+2a80434 Adds posibility for daggers hitting walls to be recoverable.
