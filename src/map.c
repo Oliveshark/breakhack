@@ -55,6 +55,7 @@ map_create(void)
 	map->monsters = linkedlist_create();
 	map->items = linkedlist_create();
 	map->artifacts = linkedlist_create();
+	map->objects = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
 	map->renderTimer = timer_create();
 	map->monsterMoveTimer = timer_create();
@@ -128,9 +129,9 @@ map_add_trap(Map *map, Position *pos, Trap *trap)
 }
 
 void
-map_clear_dead_monsters(Map *map, Player *player)
+map_clear_expired_entities(Map *map, Player *player)
 {
-	LinkedList *cleared = linkedlist_create();
+	LinkedList *filtered = linkedlist_create();
 
 	while (map->monsters) {
 		Monster *monster = linkedlist_pop(&map->monsters);
@@ -138,17 +139,12 @@ map_clear_dead_monsters(Map *map, Player *player)
 			monster_drop_loot(monster, map, player);
 			monster_destroy(monster);
 		} else {
-			linkedlist_append(&cleared, monster);
+			linkedlist_append(&filtered, monster);
 		}
 	}
-	map->monsters = cleared;
-}
+	map->monsters = filtered;
 
-void
-map_clear_collected_items(Map *map)
-{
-	LinkedList *filtered = linkedlist_create();
-
+	filtered = linkedlist_create();
 	while (map->items) {
 		Item *item = linkedlist_pop(&map->items);
 		if (item->collected)
@@ -157,12 +153,8 @@ map_clear_collected_items(Map *map)
 			linkedlist_append(&filtered, item);
 	}
 	map->items = filtered;
-}
 
-void
-map_clear_collected_artifacts(Map *map)
-{
-	LinkedList *filtered = linkedlist_create();
+	filtered = linkedlist_create();
 	while (map->artifacts) {
 		Artifact *a = linkedlist_pop(&map->artifacts);
 		if (!a->collected)
@@ -171,6 +163,16 @@ map_clear_collected_artifacts(Map *map)
 			artifact_destroy(a);
 	}
 	map->artifacts = filtered;
+
+	filtered = linkedlist_create();
+	while (map->objects) {
+		Object *o = linkedlist_pop(&map->objects);
+		if (o->dead)
+			object_destroy(o);
+		else
+			linkedlist_append(&filtered, o);
+	}
+	map->objects = filtered;
 }
 
 void
@@ -204,7 +206,7 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 		    && position_proximity(1, &rm->playerRoomPos, &pos))
 			continue;
 
-		allDone = allDone && monster_move(monster, rm);
+		allDone = allDone && monster_move(monster, rm, map);
 	}
 
 	if (allDone)
@@ -260,6 +262,17 @@ void map_tile_render(Map *map, MapTile *tile, Position *pos, Camera *cam)
 }
 
 void
+map_on_new_turn(Map *map)
+{
+	LinkedList *objects = map->objects;
+	while (objects) {
+		Object *o = objects->data;
+		objects = objects->next;
+		object_step(o);
+	}
+}
+
+void
 map_update(UpdateData *data)
 {
 	Map *map = data->map;
@@ -304,6 +317,8 @@ void map_render(Map *map, Camera *cam)
 	}
 	if (room->modifier.type == RMOD_TYPE_WINDY) {
 		particle_engine_wind(room->modifier.data.wind.direction);
+	} else if (room->modifier.type == RMOD_TYPE_FIRE) {
+		particle_engine_heat();
 	}
 
 }
@@ -315,6 +330,12 @@ map_render_mid_layer(Map *map, Camera *cam)
 	while (items != NULL) {
 		item_render(items->data, cam);
 		items = items->next;
+	}
+
+	LinkedList *objects = map->objects;
+	while (objects != NULL) {
+		object_render(objects->data, cam);
+		objects = objects->next;
 	}
 
 	LinkedList *artifacts = map->artifacts;
@@ -409,6 +430,9 @@ void map_destroy(Map *map)
 
 	while (map->artifacts != NULL)
 		artifact_destroy(linkedlist_pop(&map->artifacts));
+
+	while (map->objects != NULL)
+		artifact_destroy(linkedlist_pop(&map->objects));
 
 	timer_destroy(map->renderTimer);
 	timer_destroy(map->monsterMoveTimer);

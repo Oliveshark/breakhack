@@ -31,6 +31,7 @@
 #include "monster.h"
 #include "player.h"
 #include "map_room_modifiers.h"
+#include "object.h"
 
 typedef struct UpdateData UpdateData;
 typedef struct Trap Trap;
@@ -58,6 +59,7 @@ typedef struct Map_t {
 	LinkedList *monsters;
 	LinkedList *items;
 	LinkedList *artifacts;
+	LinkedList *objects;
 	Position currentRoom;
 	Timer *renderTimer;
 	Timer *monsterMoveTimer;
@@ -89,13 +91,10 @@ bool
 map_move_monsters(Map*, RoomMatrix*);
 
 void
-map_clear_dead_monsters(Map*, Player*);
+map_clear_expired_entities(Map*, Player*);
 
 void
-map_clear_collected_items(Map*);
-
-void
-map_clear_collected_artifacts(Map*);
+map_on_new_turn(Map*);
 
 void
 map_update(UpdateData*);

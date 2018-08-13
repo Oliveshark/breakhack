@@ -236,7 +236,7 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 		monster_behaviour_check_post_attack(monster);
 	}
 
-	return space->occupied || space->lethal || space->trap;
+	return space->occupied || space->lethal || space->trap || space->damaging;
 }
 
 static bool
@@ -376,7 +376,7 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 }
 
 bool
-monster_move(Monster *m, RoomMatrix *rm)
+monster_move(Monster *m, RoomMatrix *rm, Map *map)
 {
 	if (m->state.forceCount) {
 		if (m->state.stepsSinceChange >= m->state.forceCount) {
@@ -392,10 +392,11 @@ monster_move(Monster *m, RoomMatrix *rm)
 
 	monster_behaviour_check(m, rm);
 
-	Position originalPosition =
+	Position origPos = m->sprite->pos;
+	Position originalMPos =
 		position_to_matrix_coords(&m->sprite->pos);
-	rm->spaces[originalPosition.x][originalPosition.y].occupied = false;
-	rm->spaces[originalPosition.x][originalPosition.y].monster = NULL;
+	rm->spaces[originalMPos.x][originalMPos.y].occupied = false;
+	rm->spaces[originalMPos.x][originalMPos.y].monster = NULL;
 
 	switch (m->state.current) {
 		case PASSIVE:
@@ -420,7 +421,7 @@ monster_move(Monster *m, RoomMatrix *rm)
 	rm->spaces[newPos.x][newPos.y].occupied = true;
 	rm->spaces[newPos.x][newPos.y].monster = m;
 
-	if (!position_equals(&originalPosition, &newPos)) {
+	if (!position_equals(&originalMPos, &newPos)) {
 		Player *p = rm->spaces[rm->playerRoomPos.x][rm->playerRoomPos.y].player;
 		if (p) {
 			Uint32 range = 3 + player_has_artifact(p, IMPROVED_HEARING) * 2;
@@ -434,6 +435,14 @@ monster_move(Monster *m, RoomMatrix *rm)
 				actiontextbuilder_create_text("!", C_WHITE, &m->sprite->pos);
 			}
 		}
+
+	}
+
+	if (!position_equals(&origPos, &m->sprite->pos) && rm->modifier->type == RMOD_TYPE_FIRE) {
+		Object *o = object_create_fire();
+		o->sprite->pos = origPos;
+		o->damage *= m->stats.lvl;
+		linkedlist_push(&map->objects, o);
 	}
 
 	m->steps++;
@@ -576,6 +585,9 @@ monster_render(Monster *m, Camera *cam)
 void
 monster_render_top_layer(Monster *m, Camera *cam)
 {
+	if (m->stats.hp <= 0)
+		return;
+
 	if (m->stateIndicator.displayCount != 0)
 		sprite_render(m->stateIndicator.sprite, cam);
 }

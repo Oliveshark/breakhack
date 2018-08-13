@@ -15,53 +15,37 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef PARTICLE_ENGINE_H_
-#define	PARTICLE_ENGINE_H_
+#pragma once
 
 #include <SDL.h>
-#include "position.h"
-#include "dimension.h"
+#include <stdbool.h>
 #include "camera.h"
-#include "vector2d.h"
+#include "player.h"
+#include "sprite.h"
+#include "player.h"
+
+typedef struct Object {
+	Sprite *sprite;
+	bool blocking;
+	Uint32 damage;
+	Sint32 timeout;
+	bool dead;
+} Object;
+
+Object *
+object_create(void);
+
+Object *
+object_create_fire(void);
 
 void
-particle_engine_init(void);
+object_render(Object*, Camera*);
 
 void
-particle_engine_bloodspray(Position, Dimension, unsigned int count);
+object_damage(Object*, Player*);
 
 void
-particle_engine_fire_explosion(Position, Dimension);
+object_step(Object*);
 
 void
-particle_engine_eldritch_explosion(Position, Dimension);
-
-void
-particle_engine_speed_lines(Position, Dimension, bool horizontal);
-
-void
-particle_engine_sparkle(Position, Dimension, SDL_Color, bool global);
-
-void
-particle_engine_wind(Vector2d direction);
-
-void
-particle_engine_heat(void);
-
-void
-particle_engine_update(float deltatime);
-
-void
-particle_engine_render_game(Camera*);
-
-void
-particle_engine_render_global(Camera*);
-
-void
-particle_engine_clear(void);
-
-void
-particle_engine_close(void);
-
-#endif // PARTICLE_ENGINE_H_
+object_destroy(Object*);

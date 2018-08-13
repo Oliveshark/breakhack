@@ -194,6 +194,14 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 		}
 	}
 
+	if (space->objects && !collided) {
+		LinkedList *objects = space->objects;
+		while (objects) {
+			object_damage(objects->data, player);
+			objects = objects->next;
+		}
+	}
+
 	if (space->lethal && !collided) {
 		mixer_play_effect(FALL0 + get_random(2) - 1);
 		player->state = FALLING;
@@ -294,6 +302,7 @@ handle_next_move(UpdateData *data)
 	static unsigned int step = 1;
 
 	Player *player = data->player;
+	Position originPos = player->sprite->pos;
 
 	// Don't move when projectiles are still moving
 	if (linkedlist_size(player->projectiles) > 0)
@@ -303,6 +312,14 @@ handle_next_move(UpdateData *data)
 	Vector2d nextDir = read_direction_from(data->input);
 	if (!vector2d_equals(nextDir, VECTOR2D_NODIR))
 		move(player, matrix, nextDir);
+
+	if (!position_equals(&originPos, &player->sprite->pos)
+	    && matrix->modifier->type == RMOD_TYPE_FIRE) {
+		Object *o = object_create_fire();
+		o->damage *= player->stats.lvl;
+		o->sprite->pos = originPos;
+		linkedlist_append(&data->map->objects, o);
+	}
 
 	map_room_modifier_player_effect(player, matrix, &nextDir, move);
 

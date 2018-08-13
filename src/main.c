@@ -523,16 +523,13 @@ run_game_update(void)
 	if (gGameState == IN_GAME_MENU)
 		menu_update(inGameMenu, &input);
 
-	map_clear_dead_monsters(gMap, gPlayer);
-	map_clear_collected_items(gMap);
-	map_clear_collected_artifacts(gMap);
-
 	populateUpdateData(&updateData, deltaTime);
 	if (playerLevel != gPlayer->stats.lvl) {
 		playerLevel = gPlayer->stats.lvl;
 		skillbar_check_skill_activation(gSkillBar, gPlayer);
 	}
 
+	map_clear_expired_entities(gMap, gPlayer);
 	if (gGameState == PLAYING && currentTurn == PLAYER)
 		player_update(&updateData);
 
@@ -550,6 +547,7 @@ run_game_update(void)
 		if (player_turn_over(gPlayer)) {
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
+			map_on_new_turn(gMap);
 			repopulate_roommatrix();
 		}
 	} else if (currentTurn == MONSTER) {

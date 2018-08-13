@@ -116,6 +116,9 @@ l_map_set_current_room_modifier(lua_State *L)
 		Room *room = map->rooms[map->currentRoom.x][map->currentRoom.y];
 		room->modifier.type = RMOD_TYPE_WINDY;
 		room->modifier.data.wind.direction = dir;
+	} else if (strcmp(modifier, "FIRE") == 0) {
+		Room *room = map->rooms[map->currentRoom.x][map->currentRoom.y];
+		room->modifier.type = RMOD_TYPE_FIRE;
 	} else {
 		luaL_error(L, "Unknown room modifier: %s", modifier);
 		return 1;

@@ -294,6 +294,49 @@ particle_engine_wind(Vector2d direction)
 	}
 }
 
+void
+particle_engine_heat()
+{
+	unsigned int count = 5;
+
+	Position pos = { 0, 0 };
+	Dimension dim = { GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
+
+	if (dim.width == 0 || dim.height == 0)
+		return;
+
+	for (unsigned int i = 0; i < count; ++i) {
+		int x, y;
+		int w, h;
+		unsigned int lt;
+		Particle *p;
+		int yvel, xvel;
+
+		x = get_random(dim.width) + pos.x;
+		y = get_random(dim.height) + pos.y;
+		w = get_random(2) + 2;
+		h = get_random(2) + 2;
+
+		yvel = get_random(50) - 200;
+		xvel = get_random(100) * -get_random(1);
+
+		lt = get_random(500);
+
+		p = create_rect_particle();
+		p->particle.rect.pos = (Position) { x, y };
+		p->particle.rect.dim = (Dimension) { w, h };
+		p->velocity = (Vector2d) { (float) xvel, (float) yvel };
+		p->movetime = lt;
+		p->lifetime = lt;
+		if (get_random(1) == 0)
+			p->color = C_YELLOW;
+		else
+			p->color = C_RED;
+		p->fixed = true;
+		linkedlist_append(&engine->game_particles, p);
+	}
+}
+
 static void
 move_particle(Particle *particle, float deltaTime)
 {

@@ -77,7 +77,7 @@ void
 monster_update_pos(Monster*, Position);
 
 bool
-monster_move(Monster*, RoomMatrix*);
+monster_move(Monster*, RoomMatrix*, Map*);
 
 void
 monster_render(Monster*, Camera*);

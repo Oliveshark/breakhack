@@ -33,19 +33,22 @@ typedef struct Player Player;
 typedef struct Item_t Item;
 typedef struct Node LinkedList;
 typedef struct Trap Trap;
+typedef struct Object Object;
 
 struct UpdateData;
 
-typedef struct {
+typedef struct RoomSpace {
 	bool occupied;
 	bool lethal;
 	bool lightsource;
+	bool damaging;
 	int light;
 	Monster *monster;
 	Player *player;
 	Trap *trap;
 	LinkedList *items;
 	LinkedList *artifacts;
+	LinkedList *objects;
 } RoomSpace;
 
 typedef struct RoomMatrix_t {

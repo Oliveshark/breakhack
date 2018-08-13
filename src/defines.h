@@ -19,6 +19,7 @@
 #ifndef DEFINES_H_
 #define	DEFINES_H_
 
+#include <stdint.h>
 #include "config.h"
 
 /* Room/Map dimensions */
@@ -75,6 +76,13 @@
 #define max(a, b) (a > b ? a : b)
 #define min(a, b) (a < b ? a : b)
 #endif // _MSC_VER
+
+typedef int8_t		Sint8;
+typedef uint8_t		Uint8;
+typedef int16_t		Sint16;
+typedef uint16_t	Uint16;
+typedef int32_t		Sint32;
+typedef uint32_t	Uint32;
 
 typedef enum Direction_t {
 	UP, DOWN, LEFT, RIGHT

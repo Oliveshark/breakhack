@@ -27,10 +27,11 @@ typedef struct RoomMatrix_t RoomMatrix;
 
 typedef enum RoomModifierType_e {
 	RMOD_TYPE_NONE,
-	RMOD_TYPE_WINDY
+	RMOD_TYPE_WINDY,
+	RMOD_TYPE_FIRE
 } RoomModifierType;
 
-typedef struct WindData_t {
+typedef struct WindData {
 	Vector2d direction;
 } WindData;
 
@@ -38,7 +39,7 @@ typedef union RoomModifierDataContainer_t {
 	WindData wind;
 } RoomModifierDataContainer;
 
-typedef struct RoomModifierData_t {
+typedef struct RoomModifierData {
 	RoomModifierType type;
 	RoomModifierDataContainer data;
 } RoomModifierData;

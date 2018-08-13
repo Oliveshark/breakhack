@@ -27,6 +27,7 @@
 #include "update_data.h"
 #include "defines.h"
 #include "trap.h"
+#include "object.h"
 
 static void
 roommatrix_reset(RoomMatrix *m)
@@ -39,6 +40,7 @@ roommatrix_reset(RoomMatrix *m)
 			space = &m->spaces[i][j];
 			space->occupied = false;
 			space->lethal = false;
+			space->damaging = false;
 			space->lightsource = false;
 			space->light = 0;
 			space->monster = NULL;
@@ -48,6 +50,8 @@ roommatrix_reset(RoomMatrix *m)
 				linkedlist_pop(&space->items);
 			while (space->artifacts != NULL)
 				linkedlist_pop(&space->artifacts);
+			while (space->objects != NULL)
+				linkedlist_pop(&space->objects);
 		}
 	}
 	m->roomPos = (Position) { 0, 0 };
@@ -62,6 +66,7 @@ RoomMatrix* roommatrix_create(void)
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			m->spaces[i][j].items = linkedlist_create();;
 			m->spaces[i][j].artifacts = linkedlist_create();;
+			m->spaces[i][j].objects = linkedlist_create();;
 		}
 	}
 	roommatrix_reset(m);
@@ -167,6 +172,21 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 
 		position = position_to_matrix_coords(&a->sprite->pos);
 		linkedlist_push(&rm->spaces[position.x][position.y].artifacts, a);
+	}
+
+	LinkedList *objects = m->objects;
+	while (objects) {
+		Object *o = objects->data;
+		objects = objects->next;
+
+		if (!position_in_room(&o->sprite->pos, &m->currentRoom))
+			continue;
+
+		position = position_to_matrix_coords(&o->sprite->pos);
+		RoomSpace *space = &rm->spaces[position.x][position.y];
+		linkedlist_push(&space->objects, o);
+		space->occupied = space->occupied || o->blocking;
+		space->damaging = o->damage > 0;
 	}
 }
 
@@ -275,6 +295,8 @@ void roommatrix_destroy(RoomMatrix *m)
 				linkedlist_pop(&space->items);
 			while (space->artifacts)
 				linkedlist_pop(&space->artifacts);
+			while (space->objects)
+				linkedlist_pop(&space->objects);
 		}
 	}
 

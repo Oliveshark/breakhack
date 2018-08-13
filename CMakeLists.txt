@@ -176,6 +176,7 @@ add_executable(breakhack
 	src/artifact
 	src/screen
 	src/hiscore
+	src/object
 	)
 
 # Sqlite has some warnings that I we don't need to see
