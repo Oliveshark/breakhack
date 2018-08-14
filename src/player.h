@@ -114,6 +114,9 @@ player_destroy(Player*);
 bool
 player_turn_over(Player*);
 
+void
+player_levelup(Player*);
+
 Uint32
 player_has_artifact(Player *, MagicalEffect);
 

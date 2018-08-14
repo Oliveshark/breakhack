@@ -28,11 +28,11 @@ static Mix_Music *current_song = NULL;
 static Music loaded_song = LAST_MUSIC;
 
 static char *music[LAST_MUSIC] = {
+	 "Sounds/Music/fantasy-forest-battle.ogg",		  // MENU_MUSIC
 	 "Sounds/Music/fantasy-game-background-looping.ogg",	  // GAME_MUSIC0
 	 "Sounds/Music/bog-creatures-on-the-move-looping.ogg",	  // GAME_MUSIC1
 	 "Sounds/Music/fantascape-looping.ogg",			  // GAME_MUSIC2
-	 "Sounds/Music/forward-assault.ogg",			  // BOSS_MUSIC0
-	 "Sounds/Music/fantasy-forest-battle.ogg"		  // MENU_MUSIC
+	 "Sounds/Music/forward-assault.ogg"			  // BOSS_MUSIC0
 };
 
 static Mix_Music*
