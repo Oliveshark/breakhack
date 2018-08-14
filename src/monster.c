@@ -106,6 +106,7 @@ monster_behaviour_check_post_hit(Monster *m)
 			monster_state_change(m, SCARED);
 			break;
 		case GUERILLA:
+		case FIRE_DEMON:
 			break;
 		default:
 			monster_state_change(m, AGRESSIVE);
@@ -118,6 +119,7 @@ monster_behaviour_check_post_attack(Monster *m)
 {
 	switch (m->behaviour) {
 		case GUERILLA:
+		case FIRE_DEMON:
 			monster_state_change(m, SCARED);
 			break;
 		default:
@@ -152,6 +154,7 @@ monster_behaviour_check(Monster *m, RoomMatrix *rm)
 {
 	switch (m->behaviour) {
 		case GUERILLA:
+		case FIRE_DEMON:
 			if (m->state.stepsSinceChange > 8
 			    && m->state.current == SCARED) {
 				monster_state_change(m, AGRESSIVE);
@@ -438,7 +441,8 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 
 	}
 
-	if (!position_equals(&origPos, &m->sprite->pos) && rm->modifier->type == RMOD_TYPE_FIRE) {
+	if (!position_equals(&origPos, &m->sprite->pos)
+		&& (rm->modifier->type == RMOD_TYPE_FIRE || m->behaviour == FIRE_DEMON)) {
 		Object *o = object_create_fire();
 		o->sprite->pos = origPos;
 		o->damage *= m->stats.lvl;
@@ -600,6 +604,7 @@ monster_set_behaviour(Monster *m, MonsterBehaviour behaviour)
 		case HOSTILE:
 		case GUERILLA:
 		case COWARD:
+		case FIRE_DEMON:
 			m->state.current = AGRESSIVE;
 			break;
 		case SENTINEL:

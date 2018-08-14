@@ -498,8 +498,11 @@ check_next_level(void)
 	}
 	if (tile->levelExit) {
 		mixer_play_effect(NEXT_LEVEL);
-		mixer_play_music(GAME_MUSIC0 + get_random(2));
 		++cLevel;
+		if (cLevel % 5 == 0)
+			mixer_play_music(BOSS_MUSIC0);
+		else
+			mixer_play_music(GAME_MUSIC0 + get_random(2));
 		resetGame();
 	}
 }
