@@ -27,6 +27,7 @@ typedef enum Music_t {
 	GAME_MUSIC0,
 	GAME_MUSIC1,
 	GAME_MUSIC2,
+	BOSS_MUSIC0,
 	LAST_MUSIC
 } Music;
 

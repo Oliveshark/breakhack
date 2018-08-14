@@ -73,6 +73,9 @@ screen_create_credits(SDL_Renderer *renderer)
 	y += 60;
 	linkedlist_push(&screen->sprites, credit_txt(" - Graphics -", C_BLUE, x, y, renderer));
 	y += 30;
+	linkedlist_push(&screen->sprites, credit_txt("Tileset:", C_YELLOW, x, y, renderer));
+	linkedlist_push(&screen->sprites, credit_txt("DragonDePlatino", C_WHITE, x + columnOffset, y, renderer));
+	y += 20;
 	linkedlist_push(&screen->sprites, credit_txt("Palette:", C_YELLOW, x, y, renderer));
 	linkedlist_push(&screen->sprites, credit_txt("DawnBringer", C_WHITE, x + columnOffset, y, renderer));
 
