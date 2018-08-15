@@ -1,0 +1,8 @@
+9a610d5 Adds window icon
+6af8d9d Completes #8 First boss
+915ea59 Fixes a mistake in music loading.
+6cc96a9 Begins #8 First boss
+1a09328 Adds boss music and an additional attribution line per request.
+6633db7 Adds room objects and FIRE rooms.
+0b58e53 Removed "Examples" folder from assets
+292f549 Minor compiler warning fix
