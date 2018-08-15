@@ -542,7 +542,7 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		linkedlist_append(&map->items, treasure);
 	}
 
-	if (get_random(19) == 0) {
+	if (monster->stats.lvl > 2 && get_random(19) == 0) {
 		Artifact *a = artifact_create_random(player, 1);
 		a->sprite->pos = monster->sprite->pos;
 		linkedlist_append(&map->artifacts, a);
