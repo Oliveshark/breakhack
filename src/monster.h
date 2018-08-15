@@ -70,6 +70,7 @@ typedef struct Monster {
 	MonsterStateIndicator stateIndicator;
 	MonsterBehaviour behaviour;
 	unsigned int steps;
+	bool boss;
 } Monster;
 
 Monster* monster_create(void);

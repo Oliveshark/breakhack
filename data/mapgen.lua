@@ -49,7 +49,11 @@ local function generate_path ()
 	local direction = 0
 	local lastDirection = 0
 	local coridoor_count = 0
+	local bossLevel = CURRENT_LEVEL % 5 == 0
 	local coverage = 9 + CURRENT_LEVEL
+	if bossLevel then
+		coverage = 5
+	end
 
 	-- Create the first room
 	map_matrix[cx][cy] = room_builder.create_empty_room()
@@ -110,15 +114,23 @@ local function generate_path ()
 	map_matrix[cx][cy].goal = true
 	map_matrix[cx][cy].type = "room"
 
+	local roomCount = 0
+	local bossAdded = false
+
 	-- Build all the rooms
 	for i=1,10 do
 		for j=1,10 do
 			room = map_matrix[i][j]
 			if room then
+				roomCount = roomCount + 1
 				room_builder.build_room(room)
 				monster_gen.add_monsters_to_room(room, i-1, j-1)
 				trap_gen.add_traps_to_room(room, i-1, j-1)
 				chest_gen.add_chests_to_room(room, i-1, j-1)
+				if roomCount > 3 and bossLevel and not bossAdded then
+					bossAdded = true
+					monster_gen.add_boss_to_room(room, i-1, j-1)
+				end
 			end
 		end
 	end

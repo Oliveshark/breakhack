@@ -199,6 +199,7 @@ monster_create(void)
 	m->stateIndicator.displayCount = 0;
 	m->stateIndicator.shownOnPlayerRoomEnter = false;
 	m->state.forceCount = 0;
+	m->boss = false;
 	monster_set_behaviour(m, NORMAL);
 
 	return m;
@@ -531,6 +532,15 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 	Item *items[3];
 	unsigned int item_count = 0;
 	bool player_full_health = player->stats.hp >= player->stats.maxhp;
+
+	if (monster->boss) {
+		Artifact *a = artifact_create_random(player, 2);
+		a->sprite->pos = monster->sprite->pos;
+		linkedlist_append(&map->artifacts, a);
+		Item *treasure = item_builder_build_item(TREASURE, map->level*2);
+		treasure->sprite->pos = monster->sprite->pos;
+		linkedlist_append(&map->items, treasure);
+	}
 
 	if (get_random(19) == 0) {
 		Artifact *a = artifact_create_random(player, 1);

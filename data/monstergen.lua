@@ -44,7 +44,8 @@ local behaviour = {
 	hostile = 2,
 	guerilla = 3,
 	coward = 4,
-	sentinel = 5
+	sentinel = 5,
+	fire_demon = 6
 }
 
 local stats = {
@@ -80,6 +81,13 @@ local stats = {
 		hp = 24,
 		dmg = 1,
 		atk = 0,
+		def = 0,
+		speed = 1
+	},
+	boss = {
+		hp = 60,
+		dmg = 4,
+		atk = 1,
 		def = 0,
 		speed = 1
 	},
@@ -137,48 +145,53 @@ end
 
 local undead = {
 	-- UNDEAD
-	{ stats.undead,   0, 32, "A Skeleton", behaviour.normal };
-	{ stats.undead,  48, 32, "A Black Skeleton", behaviour.normal };
-	{ stats.undead,  64, 32, "A Zombie", behaviour.normal };
-	{ stats.undead,  80, 32, "A Zombie", behaviour.normal };
+	{ stats.undead,   0, 32, "A Skeleton", behaviour.normal },
+	{ stats.undead,  48, 32, "A Black Skeleton", behaviour.normal },
+	{ stats.undead,  64, 32, "A Zombie", behaviour.normal },
+	{ stats.undead,  80, 32, "A Zombie", behaviour.normal }
 }
 for i=1,#undead do
 	undead[i] = concat({ texturePaths.undead0, texturePaths.undead1 }, undead[i])
 end
 
 local dogs = {
-	{ stats.dog,  0, 16, "A Rabid Dog", behaviour.normal };
-	{ stats.dog,  16, 16, "An Angry Rabid Dog", behaviour.hostile };
+	{ stats.dog,  0, 16, "A Rabid Dog", behaviour.normal },
+	{ stats.dog,  16, 16, "An Angry Rabid Dog", behaviour.hostile }
 }
 for i=1,#dogs do
 	dogs[i] = concat({ texturePaths.dog0, texturePaths.dog1 }, dogs[i])
 end
 
 local reptile = {
-	{ stats.default,  0, 64, "A Small Brown Snake", behaviour.coward };
-	{ stats.default,  16, 64, "A Medium Brown Snake", behaviour.guerilla };
-	{ stats.default,  32, 64, "A Large Brown Snake", behaviour.hostile };
-	{ stats.default,  48, 64, "A Small Black Snake", behaviour.coward };
-	{ stats.default,  64, 64, "A Medium Black Snake", behaviour.guerilla };
-	{ stats.default,  80, 64, "A Large Black Snake", behaviour.hostile };
+	{ stats.default,  0, 64, "A Small Brown Snake", behaviour.coward },
+	{ stats.default,  16, 64, "A Medium Brown Snake", behaviour.guerilla },
+	{ stats.default,  32, 64, "A Large Brown Snake", behaviour.hostile },
+	{ stats.default,  48, 64, "A Small Black Snake", behaviour.coward },
+	{ stats.default,  64, 64, "A Medium Black Snake", behaviour.guerilla },
+	{ stats.default,  80, 64, "A Large Black Snake", behaviour.hostile },
 }
 for i=1,#reptile do
 	reptile[i] = concat({ texturePaths.reptile0, texturePaths.reptile1 }, reptile[i])
 end
 
 local demon = {
-	{ stats.default,   0,  0, "A Demon", behaviour.hostile };
-	{ stats.default,  16,  0, "A Demon", behaviour.hostile };
-	{ stats.default,  32,  0, "A Demon", behaviour.hostile };
-	{ stats.default,  48,  0, "A Demon", behaviour.hostile };
-	{ stats.default,  64,  0, "A Demon", behaviour.hostile };
-	{ stats.default,  80,  0, "A Demon", behaviour.hostile };
-	{ stats.default,  96,  0, "A Demon", behaviour.hostile };
-	{ stats.default, 112,  0, "A Demon", behaviour.hostile };
+	{ stats.default,   0,  0, "A Demon", behaviour.hostile },
+	{ stats.default,  16,  0, "A Demon", behaviour.hostile },
+	{ stats.default,  32,  0, "A Demon", behaviour.hostile },
+	{ stats.default,  48,  0, "A Demon", behaviour.hostile },
+	{ stats.default,  64,  0, "A Demon", behaviour.hostile },
+	{ stats.default,  80,  0, "A Demon", behaviour.hostile },
+	{ stats.default,  96,  0, "A Demon", behaviour.hostile },
+	{ stats.default, 112,  0, "A Demon", behaviour.hostile },
 }
 for i=1,#demon do
 	demon[i] = concat({ texturePaths.demon0, texturePaths.demon1 }, demon[i])
 end
+
+local bosses = {
+	{ stats.boss, 16,  5*16, "The Hell Hound", behaviour.fire_demon, true }
+}
+bosses[1] = concat({ texturePaths.dog0, texturePaths.dog1 }, bosses[1])
 
 local platino = {
 	{
@@ -201,6 +214,7 @@ local function repack(data)
 		clipY			= data[5],
 		label			= data[6] or "",
 		behaviour		= data[7] or behaviour.normal,
+		boss			= data[8] or false,
 	}
 end
 
@@ -239,7 +253,7 @@ if(CURRENT_LEVEL > 0 and CURRENT_LEVEL < 10) then
 end
 
 if random(100) == 1 then
-	enemies = concat(enemies, platino);
+	enemies = concat(enemies, platino)
 end
 
 function module.add_monsters_to_room(room, roomx, roomy)
@@ -260,6 +274,25 @@ function module.add_monsters_to_room(room, roomx, roomy)
 				enemies[random(#enemies)]
 			}
 			i = i + 1
+		end
+	end
+end
+
+function module.add_boss_to_room(room, roomx, roomy)
+	local boss = bosses[1]
+	local success = false
+	while not success do
+		local rx = random(13) + 1
+		local ry = random(9) + 1
+		if room_builder.is_tile_avilable(room, rx, ry) then
+			local x = (roomx * 512) + rx * 32
+			local y = (roomy * 384) + ry * 32
+			room.monsters[rx][ry] = {
+				x,
+				y,
+				boss
+			}
+			success = true
 		end
 	end
 end

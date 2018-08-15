@@ -295,8 +295,6 @@ void roommatrix_destroy(RoomMatrix *m)
 				linkedlist_pop(&space->items);
 			while (space->artifacts)
 				linkedlist_pop(&space->artifacts);
-			while (space->objects)
-				linkedlist_pop(&space->objects);
 		}
 	}
 

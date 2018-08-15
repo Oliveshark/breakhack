@@ -35,11 +35,22 @@
 #define info(...) do  {} while(0)
 #endif // DEBUG
 #define error(...) log_print(stderr, "ERROR", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+
+#ifdef DEBUG
+#define fatal(...) \
+{ \
+	log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__, __VA_ARGS__); \
+	printf("\n- Press any key to close -\n"); \
+	getchar(); \
+	exit(-1); \
+}
+#else
 #define fatal(...) \
 { \
 	log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__, __VA_ARGS__); \
 	exit(-1); \
 }
+#endif // DEBUG
 
 void
 log_print(FILE *out,

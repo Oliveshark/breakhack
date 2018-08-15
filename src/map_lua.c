@@ -358,6 +358,7 @@ l_add_monster(lua_State *L)
 	int x, y, clip_x, clip_y, behaviour;
 	const char *texture_path_1, *texture_path_2, *tmp_label;
 	char *label;
+	bool boss;
 	Texture *texture1, *texture2;
 	Stats stats;
 
@@ -376,14 +377,16 @@ l_add_monster(lua_State *L)
 	lua_getfield(L, 4, "clipX");
 	lua_getfield(L, 4, "clipY");
 	lua_getfield(L, 4, "behaviour");
+	lua_getfield(L, 4, "boss");
 
-	tmp_label = luaL_checkstring(L, -7);
-	texture_path_1 = luaL_checkstring(L, -6);
-	texture_path_2 = luaL_checkstring(L, -5);
-	stats = lua_checkstats(L, -4);
-	clip_x = (int) luaL_checkinteger(L, -3);
-	clip_y = (int) luaL_checkinteger(L, -2);
-	behaviour = (int) luaL_checkinteger(L, -1);
+	tmp_label = luaL_checkstring(L, -8);
+	texture_path_1 = luaL_checkstring(L, -7);
+	texture_path_2 = luaL_checkstring(L, -6);
+	stats = lua_checkstats(L, -5);
+	clip_x = (int) luaL_checkinteger(L, -4);
+	clip_y = (int) luaL_checkinteger(L, -3);
+	behaviour = (int) luaL_checkinteger(L, -2);
+	boss = (bool) lua_toboolean(L, -1);
 
 	texture1 = texturecache_add(texture_path_1);
 	texture2 = texturecache_add(texture_path_2);
@@ -404,6 +407,7 @@ l_add_monster(lua_State *L)
 	}
 
 	monster->stats = stats;
+	monster->boss = boss;
 
 	map_add_monster(map, monster);
 

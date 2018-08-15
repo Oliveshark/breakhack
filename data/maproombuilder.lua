@@ -405,6 +405,7 @@ local function room_tile_available(room, rx, ry)
 		and not room.decor[rx][ry]
 		and (room.tiles[rx][ry]
 			and not room.tiles[rx][ry][5]
+			and not room.tiles[rx][ry][7]
 			and not room.tiles[rx][ry][8])
 end
 

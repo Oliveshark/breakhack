@@ -216,6 +216,14 @@ startGame(void *unused)
 		player_destroy(gPlayer);
 	gPlayer = player_create(WARRIOR, gRenderer);
 	mixer_play_music(GAME_MUSIC0 + get_random(2));
+#ifdef DEBUG
+	// This block is for testing
+	cLevel = 1;
+	if (cLevel % 5 == 0)
+		mixer_play_music(BOSS_MUSIC0);
+	for (size_t i = 1; i < cLevel; ++i)
+		player_levelup(gPlayer);
+#endif // DEBUG
 	resetGame();
 	gui_clear_message_log();
 	gui_log("The Dungeon Crawl begins!");
