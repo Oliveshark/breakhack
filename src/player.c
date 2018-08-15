@@ -576,7 +576,7 @@ void player_update(UpdateData *data)
 		return;
 
 	check_skill_activation(data);
-	if (!check_skill_trigger(data))
+	if (player->state != FALLING && !check_skill_trigger(data))
 		handle_next_move(data);
 
 	if (player->state == FALLING && player->stats.hp > 0) {
