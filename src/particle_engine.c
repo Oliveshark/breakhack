@@ -318,7 +318,7 @@ particle_engine_heat()
 		h = get_random(2) + 2;
 
 		yvel = get_random(50) - 200;
-		xvel = get_random(100) * -get_random(1);
+		xvel = get_random(100) * -((int) get_random(1));
 
 		lt = get_random(500);
 

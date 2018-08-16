@@ -65,7 +65,7 @@
 #define C_WHITE (SDL_Color)		{	255, 255, 255, 255 }
 #define C_RED (SDL_Color)		{	255,   0,   0, 255 }
 #define C_GREEN (SDL_Color)		{	  0, 255,   0, 255 }
-#define C_BLUE (SDL_Color)		{	  0,   0, 255, 255 }
+#define C_BLUE (SDL_Color)		{	 60, 134, 252, 255 }
 #define C_YELLOW (SDL_Color)	{	255, 255,   0, 255 }
 #define C_BLACK (SDL_Color)		{	  0,   0,   0, 255 }
 #define C_PURPLE (SDL_Color)	{	137,  16, 229, 255 }
