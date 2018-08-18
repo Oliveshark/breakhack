@@ -220,7 +220,7 @@ end
 
 -- Begin script
 local enemies = {}
-if(CURRENT_LEVEL > 0 and CURRENT_LEVEL < 10) then
+if(CURRENT_LEVEL > 0) then
 	if (CURRENT_LEVEL == 1) then
 		enemies = concat(enemies, pests)
 		enemies = concat(enemies, misc)
