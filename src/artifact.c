@@ -96,7 +96,7 @@ artifact_create_random(Player *p, Uint8 level)
 {
 	int option = -1;
 	if (p->stats.lvl >= 4)
-		option = get_random(LAST_ARTIFACT_EFFECT);
+		option = get_random(LAST_ARTIFACT_EFFECT - 1);
 	else if (p->stats.lvl >= 3)
 		option = get_random(INCREASED_STUN);
 	else

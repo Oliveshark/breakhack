@@ -434,7 +434,7 @@ skill_create(enum SkillType t)
 			return NULL;
 	}
 
-#ifdef DEBUG
+#ifdef DEBUG_SKILLS
 	skill->levelcap = 1;
 #endif
 	return skill;

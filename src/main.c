@@ -51,6 +51,7 @@
 #include "input.h"
 #include "screen.h"
 #include "hiscore.h"
+#include "io_util.h"
 
 typedef enum Turn_t {
 	PLAYER,
@@ -142,6 +143,9 @@ bool initSDL(void)
 		error("Unable to create window: %s", SDL_GetError());
 		return false;
 	}
+
+	// Set the window icon
+	SDL_SetWindowIcon(gWindow, IMG_Load_RW(io_load_rwops("Extras/icon.png"), true));
 
 	gRenderer = SDL_CreateRenderer(gWindow, -1,
 				       SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
