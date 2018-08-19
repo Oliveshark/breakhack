@@ -26,22 +26,13 @@
 #include "util.h"
 #include "map.h"
 #include "texturecache.h"
+#include "gui_util.h"
 
 #define DEFAULT_LOG { NULL, LOG_LINES_COUNT, 0, 200 }
 #define DEFAULT_EVENT_MESSAGES { NULL, 5, 0, 200 }
 
 #define POS_Y_COLLECTABLES	 64
 #define POS_Y_XPBAR		128
-
-static SDL_Rect frame_top_left		= { 16, 160, 16, 16 };
-static SDL_Rect frame_top_right		= { 48, 160, 16, 16 };
-static SDL_Rect frame_bottom_left	= { 16, 192, 16, 16 };
-static SDL_Rect frame_bottom_right	= { 48, 192, 16, 16 };
-static SDL_Rect frame_top			= { 32, 160, 16, 16 };
-static SDL_Rect frame_bottom		= { 32, 192, 16, 16 };
-static SDL_Rect frame_center		= { 32, 176, 16, 16 };
-static SDL_Rect frame_left			= { 16, 176, 16, 16 };
-static SDL_Rect frame_right			= { 48, 176, 16, 16 };
 
 static struct LogData_t {
 	char **log;
@@ -56,9 +47,6 @@ static struct GuiEventMsgData_t {
 	unsigned int count;
 	unsigned int strlen;
 } event_messages = DEFAULT_EVENT_MESSAGES;
-
-static Sprite*
-gui_create_frame(unsigned int width, unsigned int height, Camera *cam);
 
 static void
 gui_malloc_log(void)
@@ -174,12 +162,12 @@ init_sprites(Gui *gui, Camera *cam)
 	s->pos = (Position) { 16, POS_Y_COLLECTABLES + 32 };
 	linkedlist_append(&gui->sprites, s);
 
-	gui->rightFrame = gui_create_frame(RIGHT_GUI_WIDTH/16,
-					   RIGHT_GUI_HEIGHT/16,
-					   cam);
-	gui->bottomFrame = gui_create_frame(BOTTOM_GUI_WIDTH/16,
-					    BOTTOM_GUI_HEIGHT/16,
-					    cam);
+	gui->rightFrame = gui_util_create_frame_sprite(RIGHT_GUI_WIDTH/16,
+						       RIGHT_GUI_HEIGHT/16,
+						       cam);
+	gui->bottomFrame = gui_util_create_frame_sprite(BOTTOM_GUI_WIDTH/16,
+							BOTTOM_GUI_HEIGHT/16,
+							cam);
 }
 
 Gui*
@@ -398,87 +386,6 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 		gui->labels[LEVEL_LABEL]->dim = gui->labels[LEVEL_LABEL]->textures[0]->dim;
 		last_level = data.level;
 	}
-}
-
-static Sprite*
-gui_create_frame(unsigned int width, unsigned int height, Camera *cam)
-{
-	Sprite *frame = sprite_create();
-	Texture *texture = texture_create();
-	texture->dim = (Dimension) {
-		width * 16,
-		height * 16
-	};
-	frame->textures[0] = texture;
-	frame->destroyTextures = true;
-	frame->pos = (Position) { 0, 0 };
-	frame->dim = (Dimension) { width*16, height*16 };
-	frame->fixed = true;
-	texture_create_blank(texture,
-			     SDL_TEXTUREACCESS_TARGET,
-			     cam->renderer);
-	Texture *source = texturecache_get("GUI/GUI0.png");
-
-	SDL_SetRenderTarget(cam->renderer, texture->texture);
-	SDL_RenderClear(cam->renderer);
-
-	SDL_Rect box = { 0, 0, 16, 16 };
-	unsigned int i, j;
-	for (i = 0; i < width; ++i) {
-		for (j = 0; j < height; ++j) {
-			box.x = i * 16;
-			box.y = j * 16;
-
-			if (i == 0 && j == 0) {
-				texture_render_clip(source,
-						    &box,
-						    &frame_top_left,
-						    cam);
-			} else if (i == (width - 1) && j == 0) {
-				texture_render_clip(source,
-						    &box,
-						    &frame_top_right,
-						    cam);
-			} else if (i == 0 && j == (height - 1)) {
-				texture_render_clip(source,
-						    &box,
-						    &frame_bottom_left,
-						    cam);
-			} else if (i == (width - 1) && j == (height - 1)) {
-				texture_render_clip(source,
-						    &box,
-						    &frame_bottom_right,
-						    cam);
-			} else if (i == 0) {
-				texture_render_clip(source,
-						    &box,
-						    &frame_left,
-						    cam);
-			} else if (i == (width - 1)) {
-				texture_render_clip(source,
-						    &box,
-						    &frame_right,
-						    cam);
-			} else if (j == 0) {
-				texture_render_clip(source,
-						    &box,
-						    &frame_top,
-						    cam);
-			} else if (j == (height - 1)) {
-				texture_render_clip(source,
-						    &box,
-						    &frame_bottom,
-						    cam);
-			} else {
-				texture_render_clip(source,
-						    &box,
-						    &frame_center,
-						    cam);
-			}
-		}
-	}
-	SDL_SetRenderTarget(cam->renderer, NULL);
-	return frame;
 }
 
 void
