@@ -52,29 +52,80 @@
 #include "screen.h"
 #include "hiscore.h"
 #include "io_util.h"
+#include "tooltip.h"
+
+static char *skills_tooltip[] = {
+	"CONGRATULATIONS!",
+	"",
+	"   You have aquired a new skill!",
+	"",
+	"   Skills are listed in the bar below the game screen.",
+	"",
+	"",
+	"   SKILL INFO:            CTRL + <NUM>",
+	"                          Where <NUM> is the skill number (1-5)",
+	"",
+	"   DISABLE TOOLTIPS:      CTRL + D",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
+static char *how_to_play_tooltip[] = {
+	"HOW TO PLAY",
+	"",
+	"   NAVIGATION:     Use ARROWS or WASD or HJKL to move",
+	"",
+	"   ATTACK:         Walk into a monster to attack it",
+	"",
+	"   THROW DAGGER:   Press 4 then chose a direction (navigation keys)",
+	"",
+	"   DRINK HEALTH:   Press 5 (if you need health and have potions)",
+	"",
+	"   TOGGLE MUSIC:   CTRL + M",
+	"",
+	"   TOGGLE SOUND:   CTRL + S",
+	"",
+	"   TOGGLE MENU:    ESC",
+	"",
+	"   Your stats and inventory are listed in the right panel",
+	"",
+	"",
+	"   GOOD LUCK!",
+	"   May your death be quick and painless...",
+	"",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
 
 typedef enum Turn_t {
 	PLAYER,
 	MONSTER
 } Turn;
 
-static SDL_Window	*gWindow	= NULL;
-static SDL_Renderer	*gRenderer	= NULL;
-static Player		*gPlayer	= NULL;
-static Map		*gMap		= NULL;
-static RoomMatrix	*gRoomMatrix	= NULL;
-static Gui		*gGui		= NULL;
-static SkillBar		*gSkillBar	= NULL;
-static Pointer		*gPointer	= NULL;
-static Menu		*mainMenu	= NULL;
-static Menu		*inGameMenu	= NULL;
-static Timer		*menuTimer	= NULL;
-static Camera		*gCamera	= NULL;
-static Screen		*creditsScreen	= NULL;
-static Screen		*scoreScreen	= NULL;
-static unsigned int	cLevel		= 1;
-static float		deltaTime	= 1.0;
-static double		renderScale	= 1.0;
+static SDL_Window	*gWindow		= NULL;
+static SDL_Renderer	*gRenderer		= NULL;
+static Player		*gPlayer		= NULL;
+static Map		*gMap			= NULL;
+static RoomMatrix	*gRoomMatrix		= NULL;
+static Gui		*gGui			= NULL;
+static SkillBar		*gSkillBar		= NULL;
+static Pointer		*gPointer		= NULL;
+static Menu		*mainMenu		= NULL;
+static Menu		*inGameMenu		= NULL;
+static Timer		*menuTimer		= NULL;
+static Camera		*gCamera		= NULL;
+static Screen		*creditsScreen		= NULL;
+static Screen		*scoreScreen		= NULL;
+static Sprite		*new_skill_tooltip	= NULL;
+static Sprite		*howto_tooltip		= NULL;
+static unsigned int	cLevel			= 1;
+static float		deltaTime		= 1.0;
+static double		renderScale		= 1.0;
 static GameState	gGameState;
 static SDL_Rect		gameViewport;
 static SDL_Rect		skillBarViewport;
@@ -218,12 +269,17 @@ startGame(void *unused)
 	gGameState = PLAYING;
 	if (gPlayer)
 		player_destroy(gPlayer);
-	gPlayer = player_create(WARRIOR, gRenderer);
+	gPlayer = player_create(WARRIOR, gCamera);
 	mixer_play_music(GAME_MUSIC0 + get_random(2));
 	resetGame();
 	gui_clear_message_log();
 	gui_log("The Dungeon Crawl begins!");
 	gui_event_message("Welcome to the dungeon!");
+
+	Settings *settings = settings_get();
+	if (!settings->howto_tooltip_shown)
+		gGui->activeTooltip = howto_tooltip;
+	settings->howto_tooltip_shown = true;
 }
 
 static void
@@ -249,6 +305,7 @@ static void
 goToMainMenu(void *unused)
 {
 	UNUSED(unused);
+	gui_clear_message_log();
 	gGameState = MENU;
 	menu_destroy(inGameMenu);
 	inGameMenu = NULL;
@@ -292,15 +349,24 @@ createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
 }
 
 static void
+showHowToTooltip(void *unused)
+{
+	UNUSED(unused);
+	toggleInGameMenu(NULL);
+	gGui->activeTooltip = howto_tooltip;
+}
+
+static void
 initInGameMenu(void)
 {
 	struct MENU_ITEM menu_items[] = {
 		{ "RESUME", toggleInGameMenu },
+		{ "HOW TO PLAY", showHowToTooltip },
 		{ "MAIN MENU", goToMainMenu },
 		{ "QUIT", exitGame },
 	};
 
-	createMenu(&inGameMenu, menu_items, 3);
+	createMenu(&inGameMenu, menu_items, 4);
 }
 
 static void
@@ -412,6 +478,9 @@ init(void)
 	hiscore_init();
 	initMainMenu();
 
+	howto_tooltip = tooltip_create(how_to_play_tooltip, gCamera);
+	new_skill_tooltip = tooltip_create(skills_tooltip, gCamera);
+
 	gCamera->pos = (Position) { 0, 0 };
 
 	gGameState = MENU;
@@ -426,7 +495,7 @@ handle_main_input(void)
 		|| gGameState == IN_GAME_MENU
 		|| gGameState == GAME_OVER)
 	{
-		if (input_key_is_pressed(&input, KEY_ESC))
+		if (!gGui->activeTooltip && input_key_is_pressed(&input, KEY_ESC))
 			toggleInGameMenu(NULL);
 	}
 
@@ -436,6 +505,8 @@ handle_main_input(void)
 		gGameState = MENU;
 	else if (gGameState == MENU && input_key_is_pressed(&input, KEY_ESC))
 		gGameState = QUIT;
+	else if (gGui->activeTooltip && input_key_is_pressed(&input, KEY_ESC))
+		gGui->activeTooltip = NULL;
 
 	if (input_modkey_is_pressed(&input, KEY_CTRL_M)) {
 		if (mixer_toggle_music(&gGameState))
@@ -449,6 +520,15 @@ handle_main_input(void)
 			gui_log("Sound enabled");
 		else
 			gui_log("Sound disabled");
+	}
+
+	if (input_modkey_is_pressed(&input, KEY_CTRL_D)) {
+		Settings *s = settings_get();
+		s->tooltips_enabled = !s->tooltips_enabled;
+		if (s->tooltips_enabled)
+			gui_log("Tooltips enabled");
+		else
+			gui_log("Tooltips disabled");
 	}
 }
 
@@ -518,6 +598,7 @@ populateUpdateData(UpdateData *data, float deltatime)
 	data->map = gMap;
 	data->matrix = gRoomMatrix;
 	data->input = &input;
+	data->gui = gGui;
 	data->deltatime = deltatime;
 }
 
@@ -531,9 +612,14 @@ run_game_update(void)
 		menu_update(inGameMenu, &input);
 
 	populateUpdateData(&updateData, deltaTime);
+	bool skillActivated = false;
 	if (playerLevel != gPlayer->stats.lvl) {
 		playerLevel = gPlayer->stats.lvl;
-		skillbar_check_skill_activation(gSkillBar, gPlayer);
+		skillActivated = skillbar_check_skill_activation(gSkillBar,
+								 gPlayer);
+	}
+	if (skillActivated && settings_get()->tooltips_enabled && playerLevel < 5) {
+		gGui->activeTooltip = new_skill_tooltip;
 	}
 
 	map_clear_expired_entities(gMap, gPlayer);
@@ -601,6 +687,7 @@ run_game_render(void)
 
 	SDL_RenderSetViewport(gRenderer, NULL);
 	particle_engine_render_global(gCamera);
+	gui_render_tooltip(gGui, gCamera);
 
 	if (gGameState == IN_GAME_MENU) {
 		SDL_Rect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
@@ -630,7 +717,6 @@ run_game(void)
 			gui_event_message("NEW HIGHSCORE");
 			gui_log("NEW HIGHSCORE");
 		}
-		gui_event_message("Press ESC to open menu");
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
@@ -750,6 +836,8 @@ void close(void)
 	if (inGameMenu)
 		menu_destroy(inGameMenu);
 
+	sprite_destroy(howto_tooltip);
+	sprite_destroy(new_skill_tooltip);
 	camera_destroy(gCamera);
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);

@@ -428,7 +428,7 @@ build_sword_animation(Player *p, SDL_Renderer *renderer)
 }
 
 Player* 
-player_create(class_t class, SDL_Renderer *renderer)
+player_create(class_t class, Camera *cam)
 {
 	Player *player = malloc(sizeof(Player));
 	player->sprite = sprite_create();
@@ -451,7 +451,7 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->animationTimer		= timer_create();
 	player->swordAnimation		= animation_create(5);
 
-	build_sword_animation(player, renderer);
+	build_sword_animation(player, cam->renderer);
 
 	memset(&player->skills,
 	       0, PLAYER_SKILL_COUNT * sizeof(Skill*));
@@ -480,16 +480,16 @@ player_create(class_t class, SDL_Renderer *renderer)
 		case WARRIOR:
 			m_strcpy(asset, 100, "Commissions/Warrior.png");
 			player->stats = (Stats) WARRIOR_STATS;
-			player->skills[0] = skill_create(FLURRY);
-			player->skills[1] = skill_create(BASH);
-			player->skills[2] = skill_create(CHARGE);
-			player->skills[3] = skill_create(DAGGER_THROW);
+			player->skills[0] = skill_create(FLURRY, cam);
+			player->skills[1] = skill_create(BASH, cam);
+			player->skills[2] = skill_create(CHARGE, cam);
+			player->skills[3] = skill_create(DAGGER_THROW, cam);
 			break;
 	}
 
-	player->skills[4] = skill_create(SIP_HEALTH);
+	player->skills[4] = skill_create(SIP_HEALTH, cam);
 
-	sprite_load_texture(player->sprite, asset, 0, renderer);
+	sprite_load_texture(player->sprite, asset, 0, cam->renderer);
 	player->sprite->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
 	player->sprite->dim = GAME_DIMENSION;
 	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };

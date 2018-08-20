@@ -79,7 +79,7 @@ typedef struct Player {
 } Player;
 
 Player*
-player_create(class_t, SDL_Renderer*);
+player_create(class_t, Camera*);
 
 ExperienceData
 player_get_xp_data(Player*);

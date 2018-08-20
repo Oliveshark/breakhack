@@ -178,6 +178,7 @@ add_executable(breakhack
 	src/hiscore
 	src/object
 	src/gui_util
+	src/tooltip
 	)
 
 # Sqlite has some warnings that I we don't need to see

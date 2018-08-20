@@ -39,8 +39,14 @@
 #define KEY_ESC		16384
 #define KEY_ENTER	32768
 
-#define KEY_CTRL_M		1
-#define KEY_CTRL_S		2
+#define KEY_CTRL_M		0x1
+#define KEY_CTRL_S		0x2
+#define KEY_CTRL_D		0x4
+#define KEY_SHIFT_NUM1	0x8
+#define KEY_SHIFT_NUM2	0x10
+#define KEY_SHIFT_NUM3	0x20
+#define KEY_SHIFT_NUM4	0x40
+#define KEY_SHIFT_NUM5	0x80
 
 #define MBUTTON_LEFT	1
 #define MBUTTON_MIDDLE	2

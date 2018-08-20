@@ -26,6 +26,7 @@
 #include "texturecache.h"
 #include "particle_engine.h"
 #include "update_data.h"
+#include "gui.h"
 
 static void
 load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
@@ -34,7 +35,7 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	t->dim.width = 16;
 	t->dim.height = 16;
 
-	for (unsigned int i = 0; i < 10; ++i) {
+	for (unsigned int i = 0; i < 5; ++i) {
 		char buffer[4];
 		Sprite *s = sprite_create();
 		s->pos = (Position) { i * 32 + 20, 20 };
@@ -73,7 +74,7 @@ skillbar_create(SDL_Renderer *renderer)
 	return bar;
 }
 
-void
+bool
 skillbar_check_skill_activation(SkillBar *bar, Player *player)
 {
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
@@ -85,6 +86,8 @@ skillbar_check_skill_activation(SkillBar *bar, Player *player)
 
 		timer_start(bar->skillSparkleTimer);
 	}
+
+	return timer_started(bar->skillSparkleTimer);
 }
 
 static void
@@ -256,8 +259,17 @@ skillbar_update(SkillBar *bar, UpdateData *data)
 {
 	Input *input = data->input;
 
-	unsigned int key = 0;
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 5; ++i) {
+		if (!data->player->skills[i])
+			continue;
+		if (input_modkey_is_pressed(input, KEY_SHIFT_NUM1 << i)) {
+			data->gui->activeTooltip = data->player->skills[i]->tooltip;
+			return;
+		}
+	}
+
+	Uint32 key = 0;
+	for (int i = 0; i < 5; ++i) {
 		if (!input_key_is_pressed(input, KEY_NUM0 << i))
 			continue;
 		key = i;

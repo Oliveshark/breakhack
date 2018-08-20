@@ -39,7 +39,7 @@ typedef struct SkillBar_t {
 SkillBar *
 skillbar_create(SDL_Renderer*);
 
-void
+bool
 skillbar_check_skill_activation(SkillBar*, Player*);
 
 void

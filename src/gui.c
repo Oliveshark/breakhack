@@ -27,6 +27,7 @@
 #include "map.h"
 #include "texturecache.h"
 #include "gui_util.h"
+#include "tooltip.h"
 
 #define DEFAULT_LOG { NULL, LOG_LINES_COUNT, 0, 200 }
 #define DEFAULT_EVENT_MESSAGES { NULL, 5, 0, 200 }
@@ -41,7 +42,7 @@ static struct LogData_t {
 	unsigned int strlen;
 } log_data = DEFAULT_LOG;
 
-static struct GuiEventMsgData_t {
+static struct GuiEventMsgs {
 	char **messages;
 	unsigned int len;
 	unsigned int count;
@@ -180,6 +181,7 @@ gui_create(Camera *cam)
 	gui->sprites = linkedlist_create();
 	gui->health = linkedlist_create();
 	gui->xp_bar = linkedlist_create();
+	gui->activeTooltip = NULL;
 
 	for (i = 0; i < LOG_LINES_COUNT; ++i) {
 		t = texture_create();
@@ -465,6 +467,14 @@ gui_event_message(const char *fmt, ...)
 }
 
 void
+gui_render_tooltip(Gui *gui, Camera *cam)
+{
+	if (gui->activeTooltip) {
+		sprite_render(gui->activeTooltip, cam);
+	}
+}
+
+void
 gui_render_log(Gui *gui, Camera *cam)
 {
 	SDL_Rect box = { 16, 0, 16, 16 };
@@ -520,8 +530,9 @@ gui_render_event_message(Gui *gui, Camera *cam)
 void
 gui_clear_message_log(void)
 {
-	for (size_t i = 0; i < event_messages.count; ++i)
+	for (size_t i = 0; i < event_messages.count; ++i) {
 		free(event_messages.messages[i]);
+	}
 	event_messages.count = 0;
 
 	for (size_t i = 0; i < log_data.count; ++i)
@@ -549,8 +560,9 @@ destroy_event_messages(void)
 	if (event_messages.messages == NULL)
 		return;
 
-	for (unsigned int i = 0; i < event_messages.count; ++i)
+	for (unsigned int i = 0; i < event_messages.count; ++i) {
 		free(event_messages.messages[i]);
+	}
 	
 	free(event_messages.messages);
 	event_messages.messages = NULL;
