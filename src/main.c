@@ -83,7 +83,7 @@ static char *skills_tooltip[] = {
 	"   Skills are listed in the bar below the game screen.",
 	"",
 	"",
-	"   SKILL INFO:            CTRL + <NUM>",
+	"   SKILL INFO:            SHIFT + <NUM>",
 	"                          Where <NUM> is the skill number (1-5)",
 	"",
 	"   DISABLE TOOLTIPS:      CTRL + D",
