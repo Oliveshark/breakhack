@@ -78,7 +78,7 @@ static char *artifacts_tooltip[] = {
 static char *skills_tooltip[] = {
 	"CONGRATULATIONS!",
 	"",
-	"   You have aquired a new skill!",
+	"   You have aquired a new level and a new skill!",
 	"",
 	"   Skills are listed in the bar below the game screen.",
 	"",

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
 #include "tooltip.h"
 #include "gui_util.h"
 #include "defines.h"
