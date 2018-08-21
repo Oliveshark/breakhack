@@ -135,7 +135,6 @@ static Map		*gMap			= NULL;
 static RoomMatrix	*gRoomMatrix		= NULL;
 static Gui		*gGui			= NULL;
 static SkillBar		*gSkillBar		= NULL;
-static Pointer		*gPointer		= NULL;
 static Menu		*mainMenu		= NULL;
 static Menu		*inGameMenu		= NULL;
 static Timer		*menuTimer		= NULL;
@@ -148,6 +147,7 @@ static Sprite		*new_artifact_tooltip	= NULL;
 static unsigned int	cLevel			= 1;
 static float		deltaTime		= 1.0;
 static double		renderScale		= 1.0;
+static Turn		currentTurn		= PLAYER;
 static GameState	gGameState;
 static SDL_Rect		gameViewport;
 static SDL_Rect		skillBarViewport;
@@ -155,8 +155,12 @@ static SDL_Rect		bottomGuiViewport;
 static SDL_Rect		statsGuiViewport;
 static SDL_Rect		minimapViewport;
 static SDL_Rect		menuViewport;
-static Turn		currentTurn	= PLAYER;
 static Input		input;
+
+#ifdef DEBUG
+static Sprite	*fpsSprite	= NULL;
+static Pointer	*gPointer	= NULL;
+#endif // DEBUG
 
 static SDL_Color C_MENU_DEFAULT		= { 255, 255, 0, 255 };
 static SDL_Color C_MENU_OUTLINE_DEFAULT	= { 0,	0, 0, 255 };
@@ -279,10 +283,19 @@ initGame(void)
 	gGui = gui_create(gCamera);
 	gSkillBar = skillbar_create(gCamera);
 	item_builder_init(gRenderer);
+#ifdef DEBUG
 	gPointer = pointer_create(gRenderer);
+#endif // DEBUG
 	particle_engine_init();
 	menuTimer = timer_create();
 	actiontextbuilder_init(gRenderer);
+
+#ifdef DEBUG
+	fpsSprite = sprite_create();
+	sprite_load_text_texture(fpsSprite, "GUI/SDS_8x8.ttf", 0, 14, 1);
+	fpsSprite->pos = POS(16, 16);
+	fpsSprite->fixed = true;
+#endif // DEBUG
 
 	return true;
 }
@@ -400,6 +413,7 @@ createInGameGameOverMenu(void)
 {
 	struct MENU_ITEM menu_items[] = {
 		{ "NEW GAME", startGame },
+		{ "HOW TO PLAY", showHowToTooltip },
 		{ "MAIN MENU", goToMainMenu },
 		{ "QUIT", exitGame },
 	};
@@ -408,7 +422,7 @@ createInGameGameOverMenu(void)
 		menu_destroy(inGameMenu);
 		inGameMenu = NULL;
 	}
-	createMenu(&inGameMenu, menu_items, 3);
+	createMenu(&inGameMenu, menu_items, 4);
 }
 
 static void
@@ -733,7 +747,10 @@ run_game_render(void)
 		SDL_RenderFillRect(gRenderer, &dimmer);
 		menu_render(inGameMenu, gCamera);
 	}
+#ifdef DEBUG
+	sprite_render(fpsSprite, gCamera);
 	pointer_render(gPointer, gCamera);
+#endif // DEBUG
 
 	SDL_RenderPresent(gRenderer);
 }
@@ -800,7 +817,10 @@ run_menu(void)
 	else if (gGameState == SCORE_SCREEN)
 		screen_render(scoreScreen, gCamera);
 
+#ifdef DEBUG
+	sprite_render(fpsSprite, gCamera);
 	pointer_render(gPointer, gCamera);
+#endif // DEBUG
 
 	SDL_RenderPresent(gRenderer);
 }
@@ -812,7 +832,16 @@ void run(void)
 	static int currentTime = 0;
 
 	bool quit = false;
-	Timer* fpsTimer = timer_create();
+
+#ifdef DEBUG
+	Uint32 frame = 0;
+	Timer *fpsTime = timer_create();
+	Timer *updateTimer = timer_create();
+	timer_start(fpsTime);
+	timer_start(updateTimer);
+#endif // DEBUG
+
+	Timer *fpsTimer = timer_create();
 
 	while (!quit)
 	{
@@ -820,7 +849,9 @@ void run(void)
 
 		quit = handle_events();
 		handle_main_input();
+#ifdef DEBUG
 		pointer_handle_input(gPointer, &input);
+#endif // DEBUG
 
 		switch (gGameState) {
 			case PLAYING:
@@ -852,9 +883,23 @@ void run(void)
 			currentTime = SDL_GetTicks();
 			deltaTime = (float) ((currentTime - oldTime) / 1000.0);
 		}
+#ifdef DEBUG
+		frame++;
+		if (timer_get_ticks(updateTimer) > 1000) {
+			char buffer[20];
+			m_sprintf(buffer, 20, "FPS: %u", frame / (timer_get_ticks(fpsTime) / 1000));
+			texture_load_from_text(fpsSprite->textures[0], buffer, C_RED, C_WHITE, gRenderer);
+			fpsSprite->dim = fpsSprite->textures[0]->dim;
+			timer_start(updateTimer);
+		}
+#endif // DEBUG
 	}
 
 	timer_destroy(fpsTimer);
+#ifdef DEBUG
+	timer_destroy(fpsTime);
+	timer_destroy(updateTimer);
+#endif // DEBUG
 }
 
 static
@@ -880,7 +925,10 @@ void close(void)
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
 	skillbar_destroy(gSkillBar);
+#ifdef DEBUG
 	pointer_destroy(gPointer);
+	sprite_destroy(fpsSprite);
+#endif // DEBUG
 	actiontextbuilder_close();
 	item_builder_close();
 	particle_engine_close();
