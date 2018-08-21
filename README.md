@@ -3,6 +3,11 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fc02d56fa7194e61b2c7d260fd2e4186)](https://www.codacy.com/app/LiquidityC/breakhack?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LiquidityC/breakhack&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/liquidityc/breakhack/badge/master)](https://www.codefactor.io/repository/github/liquidityc/breakhack/overview/master)
 <!--[![Coverity Scan](https://scan.coverity.com/projects/15218/badge.svg)](https://scan.coverity.com/projects/liquidityc-breakhack)-->
+[![GitHub issues](https://img.shields.io/github/issues/liquidityc/breakhack.svg)](https://github.com/liquidityc/breakhack/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/liquidityc/breakhack.svg)](https://github.com/liquidityc/breakhack/issues)
+![GitHub (pre-)release](https://img.shields.io/github/release/liquidityc/breakhack/all.svg)
+[![Github All Releases](https://img.shields.io/github/downloads/liquidityc/breakhack/total.svg)](https://github.com/liquidityc/breakhack/releases)
+[![HitCount](http://hits.dwyl.io/liquidityc/breakhack.svg)](http://hits.dwyl.io/liquidityc/breakhack)
 
 Something in the ways of a roguelike
 ================================
