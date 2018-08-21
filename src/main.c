@@ -152,7 +152,8 @@ static GameState	gGameState;
 static SDL_Rect		gameViewport;
 static SDL_Rect		skillBarViewport;
 static SDL_Rect		bottomGuiViewport;
-static SDL_Rect		rightGuiViewport;
+static SDL_Rect		statsGuiViewport;
+static SDL_Rect		minimapViewport;
 static SDL_Rect		menuViewport;
 static Turn		currentTurn	= PLAYER;
 static Input		input;
@@ -253,8 +254,11 @@ initViewports(void)
 	bottomGuiViewport = (SDL_Rect) { 0, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT,
 		BOTTOM_GUI_WIDTH, BOTTOM_GUI_WIDTH };
 
-	rightGuiViewport = (SDL_Rect) { GAME_VIEW_WIDTH, 0,
-		RIGHT_GUI_WIDTH, RIGHT_GUI_HEIGHT };
+	statsGuiViewport = (SDL_Rect) { GAME_VIEW_WIDTH, 0,
+		RIGHT_GUI_WIDTH, STATS_GUI_HEIGHT };
+
+	minimapViewport = (SDL_Rect) { GAME_VIEW_WIDTH, STATS_GUI_HEIGHT,
+		RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT };
 
 	menuViewport = (SDL_Rect) {
 		(SCREEN_WIDTH - GAME_VIEW_WIDTH)/2,
@@ -707,8 +711,11 @@ run_game_render(void)
 	actiontextbuilder_render(gCamera);
 	gui_render_event_message(gGui, gCamera);
 
-	SDL_RenderSetViewport(gRenderer, &rightGuiViewport);
+	SDL_RenderSetViewport(gRenderer, &statsGuiViewport);
 	gui_render_panel(gGui, gCamera);
+
+	SDL_RenderSetViewport(gRenderer, &minimapViewport);
+	gui_render_minimap(gGui, gMap, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, &skillBarViewport);
 	skillbar_render(gSkillBar, gPlayer, gCamera);

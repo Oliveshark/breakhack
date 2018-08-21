@@ -47,7 +47,8 @@ typedef struct Gui {
 	LinkedList *health;
 	LinkedList *xp_bar;
 	Sprite *bottomFrame;
-	Sprite *rightFrame;
+	Sprite *statsFrame;
+	Sprite *miniMapFrame;
 	Sprite *labels[LABEL_COUNT];
 	Sprite *activeTooltip;
 	Texture *log_lines[LOG_LINES_COUNT];
@@ -63,6 +64,9 @@ gui_update_player_stats(Gui*, Player*, Map*, SDL_Renderer*);
 
 void
 gui_render_panel(Gui*, Camera*);
+
+void
+gui_render_minimap(Gui*, Map*, Camera*);
 
 void
 gui_render_log(Gui*, Camera*);

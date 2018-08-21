@@ -163,12 +163,16 @@ init_sprites(Gui *gui, Camera *cam)
 	s->pos = (Position) { 16, POS_Y_COLLECTABLES + 32 };
 	linkedlist_append(&gui->sprites, s);
 
-	gui->rightFrame = gui_util_create_frame_sprite(RIGHT_GUI_WIDTH/16,
-						       RIGHT_GUI_HEIGHT/16,
+	gui->statsFrame = gui_util_create_frame_sprite(RIGHT_GUI_WIDTH/16,
+						       STATS_GUI_HEIGHT/16,
 						       cam);
 	gui->bottomFrame = gui_util_create_frame_sprite(BOTTOM_GUI_WIDTH/16,
 							BOTTOM_GUI_HEIGHT/16,
 							cam);
+
+	gui->miniMapFrame = gui_util_create_frame_sprite(RIGHT_GUI_WIDTH/16,
+							 MINIMAP_GUI_HEIGHT/16,
+							 cam);
 }
 
 Gui*
@@ -393,7 +397,7 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 void
 gui_render_panel(Gui *gui, Camera *cam)
 {
-	sprite_render(gui->rightFrame, cam);
+	sprite_render(gui->statsFrame, cam);
 	LinkedList *item = gui->health;
 	while (item != NULL) {
 		Sprite *s = item->data;
@@ -415,6 +419,30 @@ gui_render_panel(Gui *gui, Camera *cam)
 
 	for (int i = 0; i < LABEL_COUNT; ++i)
 		sprite_render(gui->labels[i], cam);
+}
+
+void
+gui_render_minimap(Gui *gui, Map *map, Camera *cam)
+{
+	sprite_render(gui->miniMapFrame, cam);
+
+	SDL_Rect box = { 0, 0, 12, 8 };
+	for (Uint8 i = 0; i < MAP_H_ROOM_COUNT; ++i) {
+		for (Uint8 j = 0; j < MAP_V_ROOM_COUNT; ++j) {
+			Room *room = map->rooms[i][j];
+			box.x = i*14 + 10;
+			box.y = j*10 + 14;
+			if (room && room->visited) {
+				if (map->currentRoom.x == i && map->currentRoom.y == j)
+					SDL_SetRenderDrawColor(cam->renderer, 0, 255, 255, 255);
+				else
+					SDL_SetRenderDrawColor(cam->renderer, 255, 255, 255, 255);
+				SDL_RenderFillRect(cam->renderer, &box);
+				SDL_SetRenderDrawColor(cam->renderer, 60, 134, 252, 255);
+				SDL_RenderDrawRect(cam->renderer, &box);
+			}
+		}
+	}
 }
 
 void
@@ -578,7 +606,8 @@ gui_destroy(Gui *gui)
 	texture_destroy(gui->event_message);
 
 	sprite_destroy(gui->bottomFrame);
-	sprite_destroy(gui->rightFrame);
+	sprite_destroy(gui->statsFrame);
+	sprite_destroy(gui->miniMapFrame);
 
 	while (gui->sprites != NULL)
 		sprite_destroy(linkedlist_pop(&gui->sprites));

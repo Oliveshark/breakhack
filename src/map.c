@@ -27,8 +27,8 @@
 #include "update_data.h"
 #include "trap.h"
 
-static
-Room* create_room(void)
+static Room*
+create_room(void)
 {
 	int i, j;
 	Room *room;
@@ -40,6 +40,7 @@ Room* create_room(void)
 			room->tiles[i][j] = NULL;
 			room->decorations[i][j] = NULL;
 			room->traps[i][j] = NULL;
+			room->visited = false;
 		}
 	}
 	return room;
@@ -388,6 +389,8 @@ void map_set_current_room(Map *map, Position *pos)
 		map->currentRoom.x = MAP_H_ROOM_COUNT - 1;
 	if (map->currentRoom.y >= MAP_V_ROOM_COUNT)
 		map->currentRoom.y = MAP_V_ROOM_COUNT - 1;
+
+	map->rooms[map->currentRoom.x][map->currentRoom.y]->visited = true;
 }
 
 static

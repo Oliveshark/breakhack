@@ -51,6 +51,7 @@ typedef struct Room_t {
 	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	Trap* traps[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	RoomModifierData modifier;
+	bool visited;
 } Room;
 
 typedef struct Map_t {
