@@ -100,6 +100,7 @@ include_directories(
 	${SDL2_IMAGE_INCLUDE_DIR}
 	${SDL2_TTF_INCLUDE_DIR}
 	${SDL2_MIXER_INCLUDE_DIR}
+	sqlite3
 	)
 
 if (CMOCKA_FOUND)
@@ -167,7 +168,7 @@ add_executable(breakhack
 	src/projectile
 	src/vector2d
 	src/map_room_modifiers
-	src/sqlite3
+	sqlite3/sqlite3
 	src/db
 	src/settings
 	src/actiontextbuilder
@@ -182,7 +183,7 @@ add_executable(breakhack
 	)
 
 # Sqlite has some warnings that I we don't need to see
-set_source_files_properties(src/sqlite3.c COMPILE_FLAGS -w)
+set_source_files_properties(sqlite3/sqlite3.c COMPILE_FLAGS -w)
 
 target_link_libraries(breakhack
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
