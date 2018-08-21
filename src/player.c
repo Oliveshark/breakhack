@@ -450,6 +450,7 @@ player_create(class_t class, Camera *cam)
 	player->projectiles		= linkedlist_create();
 	player->animationTimer		= timer_create();
 	player->swordAnimation		= animation_create(5);
+	player->equipment.hasArtifacts	= false;
 
 	build_sword_animation(player, cam->renderer);
 
@@ -624,6 +625,7 @@ player_reset(Player *player)
 {
 	for (size_t i = 0; i < LAST_ARTIFACT_EFFECT; ++i)
 		player->equipment.artifacts[i].level = 0;
+	player->equipment.hasArtifacts = false;
 
 	while (player->projectiles)
 		projectile_destroy(linkedlist_pop(&player->projectiles));
@@ -677,4 +679,5 @@ player_add_artifact(Player *p, Artifact *a)
 
 	gui_log("You pick an ancient %s", ad->name);
 	gui_log("%s (%u)", ad->desc, ad->level);
+	p->equipment.hasArtifacts = true;
 }

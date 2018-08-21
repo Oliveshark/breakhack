@@ -54,6 +54,27 @@
 #include "io_util.h"
 #include "tooltip.h"
 
+static char *artifacts_tooltip[] = {
+	"CONGRATULATIONS!",
+	"",
+	"   You just picked up your first artifact!",
+	"",
+	"   Your current artifacts and corresponding level are",
+	"   listed next to your skills."
+	"",
+	"",
+	"   Artifacts have mystical effects that improve your offensive",
+	"   or defensive advantage in the dungeon. However it is sometimes",
+	"   hard to know what effect an artifact has.",
+	"",
+	"",
+	"   Perhaps an experienced dungeoner will know more?",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
 static char *skills_tooltip[] = {
 	"CONGRATULATIONS!",
 	"",
@@ -123,6 +144,7 @@ static Screen		*creditsScreen		= NULL;
 static Screen		*scoreScreen		= NULL;
 static Sprite		*new_skill_tooltip	= NULL;
 static Sprite		*howto_tooltip		= NULL;
+static Sprite		*new_artifact_tooltip	= NULL;
 static unsigned int	cLevel			= 1;
 static float		deltaTime		= 1.0;
 static double		renderScale		= 1.0;
@@ -251,7 +273,7 @@ initGame(void)
 	gCamera = camera_create(gRenderer);
 	gRoomMatrix = roommatrix_create();
 	gGui = gui_create(gCamera);
-	gSkillBar = skillbar_create(gRenderer);
+	gSkillBar = skillbar_create(gCamera);
 	item_builder_init(gRenderer);
 	gPointer = pointer_create(gRenderer);
 	particle_engine_init();
@@ -452,6 +474,8 @@ resetGame(void)
 	if (gMap)
 		map_destroy(gMap);
 
+	skillbar_reset(gSkillBar);
+
 	particle_engine_clear();
 
 	info("Building new map");
@@ -480,6 +504,7 @@ init(void)
 
 	howto_tooltip = tooltip_create(how_to_play_tooltip, gCamera);
 	new_skill_tooltip = tooltip_create(skills_tooltip, gCamera);
+	new_artifact_tooltip = tooltip_create(artifacts_tooltip, gCamera);
 
 	gCamera->pos = (Position) { 0, 0 };
 
@@ -600,6 +625,7 @@ populateUpdateData(UpdateData *data, float deltatime)
 	data->input = &input;
 	data->gui = gGui;
 	data->deltatime = deltatime;
+	data->cam = gCamera;
 }
 
 static void
@@ -607,6 +633,7 @@ run_game_update(void)
 {
 	static UpdateData updateData;
 	static unsigned int playerLevel = 1;
+	static bool artifactTooltipShown = false;
 
 	if (gGameState == IN_GAME_MENU)
 		menu_update(inGameMenu, &input);
@@ -620,6 +647,10 @@ run_game_update(void)
 	}
 	if (skillActivated && settings_get()->tooltips_enabled && playerLevel < 5) {
 		gGui->activeTooltip = new_skill_tooltip;
+	}
+	if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts) {
+		artifactTooltipShown = true;
+		gGui->activeTooltip = new_artifact_tooltip;
 	}
 
 	map_clear_expired_entities(gMap, gPlayer);

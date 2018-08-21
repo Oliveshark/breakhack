@@ -28,16 +28,25 @@
 
 struct UpdateData;
 
-typedef struct SkillBar_t {
+typedef struct ArtifactDisplay {
+	Sprite *aSprite;
+	Sprite *lvlSprite;
+	Uint32 lvl;
+} ArtifactDisplay;
+
+typedef struct SkillBar {
 	LinkedList *sprites;
+	ArtifactDisplay artifacts[LAST_ARTIFACT_EFFECT];
+	Uint32 artifactDisplayOffset;
 	Sprite *countdowns[PLAYER_SKILL_COUNT];
+	Sprite *frame;
 	Timer *activationTimer;
 	Timer *skillSparkleTimer;
-	unsigned int lastActivation;
+	Uint32 lastActivation;
 } SkillBar;
 
 SkillBar *
-skillbar_create(SDL_Renderer*);
+skillbar_create(Camera*);
 
 bool
 skillbar_check_skill_activation(SkillBar*, Player*);
@@ -47,6 +56,9 @@ skillbar_render(SkillBar*, Player*, Camera*);
 
 void
 skillbar_update(SkillBar*, struct UpdateData*);
+
+void
+skillbar_reset(SkillBar*);
 
 void
 skillbar_destroy(SkillBar*);

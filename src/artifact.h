@@ -45,6 +45,9 @@ typedef struct Artifact {
 	int level;
 } Artifact;
 
+Sprite *
+artifact_sprite_for(MagicalEffect);
+
 Artifact *
 artifact_create_random(Player*, Uint8 level);
 

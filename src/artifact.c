@@ -26,65 +26,39 @@
 static void
 artifact_set_effect(Artifact *a, MagicalEffect effect)
 {
-	Texture *t;
-
 	a->effect = effect;
 	switch (effect) {
 		case IMPROVED_HEARING:
 			a->info.name = "Potion of ear juice";
 			a->info.desc = "Your hearing is slightly improved";
-			t = texturecache_add("Items/Potion.png");
-			sprite_set_texture(a->sprite, t, 0);
-			a->sprite->clip = CLIP16(7*16, 4*16);
 			break;
 		case TRAP_AVOIDANCE:
 			a->info.name = "Boot with nails inside";
 			a->info.desc = "You are lighter on your feet";
-			t = texturecache_add("Items/Boot.png");
-			sprite_set_texture(a->sprite, t, 0);
-			a->sprite->clip = CLIP16(5*16, 0);
 			break;
 		case PIERCING_DAGGERS:
 			a->info.name = "Whetstone";
 			a->info.desc = "Your daggers are sharper";
-			t = texturecache_add("Items/Rock.png");
-			sprite_set_texture(a->sprite, t, 0);
-			a->sprite->clip = CLIP16(0, 0);
 			break;
 		case CHARGE_THROUGH:
 			a->info.name = "Greasy shield";
 			a->info.desc = "You glide through obstructions";
-			t = texturecache_add("Items/Shield.png");
-			sprite_set_texture(a->sprite, t, 0);
-			a->sprite->clip = CLIP16(16, 0);
 			break;
 		case PUSH_BACK:
 			a->info.name = "Glove of strength";
 			a->info.desc = "Your arm is stronger";
-			t = texturecache_add("Items/Glove.png");
-			sprite_set_texture(a->sprite, t, 0);
-			a->sprite->clip = CLIP16(0, 0);
 			break;
 		case DAGGER_RECOVERY:
 			a->info.name = "Forging hammer";
 			a->info.desc = "Your daggers are more durable";
-			t = texturecache_add("Items/LongWep.png");
-			sprite_set_texture(a->sprite, t, 0);
-			a->sprite->clip = CLIP16(0, 6*16);
 			break;
 		case INCREASED_STUN:
 			a->info.name = "Solid shield";
 			a->info.desc = "Your shield is harder";
-			t = texturecache_add("Items/Shield.png");
-			sprite_set_texture(a->sprite, t, 0);
-			a->sprite->clip = CLIP16(4*16, 0);
 			break;
 		case FEAR_INDUCING:
 			a->info.name = "Ugly shirt";
 			a->info.desc = "You look disgusting";
-			t = texturecache_add("Items/Armor.png");
-			sprite_set_texture(a->sprite, t, 0);
-			a->sprite->clip = CLIP16(6*16, 8*16);
 			break;
 		default:
 			break;
@@ -107,11 +81,63 @@ artifact_create_random(Player *p, Uint8 level)
 	return a;
 }
 
+Sprite *
+artifact_sprite_for(MagicalEffect effect)
+{
+	Sprite *sprite = sprite_create();
+	Texture *t;
+	switch (effect) {
+		case IMPROVED_HEARING:
+			t = texturecache_add("Items/Potion.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(7*16, 4*16);
+			break;
+		case TRAP_AVOIDANCE:
+			t = texturecache_add("Items/Boot.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(5*16, 0);
+			break;
+		case PIERCING_DAGGERS:
+			t = texturecache_add("Items/Rock.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(0, 0);
+			break;
+		case CHARGE_THROUGH:
+			t = texturecache_add("Items/Shield.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(16, 0);
+			break;
+		case PUSH_BACK:
+			t = texturecache_add("Items/Glove.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(0, 0);
+			break;
+		case DAGGER_RECOVERY:
+			t = texturecache_add("Items/LongWep.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(0, 6*16);
+			break;
+		case INCREASED_STUN:
+			t = texturecache_add("Items/Shield.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(4*16, 0);
+			break;
+		case FEAR_INDUCING:
+			t = texturecache_add("Items/Armor.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(6*16, 8*16);
+			break;
+		default:
+			break;
+	}
+	return sprite;
+}
+
 Artifact *
 artifact_create(MagicalEffect effect)
 {
 	Artifact *a = ec_malloc(sizeof(Artifact));
-	a->sprite = sprite_create();
+	a->sprite = artifact_sprite_for(effect);
 	a->sprite->dim = GAME_DIMENSION;
 	a->collected = false;
 	a->level = 1;

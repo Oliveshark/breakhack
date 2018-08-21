@@ -59,6 +59,7 @@ typedef struct ArtifactData {
 
 typedef struct PlayerEquipment {
 	ArtifactData artifacts[LAST_ARTIFACT_EFFECT];
+	bool hasArtifacts;
 } PlayerEquipment;
 
 typedef struct Player {
