@@ -206,14 +206,18 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 		if (monster->state.current == PASSIVE
 		    && position_proximity(1, &rm->playerRoomPos, &pos))
 			continue;
+		if (monster->steps >= monster->stats.speed)
+			continue;
 
 		allDone = allDone && monster_move(monster, rm, map);
 	}
 
-	if (allDone)
+	if (allDone) {
 		timer_stop(map->monsterMoveTimer);
-	else
+		linkedlist_each(&map->monsters, (void (*)(void*)) monster_reset_steps);
+	} else {
 		timer_start(map->monsterMoveTimer);
+	}
 
 	return allDone;
 }

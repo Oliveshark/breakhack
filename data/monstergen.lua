@@ -100,11 +100,11 @@ local stats = {
 		speed = 1
 	},
 	platino = {
-		hp = 30,
-		dmg = 0,
+		hp = 90,
+		dmg = 1,
 		atk = 0,
 		def = 0,
-		speed = 2
+		speed = 1
 	}
 }
 
@@ -282,8 +282,6 @@ if(CURRENT_LEVEL > 0) then
 		enemies = {}
 		enemies = concat(enemies, undead)
 		enemies = concat(enemies, orcs)
-		enemies = concat(enemies, reptile)
-		enemies = concat(enemies, avian)
 	elseif (CURRENT_LEVEL > 10) then
 		enemies = {}
 		enemies = concat(enemies, undead)

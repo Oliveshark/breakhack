@@ -26,6 +26,7 @@ typedef enum GameState_t {
 	PLAYING,
 	IN_GAME_MENU,
 	GAME_OVER,
+	COMPLETED,
 	QUIT
 } GameState;
 

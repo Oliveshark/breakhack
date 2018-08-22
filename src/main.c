@@ -332,10 +332,14 @@ static void
 toggleInGameMenu(void *unused)
 {
 	UNUSED(unused);
-	if (gGameState == PLAYING || gGameState == GAME_OVER)
+	if (gGameState == PLAYING ||
+	    gGameState == GAME_OVER ||
+	    gGameState == COMPLETED)
 		gGameState = IN_GAME_MENU;
 	else if (is_player_dead())
 		gGameState = GAME_OVER;
+	else if (cLevel >= 20)
+		gGameState = COMPLETED;
 	else
 		gGameState = PLAYING;
 }
@@ -413,7 +417,6 @@ createInGameGameOverMenu(void)
 {
 	struct MENU_ITEM menu_items[] = {
 		{ "NEW GAME", startGame },
-		{ "HOW TO PLAY", showHowToTooltip },
 		{ "MAIN MENU", goToMainMenu },
 		{ "QUIT", exitGame },
 	};
@@ -422,7 +425,7 @@ createInGameGameOverMenu(void)
 		menu_destroy(inGameMenu);
 		inGameMenu = NULL;
 	}
-	createMenu(&inGameMenu, menu_items, 4);
+	createMenu(&inGameMenu, menu_items, 3);
 }
 
 static void
@@ -486,8 +489,10 @@ resetGame(void)
 		screen_destroy(scoreScreen);
 	scoreScreen = NULL;
 
-	if (!inGameMenu)
-		initInGameMenu();
+	if (inGameMenu)
+		menu_destroy(inGameMenu);
+	inGameMenu = NULL;
+	initInGameMenu();
 
 	if (gMap)
 		map_destroy(gMap);
@@ -536,7 +541,8 @@ handle_main_input(void)
 {
 	if (gGameState == PLAYING
 		|| gGameState == IN_GAME_MENU
-		|| gGameState == GAME_OVER)
+		|| gGameState == GAME_OVER
+		|| gGameState == COMPLETED)
 	{
 		if (!gGui->activeTooltip && input_key_is_pressed(&input, KEY_ESC))
 			toggleInGameMenu(NULL);
@@ -616,8 +622,23 @@ is_player_dead(void)
 }
 
 static void
+end_game_details(void)
+{
+	gui_log("You earned %.2f gold", gPlayer->gold);
+	gui_event_message("You earned %.2f gold", gPlayer->gold);
+	if (hiscore_get_top_gold() < gPlayer->gold) {
+		gui_event_message("NEW HIGHSCORE");
+		gui_log("NEW HIGHSCORE");
+	}
+}
+
+static void
 check_next_level(void)
 {
+	if (cLevel >= 20) {
+		return;
+	}
+
 	Room *room = gMap->rooms[gMap->currentRoom.x][gMap->currentRoom.y];
 	Position pos = position_to_matrix_coords(&gPlayer->sprite->pos);
 
@@ -629,14 +650,18 @@ check_next_level(void)
 	if (tile->levelExit) {
 		mixer_play_effect(NEXT_LEVEL);
 		++cLevel;
-		if (cLevel % 5 == 0) {
+		if (cLevel > 19) {
+			mixer_play_music(BOSS_MUSIC0);
+		} else if (cLevel % 5 == 0) {
 			gui_log("You sense something powerful in the vicinity");
-			gui_event_message("Something powerful lurks in the dark");
 			mixer_play_music(BOSS_MUSIC0);
 		} else {
 			mixer_play_music(GAME_MUSIC0 + get_random(2));
 		}
-		resetGame();
+
+		if (cLevel < 20) {
+			resetGame();
+		}
 	}
 }
 
@@ -679,7 +704,6 @@ run_game_update(void)
 		gGui->activeTooltip = new_artifact_tooltip;
 	}
 
-	map_clear_expired_entities(gMap, gPlayer);
 	if (gGameState == PLAYING && currentTurn == PLAYER)
 		player_update(&updateData);
 
@@ -698,25 +722,62 @@ run_game_update(void)
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
 			map_on_new_turn(gMap);
+			map_clear_expired_entities(gMap, gPlayer);
 			repopulate_roommatrix();
 		}
 	} else if (currentTurn == MONSTER) {
 		if (map_move_monsters(gMap, gRoomMatrix)) {
 			currentTurn = PLAYER;
+			map_clear_expired_entities(gMap, gPlayer);
 			repopulate_roommatrix();
 		}
 	}
 }
 
 static void
-run_game_render(void)
+render_gui(void)
 {
-	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
-	SDL_RenderClear(gRenderer);
+	SDL_RenderSetViewport(gRenderer, &statsGuiViewport);
+	gui_render_panel(gGui, gCamera);
+	SDL_RenderSetViewport(gRenderer, &minimapViewport);
+	gui_render_minimap(gGui, gMap, gCamera);
+	SDL_RenderSetViewport(gRenderer, &skillBarViewport);
+	skillbar_render(gSkillBar, gPlayer, gCamera);
+	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
+	gui_render_log(gGui, gCamera);
+	SDL_RenderSetViewport(gRenderer, NULL);
+}
 
+static void
+render_game_completed(void)
+{
+	SDL_RenderSetViewport(gRenderer, &gameViewport);
+	if (!is_player_dead()) {
+		player_render(gPlayer, gCamera);
+		player_render_toplayer(gPlayer, gCamera);
+	}
+	actiontextbuilder_render(gCamera);
+	gui_render_event_message(gGui, gCamera);
+
+	if (gGameState == IN_GAME_MENU) {
+		SDL_Rect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);
+		SDL_RenderFillRect(gRenderer, &dimmer);
+		menu_render(inGameMenu, gCamera);
+	}
+#ifdef DEBUG
+	sprite_render(fpsSprite, gCamera);
+	pointer_render(gPointer, gCamera);
+#endif // DEBUG
+}
+
+static void
+render_game(void)
+{
 	SDL_RenderSetViewport(gRenderer, &gameViewport);
 	map_render(gMap, gCamera);
 	particle_engine_render_game(gCamera);
+
 	map_render_mid_layer(gMap, gCamera);
 
 	if (!is_player_dead()) {
@@ -732,20 +793,17 @@ run_game_render(void)
 	roommatrix_render_lightmap(gRoomMatrix, gCamera);
 	actiontextbuilder_render(gCamera);
 	gui_render_event_message(gGui, gCamera);
+}
 
-	SDL_RenderSetViewport(gRenderer, &statsGuiViewport);
-	gui_render_panel(gGui, gCamera);
+static void
+run_game_render(void)
+{
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
+	SDL_RenderClear(gRenderer);
 
-	SDL_RenderSetViewport(gRenderer, &minimapViewport);
-	gui_render_minimap(gGui, gMap, gCamera);
+	render_game();
+	render_gui();
 
-	SDL_RenderSetViewport(gRenderer, &skillBarViewport);
-	skillbar_render(gSkillBar, gPlayer, gCamera);
-
-	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
-	gui_render_log(gGui, gCamera);
-
-	SDL_RenderSetViewport(gRenderer, NULL);
 	particle_engine_render_global(gCamera);
 	gui_render_tooltip(gGui, gCamera);
 
@@ -768,18 +826,21 @@ run_game(void)
 {
 	run_game_update();
 
-	run_game_render();
+	if (cLevel >= 20) {
+		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+		SDL_RenderClear(gRenderer);
+		render_game_completed();
+		render_gui();
+		SDL_RenderPresent(gRenderer);
+	} else {
+		run_game_render();
+	}
 
 	if (gGameState == PLAYING && is_player_dead()) {
 		camera_shake(VECTOR2D_RIGHT, 800);
 		gui_log("The dungeon consumed you");
-		gui_log("You earned %.2f gold", gPlayer->gold);
 		gui_event_message("You died!");
-		gui_event_message("You earned %.2f gold", gPlayer->gold);
-		if (hiscore_get_top_gold() < gPlayer->gold) {
-			gui_event_message("NEW HIGHSCORE");
-			gui_log("NEW HIGHSCORE");
-		}
+		end_game_details();
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
@@ -787,6 +848,15 @@ run_game(void)
 
 	} else {
 		check_next_level();
+	}
+
+	if (gGameState == PLAYING && cLevel >= 20) {
+		gGameState = COMPLETED;
+		createInGameGameOverMenu();
+		gui_event_message("Your break is over!");
+		gui_log("Your break is over!");
+		gui_event_message("Well done!");
+		end_game_details();
 	}
 }
 
@@ -833,8 +903,8 @@ run_menu(void)
 	SDL_RenderPresent(gRenderer);
 }
 
-static
-void run(void)
+static void
+run(void)
 {
 	static int oldTime = 0;
 	static int currentTime = 0;
@@ -865,6 +935,7 @@ void run(void)
 			case PLAYING:
 			case IN_GAME_MENU:
 			case GAME_OVER:
+			case COMPLETED:
 				run_game();
 				break;
 			case MENU:

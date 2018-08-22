@@ -110,6 +110,9 @@ void
 monster_push(Monster *, RoomMatrix*, Vector2d dir);
 
 void
+monster_reset_steps(Monster *m);
+
+void
 monster_destroy(Monster*);
 
 #endif // MONSTER_H_

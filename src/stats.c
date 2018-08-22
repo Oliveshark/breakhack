@@ -75,9 +75,9 @@ stats_fight(Stats *attacker, Stats *defender)
 	int dmgRoll = 0;
 	if (atkRoll >= defRoll) {
 		if (attacker->dmg > 0)
-			dmgRoll = get_random(attacker->dmg) + 1;
-		else
 			dmgRoll = get_random(attacker->dmg - 1) + 1;
+		else
+			dmgRoll = 1;
 
 		if (critical) {
 			dmgRoll = dmgRoll * 2;

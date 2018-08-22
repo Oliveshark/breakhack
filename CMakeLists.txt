@@ -244,7 +244,7 @@ ENDIF ()
 # LINT:
 if (CPPCHECK_FOUND)
 	add_custom_target(lint
-		COMMAND ${CPPCHECK_EXECUTABLE} --force --language=c --template=gcc --error-exitcode=1 --quiet --enable=warning,style,performance,portability,information,missingInclude --suppress=*:src/sqlite3.? -isrc/sqlite3.c src/
+		COMMAND ${CPPCHECK_EXECUTABLE} --force --language=c --template=gcc --error-exitcode=1 --quiet --enable=warning,style,performance,portability,information,missingInclude src/
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 		COMMENT "Run cppcheck"
 		)

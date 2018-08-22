@@ -472,7 +472,10 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 
 			RoomSpace *space = &rm->spaces[newPos.x][newPos.y];
 			if (space->light < 100 && withinHearingDist) {
-				actiontextbuilder_create_text("!", C_WHITE, &m->sprite->pos);
+				Position alertPos = m->sprite->pos;
+				alertPos.x += TILE_DIMENSION >> 1;
+				alertPos.y += TILE_DIMENSION >> 1;
+				actiontextbuilder_create_text("!", C_WHITE, &alertPos);
 			}
 		}
 
@@ -498,11 +501,16 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 		if (m->stateIndicator.displayCount > 0)
 			m->stateIndicator.displayCount -= 1;
 		m->state.stepsSinceChange += 1;
-		m->steps = 0;
 		return true;
 	}
 
 	return false;
+}
+
+void
+monster_reset_steps(Monster *m)
+{
+	m->steps = 0;
 }
 
 void
