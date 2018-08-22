@@ -161,12 +161,32 @@ for i=1,#misc do
 	misc[i] = concat({ texturePaths.misc0, texturePaths.misc1 }, misc[i])
 end
 
-local undead = {
-	-- UNDEAD
+local reanimated = {
 	{ stats.undead,   0, 32, "A Skeleton", behaviour.normal },
 	{ stats.undead,  48, 32, "A Black Skeleton", behaviour.normal },
 	{ stats.undead,  64, 32, "A Zombie", behaviour.normal },
 	{ stats.undead,  80, 32, "A Zombie", behaviour.normal }
+}
+for i=1,#reanimated do
+	reanimated[i] = concat({ texturePaths.undead0, texturePaths.undead1 }, reanimated[i])
+end
+
+local undead = {
+	{ stats.undead,  5*16, 16, "A Mummy", behaviour.normal },
+	{ stats.undead,  6*16, 16, "A Two Headed Mummy", behaviour.sentinel },
+	{ stats.undead,  0*16, 32, "A Skeleton", behaviour.normal },
+	{ stats.misc,  1*16, 32, "A Burning Skeleton", behaviour.fire_demon },
+	{ stats.misc,  2*16, 32, "An Eldritch Skeleton", behaviour.sorcerer },
+	{ stats.misc,  3*16, 32, "A Black Skeleton", behaviour.guerilla },
+	{ stats.misc,  4*16, 32, "A Zombie", behaviour.coward },
+	{ stats.misc,  5*16, 32, "A Pale Zombie", behaviour.coward },
+	{ stats.misc,  7*16, 32, "A Scorched Zombie", behaviour.fire_demon },
+	{ stats.undead,  0*16, 4*16, "A Whight", behaviour.coward },
+	{ stats.undead,  1*16, 4*16, "A Ghast", behaviour.sentinel },
+	{ stats.misc,  1*16, 4*16, "A Ghost", behaviour.guerilla },
+	{ stats.misc,  0*16, 5*16, "A Spectre", behaviour.sentinel },
+	{ stats.undead,  1*16, 5*16, "An Eldritch Spectre", behaviour.sorcerer },
+	{ stats.undead,  2*16, 5*16, "A Scorched Spectre", behaviour.fire_demon },
 }
 for i=1,#undead do
 	undead[i] = concat({ texturePaths.undead0, texturePaths.undead1 }, undead[i])
@@ -260,17 +280,21 @@ if(CURRENT_LEVEL > 0) then
 		enemies = concat(enemies, misc)
 	elseif (CURRENT_LEVEL > 15) then
 		enemies = {}
-		enemies = concat(enemies, demon)
+		enemies = concat(enemies, undead)
+		enemies = concat(enemies, orcs)
+		enemies = concat(enemies, reptile)
+		enemies = concat(enemies, avian)
 	elseif (CURRENT_LEVEL > 10) then
 		enemies = {}
-		enemies = concat(enemies, demon)
+		enemies = concat(enemies, undead)
+		enemies = concat(enemies, avian)
 	elseif (CURRENT_LEVEL > 5) then
 		enemies = {}
 		enemies = concat(enemies, orcs)
 		enemies = concat(enemies, avian)
 	elseif (CURRENT_LEVEL > 1) then
 		enemies = {}
-		enemies = concat(enemies, undead)
+		enemies = concat(enemies, reanimated)
 		enemies = concat(enemies, reptile)
 		enemies = concat(enemies, avian)
 		enemies = concat(enemies, misc)
@@ -335,3 +359,4 @@ function module.load_monsters(map, monsters)
 end
 
 return module
+

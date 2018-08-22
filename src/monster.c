@@ -158,7 +158,7 @@ monster_behaviour_check(Monster *m, RoomMatrix *rm)
 		case GUERILLA:
 		case SORCERER:
 		case FIRE_DEMON:
-			if (m->state.stepsSinceChange > 8
+			if (m->state.stepsSinceChange > 5
 			    && m->state.current == SCARED) {
 				monster_state_change(m, AGRESSIVE);
 			}
@@ -397,12 +397,10 @@ sorcerer_blast(Monster *m, RoomMatrix *rm)
 			if (r->monster) {
 				int dmg = stats_fight(&m->stats, &r->monster->stats);
 				monster_hit(r->monster, dmg);
-				r->monster->stats.hp -= dmg;
 				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
-			}else if (r->player) {
+			} else if (r->player) {
 				int dmg = stats_fight(&m->stats, &r->player->stats);
 				player_hit(r->player, dmg);
-				r->player->stats.hp -= dmg;
 				gui_log("You take %d damage from the explosion", dmg);
 			}
 		}

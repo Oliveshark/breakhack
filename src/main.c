@@ -304,7 +304,7 @@ static void
 startGame(void *unused)
 {
 	UNUSED(unused);
-	cLevel = 5;
+	cLevel = 1;
 	gGameState = PLAYING;
 	if (gPlayer)
 		player_destroy(gPlayer);
@@ -606,6 +606,9 @@ handle_events(void)
 static bool
 is_player_dead(void)
 {
+#ifdef DEBUG
+	gPlayer->stats.hp = gPlayer->stats.hp > 0 ? gPlayer->stats.hp : 1;
+#endif // DEBUG
 	if (gPlayer->stats.hp <= 0) {
 		return true;
 	}
