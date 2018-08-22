@@ -106,6 +106,7 @@ monster_behaviour_check_post_hit(Monster *m)
 			monster_state_change(m, SCARED);
 			break;
 		case GUERILLA:
+		case SORCERER:
 		case FIRE_DEMON:
 			break;
 		default:
@@ -119,6 +120,7 @@ monster_behaviour_check_post_attack(Monster *m)
 {
 	switch (m->behaviour) {
 		case GUERILLA:
+		case SORCERER:
 		case FIRE_DEMON:
 			monster_state_change(m, SCARED);
 			break;
@@ -154,6 +156,7 @@ monster_behaviour_check(Monster *m, RoomMatrix *rm)
 {
 	switch (m->behaviour) {
 		case GUERILLA:
+		case SORCERER:
 		case FIRE_DEMON:
 			if (m->state.stepsSinceChange > 8
 			    && m->state.current == SCARED) {
@@ -379,6 +382,33 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 	}
 }
 
+static void
+sorcerer_blast(Monster *m, RoomMatrix *rm)
+{
+	gui_log("%s creates a magical explosion", m->label);
+	particle_engine_eldritch_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+
+	Position roomPos = position_to_matrix_coords(&m->sprite->pos);
+	for (Sint32 i = -1; i <= 1; ++i) {
+		for (Sint32 j = -1; j <= 1; ++j) {
+			if (i == 0 && j == 0)
+				continue;
+			RoomSpace *r = &rm->spaces[roomPos.x + i][roomPos.y + j];
+			if (r->monster) {
+				int dmg = stats_fight(&m->stats, &r->monster->stats);
+				monster_hit(r->monster, dmg);
+				r->monster->stats.hp -= dmg;
+				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
+			}else if (r->player) {
+				int dmg = stats_fight(&m->stats, &r->player->stats);
+				player_hit(r->player, dmg);
+				r->player->stats.hp -= dmg;
+				gui_log("You take %d damage from the explosion", dmg);
+			}
+		}
+	}
+}
+
 bool
 monster_move(Monster *m, RoomMatrix *rm, Map *map)
 {
@@ -395,10 +425,18 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 	}
 
 	monster_behaviour_check(m, rm);
-
 	Position origPos = m->sprite->pos;
 	Position originalMPos =
 		position_to_matrix_coords(&m->sprite->pos);
+
+	if (m->state.current == AGRESSIVE && m->behaviour == SORCERER) {
+		if (position_proximity(1, &originalMPos, &rm->playerRoomPos)) {
+			sorcerer_blast(m, rm);
+			monster_behaviour_check_post_attack(m);
+			return true;
+		}
+	}
+
 	rm->spaces[originalMPos.x][originalMPos.y].occupied = false;
 	rm->spaces[originalMPos.x][originalMPos.y].monster = NULL;
 
@@ -442,12 +480,19 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 
 	}
 
-	if (!position_equals(&origPos, &m->sprite->pos)
-		&& (rm->modifier->type == RMOD_TYPE_FIRE || m->behaviour == FIRE_DEMON)) {
-		Object *o = object_create_fire();
-		o->sprite->pos = origPos;
-		o->damage *= m->stats.lvl;
-		linkedlist_push(&map->objects, o);
+	if (!position_equals(&origPos, &m->sprite->pos)) {
+		if (rm->modifier->type == RMOD_TYPE_FIRE || m->behaviour == FIRE_DEMON) {
+			Object *o = object_create_fire();
+			o->sprite->pos = origPos;
+			o->damage *= m->stats.lvl;
+			linkedlist_push(&map->objects, o);
+		}
+		if (m->behaviour == SORCERER) {
+			Object *o = object_create_green_gas();
+			o->sprite->pos = origPos;
+			o->damage *= m->stats.lvl;
+			linkedlist_push(&map->objects, o);
+		}
 	}
 
 	m->steps++;
@@ -542,7 +587,7 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		linkedlist_append(&map->items, treasure);
 	}
 
-	if (monster->stats.lvl > 2 && get_random(19) == 0) {
+	if (monster->stats.lvl > 2 && get_random(29) == 0) {
 		Artifact *a = artifact_create_random(player, 1);
 		a->sprite->pos = monster->sprite->pos;
 		linkedlist_append(&map->artifacts, a);
@@ -613,6 +658,7 @@ monster_set_behaviour(Monster *m, MonsterBehaviour behaviour)
 	switch (behaviour) {
 		case HOSTILE:
 		case GUERILLA:
+		case SORCERER:
 		case COWARD:
 		case FIRE_DEMON:
 			m->state.current = AGRESSIVE;

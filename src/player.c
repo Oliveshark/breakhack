@@ -531,7 +531,7 @@ player_hit(Player *p, unsigned int dmg)
 		Position pos = p->sprite->pos;
 		pos.x += 8;
 		pos.y += 8;
-		particle_engine_bloodspray(pos, (Dimension) { 8, 8 }, dmg);
+		particle_engine_bloodspray(pos, DIM(8, 8), dmg);
 		mixer_play_effect(PLAYER_HIT0 + get_random(2));
 		char msg[5];
 		m_sprintf(msg, 5, "-%d", dmg);

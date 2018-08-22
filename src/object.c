@@ -49,6 +49,21 @@ object_create_fire()
 	return o;
 }
 
+Object *
+object_create_green_gas()
+{
+	Object *o = object_create();
+	Texture *t0 = texturecache_add("Objects/Effect0.png");
+	Texture *t1 = texturecache_add("Objects/Effect1.png");
+	sprite_set_texture(o->sprite, t0, 0);
+	sprite_set_texture(o->sprite, t1, 1);
+	o->sprite->dim = GAME_DIMENSION;
+	o->sprite->clip = CLIP16(32, 24*16);
+	o->damage = 3;
+	o->timeout = 3;
+	return o;
+}
+
 void
 object_render(Object *o, Camera *cam)
 {

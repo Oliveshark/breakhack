@@ -156,10 +156,10 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
 
-		xv = get_random(600) - 300;
-		yv = get_random(600) - 300;
+		xv = get_random(500) - 300;
+		yv = get_random(500) - 300;
 
-		lt = get_random(10);
+		lt = get_random(20);
 
 		p = create_rect_particle();
 		p->particle.rect.pos = (Position) { x, y };
@@ -167,6 +167,7 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 		p->velocity = (Vector2d) { (float) xv, (float) yv };
 		p->movetime = lt;
 		p->lifetime = lt;
+		p->blend_mode = SDL_BLENDMODE_BLEND;
 		p->color = colors[get_random((unsigned int) c_count-1)];
 		linkedlist_append(&engine->game_particles, p);
 	}

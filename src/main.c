@@ -304,7 +304,7 @@ static void
 startGame(void *unused)
 {
 	UNUSED(unused);
-	cLevel = 1;
+	cLevel = 5;
 	gGameState = PLAYING;
 	if (gPlayer)
 		player_destroy(gPlayer);
@@ -626,10 +626,13 @@ check_next_level(void)
 	if (tile->levelExit) {
 		mixer_play_effect(NEXT_LEVEL);
 		++cLevel;
-		if (cLevel % 5 == 0)
+		if (cLevel % 5 == 0) {
+			gui_log("You sense something powerful in the vicinity");
+			gui_event_message("Something powerful lurks in the dark");
 			mixer_play_music(BOSS_MUSIC0);
-		else
+		} else {
 			mixer_play_music(GAME_MUSIC0 + get_random(2));
+		}
 		resetGame();
 	}
 }

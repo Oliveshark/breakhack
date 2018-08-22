@@ -67,9 +67,10 @@ stats_fight(Stats *attacker, Stats *defender)
 	bool critical = false;
 
 	int atkRoll = get_attack_roll(attacker);
-	if (atkRoll - attacker->atk == 20)
-		critical = true;
 	int defRoll = get_defence_roll(defender);
+
+	if (atkRoll - attacker->atk == 20)
+		critical = get_attack_roll(attacker) > defRoll;
 
 	int dmgRoll = 0;
 	if (atkRoll >= defRoll) {

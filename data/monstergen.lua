@@ -45,7 +45,8 @@ local behaviour = {
 	guerilla = 3,
 	coward = 4,
 	sentinel = 5,
-	fire_demon = 6
+	fire_demon = 6,
+	sorcerer = 7
 }
 
 local stats = {
@@ -93,17 +94,17 @@ local stats = {
 	},
 	boss = {
 		hp = 60,
-		dmg = 4,
+		dmg = 3,
 		atk = 1,
 		def = 0,
 		speed = 1
 	},
 	platino = {
-		hp = 60,
-		dmg = 60,
-		atk = 60,
-		def = 60,
-		speed = 3
+		hp = 30,
+		dmg = 0,
+		atk = 0,
+		def = 0,
+		speed = 2
 	}
 }
 
@@ -212,7 +213,7 @@ local orcs = {
 	{ stats.orc,   48,  4*16, "An Orc Sentry", behaviour.sentinel },
 	{ stats.orc,   64,  4*16, "An Orc Brute", behaviour.guerilla },
 	{ stats.orc,   80,  4*16, "An Orc Captain", behaviour.hostile },
-	{ stats.orc,   80,  4*16, "An Orc Pyro", behaviour.fire_demon },
+	{ stats.orc,   96,  4*16, "An Orc Pyro", behaviour.fire_demon },
 }
 for i=1,#orcs do
 	orcs[i] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, orcs[i])
@@ -220,7 +221,7 @@ end
 
 local bosses = {
 	{ stats.boss, 16,  5*16, "The Hell Hound", behaviour.fire_demon, true },
-	{ stats.boss, 32,  23*16, "The Cleric", behaviour.sentinel, true },
+	{ stats.boss, 16,  23*16, "The Cleric", behaviour.sorcerer, true },
 }
 bosses[1] = concat({ texturePaths.dog0, texturePaths.dog1 }, bosses[1])
 bosses[2] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, bosses[2])
@@ -233,7 +234,8 @@ local platino = {
 		48,
 		12*16,
 		"Platino",
-		behaviour.sentinel
+		behaviour.sentinel,
+		true
 	}
 }
 
@@ -303,7 +305,7 @@ function module.add_monsters_to_room(room, roomx, roomy)
 end
 
 function module.add_boss_to_room(room, roomx, roomy)
-	local boss = bosses[1]
+	local boss = bosses[CURRENT_LEVEL / 5]
 	local success = false
 	while not success do
 		local rx = random(13) + 1
