@@ -663,10 +663,12 @@ run_game_update(void)
 		skillActivated = skillbar_check_skill_activation(gSkillBar,
 								 gPlayer);
 	}
-	if (skillActivated && settings_get()->tooltips_enabled && playerLevel < 5) {
+
+	Settings *settings = settings_get();
+	if (skillActivated && settings->tooltips_enabled && playerLevel < 5) {
 		gGui->activeTooltip = new_skill_tooltip;
 	}
-	if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts) {
+	if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts && settings->tooltips_enabled) {
 		artifactTooltipShown = true;
 		gGui->activeTooltip = new_artifact_tooltip;
 	}

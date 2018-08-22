@@ -84,6 +84,13 @@ local stats = {
 		def = 0,
 		speed = 1
 	},
+	orc = {
+		hp = 20,
+		dmg = 2,
+		atk = 0,
+		def = 0,
+		speed = 1
+	},
 	boss = {
 		hp = 60,
 		dmg = 4,
@@ -132,6 +139,16 @@ local pests = {
 }
 for i=1,#pests do
 	pests[i] = concat({ texturePaths.pest0, texturePaths.pest1 }, pests[i])
+end
+
+local avian = {
+	{ stats.default, 0, 11*16, "A Small Brown Bat", behaviour.pacifist },
+	{ stats.default, 16, 11*16, "A Big Brown Bat", behaviour.normal },
+	{ stats.default, 32, 11*16, "A Vampire Bat", behaviour.guerilla },
+	{ stats.default, 48, 11*16, "A Rabid Bat", behaviour.hostile },
+}
+for i=1,#avian do
+	avian[i] = concat({ texturePaths.avian0, texturePaths.avian1 }, avian[i])
 end
 
 local misc = {
@@ -188,10 +205,25 @@ for i=1,#demon do
 	demon[i] = concat({ texturePaths.demon0, texturePaths.demon1 }, demon[i])
 end
 
+local orcs = {
+	{ stats.orc,   0,  4*16, "An Orc Guard", behaviour.normal },
+	{ stats.orc,   16,  4*16, "An Orc Seargeant", behaviour.coward },
+	{ stats.orc,   32,  4*16, "An Orc Militia", behaviour.hostile },
+	{ stats.orc,   48,  4*16, "An Orc Sentry", behaviour.sentinel },
+	{ stats.orc,   64,  4*16, "An Orc Brute", behaviour.guerilla },
+	{ stats.orc,   80,  4*16, "An Orc Captain", behaviour.hostile },
+	{ stats.orc,   80,  4*16, "An Orc Pyro", behaviour.fire_demon },
+}
+for i=1,#orcs do
+	orcs[i] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, orcs[i])
+end
+
 local bosses = {
-	{ stats.boss, 16,  5*16, "The Hell Hound", behaviour.fire_demon, true }
+	{ stats.boss, 16,  5*16, "The Hell Hound", behaviour.fire_demon, true },
+	{ stats.boss, 32,  23*16, "The Cleric", behaviour.sentinel, true },
 }
 bosses[1] = concat({ texturePaths.dog0, texturePaths.dog1 }, bosses[1])
+bosses[2] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, bosses[2])
 
 local platino = {
 	{
@@ -224,29 +256,21 @@ if(CURRENT_LEVEL > 0) then
 	if (CURRENT_LEVEL == 1) then
 		enemies = concat(enemies, pests)
 		enemies = concat(enemies, misc)
-		enemies = concat(enemies, dogs)
-	elseif (CURRENT_LEVEL > 5) then
+	elseif (CURRENT_LEVEL > 15) then
 		enemies = {}
 		enemies = concat(enemies, demon)
-		enemies = concat(enemies, undead)
-		enemies = concat(enemies, reptile)
-		enemies = concat(enemies, misc)
-	elseif (CURRENT_LEVEL > 3) then
+	elseif (CURRENT_LEVEL > 10) then
 		enemies = {}
-		enemies = concat(enemies, undead)
-		enemies = concat(enemies, reptile)
-		enemies = concat(enemies, misc)
-		enemies = concat(enemies, dogs)
-	elseif (CURRENT_LEVEL > 2) then
+		enemies = concat(enemies, demon)
+	elseif (CURRENT_LEVEL > 5) then
 		enemies = {}
-		enemies = concat(enemies, undead)
-		enemies = concat(enemies, reptile)
-		enemies = concat(enemies, misc)
-		enemies = concat(enemies, dogs)
+		enemies = concat(enemies, orcs)
+		enemies = concat(enemies, avian)
 	elseif (CURRENT_LEVEL > 1) then
 		enemies = {}
 		enemies = concat(enemies, undead)
 		enemies = concat(enemies, reptile)
+		enemies = concat(enemies, avian)
 		enemies = concat(enemies, misc)
 		enemies = concat(enemies, dogs)
 	end

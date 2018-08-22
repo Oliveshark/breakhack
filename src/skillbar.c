@@ -374,21 +374,23 @@ skillbar_update(SkillBar *bar, UpdateData *data)
 		if (data->player->equipment.artifacts[i].level == bar->artifacts[i].lvl)
 			continue;
 
+		Uint32 origLevel = bar->artifacts[i].lvl;
+		bar->artifacts[i].lvl = data->player->equipment.artifacts[i].level;
+
 		char lvl[4];
 		m_sprintf(lvl, 4, "%u", bar->artifacts[i].lvl);
 
 		texture_load_from_text(bar->artifacts[i].lvlSprite->textures[0],
-				       lvl, C_BLUE, C_WHITE, data->cam->renderer);
+				       lvl, C_PURPLE, C_WHITE, data->cam->renderer);
 
 		// Only update position if this is the first pickup
-		if (bar->artifacts[i].lvl == 0) {
+		if (origLevel == 0) {
 			bar->artifacts[i].lvlSprite->pos.x = bar->artifactDisplayOffset + 12;
 			bar->artifacts[i].lvlSprite->pos.y = 16;
 			bar->artifacts[i].aSprite->pos.x = bar->artifactDisplayOffset;
 			bar->artifacts[i].aSprite->pos.y = 8;
 			bar->artifactDisplayOffset += 32;
 		}
-		bar->artifacts[i].lvl = data->player->equipment.artifacts[i].level;
 	}
 }
 
