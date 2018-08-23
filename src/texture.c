@@ -223,6 +223,20 @@ texture_load_from_text_blended(Texture *t, const char * text, SDL_Color fg, SDL_
 	load_from_surface(t, surface, renderer);
 }
 
+void
+texture_set_blend_mode(Texture *t, SDL_BlendMode mode)
+{
+	assert(t->texture);
+	SDL_SetTextureBlendMode(t->texture, mode);
+}
+
+void
+texture_set_alpha(Texture *t, Uint8 alpha)
+{
+	assert(t->texture);
+	SDL_SetTextureAlphaMod(t->texture, alpha);
+}
+
 void 
 texture_render(Texture *texture, SDL_Rect *box, Camera *cam)
 {

@@ -60,6 +60,12 @@ void
 sprite_render(Sprite*, Camera*);
 
 void
+sprite_set_blend_mode(Sprite*, SDL_BlendMode);
+
+void
+sprite_set_alpha(Sprite*, Uint8);
+
+void
 sprite_destroy(Sprite *);
 
 #endif // SPRITE_H_

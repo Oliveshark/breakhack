@@ -787,7 +787,7 @@ render_game(void)
 		player_render_toplayer(gPlayer, gCamera);
 	}
 
-	map_render_top_layer(gMap, gCamera);
+	map_render_top_layer(gMap, gRoomMatrix, gCamera);
 
 	if (gPlayer->class == MAGE || gPlayer->class == PALADIN)
 		roommatrix_render_mouse_square(gRoomMatrix, gCamera);
@@ -885,7 +885,7 @@ run_menu(void)
 	SDL_RenderSetViewport(gRenderer, &menuViewport);
 	map_render(gMap, gCamera);
 	map_render_mid_layer(gMap, gCamera);
-	map_render_top_layer(gMap, gCamera);
+	map_render_top_layer(gMap, gRoomMatrix, gCamera);
 	roommatrix_render_lightmap(gRoomMatrix, gCamera);
 
 	SDL_RenderSetViewport(gRenderer, NULL);

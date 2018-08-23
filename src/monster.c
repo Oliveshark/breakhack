@@ -680,7 +680,7 @@ monster_render(Monster *m, Camera *cam)
 }
 
 void
-monster_render_top_layer(Monster *m, Camera *cam)
+monster_render_top_layer(Monster *m, RoomMatrix *rm, Camera *cam)
 {
 	if (m->stats.hp <= 0)
 		return;
@@ -688,8 +688,16 @@ monster_render_top_layer(Monster *m, Camera *cam)
 	if (m->behaviour == ASSASSIN && m->state.current != AGRESSIVE)
 		return;
 
+	Position mPos = position_to_matrix_coords(&m->sprite->pos);
+	mPos.y -= 1;
+	if (rm->spaces[mPos.x][mPos.y].player) {
+		sprite_set_alpha(m->stateIndicator.sprite, 110);
+	}
 	if (m->stateIndicator.displayCount != 0)
 		sprite_render(m->stateIndicator.sprite, cam);
+	if (rm->spaces[mPos.x][mPos.y].player) {
+		sprite_set_alpha(m->stateIndicator.sprite, 255);
+	}
 }
 
 void

@@ -358,13 +358,13 @@ map_render_mid_layer(Map *map, Camera *cam)
 }
 
 void
-map_render_top_layer(Map *map, Camera *cam)
+map_render_top_layer(Map *map, RoomMatrix *rm, Camera *cam)
 {
 	LinkedList *monsterItem = map->monsters;
 	while (monsterItem != NULL) {
 		Monster *monster = monsterItem->data;
 		monsterItem = monsterItem->next;
-		monster_render_top_layer(monster, cam);
+		monster_render_top_layer(monster, rm, cam);
 	}
 }
 

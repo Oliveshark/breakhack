@@ -107,7 +107,7 @@ void
 map_render_mid_layer(Map*, Camera*);
 
 void
-map_render_top_layer(Map*, Camera*);
+map_render_top_layer(Map*, RoomMatrix*, Camera*);
 
 void
 map_set_current_room(Map*, Position*);
