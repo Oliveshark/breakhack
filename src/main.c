@@ -311,6 +311,7 @@ startGame(void *unused)
 	gPlayer = player_create(WARRIOR, gCamera);
 	mixer_play_music(GAME_MUSIC0 + get_random(2));
 	resetGame();
+	skillbar_reset(gSkillBar);
 	gui_clear_message_log();
 	gui_log("The Dungeon Crawl begins!");
 	gui_event_message("Welcome to the dungeon!");
@@ -496,8 +497,6 @@ resetGame(void)
 
 	if (gMap)
 		map_destroy(gMap);
-
-	skillbar_reset(gSkillBar);
 
 	particle_engine_clear();
 
@@ -717,21 +716,24 @@ run_game_update(void)
 	map_set_current_room(gMap, &gPlayer->sprite->pos);
 	map_update(&updateData);
 
+	bool turnSwitch = false;
 	if (currentTurn == PLAYER) {
 		if (player_turn_over(gPlayer)) {
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
 			map_on_new_turn(gMap);
-			map_clear_expired_entities(gMap, gPlayer);
-			repopulate_roommatrix();
+			turnSwitch = true;
 		}
 	} else if (currentTurn == MONSTER) {
 		if (map_move_monsters(gMap, gRoomMatrix)) {
 			currentTurn = PLAYER;
-			map_clear_expired_entities(gMap, gPlayer);
-			repopulate_roommatrix();
+			turnSwitch = true;
 		}
 	}
+
+	map_clear_expired_entities(gMap, gPlayer);
+	if (turnSwitch)
+		repopulate_roommatrix();
 }
 
 static void
