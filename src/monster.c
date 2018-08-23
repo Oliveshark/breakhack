@@ -106,6 +106,7 @@ monster_behaviour_check_post_hit(Monster *m)
 			monster_state_change(m, SCARED);
 			break;
 		case GUERILLA:
+		case ASSASSIN:
 		case SORCERER:
 		case FIRE_DEMON:
 			break;
@@ -116,12 +117,58 @@ monster_behaviour_check_post_hit(Monster *m)
 }
 
 static void
+damage_surroundings(Monster *m, RoomMatrix *rm)
+{
+	Position roomPos = position_to_matrix_coords(&m->sprite->pos);
+	for (Sint32 i = -1; i <= 1; ++i) {
+		for (Sint32 j = -1; j <= 1; ++j) {
+			if (i == 0 && j == 0)
+				continue;
+			RoomSpace *r = &rm->spaces[roomPos.x + i][roomPos.y + j];
+			if (r->monster) {
+				int dmg = stats_fight(&m->stats, &r->monster->stats);
+				monster_hit(r->monster, dmg);
+				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
+			} else if (r->player) {
+				int dmg = stats_fight(&m->stats, &r->player->stats);
+				player_hit(r->player, dmg);
+				gui_log("You take %d damage from the explosion", dmg);
+			}
+		}
+	}
+}
+
+static void
+sorcerer_blast(Monster *m, RoomMatrix *rm)
+{
+	gui_log("%s creates a magical explosion", m->label);
+	particle_engine_eldritch_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+
+	damage_surroundings(m, rm);
+}
+
+static void
+assassin_cloak_effect(Monster *m, bool cloak)
+{
+	if (cloak)
+		gui_log("%s dissappears from sight", m->label);
+	else
+		gui_log("%s reappears, filled with rage", m->label);
+	particle_engine_fire_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+}
+
+
+static void
 monster_behaviour_check_post_attack(Monster *m)
 {
 	switch (m->behaviour) {
 		case GUERILLA:
 		case SORCERER:
 		case FIRE_DEMON:
+			monster_state_change(m, SCARED);
+			break;
+		case ASSASSIN:
+			assassin_cloak_effect(m, true);
 			monster_state_change(m, SCARED);
 			break;
 		default:
@@ -160,6 +207,13 @@ monster_behaviour_check(Monster *m, RoomMatrix *rm)
 		case FIRE_DEMON:
 			if (m->state.stepsSinceChange > 5
 			    && m->state.current == SCARED) {
+				monster_state_change(m, AGRESSIVE);
+			}
+			break;
+		case ASSASSIN:
+			if (m->state.stepsSinceChange > 5
+			    && m->state.current == SCARED) {
+				assassin_cloak_effect(m, false);
 				monster_state_change(m, AGRESSIVE);
 			}
 			break;
@@ -379,31 +433,6 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 			move(m, rm, VECTOR2D_DOWN);
 		else
 			move(m, rm, VECTOR2D_UP);
-	}
-}
-
-static void
-sorcerer_blast(Monster *m, RoomMatrix *rm)
-{
-	gui_log("%s creates a magical explosion", m->label);
-	particle_engine_eldritch_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
-
-	Position roomPos = position_to_matrix_coords(&m->sprite->pos);
-	for (Sint32 i = -1; i <= 1; ++i) {
-		for (Sint32 j = -1; j <= 1; ++j) {
-			if (i == 0 && j == 0)
-				continue;
-			RoomSpace *r = &rm->spaces[roomPos.x + i][roomPos.y + j];
-			if (r->monster) {
-				int dmg = stats_fight(&m->stats, &r->monster->stats);
-				monster_hit(r->monster, dmg);
-				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
-			} else if (r->player) {
-				int dmg = stats_fight(&m->stats, &r->player->stats);
-				player_hit(r->player, dmg);
-				gui_log("You take %d damage from the explosion", dmg);
-			}
-		}
 	}
 }
 
@@ -644,6 +673,9 @@ monster_render(Monster *m, Camera *cam)
 	if (m->stats.hp <= 0)
 		return;
 
+	if (m->behaviour == ASSASSIN && m->state.current != AGRESSIVE)
+		return;
+
 	sprite_render(m->sprite, cam);
 }
 
@@ -651,6 +683,9 @@ void
 monster_render_top_layer(Monster *m, Camera *cam)
 {
 	if (m->stats.hp <= 0)
+		return;
+
+	if (m->behaviour == ASSASSIN && m->state.current != AGRESSIVE)
 		return;
 
 	if (m->stateIndicator.displayCount != 0)
@@ -664,6 +699,7 @@ monster_set_behaviour(Monster *m, MonsterBehaviour behaviour)
 	switch (behaviour) {
 		case HOSTILE:
 		case GUERILLA:
+		case ASSASSIN:
 		case SORCERER:
 		case COWARD:
 		case FIRE_DEMON:

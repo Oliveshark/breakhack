@@ -46,7 +46,8 @@ local behaviour = {
 	coward = 4,
 	sentinel = 5,
 	fire_demon = 6,
-	sorcerer = 7
+	sorcerer = 7,
+	assassin = 8
 }
 
 local stats = {
@@ -239,12 +240,23 @@ for i=1,#orcs do
 	orcs[i] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, orcs[i])
 end
 
+local assassins = {
+	{ stats.misc,  1*16, 6*16, "A Reaper", behaviour.assassin },
+	{ stats.misc,  0*16, 7*16, "An Assassin", behaviour.assassin },
+	{ stats.misc,  1*16, 7*16, "A Royal Assassin", behaviour.assassin },
+}
+for i=1,#assassins do
+	assassins[i] = concat({ texturePaths.undead0, texturePaths.undead1 }, assassins[i])
+end
+
 local bosses = {
 	{ stats.boss, 16,  5*16, "The Hell Hound", behaviour.fire_demon, true },
 	{ stats.boss, 16,  23*16, "The Cleric", behaviour.sorcerer, true },
+	{ stats.boss, 16,  8*16, "The Shadow", behaviour.assassin, true },
 }
 bosses[1] = concat({ texturePaths.dog0, texturePaths.dog1 }, bosses[1])
 bosses[2] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, bosses[2])
+bosses[3] = concat({ texturePaths.undead0, texturePaths.undead1 }, bosses[3])
 
 local platino = {
 	{
@@ -282,6 +294,7 @@ if(CURRENT_LEVEL > 0) then
 		enemies = {}
 		enemies = concat(enemies, undead)
 		enemies = concat(enemies, orcs)
+		enemies = concat(enemies, assassins)
 	elseif (CURRENT_LEVEL > 10) then
 		enemies = {}
 		enemies = concat(enemies, undead)

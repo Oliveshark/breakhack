@@ -36,7 +36,8 @@ typedef enum {
 	COWARD,
 	SENTINEL,
 	FIRE_DEMON,
-	SORCERER
+	SORCERER,
+	ASSASSIN
 } MonsterBehaviour;
 
 typedef enum {
