@@ -27,8 +27,8 @@
 #include "update_data.h"
 #include "trap.h"
 
-static
-Room* create_room(void)
+static Room*
+create_room(void)
 {
 	int i, j;
 	Room *room;
@@ -40,6 +40,7 @@ Room* create_room(void)
 			room->tiles[i][j] = NULL;
 			room->decorations[i][j] = NULL;
 			room->traps[i][j] = NULL;
+			room->visited = false;
 		}
 	}
 	return room;
@@ -205,14 +206,18 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 		if (monster->state.current == PASSIVE
 		    && position_proximity(1, &rm->playerRoomPos, &pos))
 			continue;
+		if (monster->steps >= monster->stats.speed)
+			continue;
 
 		allDone = allDone && monster_move(monster, rm, map);
 	}
 
-	if (allDone)
+	if (allDone) {
 		timer_stop(map->monsterMoveTimer);
-	else
+		linkedlist_each(&map->monsters, (void (*)(void*)) monster_reset_steps);
+	} else {
 		timer_start(map->monsterMoveTimer);
+	}
 
 	return allDone;
 }
@@ -353,13 +358,13 @@ map_render_mid_layer(Map *map, Camera *cam)
 }
 
 void
-map_render_top_layer(Map *map, Camera *cam)
+map_render_top_layer(Map *map, RoomMatrix *rm, Camera *cam)
 {
 	LinkedList *monsterItem = map->monsters;
 	while (monsterItem != NULL) {
 		Monster *monster = monsterItem->data;
 		monsterItem = monsterItem->next;
-		monster_render_top_layer(monster, cam);
+		monster_render_top_layer(monster, rm, cam);
 	}
 }
 
@@ -388,6 +393,8 @@ void map_set_current_room(Map *map, Position *pos)
 		map->currentRoom.x = MAP_H_ROOM_COUNT - 1;
 	if (map->currentRoom.y >= MAP_V_ROOM_COUNT)
 		map->currentRoom.y = MAP_V_ROOM_COUNT - 1;
+
+	map->rooms[map->currentRoom.x][map->currentRoom.y]->visited = true;
 }
 
 static

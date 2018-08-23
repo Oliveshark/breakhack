@@ -21,6 +21,8 @@
 
 #include <stdbool.h>
 
+#define POS(x, y) (Position) { x, y }
+
 typedef struct {
 	int x;
 	int y;

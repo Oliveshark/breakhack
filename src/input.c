@@ -107,6 +107,21 @@ get_event_modkey(SDL_Event *event)
 				key = KEY_CTRL_S; break;
 			case SDLK_m:
 				key = KEY_CTRL_M; break;
+			case SDLK_d:
+				key = KEY_CTRL_D; break;
+		}
+	} else if (event->key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT)) {
+		switch (event->key.keysym.sym) {
+			case SDLK_1:
+				key = KEY_SHIFT_NUM1; break;
+			case SDLK_2:
+				key = KEY_SHIFT_NUM2; break;
+			case SDLK_3:
+				key = KEY_SHIFT_NUM3; break;
+			case SDLK_4:
+				key = KEY_SHIFT_NUM4; break;
+			case SDLK_5:
+				key = KEY_SHIFT_NUM5; break;
 			default:
 				key = 0; break;
 		}

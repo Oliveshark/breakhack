@@ -52,10 +52,11 @@ typedef struct Skill_t {
 	bool active;
 	bool (*available)(Player*);
 	bool (*use)(struct Skill_t*, SkillData*);
+	Sprite *tooltip;
 } Skill;
 
 Skill*
-skill_create(enum SkillType);
+skill_create(enum SkillType, Camera *cam);
 
 void
 skill_destroy(Skill*);

@@ -7,7 +7,7 @@ project(breakhack C)
 set(breakhack_GAME_TITLE "BreakHack")
 set(breakhack_MAJOR_VERSION 0)
 set(breakhack_MINOR_VERSION 2)
-set(breakhack_PATCH_VERSION 1)
+set(breakhack_PATCH_VERSION 0)
 set(breakhack_RELEASE_TYPE "(beta)")
 
 include(FindLua)
@@ -100,6 +100,7 @@ include_directories(
 	${SDL2_IMAGE_INCLUDE_DIR}
 	${SDL2_TTF_INCLUDE_DIR}
 	${SDL2_MIXER_INCLUDE_DIR}
+	sqlite3
 	)
 
 if (CMOCKA_FOUND)
@@ -167,7 +168,7 @@ add_executable(breakhack
 	src/projectile
 	src/vector2d
 	src/map_room_modifiers
-	src/sqlite3
+	sqlite3/sqlite3
 	src/db
 	src/settings
 	src/actiontextbuilder
@@ -177,10 +178,12 @@ add_executable(breakhack
 	src/screen
 	src/hiscore
 	src/object
+	src/gui_util
+	src/tooltip
 	)
 
 # Sqlite has some warnings that I we don't need to see
-set_source_files_properties(src/sqlite3.c COMPILE_FLAGS -w)
+set_source_files_properties(sqlite3/sqlite3.c COMPILE_FLAGS -w)
 
 target_link_libraries(breakhack
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
@@ -241,7 +244,7 @@ ENDIF ()
 # LINT:
 if (CPPCHECK_FOUND)
 	add_custom_target(lint
-		COMMAND ${CPPCHECK_EXECUTABLE} --force --language=c --template=gcc --error-exitcode=1 --quiet --enable=warning,style,performance,portability,information,missingInclude --suppress=*:src/sqlite3.? -isrc/sqlite3.c src/
+		COMMAND ${CPPCHECK_EXECUTABLE} --force --language=c --template=gcc --error-exitcode=1 --quiet --enable=warning,style,performance,portability,information,missingInclude src/
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 		COMMENT "Run cppcheck"
 		)

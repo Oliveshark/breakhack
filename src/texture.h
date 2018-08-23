@@ -25,7 +25,7 @@
 #include "position.h"
 #include "camera.h"
 
-typedef struct {
+typedef struct Texture {
 	SDL_Texture *texture;
 	TTF_Font *font;
 	TTF_Font *outlineFont;
@@ -75,6 +75,12 @@ texture_load_from_text_blended(Texture*,
 					   const char *text,
 					   SDL_Color,
 					   SDL_Renderer*);
+
+void
+texture_set_blend_mode(Texture*, SDL_BlendMode);
+
+void
+texture_set_alpha(Texture*, Uint8);
 
 void
 texture_render(Texture*, SDL_Rect*, Camera*);

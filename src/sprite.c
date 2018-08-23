@@ -95,6 +95,24 @@ sprite_set_texture(Sprite *s, Texture *t, int index)
 }
 
 void
+sprite_set_blend_mode(Sprite *s, SDL_BlendMode mode)
+{
+	if (s->textures[0])
+		texture_set_blend_mode(s->textures[0], mode);
+	if (s->textures[1])
+		texture_set_blend_mode(s->textures[1], mode);
+}
+
+void
+sprite_set_alpha(Sprite *s, Uint8 alpha)
+{
+	if (s->textures[0])
+		texture_set_alpha(s->textures[0], alpha);
+	if (s->textures[1])
+		texture_set_alpha(s->textures[1], alpha);
+}
+
+void
 sprite_render(Sprite *s, Camera *cam)
 {
 	if (s->hidden)

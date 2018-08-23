@@ -51,6 +51,7 @@ typedef struct Room_t {
 	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	Trap* traps[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	RoomModifierData modifier;
+	bool visited;
 } Room;
 
 typedef struct Map_t {
@@ -106,7 +107,7 @@ void
 map_render_mid_layer(Map*, Camera*);
 
 void
-map_render_top_layer(Map*, Camera*);
+map_render_top_layer(Map*, RoomMatrix*, Camera*);
 
 void
 map_set_current_room(Map*, Position*);

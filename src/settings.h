@@ -24,6 +24,8 @@
 typedef struct Settings {
 	bool music_enabled;
 	bool sound_enabled;
+	bool tooltips_enabled;
+	bool howto_tooltip_shown;
 } Settings;
 
 void

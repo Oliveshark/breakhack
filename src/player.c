@@ -428,7 +428,7 @@ build_sword_animation(Player *p, SDL_Renderer *renderer)
 }
 
 Player* 
-player_create(class_t class, SDL_Renderer *renderer)
+player_create(class_t class, Camera *cam)
 {
 	Player *player = malloc(sizeof(Player));
 	player->sprite = sprite_create();
@@ -450,8 +450,9 @@ player_create(class_t class, SDL_Renderer *renderer)
 	player->projectiles		= linkedlist_create();
 	player->animationTimer		= timer_create();
 	player->swordAnimation		= animation_create(5);
+	player->equipment.hasArtifacts	= false;
 
-	build_sword_animation(player, renderer);
+	build_sword_animation(player, cam->renderer);
 
 	memset(&player->skills,
 	       0, PLAYER_SKILL_COUNT * sizeof(Skill*));
@@ -480,16 +481,16 @@ player_create(class_t class, SDL_Renderer *renderer)
 		case WARRIOR:
 			m_strcpy(asset, 100, "Commissions/Warrior.png");
 			player->stats = (Stats) WARRIOR_STATS;
-			player->skills[0] = skill_create(FLURRY);
-			player->skills[1] = skill_create(BASH);
-			player->skills[2] = skill_create(CHARGE);
-			player->skills[3] = skill_create(DAGGER_THROW);
+			player->skills[0] = skill_create(FLURRY, cam);
+			player->skills[1] = skill_create(BASH, cam);
+			player->skills[2] = skill_create(CHARGE, cam);
+			player->skills[3] = skill_create(DAGGER_THROW, cam);
 			break;
 	}
 
-	player->skills[4] = skill_create(SIP_HEALTH);
+	player->skills[4] = skill_create(SIP_HEALTH, cam);
 
-	sprite_load_texture(player->sprite, asset, 0, renderer);
+	sprite_load_texture(player->sprite, asset, 0, cam->renderer);
 	player->sprite->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
 	player->sprite->dim = GAME_DIMENSION;
 	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
@@ -530,7 +531,7 @@ player_hit(Player *p, unsigned int dmg)
 		Position pos = p->sprite->pos;
 		pos.x += 8;
 		pos.y += 8;
-		particle_engine_bloodspray(pos, (Dimension) { 8, 8 }, dmg);
+		particle_engine_bloodspray(pos, DIM(8, 8), dmg);
 		mixer_play_effect(PLAYER_HIT0 + get_random(2));
 		char msg[5];
 		m_sprintf(msg, 5, "-%d", dmg);
@@ -624,6 +625,7 @@ player_reset(Player *player)
 {
 	for (size_t i = 0; i < LAST_ARTIFACT_EFFECT; ++i)
 		player->equipment.artifacts[i].level = 0;
+	player->equipment.hasArtifacts = false;
 
 	while (player->projectiles)
 		projectile_destroy(linkedlist_pop(&player->projectiles));
@@ -677,4 +679,5 @@ player_add_artifact(Player *p, Artifact *a)
 
 	gui_log("You pick an ancient %s", ad->name);
 	gui_log("%s (%u)", ad->desc, ad->level);
+	p->equipment.hasArtifacts = true;
 }

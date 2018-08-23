@@ -35,9 +35,25 @@ function module.add_traps_to_room(room)
 	while i < count do
 		local rx = random(13) + 1
 		local ry = random(9) + 1
-		if room_builder.is_tile_avilable(room, rx, ry) then
-			room.traps[rx][ry] = traps[random(#traps)]
-			i = i + 1
+		if CURRENT_LEVEL < 4 then
+			if room_builder.is_tile_avilable(room, rx, ry)
+				and not room.traps[rx+1][ry]
+				and not room.traps[rx-1][ry]
+				and not room.traps[rx][ry+1]
+				and not room.traps[rx][ry-1]
+				and not room.traps[rx+1][ry+1]
+				and not room.traps[rx+1][ry-1]
+				and not room.traps[rx-1][ry+1]
+				and not room.traps[rx-1][ry-1]
+				then
+				room.traps[rx][ry] = traps[random(#traps)]
+				i = i + 1
+			end
+		else
+			if room_builder.is_tile_avilable(room, rx, ry) then
+				room.traps[rx][ry] = traps[random(#traps)]
+				i = i + 1
+			end
 		end
 	end
 end

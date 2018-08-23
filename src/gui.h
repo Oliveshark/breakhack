@@ -42,13 +42,15 @@ typedef enum Label_e {
 	LABEL_COUNT
 } LabelIndex;
 
-typedef struct {
+typedef struct Gui {
 	LinkedList *sprites;
 	LinkedList *health;
 	LinkedList *xp_bar;
 	Sprite *bottomFrame;
-	Sprite *rightFrame;
+	Sprite *statsFrame;
+	Sprite *miniMapFrame;
 	Sprite *labels[LABEL_COUNT];
+	Sprite *activeTooltip;
 	Texture *log_lines[LOG_LINES_COUNT];
 	Texture *event_message;
 	Timer *event_message_timer;
@@ -64,10 +66,16 @@ void
 gui_render_panel(Gui*, Camera*);
 
 void
+gui_render_minimap(Gui*, Map*, Camera*);
+
+void
 gui_render_log(Gui*, Camera*);
 
 void
 gui_render_event_message(Gui*, Camera*);
+
+void
+gui_render_tooltip(Gui*, Camera*);
 
 void
 gui_log(const char *fmt, ...);

@@ -106,6 +106,8 @@ monster_behaviour_check_post_hit(Monster *m)
 			monster_state_change(m, SCARED);
 			break;
 		case GUERILLA:
+		case ASSASSIN:
+		case SORCERER:
 		case FIRE_DEMON:
 			break;
 		default:
@@ -115,11 +117,58 @@ monster_behaviour_check_post_hit(Monster *m)
 }
 
 static void
+damage_surroundings(Monster *m, RoomMatrix *rm)
+{
+	Position roomPos = position_to_matrix_coords(&m->sprite->pos);
+	for (Sint32 i = -1; i <= 1; ++i) {
+		for (Sint32 j = -1; j <= 1; ++j) {
+			if (i == 0 && j == 0)
+				continue;
+			RoomSpace *r = &rm->spaces[roomPos.x + i][roomPos.y + j];
+			if (r->monster) {
+				int dmg = stats_fight(&m->stats, &r->monster->stats);
+				monster_hit(r->monster, dmg);
+				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
+			} else if (r->player) {
+				int dmg = stats_fight(&m->stats, &r->player->stats);
+				player_hit(r->player, dmg);
+				gui_log("You take %d damage from the explosion", dmg);
+			}
+		}
+	}
+}
+
+static void
+sorcerer_blast(Monster *m, RoomMatrix *rm)
+{
+	gui_log("%s creates a magical explosion", m->label);
+	particle_engine_eldritch_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+
+	damage_surroundings(m, rm);
+}
+
+static void
+assassin_cloak_effect(Monster *m, bool cloak)
+{
+	if (cloak)
+		gui_log("%s dissappears from sight", m->label);
+	else
+		gui_log("%s reappears, filled with rage", m->label);
+	particle_engine_fire_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+}
+
+
+static void
 monster_behaviour_check_post_attack(Monster *m)
 {
 	switch (m->behaviour) {
 		case GUERILLA:
+		case SORCERER:
 		case FIRE_DEMON:
+			monster_state_change(m, SCARED);
+			break;
+		case ASSASSIN:
+			assassin_cloak_effect(m, true);
 			monster_state_change(m, SCARED);
 			break;
 		default:
@@ -154,9 +203,17 @@ monster_behaviour_check(Monster *m, RoomMatrix *rm)
 {
 	switch (m->behaviour) {
 		case GUERILLA:
+		case SORCERER:
 		case FIRE_DEMON:
-			if (m->state.stepsSinceChange > 8
+			if (m->state.stepsSinceChange > 5
 			    && m->state.current == SCARED) {
+				monster_state_change(m, AGRESSIVE);
+			}
+			break;
+		case ASSASSIN:
+			if (m->state.stepsSinceChange > 5
+			    && m->state.current == SCARED) {
+				assassin_cloak_effect(m, false);
 				monster_state_change(m, AGRESSIVE);
 			}
 			break;
@@ -395,10 +452,18 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 	}
 
 	monster_behaviour_check(m, rm);
-
 	Position origPos = m->sprite->pos;
 	Position originalMPos =
 		position_to_matrix_coords(&m->sprite->pos);
+
+	if (m->state.current == AGRESSIVE && m->behaviour == SORCERER) {
+		if (position_proximity(1, &originalMPos, &rm->playerRoomPos)) {
+			sorcerer_blast(m, rm);
+			monster_behaviour_check_post_attack(m);
+			return true;
+		}
+	}
+
 	rm->spaces[originalMPos.x][originalMPos.y].occupied = false;
 	rm->spaces[originalMPos.x][originalMPos.y].monster = NULL;
 
@@ -436,18 +501,28 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 
 			RoomSpace *space = &rm->spaces[newPos.x][newPos.y];
 			if (space->light < 100 && withinHearingDist) {
-				actiontextbuilder_create_text("!", C_WHITE, &m->sprite->pos);
+				Position alertPos = m->sprite->pos;
+				alertPos.x += TILE_DIMENSION >> 1;
+				alertPos.y += TILE_DIMENSION >> 1;
+				actiontextbuilder_create_text("!", C_WHITE, &alertPos);
 			}
 		}
 
 	}
 
-	if (!position_equals(&origPos, &m->sprite->pos)
-		&& (rm->modifier->type == RMOD_TYPE_FIRE || m->behaviour == FIRE_DEMON)) {
-		Object *o = object_create_fire();
-		o->sprite->pos = origPos;
-		o->damage *= m->stats.lvl;
-		linkedlist_push(&map->objects, o);
+	if (!position_equals(&origPos, &m->sprite->pos)) {
+		if (rm->modifier->type == RMOD_TYPE_FIRE || m->behaviour == FIRE_DEMON) {
+			Object *o = object_create_fire();
+			o->sprite->pos = origPos;
+			o->damage *= m->stats.lvl;
+			linkedlist_push(&map->objects, o);
+		}
+		if (m->behaviour == SORCERER) {
+			Object *o = object_create_green_gas();
+			o->sprite->pos = origPos;
+			o->damage *= m->stats.lvl;
+			linkedlist_push(&map->objects, o);
+		}
 	}
 
 	m->steps++;
@@ -455,11 +530,16 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 		if (m->stateIndicator.displayCount > 0)
 			m->stateIndicator.displayCount -= 1;
 		m->state.stepsSinceChange += 1;
-		m->steps = 0;
 		return true;
 	}
 
 	return false;
+}
+
+void
+monster_reset_steps(Monster *m)
+{
+	m->steps = 0;
 }
 
 void
@@ -542,7 +622,7 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		linkedlist_append(&map->items, treasure);
 	}
 
-	if (monster->stats.lvl > 2 && get_random(19) == 0) {
+	if (monster->stats.lvl > 2 && get_random(29) == 0) {
 		Artifact *a = artifact_create_random(player, 1);
 		a->sprite->pos = monster->sprite->pos;
 		linkedlist_append(&map->artifacts, a);
@@ -593,17 +673,31 @@ monster_render(Monster *m, Camera *cam)
 	if (m->stats.hp <= 0)
 		return;
 
+	if (m->behaviour == ASSASSIN && m->state.current != AGRESSIVE)
+		return;
+
 	sprite_render(m->sprite, cam);
 }
 
 void
-monster_render_top_layer(Monster *m, Camera *cam)
+monster_render_top_layer(Monster *m, RoomMatrix *rm, Camera *cam)
 {
 	if (m->stats.hp <= 0)
 		return;
 
+	if (m->behaviour == ASSASSIN && m->state.current != AGRESSIVE)
+		return;
+
+	Position mPos = position_to_matrix_coords(&m->sprite->pos);
+	mPos.y -= 1;
+	if (rm->spaces[mPos.x][mPos.y].player) {
+		sprite_set_alpha(m->stateIndicator.sprite, 110);
+	}
 	if (m->stateIndicator.displayCount != 0)
 		sprite_render(m->stateIndicator.sprite, cam);
+	if (rm->spaces[mPos.x][mPos.y].player) {
+		sprite_set_alpha(m->stateIndicator.sprite, 255);
+	}
 }
 
 void
@@ -613,6 +707,8 @@ monster_set_behaviour(Monster *m, MonsterBehaviour behaviour)
 	switch (behaviour) {
 		case HOSTILE:
 		case GUERILLA:
+		case ASSASSIN:
+		case SORCERER:
 		case COWARD:
 		case FIRE_DEMON:
 			m->state.current = AGRESSIVE;

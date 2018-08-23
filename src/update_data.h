@@ -22,11 +22,15 @@
 #include "player.h"
 #include "map.h"
 #include "roommatrix.h"
+#include "gui.h"
+#include "camera.h"
 
 typedef struct UpdateData {
 	Player *player;
 	Map *map;
 	RoomMatrix *matrix;
+	Gui *gui;
+	Camera *cam;
 	Input *input;
 	float deltatime;
 } UpdateData;

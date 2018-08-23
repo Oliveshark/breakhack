@@ -45,7 +45,9 @@ local behaviour = {
 	guerilla = 3,
 	coward = 4,
 	sentinel = 5,
-	fire_demon = 6
+	fire_demon = 6,
+	sorcerer = 7,
+	assassin = 8
 }
 
 local stats = {
@@ -84,19 +86,26 @@ local stats = {
 		def = 0,
 		speed = 1
 	},
+	orc = {
+		hp = 20,
+		dmg = 2,
+		atk = 0,
+		def = 0,
+		speed = 1
+	},
 	boss = {
 		hp = 60,
-		dmg = 4,
+		dmg = 3,
 		atk = 1,
 		def = 0,
 		speed = 1
 	},
 	platino = {
-		hp = 60,
-		dmg = 60,
-		atk = 60,
-		def = 60,
-		speed = 3
+		hp = 90,
+		dmg = 1,
+		atk = 0,
+		def = 0,
+		speed = 1
 	}
 }
 
@@ -134,6 +143,16 @@ for i=1,#pests do
 	pests[i] = concat({ texturePaths.pest0, texturePaths.pest1 }, pests[i])
 end
 
+local avian = {
+	{ stats.default, 0, 11*16, "A Small Brown Bat", behaviour.pacifist },
+	{ stats.default, 16, 11*16, "A Big Brown Bat", behaviour.normal },
+	{ stats.default, 32, 11*16, "A Vampire Bat", behaviour.guerilla },
+	{ stats.default, 48, 11*16, "A Rabid Bat", behaviour.hostile },
+}
+for i=1,#avian do
+	avian[i] = concat({ texturePaths.avian0, texturePaths.avian1 }, avian[i])
+end
+
 local misc = {
 	{ stats.misc,	0,	0, "A Giant Black Rat", behaviour.sentinel },
 	{ stats.misc,	16,	0, "A Giant White Rat", behaviour.sentinel },
@@ -143,12 +162,32 @@ for i=1,#misc do
 	misc[i] = concat({ texturePaths.misc0, texturePaths.misc1 }, misc[i])
 end
 
-local undead = {
-	-- UNDEAD
+local reanimated = {
 	{ stats.undead,   0, 32, "A Skeleton", behaviour.normal },
 	{ stats.undead,  48, 32, "A Black Skeleton", behaviour.normal },
 	{ stats.undead,  64, 32, "A Zombie", behaviour.normal },
 	{ stats.undead,  80, 32, "A Zombie", behaviour.normal }
+}
+for i=1,#reanimated do
+	reanimated[i] = concat({ texturePaths.undead0, texturePaths.undead1 }, reanimated[i])
+end
+
+local undead = {
+	{ stats.undead,  5*16, 16, "A Mummy", behaviour.normal },
+	{ stats.undead,  6*16, 16, "A Two Headed Mummy", behaviour.sentinel },
+	{ stats.undead,  0*16, 32, "A Skeleton", behaviour.normal },
+	{ stats.misc,  1*16, 32, "A Burning Skeleton", behaviour.fire_demon },
+	{ stats.misc,  2*16, 32, "An Eldritch Skeleton", behaviour.sorcerer },
+	{ stats.misc,  3*16, 32, "A Black Skeleton", behaviour.guerilla },
+	{ stats.misc,  4*16, 32, "A Zombie", behaviour.coward },
+	{ stats.misc,  5*16, 32, "A Pale Zombie", behaviour.coward },
+	{ stats.misc,  7*16, 32, "A Scorched Zombie", behaviour.fire_demon },
+	{ stats.undead,  0*16, 4*16, "A Whight", behaviour.coward },
+	{ stats.undead,  1*16, 4*16, "A Ghast", behaviour.sentinel },
+	{ stats.misc,  1*16, 4*16, "A Ghost", behaviour.guerilla },
+	{ stats.misc,  0*16, 5*16, "A Spectre", behaviour.sentinel },
+	{ stats.undead,  1*16, 5*16, "An Eldritch Spectre", behaviour.sorcerer },
+	{ stats.undead,  2*16, 5*16, "A Scorched Spectre", behaviour.fire_demon },
 }
 for i=1,#undead do
 	undead[i] = concat({ texturePaths.undead0, texturePaths.undead1 }, undead[i])
@@ -188,10 +227,36 @@ for i=1,#demon do
 	demon[i] = concat({ texturePaths.demon0, texturePaths.demon1 }, demon[i])
 end
 
+local orcs = {
+	{ stats.orc,   0,  4*16, "An Orc Guard", behaviour.normal },
+	{ stats.orc,   16,  4*16, "An Orc Seargeant", behaviour.coward },
+	{ stats.orc,   32,  4*16, "An Orc Militia", behaviour.hostile },
+	{ stats.orc,   48,  4*16, "An Orc Sentry", behaviour.sentinel },
+	{ stats.orc,   64,  4*16, "An Orc Brute", behaviour.guerilla },
+	{ stats.orc,   80,  4*16, "An Orc Captain", behaviour.hostile },
+	{ stats.orc,   96,  4*16, "An Orc Pyro", behaviour.fire_demon },
+}
+for i=1,#orcs do
+	orcs[i] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, orcs[i])
+end
+
+local assassins = {
+	{ stats.misc,  1*16, 6*16, "A Reaper", behaviour.assassin },
+	{ stats.misc,  0*16, 7*16, "An Assassin", behaviour.assassin },
+	{ stats.misc,  1*16, 7*16, "A Royal Assassin", behaviour.assassin },
+}
+for i=1,#assassins do
+	assassins[i] = concat({ texturePaths.undead0, texturePaths.undead1 }, assassins[i])
+end
+
 local bosses = {
-	{ stats.boss, 16,  5*16, "The Hell Hound", behaviour.fire_demon, true }
+	{ stats.boss, 16,  5*16, "The Hell Hound", behaviour.fire_demon, true },
+	{ stats.boss, 16,  23*16, "The Cleric", behaviour.sorcerer, true },
+	{ stats.boss, 16,  8*16, "The Shadow", behaviour.assassin, true },
 }
 bosses[1] = concat({ texturePaths.dog0, texturePaths.dog1 }, bosses[1])
+bosses[2] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, bosses[2])
+bosses[3] = concat({ texturePaths.undead0, texturePaths.undead1 }, bosses[3])
 
 local platino = {
 	{
@@ -201,7 +266,8 @@ local platino = {
 		48,
 		12*16,
 		"Platino",
-		behaviour.sentinel
+		behaviour.sentinel,
+		true
 	}
 }
 
@@ -224,29 +290,24 @@ if(CURRENT_LEVEL > 0) then
 	if (CURRENT_LEVEL == 1) then
 		enemies = concat(enemies, pests)
 		enemies = concat(enemies, misc)
-		enemies = concat(enemies, dogs)
+	elseif (CURRENT_LEVEL > 15) then
+		enemies = {}
+		enemies = concat(enemies, undead)
+		enemies = concat(enemies, orcs)
+		enemies = concat(enemies, assassins)
+	elseif (CURRENT_LEVEL > 10) then
+		enemies = {}
+		enemies = concat(enemies, undead)
+		enemies = concat(enemies, avian)
 	elseif (CURRENT_LEVEL > 5) then
 		enemies = {}
-		enemies = concat(enemies, demon)
-		enemies = concat(enemies, undead)
-		enemies = concat(enemies, reptile)
-		enemies = concat(enemies, misc)
-	elseif (CURRENT_LEVEL > 3) then
-		enemies = {}
-		enemies = concat(enemies, undead)
-		enemies = concat(enemies, reptile)
-		enemies = concat(enemies, misc)
-		enemies = concat(enemies, dogs)
-	elseif (CURRENT_LEVEL > 2) then
-		enemies = {}
-		enemies = concat(enemies, undead)
-		enemies = concat(enemies, reptile)
-		enemies = concat(enemies, misc)
-		enemies = concat(enemies, dogs)
+		enemies = concat(enemies, orcs)
+		enemies = concat(enemies, avian)
 	elseif (CURRENT_LEVEL > 1) then
 		enemies = {}
-		enemies = concat(enemies, undead)
+		enemies = concat(enemies, reanimated)
 		enemies = concat(enemies, reptile)
+		enemies = concat(enemies, avian)
 		enemies = concat(enemies, misc)
 		enemies = concat(enemies, dogs)
 	end
@@ -279,7 +340,7 @@ function module.add_monsters_to_room(room, roomx, roomy)
 end
 
 function module.add_boss_to_room(room, roomx, roomy)
-	local boss = bosses[1]
+	local boss = bosses[CURRENT_LEVEL / 5]
 	local success = false
 	while not success do
 		local rx = random(13) + 1
@@ -309,3 +370,4 @@ function module.load_monsters(map, monsters)
 end
 
 return module
+

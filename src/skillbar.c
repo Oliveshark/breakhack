@@ -26,6 +26,7 @@
 #include "texturecache.h"
 #include "particle_engine.h"
 #include "update_data.h"
+#include "gui.h"
 
 static void
 load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
@@ -34,7 +35,7 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	t->dim.width = 16;
 	t->dim.height = 16;
 
-	for (unsigned int i = 0; i < 10; ++i) {
+	for (unsigned int i = 0; i < 5; ++i) {
 		char buffer[4];
 		Sprite *s = sprite_create();
 		s->pos = (Position) { i * 32 + 20, 20 };
@@ -52,7 +53,7 @@ load_countdown_sprites(SkillBar *bar)
 {
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		Sprite *s = sprite_create();
-		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 16, 0);
+		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 14, 1);
 		s->fixed = true;
 		s->pos = (Position) { 8 + (32 * i), 8 };
 		s->dim = (Dimension) { 16, 16 };
@@ -60,45 +61,36 @@ load_countdown_sprites(SkillBar *bar)
 	}
 }
 
-SkillBar *
-skillbar_create(SDL_Renderer *renderer)
-{
-	SkillBar *bar = ec_malloc(sizeof(SkillBar));
-	bar->sprites = linkedlist_create();
-	bar->activationTimer = timer_create();
-	bar->skillSparkleTimer = timer_create();
-	bar->lastActivation = 0;
-	load_texture(bar, "GUI/GUI0.png", renderer);
-	load_countdown_sprites(bar);
-	return bar;
-}
-
-void
-skillbar_check_skill_activation(SkillBar *bar, Player *player)
-{
-	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
-		if (!player->skills[i])
-			continue;
-
-		if (player->skills[i]->levelcap != player->stats.lvl)
-			continue;
-
-		timer_start(bar->skillSparkleTimer);
-	}
-}
-
-static void
-render_frame(Camera *cam)
+static Sprite*
+create_frame_sprite(Camera *cam)
 {
 	static SDL_Rect c_top_left	= { 1*16, 10*16, 16, 16 };
 	static SDL_Rect c_top_right	= { 3*16, 10*16, 16, 16 };
+	static SDL_Rect c_center_top	= { 2*16, 10*16, 16, 16 };
+	static SDL_Rect c_center_bottom	= { 2*16, 12*16, 16, 16 };
 	static SDL_Rect c_bottom_left	= { 1*16, 12*16, 16, 16 };
 	static SDL_Rect c_bottom_right	= { 3*16, 12*16, 16, 16 };
+
+	Sprite *frame = sprite_create();
+	Texture *texture = texture_create();
+	texture->dim = (Dimension) { GAME_VIEW_WIDTH, 32 };
+	frame->textures[0] = texture;
+	frame->destroyTextures = true;
+	frame->pos = (Position) { 0, 0 };
+	frame->dim = (Dimension) { GAME_VIEW_WIDTH, 32 };
+	frame->fixed = true;
+	texture_create_blank(texture,
+			     SDL_TEXTUREACCESS_TARGET,
+			     cam->renderer);
+
+	SDL_SetRenderTarget(cam->renderer, texture->texture);
+	SDL_RenderClear(cam->renderer);
 
 	Texture *t = texturecache_get("GUI/GUI0.png");
 	SDL_Rect box = { 0, 0, 16, 16 };
 
-	for (unsigned int i = 0; i < MAP_ROOM_WIDTH; ++i) {
+	// Render skill squares
+	for (Uint32 i = 0; i < 5; ++i) {
 		box.x = i*32;
 		box.y = 0;
 		texture_render_clip(t, &box, &c_top_left, cam);
@@ -111,6 +103,93 @@ render_frame(Camera *cam)
 		box.y = 16;
 		texture_render_clip(t, &box, &c_bottom_right, cam);
 	}
+
+	// Render inventory box
+	box.x = 5 * 32;
+	box.y = 0;
+	texture_render_clip(t, &box, &c_top_left, cam);
+	box.y = 16;
+	texture_render_clip(t, &box, &c_bottom_left, cam);
+	box.x = 5 * 32 + 16;
+	box.y = 0;
+	texture_render_clip(t, &box, &c_center_top, cam);
+	box.y = 16;
+	texture_render_clip(t, &box, &c_center_bottom, cam);
+
+	for (Uint32 i = 6; i < MAP_ROOM_WIDTH - 1; ++i) {
+		box.x = i*32;
+		box.y = 0;
+		texture_render_clip(t, &box, &c_center_top, cam);
+		box.y = 16;
+		texture_render_clip(t, &box, &c_center_bottom, cam);
+
+		box.x = i * 32 + 16;
+		box.y = 0;
+		texture_render_clip(t, &box, &c_center_top, cam);
+		box.y = 16;
+		texture_render_clip(t, &box, &c_center_bottom, cam);
+	}
+
+	box.x = (MAP_ROOM_WIDTH - 1) * 32;
+	box.y = 0;
+	texture_render_clip(t, &box, &c_center_top, cam);
+	box.y = 16;
+	texture_render_clip(t, &box, &c_center_bottom, cam);
+	box.x = (MAP_ROOM_WIDTH - 1) * 32 + 16;
+	box.y = 0;
+	texture_render_clip(t, &box, &c_top_right, cam);
+	box.y = 16;
+	texture_render_clip(t, &box, &c_bottom_right, cam);
+
+	SDL_SetRenderTarget(cam->renderer, NULL);
+
+	return frame;
+}
+
+SkillBar *
+skillbar_create(Camera *cam)
+{
+	SkillBar *bar = ec_malloc(sizeof(SkillBar));
+	bar->sprites = linkedlist_create();
+	bar->activationTimer = timer_create();
+	bar->skillSparkleTimer = timer_create();
+	bar->lastActivation = 0;
+	bar->frame = create_frame_sprite(cam);
+	bar->artifactDisplayOffset = 5 * 32 + 8;
+	load_texture(bar, "GUI/GUI0.png", cam->renderer);
+	load_countdown_sprites(bar);
+
+	for (Uint32 i = 0; i < LAST_ARTIFACT_EFFECT; ++i) {
+		bar->artifacts[i].aSprite = artifact_sprite_for(i);
+		bar->artifacts[i].aSprite->fixed = true;
+		bar->artifacts[i].lvl = 0;
+
+		Sprite *lvlSprite = sprite_create();
+		lvlSprite->fixed = true;
+		lvlSprite->dim = DIM(9, 9);
+		sprite_load_text_texture(lvlSprite, "GUI/SDS_8x8.ttf", 0, 9, 0);
+		bar->artifacts[i].lvlSprite = lvlSprite;
+	}
+	return bar;
+}
+
+bool
+skillbar_check_skill_activation(SkillBar *bar, Player *player)
+{
+	if (player->stats.lvl == 1)
+		return false;
+
+	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+		if (!player->skills[i])
+			continue;
+
+		if (player->skills[i]->levelcap != player->stats.lvl)
+			continue;
+
+		timer_start(bar->skillSparkleTimer);
+	}
+
+	return timer_started(bar->skillSparkleTimer);
 }
 
 static void
@@ -174,6 +253,18 @@ render_skills(Player *player, Camera *cam)
 			SDL_SetRenderDrawColor(cam->renderer, 0, 0, 255, 100);
 			SDL_RenderFillRect(cam->renderer, &activeSkillBox);
 		}
+	}
+}
+
+static void
+render_artifacts(SkillBar *bar, Camera *cam)
+{
+	UNUSED(bar);
+	for (size_t i = 0; i < LAST_ARTIFACT_EFFECT; ++i) {
+		if (bar->artifacts[i].lvl == 0)
+			continue;
+		sprite_render(bar->artifacts[i].aSprite, cam);
+		sprite_render(bar->artifacts[i].lvlSprite, cam);
 	}
 }
 
@@ -242,8 +333,9 @@ render_skill_sparkles(SkillBar *bar, Player *player)
 void
 skillbar_render(SkillBar *bar, Player *player, Camera *cam)
 {
-	render_frame(cam);
+	sprite_render(bar->frame, cam);
 	render_skills(player, cam);
+	render_artifacts(bar, cam);
 	render_sprites(bar, cam);
 	render_skill_unavailable(bar, player, cam);
 	render_activation_indicator(bar, cam);
@@ -256,8 +348,17 @@ skillbar_update(SkillBar *bar, UpdateData *data)
 {
 	Input *input = data->input;
 
-	unsigned int key = 0;
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 5; ++i) {
+		if (!data->player->skills[i])
+			continue;
+		if (input_modkey_is_pressed(input, KEY_SHIFT_NUM1 << i)) {
+			data->gui->activeTooltip = data->player->skills[i]->tooltip;
+			return;
+		}
+	}
+
+	Uint32 key = 0;
+	for (int i = 0; i < 5; ++i) {
 		if (!input_key_is_pressed(input, KEY_NUM0 << i))
 			continue;
 		key = i;
@@ -268,6 +369,35 @@ skillbar_update(SkillBar *bar, UpdateData *data)
 		bar->lastActivation = key;
 		timer_start(bar->activationTimer);
 	}
+
+	for (size_t i = 0; i < LAST_ARTIFACT_EFFECT; ++i) {
+		if (data->player->equipment.artifacts[i].level == bar->artifacts[i].lvl)
+			continue;
+
+		Uint32 origLevel = bar->artifacts[i].lvl;
+		bar->artifacts[i].lvl = data->player->equipment.artifacts[i].level;
+
+		char lvl[4];
+		m_sprintf(lvl, 4, "%u", bar->artifacts[i].lvl);
+
+		texture_load_from_text(bar->artifacts[i].lvlSprite->textures[0],
+				       lvl, C_PURPLE, C_WHITE, data->cam->renderer);
+
+		// Only update position if this is the first pickup
+		if (origLevel == 0) {
+			bar->artifacts[i].lvlSprite->pos.x = bar->artifactDisplayOffset + 12;
+			bar->artifacts[i].lvlSprite->pos.y = 16;
+			bar->artifacts[i].aSprite->pos.x = bar->artifactDisplayOffset;
+			bar->artifacts[i].aSprite->pos.y = 8;
+			bar->artifactDisplayOffset += 32;
+		}
+	}
+}
+
+void
+skillbar_reset(SkillBar *bar)
+{
+	bar->artifactDisplayOffset = 5 * 32 + 8;
 }
 
 void
@@ -275,9 +405,14 @@ skillbar_destroy(SkillBar *bar)
 {
 	while (bar->sprites)
 		sprite_destroy(linkedlist_pop(&bar->sprites));
-	for (unsigned int i = 0; i < PLAYER_SKILL_COUNT; ++i)
+	for (Uint32 i = 0; i < PLAYER_SKILL_COUNT; ++i)
 		if (bar->countdowns[i])
 			sprite_destroy(bar->countdowns[i]);
+	for (Uint32 i = 0; i < LAST_ARTIFACT_EFFECT; ++i) {
+		sprite_destroy(bar->artifacts[i].aSprite);
+		sprite_destroy(bar->artifacts[i].lvlSprite);
+	}
+	sprite_destroy(bar->frame);
 	timer_destroy(bar->activationTimer);
 	timer_destroy(bar->skillSparkleTimer);
 	free(bar);

@@ -27,8 +27,10 @@
 static sqlite3 *db = NULL;
 static Settings settings;
 
-static const char *KEY_MUSIC_ENABLED = "music_enabled";
-static const char *KEY_SOUND_ENABLED = "sound_enabled";
+static const char *KEY_MUSIC_ENABLED		= "music_enabled";
+static const char *KEY_SOUND_ENABLED		= "sound_enabled";
+static const char *KEY_TOOLTIPS_ENABLED		= "tooltips_enabled";
+static const char *KEY_HOW_TO_PLAY_SHOWN	= "how_to_play_shown";
 
 static
 DbQuery MIGRATE_COMMANDS[] = {
@@ -49,6 +51,8 @@ set_default_settings(void)
 {
 	settings.music_enabled = true;
 	settings.sound_enabled = true;
+	settings.tooltips_enabled = true;
+	settings.howto_tooltip_shown = false;
 }
 
 static void
@@ -80,6 +84,14 @@ load_settings_cb(void *unused, int count, char **values, char **colNames)
 		}
 		else if (!strcmp(KEY_MUSIC_ENABLED, values[i])) {
 			settings.music_enabled = (bool)atoi(values[i + 1]);
+			i += 2;
+		}
+		else if (!strcmp(KEY_HOW_TO_PLAY_SHOWN, values[i])) {
+			settings.howto_tooltip_shown = (bool)atoi(values[i + 1]);
+			i += 2;
+		}
+		else if (!strcmp(KEY_TOOLTIPS_ENABLED, values[i])) {
+			settings.tooltips_enabled = (bool)atoi(values[i + 1]);
 			i += 2;
 		}
 	}
@@ -127,6 +139,8 @@ settings_save(void)
 {
 	save_setting_int(KEY_SOUND_ENABLED, settings.sound_enabled);
 	save_setting_int(KEY_MUSIC_ENABLED, settings.music_enabled);
+	save_setting_int(KEY_TOOLTIPS_ENABLED, settings.tooltips_enabled);
+	save_setting_int(KEY_HOW_TO_PLAY_SHOWN, settings.howto_tooltip_shown);
 }
 
 Settings *

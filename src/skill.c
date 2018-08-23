@@ -35,6 +35,106 @@
 #include "animation.h"
 #include "artifact.h"
 #include "trap.h"
+#include "tooltip.h"
+
+static char *flurry_tooltip[] = {
+	"FLURRY",
+	"",
+	"   Hits an adjecant enemy with a flurry of three strikes.",
+	"   Each strike has the same odds of hitting as a regular attack",
+	"",
+	"COOLDOWN:",
+	"   5 turns",
+	"",
+	"USAGE:",
+	"   activate the skill (press 1)",
+	"   followed by a direction (left, right, up or down)",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
+static char *bash_tooltip[] = {
+	"BASH",
+	"",
+	"   Bashes an adjecant enemy with your shield",
+	"   On a successful hit the target will be stunned for 2 turns",
+	"",
+	"COOLDOWN:",
+	"   2 turns",
+	"",
+	"USAGE:",
+	"   activate the skill (press 2)",
+	"   followed by a direction (left, right, up or down)",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
+static char *charge_tooltip[] = {
+	"CHARGE",
+	"",
+	"   You charge in a chosen direction into the first obstructing",
+	"   object. Charging into an enemy can deliver massive damage.",
+	"",
+	"   Damage is affected by charge distance.",
+	"   Longer distance, more damage.",
+	"",
+	"COOLDOWN:",
+	"   5 turns",
+	"",
+	"USAGE:",
+	"   activate the skill (press 3)",
+	"   followed by a direction (left, right, up or down)",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
+static char *dagger_tooltip[] = {
+	"THROW DAGGER",
+	"",
+	"   You throw a dagger in the chosen direction.",
+	"",
+	"   Damage is affected by throwing distance.",
+	"   Longer distance, more damage.",
+	"",
+	"   Dagger supply is not infinite, your current dagger",
+	"   inventory is displayed in the panel to the right.",
+	"",
+	"COOLDOWN:",
+	"   0 turns",
+	"",
+	"USAGE:",
+	"   activate the skill (press 4)",
+	"   followed by a direction (left, right, up or down)",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
+static char *health_tooltip[] = {
+	"DRINK HEALTH",
+	"",
+	"   You take a sip from your health vial",
+	"",
+	"   The current amount of sips in your vials is",
+	"   dsplayed in the panel to the right.",
+	"",
+	"COOLDOWN:",
+	"   0 turns",
+	"",
+	"USAGE:",
+	"   Sip health (press 5)",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
 
 static Skill *
 create_default(const char *s_label, Sprite *s)
@@ -50,6 +150,7 @@ create_default(const char *s_label, Sprite *s)
 	skill->available = NULL;
 	skill->use = NULL;
 	skill->levelcap = 1;
+	skill->tooltip = NULL;
 	return skill;
 }
 
@@ -410,24 +511,29 @@ create_charge(void)
 }
 
 Skill*
-skill_create(enum SkillType t)
+skill_create(enum SkillType t, Camera *cam)
 {
 	Skill *skill;
 	switch (t) {
 		case FLURRY:
 			skill = create_flurry();
+			skill->tooltip = tooltip_create(flurry_tooltip, cam);
 			break;
 		case SIP_HEALTH:
 			skill = create_sip_health();
+			skill->tooltip = tooltip_create(health_tooltip, cam);
 			break;
 		case CHARGE:
 			skill = create_charge();
+			skill->tooltip = tooltip_create(charge_tooltip, cam);
 			break;
 		case DAGGER_THROW:
 			skill = create_throw_dagger();
+			skill->tooltip = tooltip_create(dagger_tooltip, cam);
 			break;
 		case BASH:
 			skill = create_bash();
+			skill->tooltip = tooltip_create(bash_tooltip, cam);
 			break;
 		default:
 			fatal("Unknown SkillType %u", (unsigned int) t);
@@ -444,5 +550,7 @@ void
 skill_destroy(Skill *skill)
 {
 	sprite_destroy(skill->icon);
+	if (skill->tooltip)
+		sprite_destroy(skill->tooltip);
 	free(skill);
 }

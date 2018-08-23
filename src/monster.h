@@ -35,7 +35,9 @@ typedef enum {
 	GUERILLA,
 	COWARD,
 	SENTINEL,
-	FIRE_DEMON
+	FIRE_DEMON,
+	SORCERER,
+	ASSASSIN
 } MonsterBehaviour;
 
 typedef enum {
@@ -85,7 +87,7 @@ void
 monster_render(Monster*, Camera*);
 
 void
-monster_render_top_layer(Monster*, Camera*);
+monster_render_top_layer(Monster*, RoomMatrix*, Camera*);
 
 void
 monster_hit(Monster*, unsigned int dmg);
@@ -107,6 +109,9 @@ monster_set_state(Monster *m, StateType state, Uint8 forceCount);
 
 void
 monster_push(Monster *, RoomMatrix*, Vector2d dir);
+
+void
+monster_reset_steps(Monster *m);
 
 void
 monster_destroy(Monster*);

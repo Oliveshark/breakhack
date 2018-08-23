@@ -15,50 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #pragma once
 
 #include "sprite.h"
 #include "camera.h"
 
-typedef enum MagicalEffect {
-	IMPROVED_HEARING,
-	TRAP_AVOIDANCE,
-	PIERCING_DAGGERS,
-	DAGGER_RECOVERY,
-	PUSH_BACK,
-	FEAR_INDUCING,
-	INCREASED_STUN,
-	CHARGE_THROUGH,
-	LAST_ARTIFACT_EFFECT // Sentinel
-} MagicalEffect;
-
-typedef struct ArtifactInfo {
-	const char *name;
-	const char *desc;
-} ArtifactInfo;
-
-typedef struct Artifact {
-	Sprite *sprite;
-	MagicalEffect effect;
-	ArtifactInfo info;
-	bool collected;
-	int level;
-} Artifact;
+Sprite *
+gui_util_create_frame_sprite(Uint32 width,
+							 Uint32 height,
+							 Camera*);
 
 Sprite *
-artifact_sprite_for(MagicalEffect);
-
-Artifact *
-artifact_create_random(Player*, Uint8 level);
-
-Artifact *
-artifact_create(MagicalEffect);
-
-Artifact *
-artifact_copy(Artifact*);
-
-void
-artifact_render(Artifact*, Camera*);
-
-void
-artifact_destroy(Artifact*);
+gui_util_create_tooltip_frame_sprite(Uint32 width,
+									 Uint32 height,
+									 Camera*);

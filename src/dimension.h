@@ -19,6 +19,8 @@
 #ifndef DIMENSION_H_
 #define	DIMENSION_H_
 
+#define DIM(x, y)	(Dimension) { x, y }
+
 typedef struct {
 	unsigned int width;
 	unsigned int height;
