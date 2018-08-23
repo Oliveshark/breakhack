@@ -1,0 +1,20 @@
+f5a88fc Introduces texture blending
+52913af Completes #42 Add boss 2 & 3
+449cc36 Fixes some minor buggs
+f67aab0 Completes #43 Add win state
+8c261fd Added the undead monsters for level > 10
+6326a64 Begins #42 Add boss 2 & 3
+f1b0045 Introduces the "orc levels"
+ffe1736 Minor buggfixes and typos
+8bf9329 Version bump and badges
+8c25693 Moves sqlite3 files to separate dir
+bec9eb4 Fixed a typo in skill tooltip
+43f021a Created an FPS counter for debug mode
+dbc36aa Fixes #41, Minimap
+c390c02 Fixes #40, Prevent adjecant traps before lvl 4
+9ef97c0 Fixes #38, Artifact inventory
+358c0c7 Fixes #37 and #39 Adds tooltips to everything
+5f754d5 Merge branch 'master' into dev
+30058ea Creates gui_util and moves some code out from gui.c
+854f2c0 Prevent levels > 10 from crashing the game.
+549f47a Minor code fixes and a slight tweak to the blue color
