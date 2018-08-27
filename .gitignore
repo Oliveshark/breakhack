@@ -6,5 +6,7 @@
 /data.pack
 /.vs/
 /.data.db
+/steamworks_c_wrapper/_build
+/steamworks_c_wrapper/sdk
 *.swp
 *~

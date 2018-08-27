@@ -25,6 +25,14 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
 
+if (EXISTS "${PROJECT_SOURCE_DIR}/steamworks_c_wrapper/sdk")
+	set(STEAM 1)
+endif()
+
+if (STEAM)
+	add_subdirectory(steamworks_c_wrapper)
+endif()
+
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
 	set(CLANG 1)
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
@@ -123,6 +131,9 @@ if (NOT MSVC)
 endif (NOT MSVC)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
+if (STEAM)
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSTEAM_BUILD")
+endif ()
 if (NOT MSVC)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 else (NOT MSVC)
@@ -194,6 +205,12 @@ target_link_libraries(breakhack
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}
 	)
+
+if (STEAM)
+	target_link_libraries(breakhack
+		steamworks_c_wrapper
+		)
+endif ()
 
 if (NOT PHYSFS_FOUND)
 	target_link_libraries(breakhack
@@ -301,6 +318,12 @@ if (WIN32)
 		${CMAKE_SOURCE_DIR}/bin/SDL2_ttf.dll
 		${CMAKE_SOURCE_DIR}/bin/zlib1.dll
 		)
+	if (STEAM)
+		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
+			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+			${STEAMWORKS_LIBRARY}
+			)
+	endif ()
 endif (WIN32)
 include(InstallRequiredSystemLibraries)
 
