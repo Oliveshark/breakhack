@@ -24,13 +24,12 @@ I wanted to practice C and I'm comfortable using SDL2. The assets
 are graciously taken from the web. More info in the README in the
 assets folder.
 
-Future
+Download
 ------
-I'm planning on releaseing this game on Steam once I'm happy with it.
-Not to get rich, mostly because I think it will look nice on my resumé.
-the code will remain open source under GPLv3 even after a possible Steam
-release. So you'll still be able to download and compile it yourself if you
-can and want to.
+This game is available in the [steam store](https://store.steampowered.com/app/931040/BreakHack/) (release Okt 2018).
+If you enjoy the game and want a properly installed, signed copy of the game with achievements and
+global highscores you are most welcome to purchase it there.
+If you feel like getting a free copy you can download and compile from here.
 
 Compile
 -------
