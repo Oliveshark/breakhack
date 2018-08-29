@@ -11,9 +11,11 @@ static bool m_RecvCB = false;
 
 static void(*statsReceivedCb)(void) = NULL;
 static void(*statsStoredCb)(void) = NULL;
+static void(*leaderBoardReceived)(int64) = NULL;
 
 
-extern "C" int64 c_SteamAPI_Init()
+extern "C" int64
+c_SteamAPI_Init()
 {
 	if (SteamAPI_Init()) {
 		m_AppId = SteamUtils()->GetAppID();
@@ -24,13 +26,8 @@ extern "C" int64 c_SteamAPI_Init()
 	return 0;
 }
 
-extern "C" void c_SteamAPI_SetCallbacks(void(*recvCB)(void), void(*storCB)(void))
-{
-	statsReceivedCb = recvCB;
-	statsStoredCb = storCB;
-}
-
-extern "C" int64 c_SteamAPI_GetAppID()
+extern "C" int64
+c_SteamAPI_GetAppID()
 {
 	if (!m_Initiated)
 		return 0;
@@ -38,19 +35,29 @@ extern "C" int64 c_SteamAPI_GetAppID()
 	return m_AppId;
 }
 
-void c_SteamAPI_RunCallbacks(void)
+void
+c_SteamAPI_RunCallbacks(void)
 {
 	if (m_Initiated)
 		SteamAPI_RunCallbacks();
 }
 
-extern "C" void c_SteamAPI_Shutdown()
+extern "C" void c_SteamAPI_SetCallbacks(void(*recvCB)(void), void(*storCB)(void), void(*recvLB)(int64_t))
+{
+	statsReceivedCb = recvCB;
+	statsStoredCb = storCB;
+	leaderBoardReceived = recvLB;
+}
+
+extern "C" void
+c_SteamAPI_Shutdown()
 {
 	delete m_CallbackHandler;
 	SteamAPI_Shutdown();
 }
 
-extern "C" bool c_SteamUserStats_RequestCurrentStats()
+extern "C" bool
+c_SteamUserStats_RequestCurrentStats()
 {
 	if (NULL == SteamUserStats() || NULL == SteamUser())
 		return false;
@@ -60,7 +67,8 @@ extern "C" bool c_SteamUserStats_RequestCurrentStats()
 	return SteamUserStats()->RequestCurrentStats();
 }
 
-extern "C" bool c_SteamUserStats_SetAchievement(const char *pchName)
+extern "C" bool
+c_SteamUserStats_SetAchievement(const char *pchName)
 {
 	if (!m_RecvCB)
 		return false;
@@ -71,20 +79,44 @@ extern "C" bool c_SteamUserStats_SetAchievement(const char *pchName)
 	return result;
 }
 
-extern "C" void c_SteamUserStats_GetAchievement(const char *achId, bool *achieved)
+extern "C" void
+c_SteamUserStats_GetAchievement(const char *achId, bool *achieved)
 {
+	if (!m_Initiated)
+		return;
+
 	SteamUserStats()->GetAchievement(achId, achieved);
 }
 
-extern "C" const char* c_SteamUserStats_GetAchievementDisplayAttribute(const char *achId, const char *attrName)
+extern "C" const char*
+c_SteamUserStats_GetAchievementDisplayAttribute(const char *achId, const char *attrName)
 {
 	return SteamUserStats()->GetAchievementDisplayAttribute(achId, attrName);
+}
+
+extern "C" void
+c_SteamUserStats_FindLeaderboard(const char * name)
+{
+	if (!m_Initiated)
+		return;
+
+	SteamAPICall_t hSteamAPICall = SteamUserStats()->FindLeaderboard(name);
+	m_CallbackHandler->m_FindLeaderboardCallResult.Set(hSteamAPICall, m_CallbackHandler, &CallbackHandler::OnFindLeaderboard);
+}
+
+extern "C" void c_SteamUserStats_UploadLeaderboardScore(int64_t hLeaderboard, int32 nScore)
+{
+	if (!hLeaderboard || !m_Initiated)
+		return;
+
+	SteamUserStats()->UploadLeaderboardScore(hLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest, nScore, nullptr, 0);
 }
 
 CallbackHandler::CallbackHandler() :
 	m_CallbackUserStatsReceived(this, &CallbackHandler::OnUserStatsReceived),
 	m_CallbackUserStatsStored(this, &CallbackHandler::OnUserStatsStored)
 {
+	// Nothing
 }
 
 void
@@ -105,4 +137,13 @@ CallbackHandler::OnUserStatsStored(UserStatsStored_t *pCallback)
 
 	if (statsStoredCb && k_EResultOK == pCallback->m_eResult)
 		statsStoredCb();
+}
+
+void CallbackHandler::OnFindLeaderboard(LeaderboardFindResult_t * pCallback, bool bIOFailiure)
+{
+	if (bIOFailiure || !pCallback->m_bLeaderboardFound)
+		return;
+
+	if (leaderBoardReceived)
+		leaderBoardReceived(pCallback->m_hSteamLeaderboard);
 }
