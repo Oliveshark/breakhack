@@ -3,6 +3,7 @@
 #include "steamworks_c_wrapper.h"
 #include "../util.h"
 #include "../defines.h"
+#include "../gui.h"
 
 static Achievement g_Achievements[] = {
 	_ACH_ID(BAD_DOG, "Bad Dog"),

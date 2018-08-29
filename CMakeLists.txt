@@ -150,6 +150,14 @@ else (NOT MSVC)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__=__FILE__")
 endif (NOT MSVC)
 
+if (STEAM)
+	set(STEAM_SOURCES
+		src/steam/steamworks_api_wrapper
+		)
+else ()
+	set(STEAM_SOURCES "")
+endif ()
+
 # PROGRAMS:
 add_executable(breakhack
 	src/main
@@ -201,7 +209,7 @@ add_executable(breakhack
 	src/object
 	src/gui_util
 	src/tooltip
-	src/steam/steamworks_api_wrapper
+	${STEAM_SOURCES}
 	)
 
 # Sqlite has some warnings that I we don't need to see
