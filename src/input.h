@@ -47,6 +47,7 @@
 #define KEY_SHIFT_NUM3	0x20
 #define KEY_SHIFT_NUM4	0x40
 #define KEY_SHIFT_NUM5	0x80
+#define KEY_CTRL_F	0x100
 
 #define MBUTTON_LEFT	1
 #define MBUTTON_MIDDLE	2
