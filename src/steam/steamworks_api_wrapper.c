@@ -28,18 +28,13 @@ steam_request_stats()
 static void
 stats_received(void)
 {
-	debug("Stats received");
-	for (Uint8 i = 0; i < numAchievements; ++i) {
-		Achievement *a = &g_Achievements[i];
-		c_SteamUserStats_GetAchievement(a->m_pchAchievementID, &a->m_bAchieved);
-		gui_log("You just earned the \"%s\" achievement", c_SteamUserStats_GetAchievementDisplayAttribute(a->m_pchAchievementID, "name"));
-	}
+	debug("Steam stats received");
 }
 
 static void
 stats_stored(void)
 {
-	debug("Stats stored");
+	debug("Steam stats stored");
 }
 
 void
@@ -67,7 +62,10 @@ void steam_run_callbacks(void)
 void steam_set_achievement(EAchievement eAch)
 {
 	for (Uint8 i = 0; i < numAchievements; ++i) {
-		if (g_Achievements[i].m_eAchievementID == eAch)
+		Achievement *a = &g_Achievements[i];
+		if (a->m_eAchievementID == eAch && !a->m_bAchieved) {
 			c_SteamUserStats_SetAchievement(g_Achievements[i].m_pchAchievementID);
+			gui_log("You just earned the \"%s\" achievement", a->m_rgchName);
+		}
 	}
 }

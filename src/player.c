@@ -36,6 +36,10 @@
 #include "animation.h"
 #include "trap.h"
 
+#ifdef STEAM_BUILD
+#include "steam/steamworks_api_wrapper.h"
+#endif // STEAM_BUILD
+
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1, false, false }
 #define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1, false, false }
 #define PALADIN_STATS	{ 12, 12, 8, 9, 3, 1, 1, false, false }
@@ -513,6 +517,17 @@ player_monster_kill_check(Player *player, Monster *monster)
 {
 	if (!monster)
 		return;
+
+#ifdef STEAM_BUILD
+	if (strcmp("The Shadow", monster->label) == 0)
+		steam_set_achievement(LIGHTS_ON);
+	else if (strcmp("The Hell Hound", monster->label) == 0)
+		steam_set_achievement(BAD_DOG);
+	else if (strcmp("Platino", monster->label) == 0)
+		steam_set_achievement(DRAGON_SLAYER);
+	else if (strcmp("The Cleric", monster->label) == 0)
+		steam_set_achievement(THE_DOCTOR_IS_OUT);
+#endif // STEAM_BUILD
 
 	if (monster->stats.hp <= 0) {
 		unsigned int gained_xp = 5 * monster->stats.lvl;

@@ -866,6 +866,9 @@ run_game(void)
 		gui_log("Your break is over!");
 		gui_event_message("Well done!");
 		end_game_details();
+#ifdef STEAM_BUILD
+		steam_set_achievement(BACK_TO_WORK);
+#endif // STEAM_BUILD
 	}
 }
 
