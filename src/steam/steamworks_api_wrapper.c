@@ -16,6 +16,7 @@ static Uint8 numAchievements = 5;
 
 static bool m_Initiated = false;
 static Sint64 m_AppID = 0;
+static Sint64 m_hLeaderboard = 0;
 
 static bool
 steam_request_stats()
@@ -37,14 +38,21 @@ stats_stored(void)
 	debug("Steam stats stored");
 }
 
+static void
+leaderboard_received(Sint64 hLeaderboard)
+{
+	m_hLeaderboard = hLeaderboard;
+}
+
 void
 steam_init()
 {
+	c_SteamAPI_SetCallbacks(stats_received, stats_stored, leaderboard_received);
 	m_AppID = c_SteamAPI_Init();
 	m_Initiated = m_AppID != 0;
 	if (m_Initiated) {
-		c_SteamAPI_SetCallbacks(stats_received, stats_stored);
 		steam_request_stats();
+		c_SteamUserStats_FindLeaderboard("Highscore");
 	}
 }
 
@@ -68,4 +76,11 @@ void steam_set_achievement(EAchievement eAch)
 			gui_log("You just earned the \"%s\" achievement", a->m_rgchName);
 		}
 	}
+}
+
+void steam_register_score(Sint32 nScore)
+{
+	if (!m_hLeaderboard)
+		return;
+	c_SteamUserStats_UploadLeaderboardScore(m_hLeaderboard, nScore);
 }

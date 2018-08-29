@@ -632,6 +632,7 @@ end_game_details(void)
 {
 	gui_log("You earned %.2f gold", gPlayer->gold);
 	gui_event_message("You earned %.2f gold", gPlayer->gold);
+	
 	if (hiscore_get_top_gold() < gPlayer->gold) {
 		gui_event_message("NEW HIGHSCORE");
 		gui_log("NEW HIGHSCORE");
@@ -854,6 +855,9 @@ run_game(void)
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
 		hiscore_register(gPlayer, cLevel);
+#ifdef STEAM_BUILD
+		steam_register_score((int)hiscore_get_top_gold());
+#endif // STEAM_BUILD
 
 	} else {
 		check_next_level();
