@@ -30,3 +30,17 @@ add_library(steamworks_c_wrapper
 	)
 
 target_link_libraries(steamworks_c_wrapper ${STEAMWORKS_LIBRARY})
+
+IF ( MSVC )
+    MESSAGE ( STATUS "Setting MSVC MT switches")
+    SET (
+      CMAKE_CXX_FLAGS_DEBUG
+        "${CMAKE_CXX_FLAGS_DEBUG} /MTd"
+        CACHE STRING "MSVC MT flags " FORCE
+    )
+    SET (
+      CMAKE_CXX_FLAGS_RELEASE
+        "${CMAKE_CXX_FLAGS_RELEASE} /MT"
+        CACHE STRING "MSVC MT flags " FORCE
+    )
+endif ()

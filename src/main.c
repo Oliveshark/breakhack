@@ -22,7 +22,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <physfs.h>
-
 #include "linkedlist.h"
 #include "player.h"
 #include "screenresolution.h"
@@ -53,6 +52,10 @@
 #include "hiscore.h"
 #include "io_util.h"
 #include "tooltip.h"
+
+#ifdef STEAM_BUILD
+#include "steam/steamworks_api_wrapper.h"
+#endif // STEAM_BUILD
 
 static char *artifacts_tooltip[] = {
 	"CONGRATULATIONS!",
@@ -520,6 +523,10 @@ init(void)
 		return false;
 	}
 
+#ifdef STEAM_BUILD
+	steam_init();
+#endif // STEAM_BUILD
+
 	settings_init();
 	hiscore_init();
 	initMainMenu();
@@ -933,6 +940,10 @@ run(void)
 		pointer_handle_input(gPointer, &input);
 #endif // DEBUG
 
+#ifdef STEAM_BUILD
+		steam_run_callbacks();
+#endif // STEAM_BUILD
+
 		switch (gGameState) {
 			case PLAYING:
 			case IN_GAME_MENU:
@@ -1018,6 +1029,10 @@ void close(void)
 	texturecache_close();
 	settings_close();
 	hiscore_close();
+
+#ifdef STEAM_BUILD
+	steam_shutdown();
+#endif // STEAM_BUILD
 
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);

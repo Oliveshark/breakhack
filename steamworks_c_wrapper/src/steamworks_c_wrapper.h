@@ -1,31 +1,40 @@
 #pragma once
 
-enum Achievements
-{
-	ACH_BAD_DOG = 0,
-	ACH_THE_DOCTOR_IS_OUT = 1,
-	ACH_LIGHTS_ON = 2,
-	ACH_BACK_TO_WORK = 5,
-};
+#include <stdint.h>
 
-struct Achievement
-{
-	Achievements m_eAchievementID;
-	const char *m_pchAchievementID;
-	char m_rgchName[128];
-	char m_rgchDescription[256];
-	bool m_bAchieved;
-	int m_iIconImage;
-};
+int64_t
+c_SteamAPI_Init(void);
+
+int64_t
+c_SteamAPI_GetAppID(void);
 
 void
-c_SteamAPI_Init();
+c_SteamAPI_RunCallbacks(void);
+
+void
+c_SteamAPI_SetCallbacks(void(*)(void), void(*)(void));
 
 bool
-c_steam_request_stats();
+c_SteamUserStats_RequestCurrentStats();
 
 bool
-c_steam_set_achievement(const char *id);
+c_SteamUserStats_SetAchievement(const char *id);
+
+void
+c_SteamUserStats_GetAchievement(const char *achId, bool *achieved);
+
+const char *
+c_SteamUserStats_GetAchievementDisplayAttribute(const char *achId, const char *attrName);
 
 void
 c_SteamAPI_Shutdown();
+
+#ifdef __cplusplus
+class CallbackHandler
+{
+public:
+	CallbackHandler();
+	STEAM_CALLBACK(CallbackHandler, OnUserStatsReceived, UserStatsReceived_t, m_CallbackUserStatsReceived);
+	STEAM_CALLBACK(CallbackHandler, OnUserStatsStored, UserStatsStored_t, m_CallbackUserStatsStored);
+};
+#endif // __cplusplus

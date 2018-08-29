@@ -10,3 +10,4 @@
 /steamworks_c_wrapper/sdk
 *.swp
 *~
+/steam_appid.txt
