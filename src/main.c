@@ -152,6 +152,7 @@ static float		deltaTime		= 1.0;
 static double		renderScale		= 1.0;
 static Turn		currentTurn		= PLAYER;
 static GameState	gGameState;
+static SDL_Rect		mainViewport;
 static SDL_Rect		gameViewport;
 static SDL_Rect		skillBarViewport;
 static SDL_Rect		bottomGuiViewport;
@@ -250,26 +251,30 @@ bool initSDL(void)
 }
 
 static void
-initViewports(void)
+initViewports(Uint32 offset)
 {
-	gameViewport = (SDL_Rect) { 0, 0,
+	mainViewport = (SDL_Rect) { offset, 0,
+		SCREEN_HEIGHT, SCREEN_WIDTH
+	};
+
+	gameViewport = (SDL_Rect) { offset, 0,
 		GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
 
-	skillBarViewport = (SDL_Rect) { 0, GAME_VIEW_HEIGHT,
+	skillBarViewport = (SDL_Rect) { offset, GAME_VIEW_HEIGHT,
 		SKILL_BAR_WIDTH, SKILL_BAR_HEIGHT };
 
-	bottomGuiViewport = (SDL_Rect) { 0, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT,
+	bottomGuiViewport = (SDL_Rect) { offset, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT,
 		BOTTOM_GUI_WIDTH, BOTTOM_GUI_WIDTH };
 
-	statsGuiViewport = (SDL_Rect) { GAME_VIEW_WIDTH, 0,
+	statsGuiViewport = (SDL_Rect) { offset + GAME_VIEW_WIDTH, 0,
 		RIGHT_GUI_WIDTH, STATS_GUI_HEIGHT };
 
-	minimapViewport = (SDL_Rect) { GAME_VIEW_WIDTH, STATS_GUI_HEIGHT,
+	minimapViewport = (SDL_Rect) { offset + GAME_VIEW_WIDTH, STATS_GUI_HEIGHT,
 		RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT };
 
 	menuViewport = (SDL_Rect) {
-		(SCREEN_WIDTH - GAME_VIEW_WIDTH)/2,
-		(SCREEN_HEIGHT - GAME_VIEW_HEIGHT)/2,
+		offset + ((SCREEN_WIDTH - GAME_VIEW_WIDTH) >> 1),
+		(SCREEN_HEIGHT - GAME_VIEW_HEIGHT) >> 1,
 		GAME_VIEW_WIDTH,
 		GAME_VIEW_HEIGHT
 	};
@@ -278,7 +283,7 @@ initViewports(void)
 static bool
 initGame(void)
 {
-	initViewports();
+	initViewports(0);
 	input_init(&input);
 	texturecache_init(gRenderer);
 	gCamera = camera_create(gRenderer);
@@ -585,6 +590,26 @@ handle_main_input(void)
 		else
 			gui_log("Tooltips disabled");
 	}
+
+	if (input_modkey_is_pressed(&input, KEY_CTRL_F)) {
+		bool isFullscreen = SDL_GetWindowFlags(gWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP;
+		if (isFullscreen) {
+			initViewports(0);
+			SDL_SetWindowFullscreen(gWindow, 0);
+		}
+		else {
+			int w, h;
+			SDL_RenderGetLogicalSize(gRenderer, &w, &h);
+
+			SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+			SDL_DisplayMode dMode;
+			SDL_GetWindowDisplayMode(gWindow, &dMode);
+			double ratio = (double) w / (double) dMode.w;
+			double offset = (double) (dMode.w - w) / 2;
+			initViewports((Uint32) (offset * ratio));
+		}
+	}
 }
 
 static bool
@@ -755,7 +780,7 @@ render_gui(void)
 	skillbar_render(gSkillBar, gPlayer, gCamera);
 	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
 	gui_render_log(gGui, gCamera);
-	SDL_RenderSetViewport(gRenderer, NULL);
+	SDL_RenderSetViewport(gRenderer, &mainViewport);
 }
 
 static void
@@ -902,7 +927,7 @@ run_menu(void)
 	map_render_top_layer(gMap, gRoomMatrix, gCamera);
 	roommatrix_render_lightmap(gRoomMatrix, gCamera);
 
-	SDL_RenderSetViewport(gRenderer, NULL);
+	SDL_RenderSetViewport(gRenderer, &mainViewport);
 
 	if (gGameState == MENU)
 		menu_render(mainMenu, gCamera);
