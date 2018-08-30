@@ -25,10 +25,16 @@ endif ()
 
 include_directories(${STEAMWORKS_INCLUDE_DIR})
 
-add_library(steamworks_c_wrapper
-	SHARED
-	src/steamworks_c_wrapper
-	)
+if (WIN32)
+	add_library(steamworks_c_wrapper
+		src/steamworks_c_wrapper
+		)
+else ()
+	add_library(steamworks_c_wrapper
+		SHARED
+		src/steamworks_c_wrapper
+		)
+endif()
 
 target_link_libraries(steamworks_c_wrapper ${STEAMWORKS_LIBRARY})
 
