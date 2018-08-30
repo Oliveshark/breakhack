@@ -564,7 +564,7 @@ toggle_fullscreen(void)
 		SDL_RenderGetLogicalSize(gRenderer, &lw, &lh);
 		SDL_GetWindowSize(gWindow, &w, &h);
 
-		double lratio = w / lw;
+		double lratio = (double) w / (double) lw;
 
 		SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
@@ -572,7 +572,7 @@ toggle_fullscreen(void)
 		SDL_GetWindowDisplayMode(gWindow, &dMode);
 		double ratio = (double) (dMode.w) / w;
 		double offset = ((dMode.w - w) / 2);
-		initViewports((Uint32)((offset)/(ratio*lratio)));
+		initViewports((Uint32)(offset/(ratio*lratio)));
 		settings->fullscreen_enabled = true;
 	}
 }
