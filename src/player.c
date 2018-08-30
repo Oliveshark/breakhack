@@ -208,8 +208,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	}
 
 	if (space->lethal && !collided) {
-		mixer_play_effect(FALL0 + get_random(2) - 1);
-		player->state = FALLING;
+		player_set_falling(player);
 	}
 
 	if (space->trap && !collided) {
@@ -696,4 +695,11 @@ player_add_artifact(Player *p, Artifact *a)
 	gui_log("You pick an ancient %s", ad->name);
 	gui_log("%s (%u)", ad->desc, ad->level);
 	p->equipment.hasArtifacts = true;
+}
+
+void
+player_set_falling(Player *player)
+{
+	mixer_play_effect(FALL0 + get_random(2) - 1);
+	player->state = FALLING;
 }
