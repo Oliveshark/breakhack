@@ -11,10 +11,10 @@ static bool m_RecvCB = false;
 
 static void(*statsReceivedCb)(void) = NULL;
 static void(*statsStoredCb)(void) = NULL;
-static void(*leaderBoardReceived)(int64) = NULL;
+static void(*leaderBoardReceived)(int64_t) = NULL;
 
 
-extern "C" int64
+extern "C" int64_t
 c_SteamAPI_Init()
 {
 	if (SteamAPI_Init()) {
@@ -26,7 +26,7 @@ c_SteamAPI_Init()
 	return 0;
 }
 
-extern "C" int64
+extern "C" int64_t
 c_SteamAPI_GetAppID()
 {
 	if (!m_Initiated)

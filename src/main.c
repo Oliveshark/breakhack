@@ -254,7 +254,7 @@ static void
 initViewports(Uint32 offset)
 {
 	mainViewport = (SDL_Rect) { offset, 0,
-		SCREEN_HEIGHT, SCREEN_WIDTH
+		SCREEN_WIDTH, SCREEN_HEIGHT
 	};
 
 	gameViewport = (SDL_Rect) { offset, 0,
@@ -548,6 +548,31 @@ init(void)
 }
 
 static void
+toggle_fullscreen(void)
+{
+	bool isFullscreen = SDL_GetWindowFlags(gWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP;
+	Settings *settings = settings_get();
+	if (isFullscreen) {
+		initViewports(0);
+		SDL_SetWindowFullscreen(gWindow, 0);
+		settings->fullscreen_enabled = false;
+	}
+	else {
+		int w, h;
+		SDL_GetWindowSize(gWindow, &w, &h);
+
+		SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+		SDL_DisplayMode dMode;
+		SDL_GetWindowDisplayMode(gWindow, &dMode);
+		double ratio = (double) (dMode.w) / w;
+		double offset = ((dMode.w - w) / 2);
+		initViewports((Uint32)((offset)/(ratio*2)));
+		settings->fullscreen_enabled = true;
+	}
+}
+
+static void
 handle_main_input(void)
 {
 	if (gGameState == PLAYING
@@ -592,23 +617,7 @@ handle_main_input(void)
 	}
 
 	if (input_modkey_is_pressed(&input, KEY_CTRL_F)) {
-		bool isFullscreen = SDL_GetWindowFlags(gWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP;
-		if (isFullscreen) {
-			initViewports(0);
-			SDL_SetWindowFullscreen(gWindow, 0);
-		}
-		else {
-			int w, h;
-			SDL_RenderGetLogicalSize(gRenderer, &w, &h);
-
-			SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-
-			SDL_DisplayMode dMode;
-			SDL_GetWindowDisplayMode(gWindow, &dMode);
-			double ratio = (double) w / (double) dMode.w;
-			double offset = (double) (dMode.w - w) / 2;
-			initViewports((Uint32) (offset * ratio));
-		}
+		toggle_fullscreen();
 	}
 }
 
@@ -643,9 +652,6 @@ handle_events(void)
 static bool
 is_player_dead(void)
 {
-#ifdef DEBUG
-	gPlayer->stats.hp = gPlayer->stats.hp > 0 ? gPlayer->stats.hp : 1;
-#endif // DEBUG
 	if (gPlayer->stats.hp <= 0) {
 		return true;
 	}
@@ -731,9 +737,10 @@ run_game_update(void)
 	if (skillActivated && settings->tooltips_enabled && playerLevel < 5) {
 		gGui->activeTooltip = new_skill_tooltip;
 	}
-	if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts && settings->tooltips_enabled) {
+	if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts) {
 		artifactTooltipShown = true;
-		gGui->activeTooltip = new_artifact_tooltip;
+		if (settings->tooltips_enabled)
+			gGui->activeTooltip = new_artifact_tooltip;
 	}
 
 	if (gGameState == PLAYING && currentTurn == PLAYER)
@@ -839,6 +846,7 @@ run_game_render(void)
 	render_game();
 	render_gui();
 
+	SDL_RenderSetViewport(gRenderer, &mainViewport);
 	particle_engine_render_global(gCamera);
 	gui_render_tooltip(gGui, gCamera);
 
@@ -1090,6 +1098,11 @@ int main(int argc, char *argv[])
 	if (!init())
 		return 1;
 
+	if (settings_get()->fullscreen_enabled) {
+		// Game starts in windowed mode so this will 
+		// change to fullscreen
+		toggle_fullscreen();
+	}
 	run();
 	close();
 	PHYSFS_deinit();

@@ -26,6 +26,7 @@ endif ()
 include_directories(${STEAMWORKS_INCLUDE_DIR})
 
 add_library(steamworks_c_wrapper
+	SHARED
 	src/steamworks_c_wrapper
 	)
 
