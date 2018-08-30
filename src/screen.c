@@ -95,6 +95,7 @@ screen_create_credits(SDL_Renderer *renderer)
 	linkedlist_push(&screen->sprites, credit_txt("ArtisticDuded", C_WHITE, x + columnOffset, y, renderer));
 	y += 20;
 	linkedlist_push(&screen->sprites, credit_txt("opengameart.org/users/artisticdude", C_WHITE, x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites, score_txt("Press ESC to go back", C_RED, 15, SCREEN_HEIGHT - 25, renderer));
 	return screen;
 }
 
@@ -164,6 +165,7 @@ screen_create_hiscore(SDL_Renderer *renderer)
 					  renderer));
 		hiscore_destroy(score);
 	}
+	linkedlist_push(&screen->sprites, score_txt("Press ESC to go back", C_RED, 15, SCREEN_HEIGHT - 25, renderer));
 	return screen;
 }
 
