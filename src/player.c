@@ -145,7 +145,8 @@ on_monster_collision(Player *player,
 		if (get_random(10) < player_has_artifact(player, FEAR_INDUCING)) {
 			gui_log("%s shivers with fear at the sight of you",
 				monster->label);
-			monster_set_state(monster, SCARED, 3);
+			if (!monster->state.current == STUNNED)
+				monster_set_state(monster, SCARED, 3);
 		}
 	}
 
