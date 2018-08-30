@@ -15,7 +15,7 @@ void
 c_SteamAPI_SetCallbacks(void(*)(void), void(*)(void), void(*)(int64_t));
 
 bool
-c_SteamUserStats_RequestCurrentStats();
+c_SteamUserStats_RequestCurrentStats(void);
 
 bool
 c_SteamUserStats_SetAchievement(const char *id);
@@ -33,7 +33,7 @@ void
 c_SteamUserStats_UploadLeaderboardScore(int64_t hLeaderboard, int32_t nScore);
 
 void
-c_SteamAPI_Shutdown();
+c_SteamAPI_Shutdown(void);
 
 #ifdef __cplusplus
 class CallbackHandler

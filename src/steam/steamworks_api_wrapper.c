@@ -19,7 +19,7 @@ static Sint64 m_AppID = 0;
 static Sint64 m_hLeaderboard = 0;
 
 static bool
-steam_request_stats()
+steam_request_stats(void)
 {
 	if (m_Initiated)
 		return c_SteamUserStats_RequestCurrentStats();
