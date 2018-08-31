@@ -12,7 +12,7 @@ void
 c_SteamAPI_RunCallbacks(void);
 
 void
-c_SteamAPI_SetCallbacks(void(*)(void), void(*)(void), void(*)(int64_t));
+c_SteamAPI_SetCallbacks(void(*recvCB)(void), void(*storCB)(void), void(*recvLB)(int64_t, const char *));
 
 bool
 c_SteamUserStats_RequestCurrentStats(void);
@@ -34,16 +34,3 @@ c_SteamUserStats_UploadLeaderboardScore(int64_t hLeaderboard, int32_t nScore);
 
 void
 c_SteamAPI_Shutdown(void);
-
-#ifdef __cplusplus
-class CallbackHandler
-{
-public:
-	CallbackHandler();
-	STEAM_CALLBACK(CallbackHandler, OnUserStatsReceived, UserStatsReceived_t, m_CallbackUserStatsReceived);
-	STEAM_CALLBACK(CallbackHandler, OnUserStatsStored, UserStatsStored_t, m_CallbackUserStatsStored);
-	CCallResult<CallbackHandler, LeaderboardFindResult_t> m_FindLeaderboardCallResult;
-
-	void OnFindLeaderboard(LeaderboardFindResult_t *pCallback, bool bIOFailiure);
-};
-#endif // __cplusplus

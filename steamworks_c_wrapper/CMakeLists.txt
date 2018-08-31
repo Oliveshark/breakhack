@@ -28,6 +28,7 @@ include_directories(${STEAMWORKS_INCLUDE_DIR})
 if (WIN32)
 	add_library(steamworks_c_wrapper
 		src/steamworks_c_wrapper
+		src/CallbackHandler
 		)
 else ()
 	add_library(steamworks_c_wrapper
