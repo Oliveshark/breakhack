@@ -32,3 +32,5 @@ void steam_run_callbacks(void);
 void steam_set_achievement(EAchievement eAch);
 
 void steam_register_score(Sint32 nScore);
+
+void steam_register_kills(Sint32 nKills);

@@ -895,6 +895,7 @@ run_game(void)
 		hiscore_register(gPlayer, cLevel);
 #ifdef STEAM_BUILD
 		steam_register_score((int)hiscore_get_top_gold());
+		steam_register_kills((int) gPlayer->stat_data.kills);
 #endif // STEAM_BUILD
 
 	} else {
