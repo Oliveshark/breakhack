@@ -343,7 +343,6 @@ if (WIN32)
 		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
 			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
 			steamworks_c_wrapper/sdk/redistributable_bin/steam_api.dll
-			build/steam/steam_appid.txt
 			)
 	endif ()
 endif (WIN32)
