@@ -1,6 +1,7 @@
 #pragma once
 
 #include <steam_api.h>
+#include <cstdint>
 
 class CallbackHandler
 {
@@ -16,7 +17,7 @@ public:
 
 	void(*statsReceivedCb)() = nullptr;
 	void(*statsStoredCb)() = nullptr;
-	void(*leaderboardReceivedCb)(int64, const char*) = nullptr;
+	void(*leaderboardReceivedCb)(int64_t, const char*) = nullptr;
 
 	bool CallbackReceived() const;
 
