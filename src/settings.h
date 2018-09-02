@@ -26,6 +26,7 @@ typedef struct Settings {
 	bool sound_enabled;
 	bool tooltips_enabled;
 	bool howto_tooltip_shown;
+	bool fullscreen_enabled;
 } Settings;
 
 void

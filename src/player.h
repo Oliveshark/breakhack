@@ -123,3 +123,6 @@ player_has_artifact(Player *, MagicalEffect);
 
 void
 player_add_artifact(Player*, Artifact*);
+
+void
+player_set_falling(Player*);

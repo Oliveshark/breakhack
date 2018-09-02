@@ -36,6 +36,10 @@
 #include "animation.h"
 #include "trap.h"
 
+#ifdef STEAM_BUILD
+#include "steam/steamworks_api_wrapper.h"
+#endif // STEAM_BUILD
+
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1, false, false }
 #define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1, false, false }
 #define PALADIN_STATS	{ 12, 12, 8, 9, 3, 1, 1, false, false }
@@ -141,7 +145,8 @@ on_monster_collision(Player *player,
 		if (get_random(10) < player_has_artifact(player, FEAR_INDUCING)) {
 			gui_log("%s shivers with fear at the sight of you",
 				monster->label);
-			monster_set_state(monster, SCARED, 3);
+			if (monster->state.current != STUNNED)
+				monster_set_state(monster, SCARED, 3);
 		}
 	}
 
@@ -203,8 +208,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	}
 
 	if (space->lethal && !collided) {
-		mixer_play_effect(FALL0 + get_random(2) - 1);
-		player->state = FALLING;
+		player_set_falling(player);
 	}
 
 	if (space->trap && !collided) {
@@ -514,6 +518,17 @@ player_monster_kill_check(Player *player, Monster *monster)
 	if (!monster)
 		return;
 
+#ifdef STEAM_BUILD
+	if (strcmp("The Shadow", monster->label) == 0)
+		steam_set_achievement(LIGHTS_ON);
+	else if (strcmp("The Hell Hound", monster->label) == 0)
+		steam_set_achievement(BAD_DOG);
+	else if (strcmp("Platino", monster->label) == 0)
+		steam_set_achievement(DRAGON_SLAYER);
+	else if (strcmp("The Cleric", monster->label) == 0)
+		steam_set_achievement(THE_DOCTOR_IS_OUT);
+#endif // STEAM_BUILD
+
 	if (monster->stats.hp <= 0) {
 		unsigned int gained_xp = 5 * monster->stats.lvl;
 		player->stat_data.kills += 1;
@@ -680,4 +695,11 @@ player_add_artifact(Player *p, Artifact *a)
 	gui_log("You pick an ancient %s", ad->name);
 	gui_log("%s (%u)", ad->desc, ad->level);
 	p->equipment.hasArtifacts = true;
+}
+
+void
+player_set_falling(Player *player)
+{
+	mixer_play_effect(FALL0 + get_random(2) - 1);
+	player->state = FALLING;
 }

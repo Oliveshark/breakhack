@@ -5,10 +5,10 @@ SET(CMAKE_COLOR_MAKEFILE ON)
 project(breakhack C)
 
 set(breakhack_GAME_TITLE "BreakHack")
-set(breakhack_MAJOR_VERSION 0)
-set(breakhack_MINOR_VERSION 2)
-set(breakhack_PATCH_VERSION 0)
-set(breakhack_RELEASE_TYPE "(beta)")
+set(breakhack_MAJOR_VERSION 1)
+set(breakhack_MINOR_VERSION 0)
+set(breakhack_PATCH_VERSION 2)
+set(breakhack_RELEASE_TYPE "")
 
 include(FindLua)
 include(FindPhysFS)
@@ -24,6 +24,17 @@ configure_file(
 	"${PROJECT_SOURCE_DIR}/src/config.h.in"
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
+
+if (EXISTS "${PROJECT_SOURCE_DIR}/steamworks_c_wrapper/sdk")
+	MESSAGE ( STATUS "Steam SDK located, Steam build enabled")
+	set(STEAM 1)
+else ()
+	MESSAGE ( STATUS "Steam SDK not found, Steam build disabled")
+endif()
+
+if (STEAM)
+	add_subdirectory(steamworks_c_wrapper)
+endif()
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
 	set(CLANG 1)
@@ -54,22 +65,22 @@ IF ( MSVC )
     MESSAGE ( STATUS "Setting MSVC MT switches")
     SET (
       CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} /MTd"
+      "${CMAKE_C_FLAGS_DEBUG} /MTd"
         CACHE STRING "MSVC MT flags " FORCE
     )
     SET (
       CMAKE_C_FLAGS_RELEASE
-        "${CMAKE_CXX_FLAGS_RELEASE} /MT"
+      "${CMAKE_C_FLAGS_RELEASE} /MT"
         CACHE STRING "MSVC MT flags " FORCE
     )
 ELSEIF ( WIN32 )
     SET (
       CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} -mconsole"
+      "${CMAKE_C_FLAGS_DEBUG} -mconsole"
     )
     SET (
       CMAKE_C_FLAGS_RELEASE
-        "${CMAKE_CXX_FLAGS_RELEASE} -mwindows"
+      "${CMAKE_C_FLAGS_RELEASE} -mwindows"
     )
 ENDIF ()
 IF ( GCC OR CLANG )
@@ -91,6 +102,13 @@ else ()
 	include_directories(
 		${PHYSFS_INCLUDE_DIR}
 		)
+endif ()
+
+if (STEAM)
+	include_directories(
+	${STEAMWORKS_INCLUDE_DIR}
+	steamworks_c_wrapper/src
+	)
 endif ()
 
 include_directories(
@@ -123,11 +141,23 @@ if (NOT MSVC)
 endif (NOT MSVC)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
+if (STEAM)
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSTEAM_BUILD")
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DSTEAM_BUILD")
+endif ()
 if (NOT MSVC)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 else (NOT MSVC)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__=__FILE__")
 endif (NOT MSVC)
+
+if (STEAM)
+	set(STEAM_SOURCES
+		src/steam/steamworks_api_wrapper
+		)
+else ()
+	set(STEAM_SOURCES "")
+endif ()
 
 # PROGRAMS:
 add_executable(breakhack
@@ -180,6 +210,7 @@ add_executable(breakhack
 	src/object
 	src/gui_util
 	src/tooltip
+	${STEAM_SOURCES}
 	)
 
 # Sqlite has some warnings that I we don't need to see
@@ -194,6 +225,12 @@ target_link_libraries(breakhack
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}
 	)
+
+if (STEAM)
+	target_link_libraries(breakhack
+		steamworks_c_wrapper
+		)
+endif ()
 
 if (NOT PHYSFS_FOUND)
 	target_link_libraries(breakhack
@@ -287,6 +324,7 @@ SET(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT "Release")
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ".")
 if (WIN32)
 	SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
+		${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
 		${CMAKE_SOURCE_DIR}/bin/libFLAC-8.dll
 		${CMAKE_SOURCE_DIR}/bin/libfreetype-6.dll
 		${CMAKE_SOURCE_DIR}/bin/libmodplug-1.dll
@@ -301,6 +339,13 @@ if (WIN32)
 		${CMAKE_SOURCE_DIR}/bin/SDL2_ttf.dll
 		${CMAKE_SOURCE_DIR}/bin/zlib1.dll
 		)
+	if (STEAM)
+		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
+			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+			steamworks_c_wrapper/sdk/redistributable_bin/steam_api.dll
+			build/steam/steam_appid.txt
+			)
+	endif ()
 endif (WIN32)
 include(InstallRequiredSystemLibraries)
 
@@ -323,11 +368,15 @@ set(CPACK_PACKAGE_VERSION_MAJOR ${breakhack_MAJOR_VERSION})
 set(CPACK_PACKAGE_VERSION_MINOR ${breakhack_MINOR_VERSION})
 set(CPACK_PACKAGE_VERSION_PATCH ${breakhack_PATCH_VERSION})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "BreakHack")
-set(CPACK_PACKAGE_FILE_NAME "breakhack-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+if (WIN32)
+	set(CPACK_PACKAGE_FILE_NAME "breakhack-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-win32")
+else ()
+	set(CPACK_PACKAGE_FILE_NAME "breakhack-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+endif ()
 set(CPACK_PACKAGE_CHECKSUM "MD5")
 
 if(UNIX)
-	set(CPACK_GENERATOR STGZ TGZ TZ)
+	set(CPACK_GENERATOR TGZ)
 	set(CPACK_STRIP_FILES breakhack)
 	set(CPACK_SOURCE_STRIP_FILES "")
 elseif(WIN32)
