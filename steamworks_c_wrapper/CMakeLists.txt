@@ -34,6 +34,7 @@ else ()
 	add_library(steamworks_c_wrapper
 		SHARED
 		src/steamworks_c_wrapper
+		src/CallbackHandler
 		)
 endif()
 

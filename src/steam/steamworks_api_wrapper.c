@@ -62,8 +62,9 @@ void
 steam_init()
 {
 	m_AppID = c_SteamAPI_Init();
-	c_SteamAPI_SetCallbacks(stats_received, stats_stored, leaderboard_received);
 	m_Initiated = m_AppID != 0;
+	if (m_Initiated)
+		c_SteamAPI_SetCallbacks(stats_received, stats_stored, leaderboard_received);
 	requestDataTimer = timer_create();
 }
 
@@ -73,7 +74,7 @@ void steam_shutdown(void)
 	timer_destroy(requestDataTimer);
 }
 
-void
+static void
 request_data_queue_run(void)
 {
 	if (!timer_started(requestDataTimer))
