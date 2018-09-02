@@ -31,6 +31,7 @@ static const char *KEY_MUSIC_ENABLED		= "music_enabled";
 static const char *KEY_SOUND_ENABLED		= "sound_enabled";
 static const char *KEY_TOOLTIPS_ENABLED		= "tooltips_enabled";
 static const char *KEY_HOW_TO_PLAY_SHOWN	= "how_to_play_shown";
+static const char *KEY_FULLSCREEN_ENABLED	= "fullscreen_enabled";
 
 static
 DbQuery MIGRATE_COMMANDS[] = {
@@ -53,6 +54,7 @@ set_default_settings(void)
 	settings.sound_enabled = true;
 	settings.tooltips_enabled = true;
 	settings.howto_tooltip_shown = false;
+	settings.fullscreen_enabled = false;
 }
 
 static void
@@ -88,6 +90,10 @@ load_settings_cb(void *unused, int count, char **values, char **colNames)
 		}
 		else if (!strcmp(KEY_HOW_TO_PLAY_SHOWN, values[i])) {
 			settings.howto_tooltip_shown = (bool)atoi(values[i + 1]);
+			i += 2;
+		}
+		else if (!strcmp(KEY_FULLSCREEN_ENABLED, values[i])) {
+			settings.fullscreen_enabled = (bool)atoi(values[i + 1]);
 			i += 2;
 		}
 		else if (!strcmp(KEY_TOOLTIPS_ENABLED, values[i])) {
@@ -141,6 +147,7 @@ settings_save(void)
 	save_setting_int(KEY_MUSIC_ENABLED, settings.music_enabled);
 	save_setting_int(KEY_TOOLTIPS_ENABLED, settings.tooltips_enabled);
 	save_setting_int(KEY_HOW_TO_PLAY_SHOWN, settings.howto_tooltip_shown);
+	save_setting_int(KEY_FULLSCREEN_ENABLED, settings.fullscreen_enabled);
 }
 
 Settings *

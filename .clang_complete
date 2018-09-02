@@ -1,4 +1,6 @@
 -DDEBUG
+-I./steamworks_c_api/src/
+-I./src/steam/
 -I./build/config.h
 -I/usr/include/SDL2/
 -I/usr/include/lua5.2/

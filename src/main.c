@@ -22,7 +22,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <physfs.h>
-
 #include "linkedlist.h"
 #include "player.h"
 #include "screenresolution.h"
@@ -53,6 +52,10 @@
 #include "hiscore.h"
 #include "io_util.h"
 #include "tooltip.h"
+
+#ifdef STEAM_BUILD
+#include "steam/steamworks_api_wrapper.h"
+#endif // STEAM_BUILD
 
 static char *artifacts_tooltip[] = {
 	"CONGRATULATIONS!",
@@ -96,19 +99,21 @@ static char *skills_tooltip[] = {
 static char *how_to_play_tooltip[] = {
 	"HOW TO PLAY",
 	"",
-	"   NAVIGATION:     Use ARROWS or WASD or HJKL to move",
+	"   NAVIGATION:        Use ARROWS or WASD or HJKL to move",
 	"",
-	"   ATTACK:         Walk into a monster to attack it",
+	"   ATTACK:            Walk into a monster to attack it",
 	"",
-	"   THROW DAGGER:   Press 4 then chose a direction (navigation keys)",
+	"   THROW DAGGER:      Press 4 then chose a direction (nav keys)",
 	"",
-	"   DRINK HEALTH:   Press 5 (if you need health and have potions)",
+	"   DRINK HEALTH:      Press 5 (if you need health and have potions)",
 	"",
-	"   TOGGLE MUSIC:   CTRL + M",
+	"   TOGGLE MUSIC:      CTRL + M",
 	"",
-	"   TOGGLE SOUND:   CTRL + S",
+	"   TOGGLE SOUND:      CTRL + S",
 	"",
-	"   TOGGLE MENU:    ESC",
+	"   TOGGLE FULLSCREEN: CTRL + F",
+	"",
+	"   TOGGLE MENU:       ESC",
 	"",
 	"   Your stats and inventory are listed in the right panel",
 	"",
@@ -149,6 +154,7 @@ static float		deltaTime		= 1.0;
 static double		renderScale		= 1.0;
 static Turn		currentTurn		= PLAYER;
 static GameState	gGameState;
+static SDL_Rect		mainViewport;
 static SDL_Rect		gameViewport;
 static SDL_Rect		skillBarViewport;
 static SDL_Rect		bottomGuiViewport;
@@ -247,26 +253,30 @@ bool initSDL(void)
 }
 
 static void
-initViewports(void)
+initViewports(Uint32 offset)
 {
-	gameViewport = (SDL_Rect) { 0, 0,
+	mainViewport = (SDL_Rect) { offset, 0,
+		SCREEN_WIDTH, SCREEN_HEIGHT
+	};
+
+	gameViewport = (SDL_Rect) { offset, 0,
 		GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
 
-	skillBarViewport = (SDL_Rect) { 0, GAME_VIEW_HEIGHT,
+	skillBarViewport = (SDL_Rect) { offset, GAME_VIEW_HEIGHT,
 		SKILL_BAR_WIDTH, SKILL_BAR_HEIGHT };
 
-	bottomGuiViewport = (SDL_Rect) { 0, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT,
+	bottomGuiViewport = (SDL_Rect) { offset, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT,
 		BOTTOM_GUI_WIDTH, BOTTOM_GUI_WIDTH };
 
-	statsGuiViewport = (SDL_Rect) { GAME_VIEW_WIDTH, 0,
+	statsGuiViewport = (SDL_Rect) { offset + GAME_VIEW_WIDTH, 0,
 		RIGHT_GUI_WIDTH, STATS_GUI_HEIGHT };
 
-	minimapViewport = (SDL_Rect) { GAME_VIEW_WIDTH, STATS_GUI_HEIGHT,
+	minimapViewport = (SDL_Rect) { offset + GAME_VIEW_WIDTH, STATS_GUI_HEIGHT,
 		RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT };
 
 	menuViewport = (SDL_Rect) {
-		(SCREEN_WIDTH - GAME_VIEW_WIDTH)/2,
-		(SCREEN_HEIGHT - GAME_VIEW_HEIGHT)/2,
+		offset + ((SCREEN_WIDTH - GAME_VIEW_WIDTH) >> 1),
+		(SCREEN_HEIGHT - GAME_VIEW_HEIGHT) >> 1,
 		GAME_VIEW_WIDTH,
 		GAME_VIEW_HEIGHT
 	};
@@ -275,7 +285,7 @@ initViewports(void)
 static bool
 initGame(void)
 {
-	initViewports();
+	initViewports(0);
 	input_init(&input);
 	texturecache_init(gRenderer);
 	gCamera = camera_create(gRenderer);
@@ -520,6 +530,10 @@ init(void)
 		return false;
 	}
 
+#ifdef STEAM_BUILD
+	steam_init();
+#endif // STEAM_BUILD
+
 	settings_init();
 	hiscore_init();
 	initMainMenu();
@@ -533,6 +547,34 @@ init(void)
 	gGameState = MENU;
 
 	return true;
+}
+
+static void
+toggle_fullscreen(void)
+{
+	bool isFullscreen = SDL_GetWindowFlags(gWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP;
+	Settings *settings = settings_get();
+	if (isFullscreen) {
+		initViewports(0);
+		SDL_SetWindowFullscreen(gWindow, 0);
+		settings->fullscreen_enabled = false;
+	}
+	else {
+		int w, h, lw, lh;
+		SDL_RenderGetLogicalSize(gRenderer, &lw, &lh);
+		SDL_GetWindowSize(gWindow, &w, &h);
+
+		double lratio = (double) w / (double) lw;
+
+		SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+		SDL_DisplayMode dMode;
+		SDL_GetWindowDisplayMode(gWindow, &dMode);
+		double ratio = (double) (dMode.w) / w;
+		double offset = ((dMode.w - w) / 2);
+		initViewports((Uint32)(offset/(ratio*lratio)));
+		settings->fullscreen_enabled = true;
+	}
 }
 
 static void
@@ -578,6 +620,10 @@ handle_main_input(void)
 		else
 			gui_log("Tooltips disabled");
 	}
+
+	if (input_modkey_is_pressed(&input, KEY_CTRL_F)) {
+		toggle_fullscreen();
+	}
 }
 
 static bool
@@ -611,9 +657,6 @@ handle_events(void)
 static bool
 is_player_dead(void)
 {
-#ifdef DEBUG
-	gPlayer->stats.hp = gPlayer->stats.hp > 0 ? gPlayer->stats.hp : 1;
-#endif // DEBUG
 	if (gPlayer->stats.hp <= 0) {
 		return true;
 	}
@@ -625,6 +668,7 @@ end_game_details(void)
 {
 	gui_log("You earned %.2f gold", gPlayer->gold);
 	gui_event_message("You earned %.2f gold", gPlayer->gold);
+	
 	if (hiscore_get_top_gold() < gPlayer->gold) {
 		gui_event_message("NEW HIGHSCORE");
 		gui_log("NEW HIGHSCORE");
@@ -698,9 +742,10 @@ run_game_update(void)
 	if (skillActivated && settings->tooltips_enabled && playerLevel < 5) {
 		gGui->activeTooltip = new_skill_tooltip;
 	}
-	if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts && settings->tooltips_enabled) {
+	if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts) {
 		artifactTooltipShown = true;
-		gGui->activeTooltip = new_artifact_tooltip;
+		if (settings->tooltips_enabled)
+			gGui->activeTooltip = new_artifact_tooltip;
 	}
 
 	if (gGameState == PLAYING && currentTurn == PLAYER)
@@ -747,7 +792,7 @@ render_gui(void)
 	skillbar_render(gSkillBar, gPlayer, gCamera);
 	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
 	gui_render_log(gGui, gCamera);
-	SDL_RenderSetViewport(gRenderer, NULL);
+	SDL_RenderSetViewport(gRenderer, &mainViewport);
 }
 
 static void
@@ -806,6 +851,7 @@ run_game_render(void)
 	render_game();
 	render_gui();
 
+	SDL_RenderSetViewport(gRenderer, &mainViewport);
 	particle_engine_render_global(gCamera);
 	gui_render_tooltip(gGui, gCamera);
 
@@ -847,6 +893,10 @@ run_game(void)
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
 		hiscore_register(gPlayer, cLevel);
+#ifdef STEAM_BUILD
+		steam_register_score((int)hiscore_get_top_gold());
+		steam_register_kills((int) gPlayer->stat_data.kills);
+#endif // STEAM_BUILD
 
 	} else {
 		check_next_level();
@@ -859,6 +909,9 @@ run_game(void)
 		gui_log("Your break is over!");
 		gui_event_message("Well done!");
 		end_game_details();
+#ifdef STEAM_BUILD
+		steam_set_achievement(BACK_TO_WORK);
+#endif // STEAM_BUILD
 	}
 }
 
@@ -888,7 +941,7 @@ run_menu(void)
 	map_render_top_layer(gMap, gRoomMatrix, gCamera);
 	roommatrix_render_lightmap(gRoomMatrix, gCamera);
 
-	SDL_RenderSetViewport(gRenderer, NULL);
+	SDL_RenderSetViewport(gRenderer, &mainViewport);
 
 	if (gGameState == MENU)
 		menu_render(mainMenu, gCamera);
@@ -932,6 +985,10 @@ run(void)
 #ifdef DEBUG
 		pointer_handle_input(gPointer, &input);
 #endif // DEBUG
+
+#ifdef STEAM_BUILD
+		steam_run_callbacks();
+#endif // STEAM_BUILD
 
 		switch (gGameState) {
 			case PLAYING:
@@ -1019,6 +1076,10 @@ void close(void)
 	settings_close();
 	hiscore_close();
 
+#ifdef STEAM_BUILD
+	steam_shutdown();
+#endif // STEAM_BUILD
+
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
@@ -1043,6 +1104,11 @@ int main(int argc, char *argv[])
 	if (!init())
 		return 1;
 
+	if (settings_get()->fullscreen_enabled) {
+		// Game starts in windowed mode so this will 
+		// change to fullscreen
+		toggle_fullscreen();
+	}
 	run();
 	close();
 	PHYSFS_deinit();

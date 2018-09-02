@@ -393,7 +393,7 @@ skill_charge_check_path(SkillData *data,
 			Monster *monster = matrix->spaces[itPos.x][itPos.y].monster;
 			Stats tmpStats = player->stats;
 			tmpStats.dmg *= steps > 0 ? steps : 1;
-			mixer_play_effect(SWING0 + get_random(3) - 1);
+			mixer_play_effect(SWING0 + get_random(2));
 			unsigned int dmg = stats_fight(&tmpStats, &monster->stats);
 			if (dmg > 0) {
 				gui_log("You charged %s for %u damage", monster->lclabel, dmg);
@@ -491,6 +491,13 @@ skill_charge(Skill *skill, SkillData *data)
 	mixer_play_effect(SWOOSH);
 
 	skill_charge_check_path(data, playerStartPos, destination);
+
+	Position lastTilePos = position_to_matrix_coords(&playerDestinationPos);
+	RoomSpace *destSpace = &matrix->spaces[lastTilePos.x][lastTilePos.y];
+	if (destSpace->lethal)
+		player_set_falling(player);
+	else if (destSpace->trap)
+		trap_activate(destSpace->trap, player);
 
 	return true;
 }

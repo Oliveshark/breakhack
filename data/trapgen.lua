@@ -31,6 +31,7 @@ function module.add_traps_to_room(room)
 	end
 
 	local count = random(4)
+	local attempts = 0;
 	local i = 0
 	while i < count do
 		local rx = random(13) + 1
@@ -55,6 +56,8 @@ function module.add_traps_to_room(room)
 				i = i + 1
 			end
 		end
+		attempts = attempts + 1
+		if attempts > 100 then break end
 	end
 end
 
