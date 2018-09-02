@@ -12,13 +12,12 @@ static CallbackHandler *m_CallbackHandler = NULL;
 extern "C" int64_t
 c_SteamAPI_Init()
 {
-	m_CallbackHandler = new CallbackHandler(m_AppId);
 	if (SteamAPI_Init()) {
 		m_AppId = SteamUtils()->GetAppID();
 		m_Initiated = true;
-		return m_AppId;
 	}
-	return 0;
+	m_CallbackHandler = new CallbackHandler(m_AppId);
+	return m_AppId;
 }
 
 extern "C" int64_t
