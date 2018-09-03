@@ -98,10 +98,10 @@ c_SteamUserStats_FindLeaderboard(const char * name)
 	m_CallbackHandler->m_FindLeaderboardCallResult.Set(hSteamAPICall, m_CallbackHandler, &CallbackHandler::OnFindLeaderboard);
 }
 
-extern "C" void c_SteamUserStats_UploadLeaderboardScore(int64_t hLeaderboard, int32_t nScore)
+extern "C" void c_SteamUserStats_UploadLeaderboardScore(int64_t hLeaderboard, int32_t nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!hLeaderboard || !m_Initiated)
 		return;
 
-	SteamUserStats()->UploadLeaderboardScore(hLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest, nScore, nullptr, 0);
+	SteamUserStats()->UploadLeaderboardScore(hLeaderboard, k_ELeaderboardUploadScoreMethodKeepBest, nScore, details, nDetails);
 }
