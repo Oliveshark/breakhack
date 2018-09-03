@@ -521,6 +521,9 @@ player_monster_kill_check(Player *player, Monster *monster)
 		steam_set_achievement(DRAGON_SLAYER);
 	else if (strcmp("The Cleric", monster->label) == 0)
 		steam_set_achievement(THE_DOCTOR_IS_OUT);
+	else if (strcmp("Linus, the Developer", monster->label) == 0)
+		steam_set_achievement(BUGGFIXER);
+
 #endif // STEAM_BUILD
 
 	if (monster->stats.hp <= 0) {

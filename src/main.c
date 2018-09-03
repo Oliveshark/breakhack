@@ -895,7 +895,7 @@ run_game(void)
 		hiscore_register(gPlayer, cLevel);
 #ifdef STEAM_BUILD
 		uint8_t details[4] = { (uint8_t) gPlayer->stats.lvl, (uint8_t) cLevel, 0, 0 };
-		steam_register_score((int) gPlayer->gold, &details, 1);
+		steam_register_score((int) gPlayer->gold, (int32_t*) &details, 1);
 		steam_register_kills((int) gPlayer->stat_data.kills, (int32_t*) &details, 1);
 #endif // STEAM_BUILD
 
