@@ -1,4 +1,6 @@
 -DDEBUG
+-DSTEAM_BUILD
+-include ./steamworks_c_api/sdk/public/steam/steam_api.h
 -I./steamworks_c_api/src/
 -I./src/steam/
 -I./build/config.h
