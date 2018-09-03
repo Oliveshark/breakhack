@@ -111,16 +111,16 @@ void steam_set_achievement(EAchievement eAch)
 	}
 }
 
-void steam_register_score(Sint32 nScore)
+void steam_register_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hHighscoreLeaderboard)
 		return;
-	c_SteamUserStats_UploadLeaderboardScore(m_hHighscoreLeaderboard, nScore);
+	c_SteamUserStats_UploadLeaderboardScore(m_hHighscoreLeaderboard, nScore, details, nDetails);
 }
 
-void steam_register_kills(Sint32 nKills)
+void steam_register_kills(Sint32 nKills, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hKillsLeaderboard)
 		return;
-	c_SteamUserStats_UploadLeaderboardScore(m_hKillsLeaderboard, nKills);
+	c_SteamUserStats_UploadLeaderboardScore(m_hKillsLeaderboard, nKills, details, nDetails);
 }

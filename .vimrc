@@ -5,4 +5,5 @@ nnoremap <F4> :ter ++close ./_build/breakhack<cr>
 
 packadd termdebug
 let g:termdebug_wide = 1
-let g:syntastic_c_include_dirs = [ '_build', '/usr/include/SDL2', 'steamworks_c_wrapper/src', 'steamworks_c_wrapper/sdk/public/steam' ]
+let g:syntastic_c_include_dirs = [ '_build', '/usr/include/SDL2', 'steamworks_c_wrapper/src' ]
+let g:syntastic_cpp_include_dirs = [ 'steamworks_c_wrapper/sdk/public/steam' ]

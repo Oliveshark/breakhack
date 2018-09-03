@@ -9,7 +9,8 @@ typedef enum EAchievement
 	THE_DOCTOR_IS_OUT = 1,
 	LIGHTS_ON = 2,
 	BACK_TO_WORK = 5,
-	DRAGON_SLAYER = 6
+	DRAGON_SLAYER = 6,
+	BUGGFIXER = 7
 } EAchievement;
 
 
@@ -31,6 +32,6 @@ void steam_run_callbacks(void);
 
 void steam_set_achievement(EAchievement eAch);
 
-void steam_register_score(Sint32 nScore);
+void steam_register_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
-void steam_register_kills(Sint32 nKills);
+void steam_register_kills(Sint32 nKills, const int32_t *details, int32_t nDetails);

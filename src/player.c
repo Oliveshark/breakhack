@@ -106,12 +106,6 @@ action_spent(Player *p)
 }
 
 static void
-player_step(Player *p)
-{
-	action_spent(p);
-}
-
-static void
 on_monster_collision(Player *player,
 		     Monster *monster,
 		     RoomMatrix *matrix,
@@ -267,7 +261,7 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 	player->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
 
 	if (!has_collided(player, matrix, direction)) {
-		player_step(player);
+		action_spent(player);
 	}
 }
 
@@ -340,7 +334,7 @@ use_skill(Skill *skill, SkillData *skillData)
 	skill->active = false;
 	skill->use(skill, skillData);
 	if (skill->actionRequired)
-		player_step(skillData->player);
+		action_spent(skillData->player);
 	skill->resetCountdown = skill->resetTime;
 }
 
@@ -518,17 +512,6 @@ player_monster_kill_check(Player *player, Monster *monster)
 	if (!monster)
 		return;
 
-#ifdef STEAM_BUILD
-	if (strcmp("The Shadow", monster->label) == 0)
-		steam_set_achievement(LIGHTS_ON);
-	else if (strcmp("The Hell Hound", monster->label) == 0)
-		steam_set_achievement(BAD_DOG);
-	else if (strcmp("Platino", monster->label) == 0)
-		steam_set_achievement(DRAGON_SLAYER);
-	else if (strcmp("The Cleric", monster->label) == 0)
-		steam_set_achievement(THE_DOCTOR_IS_OUT);
-#endif // STEAM_BUILD
-
 	if (monster->stats.hp <= 0) {
 		unsigned int gained_xp = 5 * monster->stats.lvl;
 		player->stat_data.kills += 1;
@@ -536,6 +519,19 @@ player_monster_kill_check(Player *player, Monster *monster)
 		gui_log("You killed %s and gained %d xp",
 			monster->lclabel, gained_xp);
 		player_gain_xp(player, gained_xp);
+
+#ifdef STEAM_BUILD
+		if (strcmp("The Shadow", monster->label) == 0)
+			steam_set_achievement(LIGHTS_ON);
+		else if (strcmp("The Hell Hound", monster->label) == 0)
+			steam_set_achievement(BAD_DOG);
+		else if (strcmp("Platino", monster->label) == 0)
+			steam_set_achievement(DRAGON_SLAYER);
+		else if (strcmp("The Cleric", monster->label) == 0)
+			steam_set_achievement(THE_DOCTOR_IS_OUT);
+		else if (strcmp("Linus, the Developer", monster->label) == 0)
+			steam_set_achievement(BUGGFIXER);
+#endif // STEAM_BUILD
 	}
 }
 

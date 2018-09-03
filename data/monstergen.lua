@@ -258,6 +258,20 @@ bosses[1] = concat({ texturePaths.dog0, texturePaths.dog1 }, bosses[1])
 bosses[2] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, bosses[2])
 bosses[3] = concat({ texturePaths.undead0, texturePaths.undead1 }, bosses[3])
 
+local eastereggs = {
+	{ stats.misc,  6*16, 1*16, "Linus, the Developer", behaviour.passive },
+	{ stats.misc,  4*16, 1*16, "Scanlan, the Bard", behaviour.passive },
+	{ stats.misc,  2*16, 4*16, "Vax, the Twin", behaviour.passive },
+	{ stats.misc,  2*16, 3*16, "Vex, the Twin", behaviour.passive },
+	{ stats.misc,  0*16,10*16, "Grog, the Barbarian", behaviour.passive },
+	{ stats.misc,  3*16, 4*16, "Percy, the Gunslinger", behaviour.passive },
+	{ stats.misc,  4*16, 0*16, "Pike, the Cleric", behaviour.passive },
+	{ stats.misc,  6*16, 7*16, "Keyleth, the Druid", behaviour.passive },
+}
+for i=1,#eastereggs do
+	eastereggs[i] = concat({ texturePaths.player0, texturePaths.player1 }, eastereggs[i])
+end
+
 local platino = {
 	{
 		texturePaths.reptile0,
@@ -311,6 +325,10 @@ if(CURRENT_LEVEL > 0) then
 		enemies = concat(enemies, misc)
 		enemies = concat(enemies, dogs)
 	end
+end
+
+if random(100) == 1 then
+	enemies[#enemies+1] = eastereggs[random(#eastereggs)]
 end
 
 if random(100) == 1 then

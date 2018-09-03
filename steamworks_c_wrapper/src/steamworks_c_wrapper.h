@@ -30,7 +30,7 @@ void
 c_SteamUserStats_FindLeaderboard(const char *name);
 
 void
-c_SteamUserStats_UploadLeaderboardScore(int64_t hLeaderboard, int32_t nScore);
+c_SteamUserStats_UploadLeaderboardScore(int64_t hLeaderboard, int32_t nScore, const int32_t *details, int32_t nDetails);
 
 void
 c_SteamAPI_Shutdown(void);
