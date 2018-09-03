@@ -106,12 +106,6 @@ action_spent(Player *p)
 }
 
 static void
-player_step(Player *p)
-{
-	action_spent(p);
-}
-
-static void
 on_monster_collision(Player *player,
 		     Monster *monster,
 		     RoomMatrix *matrix,
@@ -267,7 +261,7 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 	player->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
 
 	if (!has_collided(player, matrix, direction)) {
-		player_step(player);
+		action_spent(player);
 	}
 }
 
@@ -340,7 +334,7 @@ use_skill(Skill *skill, SkillData *skillData)
 	skill->active = false;
 	skill->use(skill, skillData);
 	if (skill->actionRequired)
-		player_step(skillData->player);
+		action_spent(skillData->player);
 	skill->resetCountdown = skill->resetTime;
 }
 
