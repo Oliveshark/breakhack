@@ -35,7 +35,6 @@ else ()
 		SHARED
 		src/steamworks_c_wrapper
 		src/CallbackHandler
-		src/CSteamLeaderboard
 		)
 endif()
 
