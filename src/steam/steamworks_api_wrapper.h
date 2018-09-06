@@ -10,7 +10,8 @@ typedef enum EAchievement
 	LIGHTS_ON = 2,
 	BACK_TO_WORK = 5,
 	DRAGON_SLAYER = 6,
-	BUGGFIXER = 7
+	BUGGFIXER = 7,
+	BUGGCREATOR = 8
 } EAchievement;
 
 

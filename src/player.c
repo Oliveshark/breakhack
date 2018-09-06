@@ -531,6 +531,8 @@ player_monster_kill_check(Player *player, Monster *monster)
 			steam_set_achievement(THE_DOCTOR_IS_OUT);
 		else if (strcmp("Linus, the Developer", monster->label) == 0)
 			steam_set_achievement(BUGGFIXER);
+		else if (strcmp("Ti, the Mage", monster->label) == 0)
+			steam_set_achievement(BUGGCREATOR);
 #endif // STEAM_BUILD
 	}
 }

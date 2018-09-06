@@ -260,20 +260,18 @@ bosses[3] = concat({ texturePaths.undead0, texturePaths.undead1 }, bosses[3])
 
 local eastereggs = {
 	{ stats.misc,  6*16, 1*16, "Linus, the Developer", behaviour.passive },
-	{ stats.misc,  4*16, 1*16, "Scanlan, the Bard", behaviour.passive },
-	{ stats.misc,  2*16, 4*16, "Vax, the Twin", behaviour.passive },
-	{ stats.misc,  2*16, 3*16, "Vex, the Twin", behaviour.passive },
-	{ stats.misc,  0*16,10*16, "Grog, the Barbarian", behaviour.passive },
-	{ stats.misc,  3*16, 4*16, "Percy, the Gunslinger", behaviour.passive },
-	{ stats.misc,  4*16, 0*16, "Pike, the Cleric", behaviour.passive },
-	{ stats.misc,  6*16, 7*16, "Keyleth, the Druid", behaviour.passive },
+	{ stats.misc,  2*16, 3*16, "Lialynn, the Ranger", behaviour.passive },
+	{ stats.misc,  4*16, 3*16, "Miniel, the Paladin", behaviour.passive },
+	{ stats.misc,  2*16,12*16, "Feng, the Fighter", behaviour.passive },
+	{ stats.misc,  0*16, 7*16, "Adnis, the Ranger", behaviour.passive },
+	{ stats.misc,  7*16, 8*16, "Ti, the Mage", behaviour.passive },
 }
 for i=1,#eastereggs do
 	eastereggs[i] = concat({ texturePaths.player0, texturePaths.player1 }, eastereggs[i])
 end
 
-local platino = {
-	{
+-- Add Platino
+table.insert(eastereggs, {
 		texturePaths.reptile0,
 		texturePaths.reptile1,
 		stats.platino,
@@ -282,8 +280,7 @@ local platino = {
 		"Platino",
 		behaviour.sentinel,
 		true
-	}
-}
+	})
 
 local function repack(data)
 	return {
@@ -327,15 +324,20 @@ if(CURRENT_LEVEL > 0) then
 	end
 end
 
-if random(100) == 1 then
-	enemies[#enemies+1] = eastereggs[random(#eastereggs)]
-end
+local addSpecialInLevel = random(100) == 1
 
-if random(100) == 1 then
-	enemies = concat(enemies, platino)
+local function add_monster_to_tile(room, roomx, roomy, rx, ry, monster)
+	local x = (roomx * 512) + rx * 32
+	local y = (roomy * 384) + ry * 32
+	room.monsters[rx][ry] = {
+		x,
+		y,
+		monster
+	}
 end
 
 function module.add_monsters_to_room(room, roomx, roomy)
+	local addSpecial = addSpecialInLevel and random(5) == 1
 	local count = random(3)
 	if (CURRENT_LEVEL > 3) then
 		count = random(4)
@@ -345,13 +347,13 @@ function module.add_monsters_to_room(room, roomx, roomy)
 		local rx = random(13) + 1
 		local ry = random(9) + 1
 		if room_builder.is_tile_avilable(room, rx, ry) then
-			local x = (roomx * 512) + rx * 32
-			local y = (roomy * 384) + ry * 32
-			room.monsters[rx][ry] = {
-				x,
-				y,
-				enemies[random(#enemies)]
-			}
+			if addSpecial then
+				addSpecialInLevel = false
+				addSpecial = false
+				add_monster_to_tile(room, roomx, roomy, rx, ry, eastereggs[random(#eastereggs)])
+			else
+				add_monster_to_tile(room, roomx, roomy, rx, ry, enemies[random(#enemies)])
+			end
 			i = i + 1
 		end
 	end
