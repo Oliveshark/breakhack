@@ -3,7 +3,7 @@
 -include ./steamworks_c_api/sdk/public/steam/steam_api.h
 -I./steamworks_c_api/src/
 -I./src/steam/
--I./build/config.h
+-I./_build/config.h
 -I/usr/include/SDL2/
 -I/usr/include/lua5.2/
 -I/usr/include/physfs.h
