@@ -10,6 +10,8 @@ set(breakhack_MINOR_VERSION 0)
 set(breakhack_PATCH_VERSION 6)
 set(breakhack_RELEASE_TYPE "")
 
+include(FindLua)
+include(FindPhysFS)
 include(build/cmake/FindSDL2.cmake)
 include(build/cmake/FindSDL2_image.cmake)
 include(build/cmake/FindSDL2_ttf.cmake)
@@ -95,12 +97,21 @@ if (STEAM)
 	)
 endif ()
 
-add_subdirectory(lua-5.3.5)
-add_subdirectory(physfs-3.0.1)
-include_directories(
-	lua-5.3.5/src
-	physfs-3.0.1/src
-	)
+if (NOT FOUND_LUA OR STEAM)
+	add_subdirectory(lua-5.3.5)
+	include_directories(lua-5.3.5/src)
+	set(LUA_LIBRARY lua)
+else ()
+	include_directories(${LUA_INCLUDES})
+endif ()
+
+if (NOT FOUND_PHYSFS OR STEAM)
+	add_subdirectory(physfs-3.0.1)
+	include_directories(physfs-3.0.1/src)
+	set(PHYSFS_LIBRARY physfs-static)
+else ()
+	include_directories(${PHYSFS_INCLUDES})
+endif ()
 
 include_directories(
 	${PROJECT_BINARY_DIR}
@@ -109,7 +120,6 @@ include_directories(
 	${SDL2_TTF_INCLUDE_DIR}
 	${SDL2_MIXER_INCLUDE_DIR}
 	sqlite3
-	lua/src
 	)
 
 if (CMOCKA_FOUND)
@@ -208,13 +218,14 @@ add_executable(breakhack
 set_source_files_properties(sqlite3/sqlite3.c COMPILE_FLAGS -w)
 
 target_link_libraries(breakhack
-	lua
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
 	${SDL2_LIBRARY}
 	${SDL2MAIN_LIBRARY}
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}
+	${LUA_LIBRARY}
+	${PHYSFS_LIBRARY}
 	)
 
 if (STEAM)
@@ -335,6 +346,7 @@ else (WIN32)
 		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
 			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
 			steamworks_c_wrapper/sdk/redistributable_bin/linux64/libsteam_api.so
+			build/linux/breakhack.run
 			)
 	endif ()
 endif (WIN32)
