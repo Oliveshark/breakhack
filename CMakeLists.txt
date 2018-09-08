@@ -97,20 +97,18 @@ if (STEAM)
 	)
 endif ()
 
-if (NOT FOUND_LUA OR STEAM)
+if (NOT LUA_FOUND OR STEAM)
 	add_subdirectory(lua-5.3.5)
 	include_directories(lua-5.3.5/src)
-	set(LUA_LIBRARY lua)
-else ()
-	include_directories(${LUA_INCLUDES})
+	set(LUA_LIBRARIES lua)
+	set(LUA_INCLUDE_DIR lua-5.3.5/src)
 endif ()
 
-if (NOT FOUND_PHYSFS OR STEAM)
+if (NOT PHYSFS_FOUND OR STEAM)
 	add_subdirectory(physfs-3.0.1)
 	include_directories(physfs-3.0.1/src)
 	set(PHYSFS_LIBRARY physfs-static)
-else ()
-	include_directories(${PHYSFS_INCLUDES})
+	set(PHYSFS_INCLUDE_DIR physfs-3.0.1/src)
 endif ()
 
 include_directories(
@@ -119,6 +117,8 @@ include_directories(
 	${SDL2_IMAGE_INCLUDE_DIR}
 	${SDL2_TTF_INCLUDE_DIR}
 	${SDL2_MIXER_INCLUDE_DIR}
+	${PHYSFS_INCLUDE_DIR}
+	${LUA_INCLUDE_DIR}
 	sqlite3
 	)
 
@@ -224,7 +224,7 @@ target_link_libraries(breakhack
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}
-	${LUA_LIBRARY}
+	${LUA_LIBRARIES}
 	${PHYSFS_LIBRARY}
 	)
 
