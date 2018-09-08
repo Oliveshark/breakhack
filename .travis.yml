@@ -32,7 +32,6 @@ install:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cmake .. && make -j2 && sudo make install ; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cd ../.. ; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev ; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y lua5.2 liblua5.2-dev ; fi
 
 script:
     - mkdir _build

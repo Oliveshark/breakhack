@@ -10,7 +10,6 @@ set(breakhack_MINOR_VERSION 0)
 set(breakhack_PATCH_VERSION 6)
 set(breakhack_RELEASE_TYPE "")
 
-include(FindPhysFS)
 include(build/cmake/FindSDL2.cmake)
 include(build/cmake/FindSDL2_image.cmake)
 include(build/cmake/FindSDL2_ttf.cmake)
@@ -89,20 +88,6 @@ IF ( GCC OR CLANG )
 		)
 ENDIF ( GCC OR CLANG )
 
-if (NOT PHYSFS_FOUND OR WIN32)
-	set(PHYSFS_BUILD_STATIC TRUE)
-	set(PHYSFS_BUILD_SHARED FALSE)
-	set(PHYSFS_BUILD_TEST FALSE)
-	add_subdirectory(physfs-3.0.1)
-	include_directories(
-		physfs-3.0.1/src
-		)
-else ()
-	include_directories(
-		${PHYSFS_INCLUDE_DIR}
-		)
-endif ()
-
 if (STEAM)
 	include_directories(
 	${STEAMWORKS_INCLUDE_DIR}
@@ -111,7 +96,11 @@ if (STEAM)
 endif ()
 
 add_subdirectory(lua-5.3.5)
-include_directories(lua-5.3.5/src)
+add_subdirectory(physfs-3.0.1)
+include_directories(
+	lua-5.3.5/src
+	physfs-3.0.1/src
+	)
 
 include_directories(
 	${PROJECT_BINARY_DIR}
@@ -234,15 +223,9 @@ if (STEAM)
 		)
 endif ()
 
-if (NOT PHYSFS_FOUND)
-	target_link_libraries(breakhack
-		physfs-static
-		)
-else ()
-	target_link_libraries(breakhack
-		${PHYSFS_LIBRARY}
-		)
-endif ()
+target_link_libraries(breakhack
+	physfs-static
+	)
 
 if (MSVC)
 	set_target_properties(breakhack PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")

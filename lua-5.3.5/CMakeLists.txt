@@ -8,6 +8,10 @@ set(lua_MAJOR_VERSION 5)
 set(lua_MINOR_VERSION 3)
 set(lua_PATCH_VERSION 5)
 
+if (NOT MSVC)
+	add_definitions(-DLUA_USE_POSIX)
+endif ()
+
 add_library(lua STATIC
 	src/lapi.c
 	src/lauxlib.c

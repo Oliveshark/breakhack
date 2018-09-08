@@ -215,7 +215,9 @@ static Stats
 lua_checkstats(lua_State *L, int index)
 {
 	// Confirm table
-	lua_istable(L, index);
+	if (lua_istable(L, index)) {
+		fatal("Bad table provided");
+	}
 
 	// Push to top of stack
 	lua_pushvalue(L, index);
