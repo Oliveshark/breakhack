@@ -215,7 +215,7 @@ static Stats
 lua_checkstats(lua_State *L, int index)
 {
 	// Confirm table
-	if (lua_istable(L, index)) {
+	if (!lua_istable(L, index)) {
 		fatal("Bad table provided");
 	}
 

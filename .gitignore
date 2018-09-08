@@ -11,3 +11,5 @@
 *.swp
 *~
 /steam_appid.txt
+/*.so
+/breakhack.run
