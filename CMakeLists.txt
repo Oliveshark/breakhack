@@ -234,10 +234,6 @@ if (STEAM)
 		)
 endif ()
 
-target_link_libraries(breakhack
-	physfs-static
-	)
-
 if (MSVC)
 	set_target_properties(breakhack PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE")
 	set_target_properties(breakhack PROPERTIES COMPILE_DEFINITIONS_DEBUG "_CONSOLE")
