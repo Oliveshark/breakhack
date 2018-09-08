@@ -17,3 +17,7 @@ run: $(all)
 lint:
 	@make lint -sC _build
 .PHONY: lint
+
+package:
+	@make package -sC _build
+.PHONY: package

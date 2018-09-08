@@ -10,7 +10,6 @@ set(breakhack_MINOR_VERSION 0)
 set(breakhack_PATCH_VERSION 6)
 set(breakhack_RELEASE_TYPE "")
 
-include(FindLua)
 include(FindPhysFS)
 include(build/cmake/FindSDL2.cmake)
 include(build/cmake/FindSDL2_image.cmake)
@@ -111,14 +110,17 @@ if (STEAM)
 	)
 endif ()
 
+add_subdirectory(lua-5.3.5)
+include_directories(lua-5.3.5/src)
+
 include_directories(
 	${PROJECT_BINARY_DIR}
-	${LUA_INCLUDE_DIR}
 	${SDL2_INCLUDE_DIR}
 	${SDL2_IMAGE_INCLUDE_DIR}
 	${SDL2_TTF_INCLUDE_DIR}
 	${SDL2_MIXER_INCLUDE_DIR}
 	sqlite3
+	lua/src
 	)
 
 if (CMOCKA_FOUND)
@@ -217,8 +219,8 @@ add_executable(breakhack
 set_source_files_properties(sqlite3/sqlite3.c COMPILE_FLAGS -w)
 
 target_link_libraries(breakhack
+	lua
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
-	${LUA_LIBRARY}
 	${SDL2_LIBRARY}
 	${SDL2MAIN_LIBRARY}
 	${SDL2_IMAGE_LIBRARY}
@@ -345,6 +347,13 @@ if (WIN32)
 			steamworks_c_wrapper/sdk/redistributable_bin/steam_api.dll
 			)
 	endif ()
+else (WIN32)
+	if (STEAM)
+		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
+			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+			steamworks_c_wrapper/sdk/redistributable_bin/linux64/libsteam_api.so
+			)
+	endif ()
 endif (WIN32)
 include(InstallRequiredSystemLibraries)
 
@@ -379,7 +388,7 @@ if (STEAM)
 endif ()
 
 if(UNIX)
-	set(CPACK_GENERATOR TGZ)
+	set(CPACK_GENERATOR TGZ ZIP)
 	set(CPACK_STRIP_FILES breakhack)
 	set(CPACK_SOURCE_STRIP_FILES "")
 elseif(WIN32)

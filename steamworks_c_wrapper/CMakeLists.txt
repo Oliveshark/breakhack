@@ -25,20 +25,15 @@ endif ()
 
 include_directories(${STEAMWORKS_INCLUDE_DIR})
 
-if (WIN32)
-	add_library(steamworks_c_wrapper
-		src/steamworks_c_wrapper
-		src/CallbackHandler
-		)
-else ()
-	add_library(steamworks_c_wrapper
-		SHARED
-		src/steamworks_c_wrapper
-		src/CallbackHandler
-		)
-endif()
+add_library(steamworks_c_wrapper STATIC
+	src/steamworks_c_wrapper
+	src/CallbackHandler
+	)
 
 target_link_libraries(steamworks_c_wrapper ${STEAMWORKS_LIBRARY})
+if (NOT WIN32)
+	target_link_libraries(steamworks_c_wrapper -lstdc++)
+endif()
 
 IF ( MSVC )
     MESSAGE ( STATUS "Setting MSVC MT switches")
