@@ -300,7 +300,9 @@ local enemies = {}
 if(CURRENT_LEVEL > 0) then
 	if (CURRENT_LEVEL == 1) then
 		enemies = concat(enemies, pests)
+		enemies = concat(enemies, avian)
 		enemies = concat(enemies, misc)
+		enemies = concat(enemies, dogs)
 	elseif (CURRENT_LEVEL > 15) then
 		enemies = {}
 		enemies = concat(enemies, undead)
@@ -342,6 +344,7 @@ function module.add_monsters_to_room(room, roomx, roomy)
 	if (CURRENT_LEVEL > 3) then
 		count = random(4)
 	end
+	count = count + 1
 	local i = 0
 	while i < count do
 		local rx = random(13) + 1

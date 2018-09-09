@@ -50,8 +50,8 @@ local function generate_path ()
 	local lastDirection = 0
 	local coridoor_count = 0
 	local bossLevel = CURRENT_LEVEL % 5 == 0
-	local coverage = 9 + CURRENT_LEVEL
-	if bossLevel then
+	local coverage = 8 + CURRENT_LEVEL
+	if bossLevel or CURRENT_LEVEL == 1 then
 		coverage = 5
 	end
 
@@ -61,15 +61,7 @@ local function generate_path ()
 	while matrix_coverage(map_matrix) < coverage do
 		local direction = random(4)
 
-		if lastDirection > 0 then
-			if random(24) <= 6 then direction = lastDirection end
-		end
-
-		while lastDirection == reverse_direction(direction) do
-			direction = random(4)
-		end
-
-		if coridoor_count < coverage/3 then
+		if coridoor_count < coverage/2 then
 			if random(3) == 1 and (cx > 1 or cy > 1) then
 				map_matrix[cx][cy].type = "coridoor"
 				coridoor_count = coridoor_count + 1

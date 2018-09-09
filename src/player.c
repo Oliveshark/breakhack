@@ -306,6 +306,12 @@ handle_next_move(UpdateData *data)
 	if (linkedlist_size(player->projectiles) > 0)
 		return;
 
+	if (input_key_is_pressed(data->input, KEY_SPACE)) {
+		action_spent(data->player);
+		gui_log("You take a moment and stare at your feet");
+		return;
+	}
+
 	RoomMatrix *matrix = data->matrix;
 	Vector2d nextDir = read_direction_from(data->input);
 	if (!vector2d_equals(nextDir, VECTOR2D_NODIR))

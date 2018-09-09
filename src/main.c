@@ -103,6 +103,8 @@ static char *how_to_play_tooltip[] = {
 	"",
 	"   ATTACK:            Walk into a monster to attack it",
 	"",
+	"   HOLD TURN:         Press SPACE",
+	"",
 	"   THROW DAGGER:      Press 4 then chose a direction (nav keys)",
 	"",
 	"   DRINK HEALTH:      Press 5 (if you need health and have potions)",

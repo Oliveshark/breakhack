@@ -62,7 +62,7 @@ static char *bash_tooltip[] = {
 	"   On a successful hit the target will be stunned for 2 turns",
 	"",
 	"COOLDOWN:",
-	"   2 turns",
+	"   3 turns",
 	"",
 	"USAGE:",
 	"   activate the skill (press 2)",
@@ -335,7 +335,7 @@ create_bash(void)
 	Skill *skill = create_default("Bash", s);
 	skill->levelcap = 3;
 	skill->instantUse = false;
-	skill->resetTime = 2;
+	skill->resetTime = 3;
 	skill->available = NULL;
 	skill->use = skill_bash;
 	skill->actionRequired = true;

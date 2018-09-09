@@ -22,22 +22,23 @@
 #include <SDL.h>
 #include <stdbool.h>
 
-#define KEY_LEFT	1
-#define KEY_RIGHT	2
-#define KEY_UP		4
-#define KEY_DOWN	8
-#define KEY_NUM0	16
-#define KEY_NUM1	32
-#define KEY_NUM2	64
-#define KEY_NUM3	128
-#define KEY_NUM4	256
-#define KEY_NUM5	512
-#define KEY_NUM6	1024
-#define KEY_NUM7	2048
-#define KEY_NUM8	4096
-#define KEY_NUM9	8192
-#define KEY_ESC		16384
-#define KEY_ENTER	32768
+#define KEY_LEFT	0x1
+#define KEY_RIGHT	0x2
+#define KEY_UP		0x4
+#define KEY_DOWN	0x8
+#define KEY_NUM0	0x10
+#define KEY_NUM1	0x20
+#define KEY_NUM2	0x40
+#define KEY_NUM3	0x80
+#define KEY_NUM4	0x100
+#define KEY_NUM5	0x200
+#define KEY_NUM6	0x400
+#define KEY_NUM7	0x800
+#define KEY_NUM8	0x1000
+#define KEY_NUM9	0x2000
+#define KEY_ESC		0x4000
+#define KEY_ENTER	0x8000
+#define KEY_SPACE	0x10000
 
 #define KEY_CTRL_M		0x1
 #define KEY_CTRL_S		0x2
@@ -47,11 +48,11 @@
 #define KEY_SHIFT_NUM3	0x20
 #define KEY_SHIFT_NUM4	0x40
 #define KEY_SHIFT_NUM5	0x80
-#define KEY_CTRL_F	0x100
+#define KEY_CTRL_F		0x100
 
-#define MBUTTON_LEFT	1
-#define MBUTTON_MIDDLE	2
-#define MBUTTON_RIGHT	4
+#define MBUTTON_LEFT	0x1
+#define MBUTTON_MIDDLE	0x2
+#define MBUTTON_RIGHT	0x4
 
 typedef struct Input {
 	Uint64 keyState;

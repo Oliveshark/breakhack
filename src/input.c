@@ -91,6 +91,8 @@ get_event_key(SDL_Event *event)
 			key = KEY_ESC; break;
 		case SDLK_RETURN:
 			key = KEY_ENTER; break;
+		case SDLK_SPACE:
+			key = KEY_SPACE; break;
 		default:
 			key = 0; break;
 	}
