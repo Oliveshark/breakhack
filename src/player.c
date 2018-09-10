@@ -704,6 +704,6 @@ player_add_artifact(Player *p, Artifact *a)
 void
 player_set_falling(Player *player)
 {
-	mixer_play_effect(FALL0 + get_random(2) - 1);
+	mixer_play_effect(FALL0 + get_random(1));
 	player->state = FALLING;
 }
