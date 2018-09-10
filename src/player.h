@@ -34,7 +34,7 @@ typedef struct UpdateData UpdateData;
 typedef struct Animation Animation;
 
 typedef enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR } class_t;
-typedef enum PlayerState { ALIVE, DEAD, FALLING } state_t;
+typedef enum PlayerState { ALIVE, DEAD } state_t;
 
 typedef struct PlayerStatData {
 	unsigned int total_steps;

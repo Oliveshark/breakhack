@@ -156,7 +156,7 @@ end
 
 local function add_pits_to_room(room)
 
-	if CURRENT_LEVEL < 3 then
+	if CURRENT_LEVEL < 1 then
 		return
 	elseif random(5) ~= 1 then
 		return

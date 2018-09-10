@@ -32,7 +32,7 @@ typedef struct {
  * Return a matrix coord position for a given position
  */
 Position
-position_to_matrix_coords(Position*);
+position_to_matrix_coords(const Position*);
 
 /*
  * Get the room coord for the room containing the given position

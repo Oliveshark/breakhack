@@ -108,7 +108,7 @@ void
 monster_set_state(Monster *m, StateType state, Uint8 forceCount);
 
 void
-monster_push(Monster *, RoomMatrix*, Vector2d dir);
+monster_push(Monster *, Player *, RoomMatrix*, Vector2d dir);
 
 void
 monster_reset_steps(Monster *m);

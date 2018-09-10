@@ -1,7 +1,7 @@
 nnoremap <F1> :Make<cr>
 nnoremap <F2> :Make lint test<cr>
 nnoremap <F3> :Termdebug _build/breakhack<cr>
-nnoremap <F4> :ter ++close ./_build/breakhack<cr>
+nnoremap <F4> :ter ++close env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ ./_build/breakhack<cr>
 
 packadd termdebug
 let g:termdebug_wide = 1

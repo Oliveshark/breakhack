@@ -61,22 +61,33 @@ typedef struct RoomMatrix_t {
 
 RoomMatrix* roommatrix_create(void);
 
-void roommatrix_update(struct UpdateData*);
+void
+roommatrix_update(struct UpdateData*);
 
-void roommatrix_populate_from_map(RoomMatrix*, Map*);
+void
+roommatrix_populate_from_map(RoomMatrix*, Map*);
 
-void roommatrix_add_lightsource(RoomMatrix*, Position*);
+void
+roommatrix_add_lightsource(RoomMatrix*, Position*);
 
-void roommatrix_build_lightmap(RoomMatrix*);
+void
+roommatrix_build_lightmap(RoomMatrix*);
 
-void roommatrix_render_mouse_square(RoomMatrix*, Camera*);
+void
+roommatrix_render_mouse_square(RoomMatrix*, Camera*);
 
-void roommatrix_render_lightmap(RoomMatrix*, Camera*);
+void
+roommatrix_render_lightmap(RoomMatrix*, Camera*);
+
+RoomSpace*
+roommatrix_get_space_for(RoomMatrix*, const Position *p);
 
 #ifdef DEBUG
-void roommatrix_render_debug(RoomMatrix*, Camera*);
+void
+roommatrix_render_debug(RoomMatrix*, Camera*);
 #endif
 
-void roommatrix_destroy(RoomMatrix*);
+void
+roommatrix_destroy(RoomMatrix*);
 
 #endif // ROOMMATRIX_H_

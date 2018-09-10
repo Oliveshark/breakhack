@@ -33,6 +33,8 @@
 #include "update_data.h"
 #include "actiontextbuilder.h"
 #include "texturecache.h"
+#include "trap.h"
+#include "object.h"
 
 static void
 monster_set_sprite_clip_for_current_state(Monster *m)
@@ -278,8 +280,7 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 	if (!position_in_room(&monster->sprite->pos, &matrix->roomPos))
 		return true;
 
-	Position roomPos = position_to_matrix_coords(&monster->sprite->pos);
-	RoomSpace *space = &matrix->spaces[roomPos.x][roomPos.y];
+	RoomSpace *space = roommatrix_get_space_for(matrix, &monster->sprite->pos);
 
 	if (space->player && monster->state.current == AGRESSIVE) {
 		unsigned int dmg = stats_fight(&monster->stats,
@@ -297,7 +298,7 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 		monster_behaviour_check_post_attack(monster);
 	}
 
-	return space->occupied || space->lethal || space->trap || space->damaging;
+	return space->occupied;
 }
 
 static bool
@@ -305,7 +306,9 @@ move(Monster *m, RoomMatrix *rm, Vector2d direction)
 {
 	m->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
 	m->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
-	if (has_collided(m, rm, direction)) {
+
+	RoomSpace *space = roommatrix_get_space_for(rm, &m->sprite->pos);
+	if (has_collided(m, rm, direction) || space->lethal || space->trap || space->damaging) {
 		m->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;
 		m->sprite->pos.y -= TILE_DIMENSION * (int) direction.y;
 		return false;
@@ -439,6 +442,9 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 bool
 monster_move(Monster *m, RoomMatrix *rm, Map *map)
 {
+	if (m->stats.hp <= 0 || m->sprite->state == SPRITE_STATE_FALLING)
+		return true;
+
 	if (m->state.forceCount) {
 		if (m->state.stepsSinceChange >= m->state.forceCount) {
 			monster_state_change(m, m->state.last);
@@ -545,6 +551,17 @@ monster_reset_steps(Monster *m)
 void
 monster_update(Monster *m, UpdateData *data)
 {
+	if (m->stats.hp <= 0)
+		return;
+
+	sprite_update(m->sprite, data);
+
+	if (m->sprite->state == SPRITE_STATE_FALLING && m->sprite->dim.width < 4) {
+		m->stats.hp = 0;
+		player_monster_kill_check(data->player, m);
+		return;
+	}
+
 	Position monsterRoomPos = position_to_room_coords(&m->sprite->pos);
 	if (position_equals(&data->matrix->roomPos, &monsterRoomPos)
 	    && !m->stateIndicator.shownOnPlayerRoomEnter)
@@ -608,23 +625,30 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 	static unsigned int treasure_drop_chance = 1;
 	unsigned int item_drop_chance = 1;
 
+	if (monster->sprite->state == SPRITE_STATE_FALLING)
+		return;
+
 	Item *item;
 	Item *items[3];
 	unsigned int item_count = 0;
 	bool player_full_health = player->stats.hp >= player->stats.maxhp;
 
+	Position monsterTilePos = monster->sprite->pos;
+	monsterTilePos.x -= (monsterTilePos.x % TILE_DIMENSION);
+	monsterTilePos.y -= (monsterTilePos.y % TILE_DIMENSION);
+
 	if (monster->boss) {
 		Artifact *a = artifact_create_random(player, 2);
-		a->sprite->pos = monster->sprite->pos;
+		a->sprite->pos = monsterTilePos;
 		linkedlist_append(&map->artifacts, a);
 		Item *treasure = item_builder_build_item(TREASURE, map->level*2);
-		treasure->sprite->pos = monster->sprite->pos;
+		treasure->sprite->pos = monsterTilePos;
 		linkedlist_append(&map->items, treasure);
 	}
 
 	if (monster->stats.lvl > 2 && get_random(29) == 0) {
 		Artifact *a = artifact_create_random(player, 1);
-		a->sprite->pos = monster->sprite->pos;
+		a->sprite->pos = monsterTilePos;
 		linkedlist_append(&map->artifacts, a);
 	}
 
@@ -633,19 +657,19 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 
 	if (get_random(treasure_drop_chance) == 0) {
 		item = item_builder_build_item(TREASURE, map->level);
-		item->sprite->pos = monster->sprite->pos;
+		item->sprite->pos = monsterTilePos;
 		items[item_count++] = item;
 	}
 	if (get_random(item_drop_chance) == 0) {
 		ItemKey key;
 		key = get_random(DAGGER);
 		item = item_builder_build_item(key, map->level);
-		item->sprite->pos = monster->sprite->pos;
+		item->sprite->pos = monsterTilePos;
 		items[item_count++] = item;
 	}
 	if (!player_full_health && get_random(2) == 0) {
 		item = item_builder_build_item(FLESH, map->level);
-		item->sprite->pos = monster->sprite->pos;
+		item->sprite->pos = monsterTilePos;
 		items[item_count++] = item;
 	}
 
@@ -658,7 +682,7 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		linkedlist_append(&map->items, items[0]);
 	} else {
 		Item *container = item_builder_build_sack();
-		container->sprite->pos = monster->sprite->pos;
+		container->sprite->pos = monsterTilePos;
 		unsigned int i;
 		for (i = 0; i < item_count; ++i) {
 			linkedlist_append(&container->items, items[i]);
@@ -733,9 +757,35 @@ monster_set_state(Monster *m, StateType state, Uint8 forceCount)
 }
 
 void
-monster_push(Monster *m, RoomMatrix *rm, Vector2d dir)
+monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 {
-	move(m, rm, dir);
+	m->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
+	m->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
+
+	RoomSpace *space = roommatrix_get_space_for(rm, &m->sprite->pos);
+	if (space->lethal) {
+		m->sprite->state = SPRITE_STATE_FALLING;
+	} else if (space->trap) {
+		m->stats.hp -= space->trap->damage;
+		monster_hit(m, space->trap->damage);
+		gui_log("%s takes %d damage from a trap", m->label, space->trap->damage);
+	} else if (space->damaging) {
+		LinkedList *objects = space->objects;
+		while (objects) {
+			Object *o = objects->data;
+			objects = objects->next;
+			if (!o->damage)
+				return;
+			m->stats.hp -= o->damage;
+			monster_hit(m, o->damage);
+		}
+	} else if (has_collided(m, rm, direction)) {
+		m->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;
+		m->sprite->pos.y -= TILE_DIMENSION * (int) direction.y;
+	}
+
+	monster_update_pos(m, m->sprite->pos);
+	player_monster_kill_check(p, m);
 }
 
 void

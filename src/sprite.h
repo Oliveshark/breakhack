@@ -27,7 +27,15 @@
 #include "roommatrix.h"
 #include "timer.h"
 
+typedef struct UpdateData UpdateData;
+
+typedef enum SpriteState {
+	SPRITE_STATE_FALLING,
+	SPRITE_STATE_DEFAULT
+} SpriteState;
+
 typedef struct Sprite {
+	SpriteState state;
 	Texture* textures[2];
 	SDL_Rect clip;
 	bool destroyTextures;
@@ -37,6 +45,7 @@ typedef struct Sprite {
 	SDL_Point rotationPoint;
 	SDL_RendererFlip flip;
 	Timer *renderTimer;
+	Timer *animationTimer;
 	unsigned int texture_index;
 	bool fixed;
 	bool animate;
@@ -55,6 +64,9 @@ sprite_load_text_texture(Sprite *, const char *path, int index, int size, int ou
 
 void
 sprite_set_texture(Sprite *, Texture *, int index);
+
+void
+sprite_update(Sprite*, UpdateData *data);
 
 void
 sprite_render(Sprite*, Camera*);

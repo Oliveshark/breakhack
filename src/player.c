@@ -133,7 +133,7 @@ on_monster_collision(Player *player,
 		if (get_random(10) < player_has_artifact(player, PUSH_BACK)) {
 			gui_log("The force of your blow sends %s reeling",
 				monster->lclabel);
-			monster_push(monster, matrix, direction);
+			monster_push(monster, player, matrix, direction);
 		}
 
 		if (get_random(10) < player_has_artifact(player, FEAR_INDUCING)) {
@@ -163,12 +163,22 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	RoomSpace *space = &matrix->spaces[matrixPos.x][matrixPos.y];
 	collided = space->occupied;
 
+	if (space->monster != NULL
+	    && (space->monster->sprite->state == SPRITE_STATE_FALLING
+		|| space->monster->stats.hp <= 0))
+	{
+		collided = false;
+	}
+
 	if (collided) {
 		player->sprite->pos.x -= TILE_DIMENSION * (int)direction.x;
 		player->sprite->pos.y -= TILE_DIMENSION * (int)direction.y;
 	}
 
-	if (space->monster != NULL) {
+	if (space->monster != NULL
+	    && space->monster->stats.hp > 0
+	    && space->monster->sprite->state != SPRITE_STATE_FALLING)
+	{
 		on_monster_collision(player, space->monster, matrix, direction);
 	} else if (collided) {
 		mixer_play_effect(BONK);
@@ -595,29 +605,16 @@ void player_update(UpdateData *data)
 	if (player->stats.hp <= 0)
 		return;
 
+	sprite_update(player->sprite, data);
+
 	check_skill_activation(data);
-	if (player->state != FALLING && !check_skill_trigger(data))
+	if (player->sprite->state != SPRITE_STATE_FALLING && !check_skill_trigger(data))
 		handle_next_move(data);
 
-	if (player->state == FALLING && player->stats.hp > 0) {
-		if (!timer_started(player->animationTimer)) {
-			timer_start(player->animationTimer);
-			player->sprite->clip = CLIP16(0, 0);
-		} else {
-			if (timer_get_ticks(player->animationTimer) > 100) {
-				timer_start(player->animationTimer);
-				player->sprite->angle += 60;
-				player->sprite->dim.width -= 4;
-				player->sprite->dim.height -= 4;
-				player->sprite->pos.x += 2;
-				player->sprite->pos.y += 2;
-				player->sprite->rotationPoint = (SDL_Point) {
-					player->sprite->dim.width /2,
-					player->sprite->dim.height /2
-				};
-				if (player->sprite->dim.width <= 4)
-					player->stats.hp = 0;
-			}
+	if (player->sprite->state == SPRITE_STATE_FALLING && player->stats.hp > 0) {
+		if (player->sprite->dim.width <= 4) {
+			player->stats.hp = 0;
+			player->sprite->state = SPRITE_STATE_DEFAULT;
 		}
 	}
 
@@ -705,5 +702,5 @@ void
 player_set_falling(Player *player)
 {
 	mixer_play_effect(FALL0 + get_random(1));
-	player->state = FALLING;
+	player->sprite->state = SPRITE_STATE_FALLING;
 }

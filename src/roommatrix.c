@@ -284,6 +284,13 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 	}
 }
 
+RoomSpace*
+roommatrix_get_space_for(RoomMatrix *matrix, const Position *p)
+{
+	Position roomPos = position_to_matrix_coords(p);
+	return &matrix->spaces[roomPos.x][roomPos.y];
+}
+
 void roommatrix_destroy(RoomMatrix *m)
 {
 	// Clear the list but don't destroy the items

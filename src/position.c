@@ -21,7 +21,7 @@
 #include "defines.h"
 
 Position
-position_to_matrix_coords(Position *src)
+position_to_matrix_coords(const Position *src)
 {
 	unsigned int room_px_width, room_px_height;
 	Position pos;

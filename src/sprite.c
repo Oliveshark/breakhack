@@ -19,11 +19,13 @@
 #include <stdlib.h>
 #include "sprite.h"
 #include "util.h"
+#include "update_data.h"
 
 static Sprite*
 sprite_create_default(void)
 {
 	Sprite *s = ec_malloc(sizeof(Sprite));
+	s->state = SPRITE_STATE_DEFAULT;
 	s->textures[0] = NULL;
 	s->textures[1] = NULL;
 	s->clip = (SDL_Rect) { 0, 0, 0, 0 };
@@ -34,6 +36,7 @@ sprite_create_default(void)
 	s->rotationPoint = (SDL_Point) { 0, 0 };
 	s->flip = SDL_FLIP_NONE;
 	s->renderTimer = timer_create();
+	s->animationTimer = timer_create();
 	s->texture_index = 0;
 	s->fixed = false;
 	s->animate = true;
@@ -113,6 +116,33 @@ sprite_set_alpha(Sprite *s, Uint8 alpha)
 }
 
 void
+sprite_update(Sprite *s, UpdateData *data)
+{
+	UNUSED(data);
+
+	if (s->state == SPRITE_STATE_FALLING) {
+		if (!timer_started(s->animationTimer)) {
+			timer_start(s->animationTimer);
+			s->clip = CLIP16(0, 0);
+		} else {
+			if (timer_get_ticks(s->animationTimer) > 100) {
+				timer_start(s->animationTimer);
+				s->angle += 60;
+				s->dim.width -= 4;
+				s->dim.height -= 4;
+				s->pos.x += 2;
+				s->pos.y += 2;
+				s->rotationPoint = (SDL_Point) {
+					s->dim.width /2,
+					s->dim.height /2
+				};
+			}
+		}
+	}
+
+}
+
+void
 sprite_render(Sprite *s, Camera *cam)
 {
 	if (s->hidden)
@@ -169,5 +199,6 @@ void sprite_destroy(Sprite *sprite)
 			texture_destroy(sprite->textures[1]);
 	}
 	timer_destroy(sprite->renderTimer);
+	timer_destroy(sprite->animationTimer);
 	free(sprite);
 }
