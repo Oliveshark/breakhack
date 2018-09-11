@@ -499,6 +499,12 @@ skill_charge(Skill *skill, SkillData *data)
 	else if (destSpace->trap)
 		trap_activate(destSpace->trap, player);
 
+	LinkedList *objects = destSpace->objects;
+	while (objects) {
+		object_damage(objects->data, player);
+		objects = objects->next;
+	}
+
 	return true;
 }
 
