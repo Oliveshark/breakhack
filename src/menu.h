@@ -25,6 +25,11 @@
 #include "texture.h"
 #include "sprite.h"
 
+typedef struct TEXT_MENU_ITEM {
+	char label[20];
+	void (*callback)(void*);
+} TEXT_MENU_ITEM;
+
 typedef struct Menu_t {
 	LinkedList *items;
 	int selected;
@@ -32,6 +37,9 @@ typedef struct Menu_t {
 
 Menu *
 menu_create(void);
+
+void
+menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size, SDL_Renderer *);
 
 void
 menu_update(Menu*, Input*);

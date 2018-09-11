@@ -170,15 +170,6 @@ static Sprite	*fpsSprite	= NULL;
 static Pointer	*gPointer	= NULL;
 #endif // DEBUG
 
-static SDL_Color C_MENU_DEFAULT		= { 255, 255, 0, 255 };
-static SDL_Color C_MENU_OUTLINE_DEFAULT	= { 0,	0, 0, 255 };
-static SDL_Color C_MENU_HOVER		= { 255, 0, 0, 255 };
-
-struct MENU_ITEM {
-	char label[20];
-	void (*callback)(void*);
-};
-
 static void resetGame(void);
 static void initMainMenu(void);
 static bool is_player_dead(void);
@@ -373,38 +364,6 @@ goToMainMenu(void *unused)
 }
 
 static void
-createMenu(Menu **menu, struct MENU_ITEM menu_items[], unsigned int size)
-{
-	if (*menu == NULL)
-		*menu = menu_create();
-
-	for (unsigned int i = 0; i < size; ++i) {
-		unsigned int hcenter;
-
-		Sprite *s1 = sprite_create();
-		sprite_load_text_texture(s1, "GUI/SDS_8x8.ttf", 0, 25, 2);
-		texture_load_from_text(s1->textures[0], menu_items[i].label,
-				       C_MENU_DEFAULT, C_MENU_OUTLINE_DEFAULT, gRenderer);
-
-		hcenter = (SCREEN_WIDTH/2) - (s1->textures[0]->dim.width/2);
-		s1->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
-		s1->dim = s1->textures[0]->dim;
-		s1->fixed = true;
-
-		Sprite *s2 = sprite_create();
-		sprite_load_text_texture(s2, "GUI/SDS_8x8.ttf", 0, 25, 2);
-		texture_load_from_text(s2->textures[0], menu_items[i].label,
-				       C_MENU_HOVER, C_MENU_OUTLINE_DEFAULT, gRenderer);
-
-		s2->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
-		s2->dim = s2->textures[0]->dim;
-		s2->fixed = true;
-
-		menu_item_add(*menu, s1, s2, menu_items[i].callback);
-	}
-}
-
-static void
 showHowToTooltip(void *unused)
 {
 	UNUSED(unused);
@@ -415,20 +374,20 @@ showHowToTooltip(void *unused)
 static void
 initInGameMenu(void)
 {
-	struct MENU_ITEM menu_items[] = {
+	static TEXT_MENU_ITEM menu_items[] = {
 		{ "RESUME", toggleInGameMenu },
 		{ "HOW TO PLAY", showHowToTooltip },
 		{ "MAIN MENU", goToMainMenu },
 		{ "QUIT", exitGame },
 	};
 
-	createMenu(&inGameMenu, menu_items, 4);
+	menu_create_text_menu(&inGameMenu, &menu_items[0], 4, gRenderer);
 }
 
 static void
 createInGameGameOverMenu(void)
 {
-	struct MENU_ITEM menu_items[] = {
+	static TEXT_MENU_ITEM menu_items[] = {
 		{ "NEW GAME", startGame },
 		{ "MAIN MENU", goToMainMenu },
 		{ "QUIT", exitGame },
@@ -438,7 +397,7 @@ createInGameGameOverMenu(void)
 		menu_destroy(inGameMenu);
 		inGameMenu = NULL;
 	}
-	createMenu(&inGameMenu, menu_items, 3);
+	menu_create_text_menu(&inGameMenu, &menu_items[0], 3, gRenderer);
 }
 
 static void
@@ -458,7 +417,7 @@ viewScoreScreen(void *unused)
 static void
 initMainMenu(void)
 {
-	struct MENU_ITEM menu_items[] = {
+	static TEXT_MENU_ITEM menu_items[] = {
 		{ "PLAY", startGame },
 		{ "SCORES", viewScoreScreen },
 		{ "CREDITS", viewCredits },
@@ -470,7 +429,7 @@ initMainMenu(void)
 
 	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
 
-	createMenu(&mainMenu, menu_items, 4);
+	menu_create_text_menu(&mainMenu, &menu_items[0], 4, gRenderer);
 	mixer_play_music(MENU_MUSIC);
 	creditsScreen = screen_create_credits(gRenderer);
 	scoreScreen = screen_create_hiscore(gRenderer);

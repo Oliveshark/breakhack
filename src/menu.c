@@ -27,6 +27,10 @@
 #include "mixer.h"
 #include "collisions.h"
 
+static SDL_Color C_MENU_DEFAULT		= { 255, 255, 0, 255 };
+static SDL_Color C_MENU_OUTLINE_DEFAULT	= { 0,	0, 0, 255 };
+static SDL_Color C_MENU_HOVER		= { 255, 0, 0, 255 };
+
 typedef struct MenuItems {
 	Sprite *sprite;
 	Sprite *hsprite;
@@ -40,6 +44,42 @@ menu_create(void)
 	menu->items = linkedlist_create();
 	menu->selected = 0;
 	return menu;
+}
+
+void
+menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size, SDL_Renderer *renderer)
+{
+	if (*menu != NULL) {
+		menu_destroy(*menu);
+		*menu = NULL;
+	}
+
+	*menu = menu_create();
+
+	for (unsigned int i = 0; i < size; ++i) {
+		unsigned int hcenter;
+
+		Sprite *s1 = sprite_create();
+		sprite_load_text_texture(s1, "GUI/SDS_8x8.ttf", 0, 25, 2);
+		texture_load_from_text(s1->textures[0], menu_items[i].label,
+				       C_MENU_DEFAULT, C_MENU_OUTLINE_DEFAULT, renderer);
+
+		hcenter = (SCREEN_WIDTH/2) - (s1->textures[0]->dim.width/2);
+		s1->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
+		s1->dim = s1->textures[0]->dim;
+		s1->fixed = true;
+
+		Sprite *s2 = sprite_create();
+		sprite_load_text_texture(s2, "GUI/SDS_8x8.ttf", 0, 25, 2);
+		texture_load_from_text(s2->textures[0], menu_items[i].label,
+				       C_MENU_HOVER, C_MENU_OUTLINE_DEFAULT, renderer);
+
+		s2->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
+		s2->dim = s2->textures[0]->dim;
+		s2->fixed = true;
+
+		menu_item_add(*menu, s1, s2, menu_items[i].callback);
+	}
 }
 
 static bool
