@@ -123,7 +123,6 @@ sprite_update(Sprite *s, UpdateData *data)
 	if (s->state == SPRITE_STATE_FALLING) {
 		if (!timer_started(s->animationTimer)) {
 			timer_start(s->animationTimer);
-			s->clip = CLIP16(0, 0);
 		} else {
 			if (timer_get_ticks(s->animationTimer) > 100) {
 				timer_start(s->animationTimer);

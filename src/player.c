@@ -702,5 +702,6 @@ void
 player_set_falling(Player *player)
 {
 	mixer_play_effect(FALL0 + get_random(1));
+	player->sprite->clip = CLIP16(0, 0);
 	player->sprite->state = SPRITE_STATE_FALLING;
 }
