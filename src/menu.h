@@ -41,6 +41,9 @@ menu_create(void);
 void
 menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size, SDL_Renderer *);
 
+Menu *
+menu_create_character_selector(void (*onCharacterSelect)(const char **));
+
 void
 menu_update(Menu*, Input*);
 

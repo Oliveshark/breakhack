@@ -26,12 +26,13 @@
 #include "keyboard.h"
 #include "mixer.h"
 #include "collisions.h"
+#include "texturecache.h"
 
 static SDL_Color C_MENU_DEFAULT		= { 255, 255, 0, 255 };
 static SDL_Color C_MENU_OUTLINE_DEFAULT	= { 0,	0, 0, 255 };
 static SDL_Color C_MENU_HOVER		= { 255, 0, 0, 255 };
 
-typedef struct MenuItems {
+typedef struct MenuItem {
 	Sprite *sprite;
 	Sprite *hsprite;
 	GuiButton *button;
@@ -80,6 +81,30 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 
 		menu_item_add(*menu, s1, s2, menu_items[i].callback);
 	}
+}
+
+Menu *
+menu_create_character_selector(void (*onCharacterSelect)(const char **))
+{
+	const char *spriteSheets[] = {
+"Comissions/Warrior.png",
+	}
+	Menu *menu = menu_create();
+
+	Sprite *s1 = sprite_create();
+	sprite_set_texture(s1, texturecache_add(), 0);
+	s1->clip = CLIP16(0, 0);
+	s1->dim = DIM(32, 32);
+
+	Sprite *s2 = sprite_create();
+	sprite_set_texture(s2, texturecache_add("Commissions/Warrior.png"), 1);
+	s2->clip = CLIP16(0, 48);
+	s2->dim = DIM(32, 32);
+
+	MenuItem *item 
+	menu_item_add(menu, s1, s2, (void (*)(void *)) onCharacterSelect);
+
+	return menu;
 }
 
 static bool
