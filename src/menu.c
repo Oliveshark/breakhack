@@ -84,25 +84,38 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 }
 
 Menu *
-menu_create_character_selector(void (*onCharacterSelect)(const char **))
+menu_create_character_selector(void (*onCharacterSelect)(const char *))
 {
 	const char *spriteSheets[] = {
-"Comissions/Warrior.png",
-	}
+		"Commissions/Warrior.png",
+		"Commissions/Rogue.png"
+	};
+
+	char *callbackData[] = {
+		"warrior",
+		"rogue"
+	};
+
 	Menu *menu = menu_create();
+	int yoffset = 100;
+	for (size_t i = 0; i < 2; ++i) {
+		Sprite *s1 = sprite_create();
+		sprite_set_texture(s1, texturecache_add(spriteSheets[i]), 0);
+		s1->clip = CLIP16(0, 0);
+		s1->dim = DIM(64, 64);
+		s1->pos = POS((SCREEN_WIDTH + 16)/2, yoffset);
 
-	Sprite *s1 = sprite_create();
-	sprite_set_texture(s1, texturecache_add(), 0);
-	s1->clip = CLIP16(0, 0);
-	s1->dim = DIM(32, 32);
+		Sprite *s2 = sprite_create();
+		sprite_set_texture(s2, texturecache_add(spriteSheets[i]), 0);
+		s2->clip = CLIP16(0, 48);
+		s2->dim = DIM(64, 64);
+		s2->pos = POS((SCREEN_WIDTH + 16)/2, yoffset);
 
-	Sprite *s2 = sprite_create();
-	sprite_set_texture(s2, texturecache_add("Commissions/Warrior.png"), 1);
-	s2->clip = CLIP16(0, 48);
-	s2->dim = DIM(32, 32);
-
-	MenuItem *item 
-	menu_item_add(menu, s1, s2, (void (*)(void *)) onCharacterSelect);
+		menu_item_add(menu, s1, s2, (void (*)(void *)) onCharacterSelect);
+		MenuItem *item = linkedlist_get(&menu->items, (Uint32) i);
+		item->button->usrdata = callbackData[i];
+		yoffset += 100;
+	}
 
 	return menu;
 }

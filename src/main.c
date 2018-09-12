@@ -144,6 +144,7 @@ static Gui		*gGui			= NULL;
 static SkillBar		*gSkillBar		= NULL;
 static Menu		*mainMenu		= NULL;
 static Menu		*inGameMenu		= NULL;
+static Menu		*charSelectMenu		= NULL;
 static Timer		*menuTimer		= NULL;
 static Camera		*gCamera		= NULL;
 static Screen		*creditsScreen		= NULL;
@@ -155,6 +156,7 @@ static unsigned int	cLevel			= 1;
 static float		deltaTime		= 1.0;
 static double		renderScale		= 1.0;
 static Turn		currentTurn		= PLAYER;
+static class_t		playerClass		= WARRIOR;
 static GameState	gGameState;
 static SDL_Rect		mainViewport;
 static SDL_Rect		gameViewport;
@@ -304,9 +306,8 @@ initGame(void)
 }
 
 static void
-startGame(void *unused)
+startGame(void)
 {
-	UNUSED(unused);
 	cLevel = 1;
 	gGameState = PLAYING;
 	if (gPlayer)
@@ -349,6 +350,25 @@ toggleInGameMenu(void *unused)
 }
 
 static void
+on_character_select(const char *str)
+{
+	if (strcmp(str, "warrior") == 0)
+		playerClass = WARRIOR;
+	else if (strcmp(str, "rogue") == 0)
+		playerClass = ROGUE;
+
+	startGame();
+}
+
+static void
+goToCharacterMenu(void *unused)
+{
+	UNUSED(unused);
+	charSelectMenu = menu_create_character_selector(on_character_select);
+	gGameState = CHARACTER_MENU;
+}
+
+static void
 goToMainMenu(void *unused)
 {
 	UNUSED(unused);
@@ -388,7 +408,7 @@ static void
 createInGameGameOverMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "NEW GAME", startGame },
+		{ "NEW GAME", goToCharacterMenu },
 		{ "MAIN MENU", goToMainMenu },
 		{ "QUIT", exitGame },
 	};
@@ -418,7 +438,7 @@ static void
 initMainMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "PLAY", startGame },
+		{ "PLAY", goToCharacterMenu },
 		{ "SCORES", viewScoreScreen },
 		{ "CREDITS", viewCredits },
 		{ "QUIT", exitGame },
@@ -452,6 +472,9 @@ resetGame(void)
 	if (mainMenu)
 		menu_destroy(mainMenu);
 	mainMenu = NULL;
+	if (charSelectMenu)
+		menu_destroy(charSelectMenu);
+	charSelectMenu = NULL;
 
 	if (creditsScreen)
 		screen_destroy(creditsScreen);
@@ -891,9 +914,16 @@ run_menu(void)
 		map_move_monsters(gMap, gRoomMatrix);
 	}
 
-	menu_update(mainMenu, &input);
-	if (gGameState != MENU && gGameState != CREDITS && gGameState != SCORE_SCREEN)
+	if (gGameState != MENU
+	    && gGameState != CREDITS
+	    && gGameState != SCORE_SCREEN
+	    && gGameState != CHARACTER_MENU)
 		return;
+
+	if (gGameState == MENU)
+		menu_update(mainMenu, &input);
+	else if (gGameState == CHARACTER_MENU)
+		menu_update(charSelectMenu, &input);
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
@@ -907,6 +937,8 @@ run_menu(void)
 
 	if (gGameState == MENU)
 		menu_render(mainMenu, gCamera);
+	if (gGameState == CHARACTER_MENU)
+		menu_render(charSelectMenu, gCamera);
 	else if (gGameState == CREDITS)
 		screen_render(creditsScreen, gCamera);
 	else if (gGameState == SCORE_SCREEN)
@@ -962,6 +994,7 @@ run(void)
 			case MENU:
 			case CREDITS:
 			case SCORE_SCREEN:
+			case CHARACTER_MENU:
 				run_menu();
 				break;
 			case QUIT:
