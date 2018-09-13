@@ -148,78 +148,89 @@ on_monster_collision(Player *player,
 
 }
 
+static void
+player_pickup_artifacts(Player *player, RoomSpace *space)
+{
+	LinkedList *artifacts = space->artifacts;
+	while (artifacts) {
+		player_add_artifact(player, artifacts->data);
+		artifacts = artifacts->next;
+	}
+}
+
+static void
+player_interact_objects(Player *player, RoomSpace *space)
+{
+	LinkedList *objects = space->objects;
+	while (objects) {
+		object_damage(objects->data, player);
+		objects = objects->next;
+	}
+}
+
+static void
+player_collect_items(Player *player, RoomSpace *space)
+{
+	LinkedList *items = space->items;
+	while (items != NULL) {
+		Item *item = items->data;
+		items = items->next;
+		item_collected(item, player);
+	}
+}
+
+static void
+player_interact_traps_and_pits(Player *player, RoomSpace *space)
+{
+	if (space->lethal) {
+		player_set_falling(player);
+	}
+
+	if (space->trap) {
+		trap_activate(space->trap, player);
+	}
+}
+
+static bool
+player_has_collided(RoomSpace *space)
+{
+	if (space->occupied)
+		return true;
+
+	return space->monster && space->monster->sprite->state != SPRITE_STATE_FALLING;
+}
+
 static bool 
 has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
-	bool collided = false;
-
 	Position roomCoord = position_to_room_coords(&player->sprite->pos);
-	if (roomCoord.x != matrix->roomPos.x
-	    || roomCoord.y != matrix->roomPos.y) {
-		return collided;
+	if (roomCoord.x != matrix->roomPos.x || roomCoord.y != matrix->roomPos.y) {
+		return false;
 	}
 
 	Position matrixPos = position_to_matrix_coords(&player->sprite->pos);
 	RoomSpace *space = &matrix->spaces[matrixPos.x][matrixPos.y];
-	collided = space->occupied;
 
-	if (space->monster != NULL
-	    && (space->monster->sprite->state == SPRITE_STATE_FALLING
-		|| space->monster->stats.hp <= 0))
-	{
-		collided = false;
-	}
-
-	if (collided) {
+	if (player_has_collided(space)) {
 		player->sprite->pos.x -= TILE_DIMENSION * (int)direction.x;
 		player->sprite->pos.y -= TILE_DIMENSION * (int)direction.y;
-	}
 
-	if (space->monster != NULL
-	    && space->monster->stats.hp > 0
-	    && space->monster->sprite->state != SPRITE_STATE_FALLING)
-	{
-		on_monster_collision(player, space->monster, matrix, direction);
-	} else if (collided) {
-		mixer_play_effect(BONK);
-		camera_shake(direction, 100);
-		gui_log("Ouch! There is something in the way");
-	}
-
-	if (space->items != NULL && !collided) {
-		LinkedList *items = space->items;
-		while (items != NULL) {
-			Item *item = items->data;
-			items = items->next;
-			item_collected(item, player);
+		if (space->monster) {
+			on_monster_collision(player, space->monster, matrix, direction);
+		} else {
+			mixer_play_effect(BONK);
+			camera_shake(direction, 100);
+			gui_log("Ouch! There is something in the way");
 		}
+		return true;
 	}
-
-	if (space->artifacts != NULL && !collided) {
-		LinkedList *artifacts = space->artifacts;
-		while (artifacts) {
-			player_add_artifact(player, artifacts->data);
-			artifacts = artifacts->next;
-		}
+	else {
+		player_collect_items(player, space);
+		player_pickup_artifacts(player, space);
+		player_interact_objects(player, space);
+		player_interact_traps_and_pits(player, space);
+		return false;
 	}
-
-	if (space->objects && !collided) {
-		LinkedList *objects = space->objects;
-		while (objects) {
-			object_damage(objects->data, player);
-			objects = objects->next;
-		}
-	}
-
-	if (space->lethal && !collided) {
-		player_set_falling(player);
-	}
-
-	if (space->trap && !collided) {
-		trap_activate(space->trap, player);
-	}
-
-	return collided;
 }
 
 static void

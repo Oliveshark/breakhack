@@ -145,8 +145,6 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 			position_to_matrix_coords(&monster->sprite->pos);
 
 		rm->spaces[position.x][position.y]
-			.occupied = true;
-		rm->spaces[position.x][position.y]
 			.monster = monster;
 	}
 
