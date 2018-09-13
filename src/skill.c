@@ -155,18 +155,28 @@ create_default(const char *s_label, Sprite *s)
 }
 
 static bool
+check_skill_validity(Position *playerPos, Position *targetPos, SkillData *data)
+{
+	*playerPos = position_to_matrix_coords(&data->player->sprite->pos);
+	*targetPos = *playerPos;
+	targetPos->x += (int) data->direction.x;
+	targetPos->y += (int) data->direction.y;
+
+	player_turn(data->player, &data->direction);
+
+	if (!position_in_roommatrix(targetPos)) {
+		return false;
+	}
+	return true;
+}
+
+static bool
 skill_use_flurry(Skill *skill, SkillData *data)
 {
 	UNUSED (skill);
 
-	Position playerPos = position_to_matrix_coords(&data->player->sprite->pos);
-	Position targetPos = playerPos;
-	targetPos.x += (int) data->direction.x;
-	targetPos.y += (int) data->direction.y;
-
-	player_turn(data->player, &data->direction);
-
-	if (!position_in_roommatrix(&targetPos)) {
+	Position playerPos, targetPos;
+	if (!check_skill_validity(&playerPos, &targetPos, data)) {
 		return false;
 	}
 
@@ -285,14 +295,8 @@ skill_bash(Skill *skill, SkillData *data)
 {
 	UNUSED (skill);
 
-	Position playerPos = position_to_matrix_coords(&data->player->sprite->pos);
-	Position targetPos = playerPos;
-	targetPos.x += (int) data->direction.x;
-	targetPos.y += (int) data->direction.y;
-
-	player_turn(data->player, &data->direction);
-
-	if (!position_in_roommatrix(&targetPos)) {
+	Position playerPos, targetPos;
+	if (!check_skill_validity(&playerPos, &targetPos, data)) {
 		return false;
 	}
 
