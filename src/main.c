@@ -716,26 +716,25 @@ populateUpdateData(UpdateData *data, float deltatime)
 	data->cam = gCamera;
 }
 
-static void
-run_game_update(void)
+static bool
+check_skillbar_activation(void)
 {
-	static UpdateData updateData;
 	static unsigned int playerLevel = 1;
-	static bool artifactTooltipShown = false;
 
-	if (gGameState == IN_GAME_MENU)
-		menu_update(inGameMenu, &input);
-
-	populateUpdateData(&updateData, deltaTime);
-	bool skillActivated = false;
 	if (playerLevel != gPlayer->stats.lvl) {
 		playerLevel = gPlayer->stats.lvl;
-		skillActivated = skillbar_check_skill_activation(gSkillBar,
-								 gPlayer);
+		return skillbar_check_skill_activation(gSkillBar, gPlayer);
 	}
+	return false;
+}
+
+static void
+check_tooltip_activation(bool skillActivated)
+{
+	static bool artifactTooltipShown = false;
 
 	Settings *settings = settings_get();
-	if (skillActivated && settings->tooltips_enabled && playerLevel < 5) {
+	if (skillActivated && settings->tooltips_enabled) {
 		gGui->activeTooltip = new_skill_tooltip;
 	}
 	if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts) {
@@ -743,6 +742,20 @@ run_game_update(void)
 		if (settings->tooltips_enabled)
 			gGui->activeTooltip = new_artifact_tooltip;
 	}
+}
+
+static void
+run_game_update(void)
+{
+	static UpdateData updateData;
+
+	if (gGameState == IN_GAME_MENU)
+		menu_update(inGameMenu, &input);
+
+	populateUpdateData(&updateData, deltaTime);
+
+	bool skillActivated = check_skillbar_activation();
+	check_tooltip_activation(skillActivated);
 
 	if (gGameState == PLAYING && currentTurn == PLAYER)
 		player_update(&updateData);
