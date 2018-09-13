@@ -502,9 +502,9 @@ player_create(class_t class, Camera *cam)
 		case ROGUE:
 			m_strcpy(asset, 100, "Commissions/Rogue.png");
 			player->stats = (Stats) ROGUE_STATS;
-			player->skills[0] = NULL;
-			player->skills[1] = NULL;
-			player->skills[2] = NULL;
+			player->skills[0] = skill_create(BACKSTAB, cam);
+			player->skills[1] = skill_create(TRIP, cam);
+			player->skills[2] = skill_create(BLINK, cam);
 			player->skills[3] = skill_create(DAGGER_THROW, cam);
 			player->daggers = 10;
 			break;

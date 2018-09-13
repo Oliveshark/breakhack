@@ -73,6 +73,26 @@ static char *bash_tooltip[] = {
 	NULL
 };
 
+static char *trip_tooltip[] = {
+	"TRIP",
+	"",
+	"   Trips an adjecant enemy causing him to fall (move), in",
+	"   the direction you tripped him.",
+	"",
+	"   This can be combined with traps and pits to great effect",
+	"",
+	"COOLDOWN:",
+	"   3 turns",
+	"",
+	"USAGE:",
+	"   activate the skill (press 2)",
+	"   followed by a direction (left, right, up or down)",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
 static char *charge_tooltip[] = {
 	"CHARGE",
 	"",
@@ -347,6 +367,50 @@ create_bash(void)
 }
 
 static bool
+skill_trip(Skill *skill, SkillData *data)
+{
+	UNUSED (skill);
+
+	Position playerPos, targetPos;
+	if (!check_skill_validity(&playerPos, &targetPos, data)) {
+		return false;
+	}
+
+	RoomSpace *space = &data->matrix->spaces[targetPos.x][targetPos.y];
+	mixer_play_effect(SWING0 + get_random(2));
+	if (space->monster) {
+		monster_push(space->monster, data->player, data->matrix,  data->direction);
+		int dmg = stats_fight(&data->player->stats, &space->monster->stats);
+		gui_log("You trip %s causing it to fall away from you", space->monster->lclabel);
+		monster_hit(space->monster, dmg);
+		player_monster_kill_check(data->player, space->monster);
+
+	} else {
+		gui_log("You flail at the air");
+	}
+	return true;
+}
+
+static Skill *
+create_trip(void)
+{
+	Texture *t = texturecache_add("Extras/Skills.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(96, 0);
+	s->fixed = true;
+	Skill *skill = create_default("Trip", s);
+	skill->levelcap = 3;
+	skill->instantUse = false;
+	skill->resetTime = 3;
+	skill->available = NULL;
+	skill->use = skill_trip;
+	skill->actionRequired = true;
+	return skill;
+}
+
+static bool
 skill_sip_health_available(Player *player)
 {
 	return player->potion_sips > 0 && player->stats.hp != player->stats.maxhp;
@@ -552,6 +616,14 @@ skill_create(enum SkillType t, Camera *cam)
 			skill = create_bash();
 			skill->tooltip = tooltip_create(bash_tooltip, cam);
 			break;
+		case TRIP:
+			skill = create_trip();
+			skill->tooltip = tooltip_create(trip_tooltip, cam);
+			break;
+		case BACKSTAB:
+		case BLINK:
+			error("Skill %d not implemented", t);
+			return NULL;
 		default:
 			fatal("Unknown SkillType %u", (unsigned int) t);
 			return NULL;
