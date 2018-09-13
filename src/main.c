@@ -562,27 +562,8 @@ toggle_fullscreen(void)
 }
 
 static void
-handle_main_input(void)
+handle_settings_input(void)
 {
-	if (gGameState == PLAYING
-		|| gGameState == IN_GAME_MENU
-		|| gGameState == GAME_OVER
-		|| gGameState == COMPLETED)
-	{
-		if (!gGui->activeTooltip && input_key_is_pressed(&input, KEY_ESC))
-			toggleInGameMenu(NULL);
-	}
-
-	if (gGameState == CREDITS && input_key_is_pressed(&input, KEY_ESC))
-		gGameState = MENU;
-	else if ((gGameState == SCORE_SCREEN || gGameState == CHARACTER_MENU)
-		 && input_key_is_pressed(&input, KEY_ESC))
-		gGameState = MENU;
-	else if (gGameState == MENU && input_key_is_pressed(&input, KEY_ESC))
-		gGameState = QUIT;
-	else if (gGui->activeTooltip && input_key_is_pressed(&input, KEY_ESC))
-		gGui->activeTooltip = NULL;
-
 	if (input_modkey_is_pressed(&input, KEY_CTRL_M)) {
 		if (mixer_toggle_music(&gGameState))
 			gui_log("Music enabled");
@@ -609,6 +590,36 @@ handle_main_input(void)
 	if (input_modkey_is_pressed(&input, KEY_CTRL_F)) {
 		toggle_fullscreen();
 	}
+}
+
+static void
+handle_main_input(void)
+{
+	if (input_key_is_pressed(&input, KEY_ESC)) {
+		switch (gGameState) {
+			case CREDITS:
+			case SCORE_SCREEN:
+			case CHARACTER_MENU:
+				gGameState = MENU;
+				break;
+			case MENU:
+				gGameState = QUIT;
+				break;
+			case PLAYING:
+			case IN_GAME_MENU:
+			case GAME_OVER:
+			case COMPLETED:
+				if (gGui->activeTooltip)
+					gGui->activeTooltip = NULL;
+				else
+					toggleInGameMenu(NULL);
+			default:
+				break;
+		}
+
+	}
+
+	handle_settings_input();
 }
 
 static bool
