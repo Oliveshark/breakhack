@@ -439,6 +439,92 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 	}
 }
 
+static void
+on_monster_move(Monster *m, Position *origPos, Map *map, RoomMatrix *rm)
+{
+	Position currentTilePos = position_to_matrix_coords(&m->sprite->pos); 
+	Player *player = rm->spaces[rm->playerRoomPos.x][rm->playerRoomPos.y].player;
+	if (player) {
+		Uint32 range = 3 + player_has_artifact(player, IMPROVED_HEARING) * 2;
+		bool withinHearingDist =
+			range > 3 && position_proximity(range,
+							&currentTilePos,
+							&rm->playerRoomPos);
+
+		RoomSpace *space = &rm->spaces[currentTilePos.x][currentTilePos.y];
+		if (space->light < 100 && withinHearingDist) {
+			Position alertPos = m->sprite->pos;
+			alertPos.x += TILE_DIMENSION >> 1;
+			alertPos.y += TILE_DIMENSION >> 1;
+			actiontextbuilder_create_text("!", C_WHITE, &alertPos);
+		}
+	}
+
+	if (rm->modifier->type == RMOD_TYPE_FIRE || m->behaviour == FIRE_DEMON) {
+		Object *o = object_create_fire();
+		o->sprite->pos = *origPos;
+		o->damage *= m->stats.lvl;
+		linkedlist_push(&map->objects, o);
+	}
+	if (m->behaviour == SORCERER) {
+		Object *o = object_create_green_gas();
+		o->sprite->pos = *origPos;
+		o->damage *= m->stats.lvl;
+		linkedlist_push(&map->objects, o);
+	}
+}
+
+static void
+monster_walk(Monster *m, RoomMatrix *rm)
+{
+	switch (m->state.current) {
+		case PASSIVE:
+			monster_drunk_walk(m, rm);
+			break;
+		case AGRESSIVE:
+			monster_agressive_walk(m, rm);
+			break;
+		case SCARED:
+			monster_coward_walk(m, rm);
+			break;
+		case STATIONARY:
+		case SLEEPING:
+		case SCANNING:
+		default:
+			break;
+	};
+
+	monster_update_pos(m, m->sprite->pos);
+}
+
+static bool
+monster_check_steps(Monster *m)
+{
+	m->steps++;
+	if (m->steps >= m->stats.speed) {
+		if (m->stateIndicator.displayCount > 0)
+			m->stateIndicator.displayCount -= 1;
+		m->state.stepsSinceChange += 1;
+		return true;
+	}
+
+	return false;
+}
+
+static bool
+monster_perform_aoe_attack(Monster *m, RoomMatrix *rm)
+{
+	if (m->state.current == AGRESSIVE && m->behaviour == SORCERER) {
+		Position tilePos = position_to_matrix_coords(&m->sprite->pos);
+		if (position_proximity(1, &tilePos, &rm->playerRoomPos)) {
+			sorcerer_blast(m, rm);
+			monster_behaviour_check_post_attack(m);
+			return true;
+		}
+	}
+	return false;
+}
+
 bool
 monster_move(Monster *m, RoomMatrix *rm, Map *map)
 {
@@ -459,87 +545,27 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 
 	monster_behaviour_check(m, rm);
 	Position origPos = m->sprite->pos;
-	Position originalMPos =
-		position_to_matrix_coords(&m->sprite->pos);
 
-	if (m->state.current == AGRESSIVE && m->behaviour == SORCERER) {
-		if (position_proximity(1, &originalMPos, &rm->playerRoomPos)) {
-			sorcerer_blast(m, rm);
-			monster_behaviour_check_post_attack(m);
-			return true;
-		}
+	if (monster_perform_aoe_attack(m, rm)) {
+		return true;
 	}
+
+	Position originalMPos = position_to_matrix_coords(&m->sprite->pos);
 
 	rm->spaces[originalMPos.x][originalMPos.y].occupied = false;
 	rm->spaces[originalMPos.x][originalMPos.y].monster = NULL;
 
-	switch (m->state.current) {
-		case PASSIVE:
-			monster_drunk_walk(m, rm);
-			break;
-		case AGRESSIVE:
-			monster_agressive_walk(m, rm);
-			break;
-		case SCARED:
-			monster_coward_walk(m, rm);
-			break;
-		case STATIONARY:
-		case SLEEPING:
-		case SCANNING:
-		default:
-			break;
-	};
-
-	monster_update_pos(m, m->sprite->pos);
+	monster_walk(m, rm);
 
 	Position newPos = position_to_matrix_coords(&m->sprite->pos);
 	rm->spaces[newPos.x][newPos.y].occupied = true;
 	rm->spaces[newPos.x][newPos.y].monster = m;
 
 	if (!position_equals(&originalMPos, &newPos)) {
-		Player *p = rm->spaces[rm->playerRoomPos.x][rm->playerRoomPos.y].player;
-		if (p) {
-			Uint32 range = 3 + player_has_artifact(p, IMPROVED_HEARING) * 2;
-			bool withinHearingDist =
-				range > 3 && position_proximity(range,
-								&newPos,
-								&rm->playerRoomPos);
-
-			RoomSpace *space = &rm->spaces[newPos.x][newPos.y];
-			if (space->light < 100 && withinHearingDist) {
-				Position alertPos = m->sprite->pos;
-				alertPos.x += TILE_DIMENSION >> 1;
-				alertPos.y += TILE_DIMENSION >> 1;
-				actiontextbuilder_create_text("!", C_WHITE, &alertPos);
-			}
-		}
-
+		on_monster_move(m, &origPos, map, rm);
 	}
 
-	if (!position_equals(&origPos, &m->sprite->pos)) {
-		if (rm->modifier->type == RMOD_TYPE_FIRE || m->behaviour == FIRE_DEMON) {
-			Object *o = object_create_fire();
-			o->sprite->pos = origPos;
-			o->damage *= m->stats.lvl;
-			linkedlist_push(&map->objects, o);
-		}
-		if (m->behaviour == SORCERER) {
-			Object *o = object_create_green_gas();
-			o->sprite->pos = origPos;
-			o->damage *= m->stats.lvl;
-			linkedlist_push(&map->objects, o);
-		}
-	}
-
-	m->steps++;
-	if (m->steps >= m->stats.speed) {
-		if (m->stateIndicator.displayCount > 0)
-			m->stateIndicator.displayCount -= 1;
-		m->state.stepsSinceChange += 1;
-		return true;
-	}
-
-	return false;
+	return monster_check_steps(m);
 }
 
 void
