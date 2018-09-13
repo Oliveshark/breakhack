@@ -72,8 +72,9 @@ pickup_dagger(Item *item, Player *player)
 	player->daggers += (Uint32) item->value;
 
 	mixer_play_effect(DAGGER_PICKUP);
-	if (item->value > 1)
-		gui_log("You collect %u daggers", (Uint32) item->value);
+	double count = player->class == ROGUE ? item->value * 2 : item->value;
+	if (count > 1)
+		gui_log("You collect %u daggers", (Uint32) count);
 	else
 		gui_log("You collect a dagger");
 }

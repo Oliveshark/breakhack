@@ -43,7 +43,7 @@
 #define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1, false, false }
 #define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1, false, false }
 #define PALADIN_STATS	{ 12, 12, 8, 9, 3, 1, 1, false, false }
-#define ROGUE_STATS	{ 12, 12, 5, 7, 1, 2, 1, false, false }
+#define ROGUE_STATS	{  9,  9, 4, 9, 4, 2, 1, false, false }
 #define WARRIOR_STATS	{ 12, 12, 8, 9, 3, 1, 1, false, false }
 
 void
@@ -495,6 +495,7 @@ player_create(class_t class, Camera *cam)
 			player->skills[1] = NULL;
 			player->skills[2] = NULL;
 			player->skills[3] = skill_create(DAGGER_THROW, cam);
+			player->daggers = 10;
 			break;
 		case WARRIOR:
 			m_strcpy(asset, 100, "Commissions/Warrior.png");
