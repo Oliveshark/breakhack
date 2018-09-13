@@ -99,9 +99,11 @@ action_spent(Player *p)
 	p->stat_data.steps++;
 	p->stat_data.total_steps++;
 
-	for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
-		if (p->skills[i] != NULL && p->skills[i]->resetCountdown > 0)
-			p->skills[i]->resetCountdown--;
+	if (p->stat_data.steps >= p->stats.speed) {
+		for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
+			if (p->skills[i] != NULL && p->skills[i]->resetCountdown > 0)
+				p->skills[i]->resetCountdown--;
+		}
 	}
 }
 

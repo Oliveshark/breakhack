@@ -770,23 +770,20 @@ run_game_update(void)
 	map_set_current_room(gMap, &gPlayer->sprite->pos);
 	map_update(&updateData);
 
-	bool turnSwitch = false;
 	if (currentTurn == PLAYER) {
 		if (player_turn_over(gPlayer)) {
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
 			map_on_new_turn(gMap);
-			turnSwitch = true;
 		}
 	} else if (currentTurn == MONSTER) {
 		if (map_move_monsters(gMap, gRoomMatrix)) {
 			currentTurn = PLAYER;
-
 		}
 	}
 
-	if (map_clear_expired_entities(gMap, gPlayer) || turnSwitch)
-		repopulate_roommatrix();
+	map_clear_expired_entities(gMap, gPlayer);
+	repopulate_roommatrix();
 }
 
 static void

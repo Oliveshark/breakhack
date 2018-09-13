@@ -379,11 +379,12 @@ skill_trip(Skill *skill, SkillData *data)
 	RoomSpace *space = &data->matrix->spaces[targetPos.x][targetPos.y];
 	mixer_play_effect(SWING0 + get_random(2));
 	if (space->monster) {
-		monster_push(space->monster, data->player, data->matrix,  data->direction);
+		mixer_play_effect(SWORD_HIT);
 		int dmg = stats_fight(&data->player->stats, &space->monster->stats);
 		gui_log("You trip %s causing it to fall away from you", space->monster->lclabel);
 		monster_hit(space->monster, dmg);
 		player_monster_kill_check(data->player, space->monster);
+		monster_push(space->monster, data->player, data->matrix,  data->direction);
 
 	} else {
 		gui_log("You flail at the air");
