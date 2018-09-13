@@ -97,24 +97,24 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *))
 	};
 
 	Menu *menu = menu_create();
-	int yoffset = 100;
+	int xoffset = 224;
 	for (size_t i = 0; i < 2; ++i) {
 		Sprite *s1 = sprite_create();
 		sprite_set_texture(s1, texturecache_add(spriteSheets[i]), 0);
-		s1->clip = CLIP16(0, 0);
+		s1->clip = CLIP16(0, 48);
 		s1->dim = DIM(64, 64);
-		s1->pos = POS((SCREEN_WIDTH + 16)/2, yoffset);
+		s1->pos = POS(xoffset - 32, 256);
 
 		Sprite *s2 = sprite_create();
 		sprite_set_texture(s2, texturecache_add(spriteSheets[i]), 0);
-		s2->clip = CLIP16(0, 48);
+		s2->clip = CLIP16(0, 0);
 		s2->dim = DIM(64, 64);
-		s2->pos = POS((SCREEN_WIDTH + 16)/2, yoffset);
+		s2->pos = POS(xoffset - 32, 256);
 
 		menu_item_add(menu, s1, s2, (void (*)(void *)) onCharacterSelect);
 		MenuItem *item = linkedlist_get(&menu->items, (Uint32) i);
 		item->button->usrdata = callbackData[i];
-		yoffset += 100;
+		xoffset += 224;
 	}
 
 	return menu;
@@ -125,10 +125,10 @@ handle_keyboard_input(Menu *m, Input *input)
 {
 	int lastSelect = -1;
 
-	if (input_key_is_pressed(input, KEY_UP)) {
+	if (input_key_is_pressed(input, KEY_UP | KEY_LEFT)) {
 		lastSelect = m->selected;
 		m->selected--;
-	} else if (input_key_is_pressed(input, KEY_DOWN)) {
+	} else if (input_key_is_pressed(input, KEY_DOWN | KEY_RIGHT)) {
 		lastSelect = m->selected;
 		m->selected++;
 	} else if (input_key_is_pressed(input, KEY_ENTER)) {

@@ -129,16 +129,18 @@ map_add_trap(Map *map, Position *pos, Trap *trap)
 	*oldTrap = trap;
 }
 
-void
+bool
 map_clear_expired_entities(Map *map, Player *player)
 {
 	LinkedList *filtered = linkedlist_create();
+	bool anythingCleared = false;
 
 	while (map->monsters) {
 		Monster *monster = linkedlist_pop(&map->monsters);
 		if (monster->stats.hp <= 0) {
 			monster_drop_loot(monster, map, player);
 			monster_destroy(monster);
+			anythingCleared = true;
 		} else {
 			linkedlist_append(&filtered, monster);
 		}
@@ -148,32 +150,40 @@ map_clear_expired_entities(Map *map, Player *player)
 	filtered = linkedlist_create();
 	while (map->items) {
 		Item *item = linkedlist_pop(&map->items);
-		if (item->collected)
+		if (item->collected) {
 			item_destroy(item);
-		else
+			anythingCleared = true;
+		} else {
 			linkedlist_append(&filtered, item);
+		}
 	}
 	map->items = filtered;
 
 	filtered = linkedlist_create();
 	while (map->artifacts) {
 		Artifact *a = linkedlist_pop(&map->artifacts);
-		if (!a->collected)
+		if (!a->collected) {
 			linkedlist_append(&filtered, a);
-		else
+		} else {
 			artifact_destroy(a);
+			anythingCleared = true;
+		}
 	}
 	map->artifacts = filtered;
 
 	filtered = linkedlist_create();
 	while (map->objects) {
 		Object *o = linkedlist_pop(&map->objects);
-		if (o->dead)
+		if (o->dead) {
 			object_destroy(o);
-		else
+			anythingCleared = true;
+		} else {
 			linkedlist_append(&filtered, o);
+		}
 	}
 	map->objects = filtered;
+
+	return anythingCleared;
 }
 
 void

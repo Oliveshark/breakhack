@@ -312,7 +312,7 @@ startGame(void)
 	gGameState = PLAYING;
 	if (gPlayer)
 		player_destroy(gPlayer);
-	gPlayer = player_create(WARRIOR, gCamera);
+	gPlayer = player_create(playerClass, gCamera);
 	mixer_play_music(GAME_MUSIC0 + get_random(2));
 	resetGame();
 	skillbar_reset(gSkillBar);
@@ -575,7 +575,8 @@ handle_main_input(void)
 
 	if (gGameState == CREDITS && input_key_is_pressed(&input, KEY_ESC))
 		gGameState = MENU;
-	else if (gGameState == SCORE_SCREEN && input_key_is_pressed(&input, KEY_ESC))
+	else if ((gGameState == SCORE_SCREEN || gGameState == CHARACTER_MENU)
+		 && input_key_is_pressed(&input, KEY_ESC))
 		gGameState = MENU;
 	else if (gGameState == MENU && input_key_is_pressed(&input, KEY_ESC))
 		gGameState = QUIT;
@@ -745,23 +746,19 @@ run_game_update(void)
 	map_set_current_room(gMap, &gPlayer->sprite->pos);
 	map_update(&updateData);
 
-	bool turnSwitch = false;
 	if (currentTurn == PLAYER) {
 		if (player_turn_over(gPlayer)) {
 			currentTurn = MONSTER;
 			player_reset_steps(gPlayer);
 			map_on_new_turn(gMap);
-			turnSwitch = true;
 		}
 	} else if (currentTurn == MONSTER) {
 		if (map_move_monsters(gMap, gRoomMatrix)) {
 			currentTurn = PLAYER;
-			turnSwitch = true;
 		}
 	}
 
-	map_clear_expired_entities(gMap, gPlayer);
-	if (turnSwitch)
+	if (map_clear_expired_entities(gMap, gPlayer))
 		repopulate_roommatrix();
 }
 
@@ -927,11 +924,13 @@ run_menu(void)
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
-	SDL_RenderSetViewport(gRenderer, &menuViewport);
-	map_render(gMap, gCamera);
-	map_render_mid_layer(gMap, gCamera);
-	map_render_top_layer(gMap, gRoomMatrix, gCamera);
-	roommatrix_render_lightmap(gRoomMatrix, gCamera);
+	if (gGameState != CHARACTER_MENU)  {
+		SDL_RenderSetViewport(gRenderer, &menuViewport);
+		map_render(gMap, gCamera);
+		map_render_mid_layer(gMap, gCamera);
+		map_render_top_layer(gMap, gRoomMatrix, gCamera);
+		roommatrix_render_lightmap(gRoomMatrix, gCamera);
+	}
 
 	SDL_RenderSetViewport(gRenderer, &mainViewport);
 

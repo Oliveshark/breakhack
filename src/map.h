@@ -91,7 +91,7 @@ map_add_monster(Map*, Monster*);
 bool
 map_move_monsters(Map*, RoomMatrix*);
 
-void
+bool
 map_clear_expired_entities(Map*, Player*);
 
 void
