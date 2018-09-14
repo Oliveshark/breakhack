@@ -435,7 +435,7 @@ local function build_normal_room(room)
 	if CURRENT_LEVEL > 5 and random(8) == 1 then
 		room.modifier.type = "FIRE"
 		room.modifier.arg = ""
-	elseif (not pitsAdded and CURRENT_LEVEL > 1) or CURRENT_LEVEL > 3 and random(8) == 1 then
+	elseif ((not pitsAdded and CURRENT_LEVEL > 1) or CURRENT_LEVEL > 3) and random(8) == 1 then
 		directions = { "LEFT", "RIGHT", "UP", "DOWN" }
 		room.modifier.type = "WINDY"
 		room.modifier.arg = directions[random(#directions)]

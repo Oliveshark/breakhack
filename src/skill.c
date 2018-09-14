@@ -631,7 +631,7 @@ skill_create(enum SkillType t, Camera *cam)
 			return NULL;
 	}
 
-#ifdef DEBUG_SKILLS
+#ifdef DEBUG
 	skill->levelcap = 1;
 #endif
 	return skill;
