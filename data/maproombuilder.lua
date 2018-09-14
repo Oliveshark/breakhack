@@ -156,10 +156,8 @@ end
 
 local function add_pits_to_room(room)
 
-	if CURRENT_LEVEL < 1 then
-		return
-	elseif random(5) ~= 1 then
-		return
+	if CURRENT_LEVEL < 2 or random(5) ~= 1 then
+		return false
 	end
 
 	local pitdata = read_file("pitlayouts.dat")
@@ -220,6 +218,8 @@ local function add_pits_to_room(room)
 			end
 		end
 	end
+
+	return true
 end
 
 local function add_tiles_to_room (room)
@@ -426,7 +426,7 @@ local function build_normal_room(room)
 	add_random_decor_to_room(room)
 	add_walls_to_room(room)
 	add_exits_to_room(room)
-	add_pits_to_room(room)
+	local pitsAdded = add_pits_to_room(room)
 
 	if room.goal then
 		add_level_exit(room)
@@ -435,7 +435,7 @@ local function build_normal_room(room)
 	if CURRENT_LEVEL > 5 and random(8) == 1 then
 		room.modifier.type = "FIRE"
 		room.modifier.arg = ""
-	elseif CURRENT_LEVEL > 2 and random(8) == 1 then
+	elseif (not pitsAdded and CURRENT_LEVEL > 1) or CURRENT_LEVEL > 3 and random(8) == 1 then
 		directions = { "LEFT", "RIGHT", "UP", "DOWN" }
 		room.modifier.type = "WINDY"
 		room.modifier.arg = directions[random(#directions)]
