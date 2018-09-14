@@ -22,6 +22,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <physfs.h>
+#include <string.h>
 #include "linkedlist.h"
 #include "player.h"
 #include "screenresolution.h"
