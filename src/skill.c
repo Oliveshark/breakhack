@@ -378,6 +378,7 @@ skill_trip(Skill *skill, SkillData *data)
 
 	RoomSpace *space = &data->matrix->spaces[targetPos.x][targetPos.y];
 	mixer_play_effect(SWING0 + get_random(2));
+	animation_run(data->player->swordAnimation);
 	if (space->monster) {
 		mixer_play_effect(SWORD_HIT);
 		int dmg = stats_fight(&data->player->stats, &space->monster->stats);

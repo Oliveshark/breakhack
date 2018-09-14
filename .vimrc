@@ -5,5 +5,5 @@ nnoremap <F4> :ter ++close env LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ ./_build/debu
 
 packadd termdebug
 let g:termdebug_wide = 1
-let g:syntastic_c_include_dirs = [ '_build', '/usr/include/SDL2', 'steamworks_c_wrapper/src' ]
+let g:syntastic_c_include_dirs = [ '_build/debug', '/usr/include/SDL2', 'steamworks_c_wrapper/src' ]
 let g:syntastic_cpp_include_dirs = [ 'steamworks_c_wrapper/sdk/public/steam' ]
