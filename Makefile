@@ -1,6 +1,5 @@
 all:
 	@make -sC _build/debug
-	@make -sC _build/release
 .PHONY: all
 
 clean:
