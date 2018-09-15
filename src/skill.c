@@ -93,6 +93,25 @@ static char *trip_tooltip[] = {
 	NULL
 };
 
+static char *backstab_tooltip[] = {
+	"BACKSTAB",
+	"",
+	"   You flip over an adjecant enemy taking it's place and",
+	"   it taking yours, finnishing off with a stab in the back",
+	"   of your foe.",
+	"",
+	"COOLDOWN:",
+	"   5 turns",
+	"",
+	"USAGE:",
+	"   activate the skill (press 1)",
+	"   followed by a direction (left, right, up or down)",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
 static char *charge_tooltip[] = {
 	"CHARGE",
 	"",
@@ -413,6 +432,68 @@ create_trip(void)
 }
 
 static bool
+skill_backstab(Skill *skill, SkillData *data)
+{
+	UNUSED(skill);
+
+	Position playerPos, targetPos;
+	if (!check_skill_validity(&playerPos, &targetPos, data)) {
+		return false;
+	}
+	RoomSpace *targetSpace = &data->matrix->spaces[targetPos.x][targetPos.y];
+	if (targetSpace->occupied) {
+		return false;
+	}
+
+	Vector2d reverseDirection = data->direction;
+	reverseDirection.x *= -1;
+	reverseDirection.y *= -1;
+
+	mixer_play_effect(SWING0 + get_random(2));
+
+	data->player->sprite->pos.x += (int) data->direction.x * TILE_DIMENSION;
+	data->player->sprite->pos.y += (int) data->direction.y * TILE_DIMENSION;
+	player_turn(data->player, &reverseDirection);
+	animation_run(data->player->swordAnimation);
+
+	if (targetSpace->monster) {
+		targetSpace->monster->sprite->pos.x += (int) reverseDirection.x * TILE_DIMENSION;
+		targetSpace->monster->sprite->pos.y += (int) reverseDirection.y * TILE_DIMENSION;
+
+		targetSpace->monster->stats.disadvantage = true;
+		int dmg = stats_fight(&data->player->stats, &targetSpace->monster->stats);
+		targetSpace->monster->stats.disadvantage = false;
+		monster_hit(targetSpace->monster, dmg);
+		player_monster_kill_check(data->player, targetSpace->monster);
+		if (dmg) {
+			mixer_play_effect(SWORD_HIT);
+			monster_set_state(targetSpace->monster, STUNNED, 1);
+		}
+	}
+
+	return true;
+}
+
+static Skill *
+create_backstab(void)
+{
+	Texture *t = texturecache_add("Extras/Skills.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(0, 0);
+	s->fixed = true;
+	Skill *skill = create_default("Backstab", s);
+	skill->levelcap = 2;
+	skill->instantUse = false;
+	skill->resetTime = 5;
+	skill->available = NULL;
+	skill->use = skill_backstab;
+	skill->actionRequired = true;
+	return skill;
+}
+
+static bool
 skill_sip_health_available(Player *player)
 {
 	return player->potion_sips > 0 && player->stats.hp != player->stats.maxhp;
@@ -623,6 +704,9 @@ skill_create(enum SkillType t, Camera *cam)
 			skill->tooltip = tooltip_create(trip_tooltip, cam);
 			break;
 		case BACKSTAB:
+			skill = create_backstab();
+			skill->tooltip = tooltip_create(backstab_tooltip, cam);
+			break;
 		case BLINK:
 			error("Skill %d not implemented", t);
 			return NULL;

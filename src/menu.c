@@ -91,7 +91,7 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *))
 		"Commissions/Rogue.png"
 	};
 
-	char *callbackData[] = {
+	static char *callbackData[] = {
 		"warrior",
 		"rogue"
 	};
