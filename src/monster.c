@@ -792,9 +792,10 @@ monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 	if (space->lethal) {
 		m->sprite->state = SPRITE_STATE_FALLING;
 	} else if (space->trap) {
-		m->stats.hp -= space->trap->damage;
-		monster_hit(m, space->trap->damage);
-		gui_log("%s takes %d damage from a trap", m->label, space->trap->damage);
+		int dmg = space->trap->damage * 3;
+		m->stats.hp -= dmg;
+		monster_hit(m, dmg);
+		gui_log("%s takes %d damage from a trap", m->label, dmg);
 	} else if (space->damaging) {
 		LinkedList *objects = space->objects;
 		while (objects) {
@@ -802,8 +803,8 @@ monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 			objects = objects->next;
 			if (!o->damage)
 				return;
-			m->stats.hp -= o->damage;
-			monster_hit(m, o->damage);
+			m->stats.hp -= o->damage * 3;
+			monster_hit(m, o->damage * 3);
 		}
 	} else if (has_collided(m, rm, direction)) {
 		m->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;

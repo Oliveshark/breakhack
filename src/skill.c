@@ -404,7 +404,8 @@ skill_trip(Skill *skill, SkillData *data)
 		gui_log("You trip %s causing it to fall away from you", space->monster->lclabel);
 		monster_hit(space->monster, dmg);
 		player_monster_kill_check(data->player, space->monster);
-		monster_push(space->monster, data->player, data->matrix,  data->direction);
+		if (space->monster->stats.hp > 0)
+			monster_push(space->monster, data->player, data->matrix,  data->direction);
 
 	} else {
 		gui_log("You flail at the air");
@@ -457,17 +458,17 @@ skill_backstab(Skill *skill, SkillData *data)
 	animation_run(data->player->swordAnimation);
 
 	if (targetSpace->monster) {
-		targetSpace->monster->sprite->pos.x += (int) reverseDirection.x * TILE_DIMENSION;
-		targetSpace->monster->sprite->pos.y += (int) reverseDirection.y * TILE_DIMENSION;
+		Monster *m = targetSpace->monster;
+		monster_push(m, data->player, data->matrix, reverseDirection);
 
-		targetSpace->monster->stats.disadvantage = true;
-		int dmg = stats_fight(&data->player->stats, &targetSpace->monster->stats);
-		targetSpace->monster->stats.disadvantage = false;
-		monster_hit(targetSpace->monster, dmg);
-		player_monster_kill_check(data->player, targetSpace->monster);
+		m->stats.disadvantage = true;
+		int dmg = stats_fight(&data->player->stats, &m->stats);
+		m->stats.disadvantage = false;
+		monster_hit(m, dmg);
+		player_monster_kill_check(data->player, m);
 		if (dmg) {
 			mixer_play_effect(SWORD_HIT);
-			monster_set_state(targetSpace->monster, STUNNED, 1);
+			monster_set_state(m, STUNNED, 1);
 		}
 	}
 
