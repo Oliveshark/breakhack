@@ -404,8 +404,16 @@ skill_trip(Skill *skill, SkillData *data)
 		gui_log("You trip %s causing it to fall away from you", space->monster->lclabel);
 		monster_hit(space->monster, dmg);
 		player_monster_kill_check(data->player, space->monster);
-		if (space->monster->stats.hp > 0)
-			monster_push(space->monster, data->player, data->matrix,  data->direction);
+		if (space->monster->stats.hp > 0) {
+			Uint32 pushCount = 1 + player_has_artifact(data->player, PUSH_BACK);
+			for (Uint32 i = 0; i < pushCount; ++i) {
+				monster_push(space->monster, data->player, data->matrix, data->direction);
+				if (space->monster->stats.hp <= 0 || space->monster->sprite->state == SPRITE_STATE_FALLING) {
+					break;
+				}
+			}
+		}
+
 
 	} else {
 		gui_log("You flail at the air");
@@ -468,7 +476,7 @@ skill_backstab(Skill *skill, SkillData *data)
 		player_monster_kill_check(data->player, m);
 		if (dmg) {
 			mixer_play_effect(SWORD_HIT);
-			monster_set_state(m, STUNNED, 1);
+			monster_set_state(m, STUNNED, 1 + player_has_artifact(data->player, INCREASED_STUN));
 		}
 	}
 
