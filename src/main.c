@@ -526,15 +526,20 @@ resetGame(void)
 static bool
 init(void)
 {
+#ifdef STEAM_BUILD
+	if (!steam_restart_needed()) {
+		steam_init();
+	} else {
+		error("%s needs to be started through Steam", GAME_TITLE);
+		return false;
+	}
+#endif // STEAM_BUILD
+
 	if (!initSDL()) {
 		return false;
 	} else if (!initGame()) {
 		return false;
 	}
-
-#ifdef STEAM_BUILD
-	steam_init();
-#endif // STEAM_BUILD
 
 	settings_init();
 	hiscore_init();
