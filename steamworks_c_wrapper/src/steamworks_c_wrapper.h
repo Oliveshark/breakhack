@@ -26,6 +26,9 @@ c_SteamAPI_Init(void);
 int64_t
 c_SteamAPI_GetAppID(void);
 
+bool
+c_SteamAPI_RestartAppIfNecessary(void);
+
 void
 c_SteamAPI_RunCallbacks(void);
 

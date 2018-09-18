@@ -47,6 +47,11 @@ c_SteamAPI_GetAppID()
 	return m_AppId;
 }
 
+bool c_SteamAPI_RestartAppIfNecessary()
+{
+	return SteamAPI_RestartAppIfNecessary(931040);
+}
+
 void
 c_SteamAPI_RunCallbacks(void)
 {

@@ -25,6 +25,8 @@ typedef struct Achievement {
 	int m_iIconImage;
 } Achievement;
 
+bool steam_restart_needed(void);
+
 void steam_init(void);
 
 void steam_shutdown(void);

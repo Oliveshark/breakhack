@@ -58,6 +58,12 @@ leaderboard_received(Sint64 hLeaderboard, const char *name)
 		m_hKillsLeaderboard = hLeaderboard;
 }
 
+bool
+steam_restart_needed()
+{
+	return c_SteamAPI_RestartAppIfNecessary();
+}
+
 void
 steam_init()
 {
