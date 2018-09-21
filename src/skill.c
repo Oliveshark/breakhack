@@ -476,7 +476,7 @@ skill_backstab(Skill *skill, SkillData *data)
 		player_monster_kill_check(data->player, m);
 		if (dmg) {
 			mixer_play_effect(SWORD_HIT);
-			monster_set_state(m, STUNNED, 1 + player_has_artifact(data->player, INCREASED_STUN));
+			monster_set_state(m, STUNNED, (Uint8)(1 + player_has_artifact(data->player, INCREASED_STUN)));
 		}
 	}
 
