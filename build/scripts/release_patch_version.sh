@@ -10,7 +10,7 @@ LAST_TAG=v$MAJOR_VERSION.$MINOR_VERSION.$LAST_PATCH_VERSION
 NEXT_TAG=v$MAJOR_VERSION.$MINOR_VERSION.$NEXT_PATCH_VERSION
 
 # Update the version and create release notes
-sed -i -e "s/breakhack_PATCH_VERSION [0-9]\+/breakhack_PATCH_VERSION $NEXT_VERSION/" CMakeLists.txt
+sed -i -e "s/breakhack_PATCH_VERSION [0-9]\+/breakhack_PATCH_VERSION $NEXT_PATCH_VERSION/" CMakeLists.txt
 git log --oneline $LAST_TAG..HEAD > build/releasenotes/$NEXT_TAG.txt
 git add build/releasenotes/$NEXT_TAG.txt
 git commit -a -m"Patch version raised to $NEXT_VERSION"
