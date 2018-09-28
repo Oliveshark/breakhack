@@ -71,6 +71,7 @@ typedef struct Player {
 	double gold;
 	PlayerStatData stat_data;
 	unsigned int potion_sips;
+	unsigned int phase_count;
 	class_t class;
 	state_t state;
 	Skill *skills[PLAYER_SKILL_COUNT];

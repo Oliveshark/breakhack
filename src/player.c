@@ -103,6 +103,8 @@ action_spent(Player *p)
 		for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 			if (p->skills[i] != NULL && p->skills[i]->resetCountdown > 0)
 				p->skills[i]->resetCountdown--;
+			if (p->phase_count > 0)
+				p->phase_count--;
 		}
 	}
 }
@@ -194,12 +196,12 @@ player_interact_traps_and_pits(Player *player, RoomSpace *space)
 }
 
 static bool
-player_has_collided(RoomSpace *space)
+player_has_collided(Player *p, RoomSpace *space)
 {
 	if (space->occupied)
 		return true;
 
-	return space->monster && space->monster->sprite->state != SPRITE_STATE_FALLING;
+	return !p->phase_count && space->monster && space->monster->sprite->state != SPRITE_STATE_FALLING;
 }
 
 static bool 
@@ -213,7 +215,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	Position matrixPos = position_to_matrix_coords(&player->sprite->pos);
 	RoomSpace *space = &matrix->spaces[matrixPos.x][matrixPos.y];
 
-	if (player_has_collided(space)) {
+	if (player_has_collided(player, space)) {
 		player->sprite->pos.x -= TILE_DIMENSION * (int)direction.x;
 		player->sprite->pos.y -= TILE_DIMENSION * (int)direction.y;
 
@@ -229,8 +231,10 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	else {
 		player_collect_items(player, space);
 		player_pickup_artifacts(player, space);
-		player_interact_objects(player, space);
-		player_interact_traps_and_pits(player, space);
+		if (player->phase_count) {
+			player_interact_objects(player, space);
+			player_interact_traps_and_pits(player, space);
+		}
 		return false;
 	}
 }
@@ -472,6 +476,7 @@ player_create(class_t class, Camera *cam)
 	player->xp			= 0;
 	player->gold			= 0;
 	player->potion_sips		= 0;
+	player->phase_count		= 0;
 	player->class			= class;
 	player->state			= ALIVE;
 	player->projectiles		= linkedlist_create();
@@ -506,7 +511,7 @@ player_create(class_t class, Camera *cam)
 			player->stats = (Stats) ROGUE_STATS;
 			player->skills[0] = skill_create(BACKSTAB, cam);
 			player->skills[1] = skill_create(TRIP, cam);
-			player->skills[2] = skill_create(BLINK, cam);
+			player->skills[2] = skill_create(PHASE, cam);
 			player->skills[3] = skill_create(DAGGER_THROW, cam);
 			player->daggers = 10;
 			break;
@@ -596,6 +601,7 @@ player_hit(Player *p, unsigned int dmg)
 void
 player_render(Player *player, Camera *cam)
 {
+	sprite_set_alpha(player->sprite, player->phase_count ? 150 : 255);
 	sprite_render(player->sprite, cam);
 
 	LinkedList *projectile = player->projectiles;

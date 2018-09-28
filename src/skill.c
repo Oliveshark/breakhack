@@ -716,7 +716,7 @@ skill_create(enum SkillType t, Camera *cam)
 			skill = create_backstab();
 			skill->tooltip = tooltip_create(backstab_tooltip, cam);
 			break;
-		case BLINK:
+		case PHASE:
 			error("Skill %d not implemented", t);
 			return NULL;
 		default:
