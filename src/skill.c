@@ -112,6 +112,27 @@ static char *backstab_tooltip[] = {
 	NULL
 };
 
+static char *phase_tooltip[] = {
+	"PHASE",
+	"",
+	"   You phase out of existence for a time. While you are phased you",
+	"   are unaffected by gravity, traps and monsters won't see you.",
+	"   You can also pass through monsters",
+	"",
+	"   The effect lasts for 3 turns",
+	"",
+	"COOLDOWN:",
+	"   8 turns",
+	"",
+	"USAGE:",
+	"   activate the skill (press 3)",
+	"   then move as normal",
+	"",
+	"",
+	"Press ESC to close",
+	NULL
+};
+
 static char *charge_tooltip[] = {
 	"CHARGE",
 	"",
