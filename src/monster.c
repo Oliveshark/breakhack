@@ -528,6 +528,10 @@ monster_perform_aoe_attack(Monster *m, RoomMatrix *rm)
 bool
 monster_move(Monster *m, RoomMatrix *rm, Map *map)
 {
+	Player *player = roommatrix_get_player(rm);
+	if (player && player->phase_count)
+		return true;
+
 	if (m->stats.hp <= 0 || m->sprite->state == SPRITE_STATE_FALLING)
 		return true;
 

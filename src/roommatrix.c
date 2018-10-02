@@ -307,3 +307,10 @@ void roommatrix_destroy(RoomMatrix *m)
 
 	free(m);
 }
+
+Player *
+roommatrix_get_player(RoomMatrix *rm)
+{
+	Position *pos = &rm->playerRoomPos;
+	return rm->spaces[pos->x][pos->y].player;
+}

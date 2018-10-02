@@ -77,9 +77,10 @@ static char *trip_tooltip[] = {
 	"TRIP",
 	"",
 	"   Trips an adjecant enemy causing him to fall (move), in",
-	"   the direction you tripped him.",
+	"   the direction you tripped it in.",
+	"   On a successful hit the enemy will also be stunned."
 	"",
-	"   This can be combined with traps and pits to great effect",
+	"   This can be combined with traps and pits to great effect.",
 	"",
 	"COOLDOWN:",
 	"   3 turns",
@@ -99,6 +100,7 @@ static char *backstab_tooltip[] = {
 	"   You flip over an adjecant enemy taking it's place and",
 	"   it taking yours, finnishing off with a stab in the back",
 	"   of your foe.",
+	"   A successful attack will also leave the enemy stunned."
 	"",
 	"COOLDOWN:",
 	"   5 turns",
@@ -116,8 +118,8 @@ static char *phase_tooltip[] = {
 	"PHASE",
 	"",
 	"   You phase out of existence for a time. While you are phased you",
-	"   are unaffected by gravity, traps and monsters won't see you.",
-	"   You can also pass through monsters",
+	"   are unaffected by gravity, traps and enemies won't see you.",
+	"   You can also pass through enemies.",
 	"",
 	"   The effect lasts for 3 turns",
 	"",
@@ -425,7 +427,7 @@ skill_trip(Skill *skill, SkillData *data)
 		gui_log("You trip %s causing it to fall away from you", space->monster->lclabel);
 		monster_hit(space->monster, dmg);
 		player_monster_kill_check(data->player, space->monster);
-		if (space->monster->stats.hp > 0) {
+		if (dmg && space->monster->stats.hp > 0) {
 			Uint32 pushCount = 1 + player_has_artifact(data->player, PUSH_BACK);
 			for (Uint32 i = 0; i < pushCount; ++i) {
 				monster_push(space->monster, data->player, data->matrix, data->direction);
@@ -433,6 +435,7 @@ skill_trip(Skill *skill, SkillData *data)
 					break;
 				}
 			}
+			monster_set_state(space->monster, STUNNED, (Uint8)(1 + player_has_artifact(data->player, INCREASED_STUN)));
 		}
 
 

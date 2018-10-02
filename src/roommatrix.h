@@ -90,4 +90,7 @@ roommatrix_render_debug(RoomMatrix*, Camera*);
 void
 roommatrix_destroy(RoomMatrix*);
 
+Player *
+roommatrix_get_player(RoomMatrix*);
+
 #endif // ROOMMATRIX_H_

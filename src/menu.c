@@ -193,7 +193,7 @@ menu_update(Menu *m, Input *input)
 		if (position_in_rect(&p, &item->button->area)
 		    && input_mousebutton_is_pressed(input, MBUTTON_LEFT))
 		{
-			item->button->event(NULL);
+			item->button->event(item->button->usrdata);
 			return;
 		}
 	}

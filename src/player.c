@@ -103,9 +103,9 @@ action_spent(Player *p)
 		for (size_t i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 			if (p->skills[i] != NULL && p->skills[i]->resetCountdown > 0)
 				p->skills[i]->resetCountdown--;
-			if (p->phase_count > 0)
-				p->phase_count--;
 		}
+		if (p->phase_count > 0)
+			p->phase_count--;
 	}
 }
 
@@ -231,7 +231,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	else {
 		player_collect_items(player, space);
 		player_pickup_artifacts(player, space);
-		if (player->phase_count) {
+		if (!player->phase_count) {
 			player_interact_objects(player, space);
 			player_interact_traps_and_pits(player, space);
 		}
