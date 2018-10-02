@@ -158,14 +158,17 @@ handle_mouse_motion(Menu *m, Input *input)
 
 	Position p = { input->mouseX, input->mouseY };
 
-	LinkedList *items = m->items;
+	int lastSelect = m->selected;
 	int index = 0;
+	LinkedList *items = m->items;
 	while (items) {
 		MenuItem *item = items->data;
 		items = items->next;
 
 		if (position_in_rect(&p, &item->button->area)) {
 			m->selected = index;
+			if (index != lastSelect)
+				mixer_play_effect(CLICK);
 			break;
 		}
 		index++;
