@@ -1,0 +1,5 @@
+6811c42 Patch version raised to
+e796fff Prepare release script for real versions
+ae44d5c Adds minimal Steam fiddling protection
+6e3343a License stuff and README updates
+899d2e5 Update to build env

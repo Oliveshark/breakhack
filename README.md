@@ -1,13 +1,13 @@
-[![Build Status](https://travis-ci.org/LiquidityC/breakhack.svg?branch=master)](https://travis-ci.org/LiquidityC/breakhack)
-[![Build Status](https://ci.appveyor.com/api/projects/status/2nvna97cmm4cf535?svg=true)](https://ci.appveyor.com/project/LiquidityC/breakhack)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/fc02d56fa7194e61b2c7d260fd2e4186)](https://www.codacy.com/app/LiquidityC/breakhack?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=LiquidityC/breakhack&amp;utm_campaign=Badge_Grade)
-[![CodeFactor](https://www.codefactor.io/repository/github/liquidityc/breakhack/badge/master)](https://www.codefactor.io/repository/github/liquidityc/breakhack/overview/master)
-<!--[![Coverity Scan](https://scan.coverity.com/projects/15218/badge.svg)](https://scan.coverity.com/projects/liquidityc-breakhack)-->
-[![GitHub issues](https://img.shields.io/github/issues/liquidityc/breakhack.svg)](https://github.com/liquidityc/breakhack/issues)
-[![GitHub closed issues](https://img.shields.io/github/issues-closed/liquidityc/breakhack.svg)](https://github.com/liquidityc/breakhack/issues)
-![GitHub (pre-)release](https://img.shields.io/github/release/liquidityc/breakhack/all.svg)
-[![Github All Releases](https://img.shields.io/github/downloads/liquidityc/breakhack/total.svg)](https://github.com/liquidityc/breakhack/releases)
-[![HitCount](http://hits.dwyl.io/liquidityc/breakhack.svg)](http://hits.dwyl.io/liquidityc/breakhack)
+[![Build Status](https://travis-ci.org/Oliveshark/breakhack.svg?branch=master)](https://travis-ci.org/Oliveshark/breakhack)
+[![Build status](https://ci.appveyor.com/api/projects/status/2a18npdntkmlx3dc?svg=true)](https://ci.appveyor.com/project/LiquidityC/breakhack)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/fc02d56fa7194e61b2c7d260fd2e4186)](https://www.codacy.com/app/LiquidityC/breakhack?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Oliveshark/breakhack&amp;utm_campaign=Badge_Grade)
+[![CodeFactor](https://www.codefactor.io/repository/github/oliveshark/breakhack/badge/master)](https://www.codefactor.io/repository/github/oliveshark/breakhack/overview/master)
+<!--[![Coverity Scan](https://scan.coverity.com/projects/15218/badge.svg)](https://scan.coverity.com/projects/oliveshark-breakhack)-->
+[![GitHub issues](https://img.shields.io/github/issues/oliveshark/breakhack.svg)](https://github.com/oliveshark/breakhack/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/oliveshark/breakhack.svg)](https://github.com/oliveshark/breakhack/issues)
+![GitHub (pre-)release](https://img.shields.io/github/release/oliveshark/breakhack/all.svg)
+[![Github All Releases](https://img.shields.io/github/downloads/oliveshark/breakhack/total.svg)](https://github.com/oliveshark/breakhack/releases)
+[![HitCount](http://hits.dwyl.io/oliveshark/breakhack.svg)](http://hits.dwyl.io/oliveshark/breakhack)
 
 Something in the ways of a roguelike
 ================================
@@ -41,7 +41,7 @@ License
 -------
 BreakHack is released under two different licenses.
 
-- The source code is released under [GPLv3](https://github.com/LiquidityC/breakhack/blob/master/LICENSE.txt)
+- The source code is released under [GPLv3](https://github.com/oliveshark/breakhack/blob/master/LICENSE.txt)
 - The Steam release is released under the [Steam subscriber agreement](https://store.steampowered.com/subscriber_agreement/)
 
 Compile
@@ -66,4 +66,5 @@ your name to the credits list (once I add it in game).
 Links
 -----
 
-- [https://liquidityc.itch.io/breakhack](https://liquidityc.itch.io/breakhack)
+- [Itch.io](https://store.steampowered.com/app/931040/BreakHack/)
+- [Steam](https://liquidityc.itch.io/breakhack)
