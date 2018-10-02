@@ -60,23 +60,55 @@ artifact_set_effect(Artifact *a, MagicalEffect effect)
 			a->info.name = "Ugly shirt";
 			a->info.desc = "You look disgusting";
 			break;
+		case PHASE_IMPROVEMENT:
+			a->info.name = "Shadow cloak";
+			a->info.desc = "You feel more in phase with the world";
+			break;
 		default:
 			break;
 	}
 }
+
+static int WarriorArtifacts[] = {
+	IMPROVED_HEARING,	// 0
+	TRAP_AVOIDANCE,         // 1
+	PIERCING_DAGGERS,       // 2
+	DAGGER_RECOVERY,        // 3
+	PUSH_BACK,              // 4
+	FEAR_INDUCING,          // 5
+	INCREASED_STUN,         // 6
+	CHARGE_THROUGH          // 7
+};
+
+static int RogueArtifacts[] = {
+	IMPROVED_HEARING,	// 0
+	TRAP_AVOIDANCE,		// 1
+	PIERCING_DAGGERS,	// 2
+	DAGGER_RECOVERY,	// 3
+	PUSH_BACK,		// 4
+	FEAR_INDUCING,		// 5
+	INCREASED_STUN,		// 6
+	PHASE_IMPROVEMENT	// 7
+};
 
 Artifact *
 artifact_create_random(Player *p, Uint8 level)
 {
 	int option = -1;
 	if (p->stats.lvl >= 4)
-		option = get_random(LAST_ARTIFACT_EFFECT - 1);
+		option = get_random(7);
 	else if (p->stats.lvl >= 3)
-		option = get_random(INCREASED_STUN);
+		option = get_random(6);
 	else
-		option = get_random(FEAR_INDUCING);
+		option = get_random(5);
 
-	Artifact *a = artifact_create(option);
+	int * artifactPool = NULL;
+	if (p->class == ROGUE)
+		artifactPool = RogueArtifacts;
+	else
+		artifactPool = WarriorArtifacts;
+
+	Artifact *a = artifact_create(artifactPool[option]);
 	a->level = level;
 	return a;
 }
@@ -126,6 +158,11 @@ artifact_sprite_for(MagicalEffect effect)
 			t = texturecache_add("Items/Armor.png");
 			sprite_set_texture(sprite, t, 0);
 			sprite->clip = CLIP16(6*16, 8*16);
+			break;
+		case PHASE_IMPROVEMENT:
+			t = texturecache_add("Items/Armor.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(1*16, 5*16);
 			break;
 		default:
 			break;
