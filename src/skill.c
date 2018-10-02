@@ -524,6 +524,33 @@ create_backstab(void)
 }
 
 static bool
+skill_phase(Skill *skill, SkillData *data)
+{
+	UNUSED(skill);
+	data->player->phase_count = 3;
+	return true;
+}
+
+static Skill *
+create_phase(void)
+{
+	Texture *t = texturecache_add("Extras/Skills.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(32, 0);
+	s->fixed = true;
+	Skill *skill = create_default("Phase", s);
+	skill->levelcap = 4;
+	skill->instantUse = true;
+	skill->resetTime = 8;
+	skill->available = NULL;
+	skill->use = skill_phase;
+	skill->actionRequired = false;
+	return skill;
+}
+
+static bool
 skill_sip_health_available(Player *player)
 {
 	return player->potion_sips > 0 && player->stats.hp != player->stats.maxhp;
@@ -738,8 +765,9 @@ skill_create(enum SkillType t, Camera *cam)
 			skill->tooltip = tooltip_create(backstab_tooltip, cam);
 			break;
 		case PHASE:
-			error("Skill %d not implemented", t);
-			return NULL;
+			skill = create_phase();
+			skill->tooltip = tooltip_create(phase_tooltip, cam);
+			break;
 		default:
 			fatal("Unknown SkillType %u", (unsigned int) t);
 			return NULL;
