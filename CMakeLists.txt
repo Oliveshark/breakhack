@@ -214,6 +214,11 @@ add_executable(breakhack
 	${STEAM_SOURCES}
 	)
 
+if (MSVC)
+	source_group("Header files" REGULAR_EXPRESSION ".*\\.h")
+	source_group("Source files" REGULAR_EXPRESSION ".*\\.c")
+endif ()
+
 # Sqlite has some warnings that I we don't need to see
 set_source_files_properties(sqlite3/sqlite3.c COMPILE_FLAGS -w)
 
