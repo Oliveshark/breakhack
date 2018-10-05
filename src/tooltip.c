@@ -21,6 +21,39 @@
 #include "gui_util.h"
 #include "defines.h"
 #include "gui.h"
+#include "texturecache.h"
+
+static bool
+render_button_texture_for(const char *text, Position pos, Camera *cam)
+{
+	Texture *t = texturecache_add("Characters/Player0.png");
+	SDL_Rect clip = CLIP16(0, 0);
+	if (strcmp(text, "1") == 0) {
+		// no op
+	} else {
+		return false;
+	}
+
+	SDL_Rect renderBox = { pos.x, pos.y, 8, 8 };
+	texture_render_clip(t, &renderBox, &clip, cam);
+	return true;
+}
+
+static void
+load_texture_for(Texture *text,
+		 char *content,
+		 SDL_Rect *renderBox,
+		 SDL_Renderer *renderer)
+{
+	texture_load_from_text(text,
+			       content,
+			       C_WHITE,
+			       C_WHITE,
+			       renderer);
+
+	renderBox->w = text->dim.width;
+	renderBox->h = text->dim.height;
+}
 
 Sprite *
 tooltip_create(char **content, Camera *cam)
@@ -45,14 +78,10 @@ tooltip_create(char **content, Camera *cam)
 
 	while (*content) {
 		if (strlen(*content) > 0) {
-			texture_load_from_text(text,
-					       *content,
-					       C_WHITE,
-					       C_WHITE,
-					       cam->renderer);
-			renderBox.w = text->dim.width;
-			renderBox.h = text->dim.height;
-			texture_render(text, &renderBox, cam);
+			if (!render_button_texture_for(*content, POS(renderBox.w, renderBox.y), cam)) {
+				load_texture_for(text, *content, &renderBox, cam->renderer);
+				texture_render(text, &renderBox, cam);
+			}
 		}
 
 		renderBox.y += 10;
