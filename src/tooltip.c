@@ -30,11 +30,13 @@ render_button_texture_for(const char *text, Position pos, Camera *cam)
 	SDL_Rect clip = CLIP16(0, 0);
 	if (strcmp(text, "1") == 0) {
 		// no op
+	} else if (strcmp(text, "2") == 0) {
+		clip = CLIP16(16, 0);
 	} else {
 		return false;
 	}
 
-	SDL_Rect renderBox = { pos.x, pos.y, 8, 8 };
+	SDL_Rect renderBox = { pos.x, pos.y, 16, 16 };
 	texture_render_clip(t, &renderBox, &clip, cam);
 	return true;
 }
@@ -66,10 +68,10 @@ tooltip_create(char **content, Camera *cam)
 	}
 
 	Sprite *sprite = gui_util_create_tooltip_frame_sprite(BOTTOM_GUI_WIDTH/16 - 6,
-							      (Uint32) ((rowCount * 10 + 48)/16),
+							      (Uint32) ((rowCount * 9 + 48)/16),
 							      cam);
 	sprite->pos.x = 48;
-	sprite->pos.y = 96;
+	sprite->pos.y = 48;
 	Texture *texture = sprite->textures[0];
 	Texture *text = texture_create();
 	texture_load_font(text, "GUI/SDS_8x8.ttf", LOG_FONT_SIZE, 0);
@@ -78,13 +80,17 @@ tooltip_create(char **content, Camera *cam)
 
 	while (*content) {
 		if (strlen(*content) > 0) {
-			if (!render_button_texture_for(*content, POS(renderBox.w, renderBox.y), cam)) {
+			if (render_button_texture_for(*content, POS(renderBox.x, renderBox.y - 4), cam)) {
+				renderBox.x += 24;
+			} else {
 				load_texture_for(text, *content, &renderBox, cam->renderer);
 				texture_render(text, &renderBox, cam);
-			}
+				renderBox.x += text->dim.width;
+			} 
+		} else {
+			renderBox.x = 16;
+			renderBox.y += 14;
 		}
-
-		renderBox.y += 10;
 		content++;
 	}
 	SDL_SetRenderTarget(cam->renderer, NULL);
