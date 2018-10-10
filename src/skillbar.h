@@ -45,6 +45,9 @@ typedef struct SkillBar {
 	Uint32 lastActivation;
 } SkillBar;
 
+void
+skillbar_set_controller_mode(bool ctrl_mode);
+
 SkillBar *
 skillbar_create(Camera*);
 

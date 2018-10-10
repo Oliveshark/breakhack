@@ -28,6 +28,26 @@
 #include "update_data.h"
 #include "gui.h"
 
+static bool controller_mode = false;
+
+void
+skillbar_set_controller_mode(bool ctrl_mode)
+{
+	controller_mode = ctrl_mode;
+}
+
+static Sprite *
+create_controller_button_sprite(Position pos, SDL_Rect clip)
+{
+		Texture *t = texturecache_add("Extras/Controller.png");
+		Sprite *s = sprite_create();
+		sprite_set_texture(s, t, 0);
+		s->pos = pos;
+		s->clip = clip;
+		s->dim = DIM(16, 16);
+		return s;
+}
+
 static void
 load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 {
@@ -35,16 +55,25 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	t->dim.width = 16;
 	t->dim.height = 16;
 
-	for (unsigned int i = 0; i < 5; ++i) {
-		char buffer[4];
-		Sprite *s = sprite_create();
-		s->pos = (Position) { i * 32 + 20, 20 };
-		s->dim = (Dimension) { 8, 8 };
-		s->fixed = true;
-		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8, 0);
-		m_sprintf(buffer, 4, "%u", i+1 < 10 ? i+1 : 0);
-		texture_load_from_text(s->textures[0], buffer, C_YELLOW, C_BLACK, renderer);
-		linkedlist_append(&bar->sprites, s);
+	if (!controller_mode) {
+		for (unsigned int i = 0; i < 5; ++i) {
+			char buffer[4];
+			Sprite *s = sprite_create();
+			s->pos = (Position) { i * 32 + 20, 20 };
+			s->dim = (Dimension) { 8, 8 };
+			s->fixed = true;
+			sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8, 0);
+			m_sprintf(buffer, 4, "%u", i + 1 < 10 ? i + 1 : 0);
+			texture_load_from_text(s->textures[0], buffer, C_YELLOW, C_BLACK, renderer);
+			linkedlist_append(&bar->sprites, s);
+		}
+	} else {
+		Uint8 i = 0;
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CLIP16(0, 0)));
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CLIP16(16, 0)));
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CLIP16(32, 0)));
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CLIP16(48, 0)));
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 20), CLIP16(48, 48)));
 	}
 }
 
