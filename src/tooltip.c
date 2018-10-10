@@ -23,9 +23,15 @@
 #include "gui.h"
 #include "texturecache.h"
 
+static bool controller_mode = false;
+
 static bool
 render_button_texture_for(const char *text, Position pos, Camera *cam)
 {
+	if (!controller_mode) {
+		return false;
+	}
+
 	Texture *t = texturecache_add("Extras/Controller.png");
 	SDL_Rect clip;
 	if (strcmp(text, "1") == 0) {
@@ -109,4 +115,10 @@ tooltip_create(char **content, Camera *cam)
 	texture_destroy(text);
 
 	return sprite;
+}
+
+void
+tooltip_set_controller_mode(bool ctrl_mode)
+{
+	controller_mode = ctrl_mode;
 }

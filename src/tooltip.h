@@ -23,3 +23,6 @@
 
 Sprite *
 tooltip_create(char **content, Camera*);
+
+void
+tooltip_set_controller_mode(bool);

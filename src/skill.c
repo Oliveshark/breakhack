@@ -185,7 +185,7 @@ static char *health_tooltip[] = {
 	"   You take a sip from your health vial", "",
 	"",
 	"   The current amount of sips in your vials is", "",
-	"   dsplayed in the panel to the right.", "",
+	"   displayed in the panel to the right.", "",
 	"",
 	"COOLDOWN:", "",
 	"   0 turns", "",
