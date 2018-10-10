@@ -26,12 +26,24 @@
 static bool
 render_button_texture_for(const char *text, Position pos, Camera *cam)
 {
-	Texture *t = texturecache_add("Characters/Player0.png");
-	SDL_Rect clip = CLIP16(0, 0);
+	Texture *t = texturecache_add("Extras/Controller.png");
+	SDL_Rect clip;
 	if (strcmp(text, "1") == 0) {
-		// no op
+		clip = CLIP16(0, 0);
 	} else if (strcmp(text, "2") == 0) {
 		clip = CLIP16(16, 0);
+	} else if (strcmp(text, "3") == 0) {
+		clip = CLIP16(32, 0);
+	} else if (strcmp(text, "4") == 0) {
+		clip = CLIP16(48, 0);
+	} else if (strcmp(text, "5") == 0) {
+		clip = CLIP16(48, 48);
+	} else if (strcmp(text, "ESC") == 0) {
+		clip = CLIP16(0, 64);
+	} else if (strcmp(text, "SHIFT") == 0) {
+		clip = CLIP16(16, 48);
+	} else if (strcmp(text, "SPACE") == 0) {
+		clip = CLIP16(16, 32);
 	} else {
 		return false;
 	}
@@ -81,7 +93,7 @@ tooltip_create(char **content, Camera *cam)
 	while (*content) {
 		if (strlen(*content) > 0) {
 			if (render_button_texture_for(*content, POS(renderBox.x, renderBox.y - 4), cam)) {
-				renderBox.x += 24;
+				renderBox.x += 16;
 			} else {
 				load_texture_for(text, *content, &renderBox, cam->renderer);
 				texture_render(text, &renderBox, cam);
