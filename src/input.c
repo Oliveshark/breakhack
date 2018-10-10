@@ -99,6 +99,37 @@ get_event_key(SDL_Event *event)
 	return key;
 }
 
+static Uint64
+get_event_button(SDL_Event *event)
+{
+	Uint64 key;
+	switch (event->jbutton.button) {
+		case SDL_CONTROLLER_BUTTON_A:
+			key = KEY_NUM1 & KEY_ENTER; break;
+		case SDL_CONTROLLER_BUTTON_X:
+			key = KEY_NUM2; break;
+		case SDL_CONTROLLER_BUTTON_Y:
+			key = KEY_NUM3; break;
+		case SDL_CONTROLLER_BUTTON_B:
+			key = KEY_NUM4; break;
+		case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+			key = KEY_NUM5; break;
+		case SDL_CONTROLLER_BUTTON_START:
+			key = KEY_ESC; break;
+		case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+			key = KEY_SPACE; break;
+		case SDL_CONTROLLER_BUTTON_INVALID:
+		default:
+			key = 0; break;
+	}
+	return key;
+}
+
+static Uint64
+get_axis_motion(SDL_Event *event)
+{
+}
+
 static Uint32
 get_event_modkey(SDL_Event *event)
 {
@@ -172,6 +203,12 @@ input_handle_event(Input *input, SDL_Event *event)
 	else if (event->type == SDL_MOUSEMOTION) {
 		input->mouseX = event->motion.x;
 		input->mouseY = event->motion.y;
+	}
+	else if (event->type == SDL_CONTROLLERBUTTONDOWN) {
+		input->keyState |= get_event_button(event);
+	}
+	else if (event->type == SDL_CONTROLLERBUTTONUP) {
+		input->keyState &= ~get_event_button(event);
 	}
 }
 

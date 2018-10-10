@@ -154,6 +154,7 @@ static Screen		*scoreScreen		= NULL;
 static Sprite		*new_skill_tooltip	= NULL;
 static Sprite		*howto_tooltip		= NULL;
 static Sprite		*new_artifact_tooltip	= NULL;
+static SDL_GameController *gController		= NULL;
 static unsigned int	cLevel			= 1;
 static float		deltaTime		= 1.0;
 static double		renderScale		= 1.0;
@@ -183,7 +184,7 @@ bool initSDL(void)
 {
 	int imgFlags = IMG_INIT_PNG;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
 	{
 		error("Could not initiate SDL2: %s", SDL_GetError());
 		return false;
@@ -207,6 +208,16 @@ bool initSDL(void)
 		error("Unable to initiate ttf library: %s",
 		       TTF_GetError());
 		return false;
+	}
+
+	if (SDL_NumJoysticks() > 0) {
+		gController = SDL_JoystickOpen(0);
+		if (!gController) {
+			error("Unable to open controller: %s", SDL_GetError());
+		}
+	}
+	else {
+		error("No controller found");
 	}
 
 	mixer_init();
@@ -288,6 +299,7 @@ initGame(void)
 	gCamera = camera_create(gRenderer);
 	gRoomMatrix = roommatrix_create();
 	gGui = gui_create(gCamera);
+	skillbar_set_controller_mode(gController != NULL);
 	gSkillBar = skillbar_create(gCamera);
 	item_builder_init(gRenderer);
 #ifdef DEBUG
@@ -529,6 +541,7 @@ init(void)
 	hiscore_init();
 	initMainMenu();
 
+	tooltip_set_controller_mode(gController != NULL);
 	howto_tooltip = tooltip_create(how_to_play_tooltip, gCamera);
 	new_skill_tooltip = tooltip_create(skills_tooltip, gCamera);
 	new_artifact_tooltip = tooltip_create(artifacts_tooltip, gCamera);
@@ -1105,6 +1118,8 @@ void close(void)
 	steam_shutdown();
 #endif // STEAM_BUILD
 
+	if (gController)
+		SDL_JoystickClose(gController);
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
