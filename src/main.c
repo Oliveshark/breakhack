@@ -210,14 +210,15 @@ bool initSDL(void)
 		return false;
 	}
 
-	if (SDL_NumJoysticks() > 0) {
-		gController = SDL_JoystickOpen(0);
-		if (!gController) {
-			error("Unable to open controller: %s", SDL_GetError());
+	for (Uint8 i = 0; i < SDL_NumJoysticks(); ++i) {
+		if (!SDL_IsGameController(i))
+			continue;
+
+		gController = SDL_GameControllerOpen(i);
+		if (gController) {
+			info("Game controller connected");
+			break;
 		}
-	}
-	else {
-		error("No controller found");
 	}
 
 	mixer_init();
@@ -1119,7 +1120,7 @@ void close(void)
 #endif // STEAM_BUILD
 
 	if (gController)
-		SDL_JoystickClose(gController);
+		SDL_GameControllerClose(gController);
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
