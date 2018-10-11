@@ -659,7 +659,7 @@ skill_charge(Skill *skill, SkillData *data)
 	Position lastAvailableDest = playerStartPos;
 	while (position_in_roommatrix(&destination))
 	{
-		if (space->occupied) {
+		if (space->occupied || space->monster) {
 			if (!space->monster || passThroughCount >= chargeThroughLvl)
 				break;
 			else

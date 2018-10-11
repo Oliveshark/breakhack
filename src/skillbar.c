@@ -43,6 +43,7 @@ create_controller_button_sprite(Position pos, SDL_Rect clip)
 		Sprite *s = sprite_create();
 		sprite_set_texture(s, t, 0);
 		s->pos = pos;
+		s->fixed = true;
 		s->clip = clip;
 		s->dim = DIM(16, 16);
 		return s;

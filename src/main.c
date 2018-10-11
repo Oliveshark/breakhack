@@ -87,9 +87,9 @@ static char *skills_tooltip[] = {
 	"   Skills are listed in the bar below the game screen.", "",
 	"",
 	"",
-	"   SKILL INFO:            ", "SHIFT", " + <N>", "",
-	"                          Where <N> is the button corresponding to the skill",
-	"                          Eg. ", "1", "2", "3", "4", "5", "",
+	"   SKILL INFO:            SHIFT + <N>", "",
+	"                          Where <N> is the number corresponding to the skill", "",
+	"                          Eg. 1, 2, 3, 4, 5", "",
 	"",
 	"   DISABLE TOOLTIPS:      CTRL + D", "",
 	"",
@@ -102,6 +102,7 @@ static char *how_to_play_tooltip[] = {
 	"HOW TO PLAY", "",
 	"",
 	"   NAVIGATION:        Use ARROWS or WASD or HJKL to move", "",
+	"                      Controller: RIGHT STICK or D-PAD", "",
 	"",
 	"   ATTACK:            Walk into a monster to attack it", "",
 	"",
@@ -184,7 +185,7 @@ bool initSDL(void)
 {
 	int imgFlags = IMG_INIT_PNG;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0)
 	{
 		error("Could not initiate SDL2: %s", SDL_GetError());
 		return false;
@@ -216,7 +217,7 @@ bool initSDL(void)
 
 		gController = SDL_GameControllerOpen(i);
 		if (gController) {
-			info("Game controller connected");
+			info("Game controller connected: %s", SDL_GameControllerName(gController));
 			break;
 		}
 	}

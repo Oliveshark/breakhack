@@ -105,7 +105,7 @@ get_event_button(SDL_Event *event)
 		case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
 			key = KEY_RIGHT; break;
 		case SDL_CONTROLLER_BUTTON_A:
-			key = KEY_NUM1 & KEY_ENTER; break;
+			key = KEY_NUM1 | KEY_ENTER; break;
 		case SDL_CONTROLLER_BUTTON_X:
 			key = KEY_NUM2; break;
 		case SDL_CONTROLLER_BUTTON_Y:
@@ -115,7 +115,11 @@ get_event_button(SDL_Event *event)
 		case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
 			key = KEY_NUM5; break;
 		case SDL_CONTROLLER_BUTTON_START:
+			key = KEY_ENTER; break;
+		case SDL_CONTROLLER_BUTTON_BACK:
 			key = KEY_ESC; break;
+		case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+			key = KEY_SPACE; break;
 		default:
 			key = 0; break;
 	}
@@ -128,8 +132,6 @@ get_axis_motion(SDL_Event *event)
 	Uint64 key;
 	int angle = event->caxis.value;
 	switch (event->caxis.axis) {
-		case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-			key = KEY_SPACE; break;
 		case SDL_CONTROLLER_AXIS_LEFTX:
 			key = angle < 0 ? KEY_LEFT : KEY_RIGHT; break;
 		case SDL_CONTROLLER_AXIS_LEFTY:
@@ -138,6 +140,11 @@ get_axis_motion(SDL_Event *event)
 			key = 0;
 	}
 	return key;
+}
+
+static Uint32
+get_button_modkey(SDL_Event *event) {
+
 }
 
 static Uint32
@@ -221,7 +228,7 @@ input_handle_event(Input *input, SDL_Event *event)
 		input->keyState &= ~get_event_button(event);
 	}
 	else if (event->type == SDL_CONTROLLERAXISMOTION) {
-		if (event->caxis.value > 8000 || event->caxis.value < -8000)
+		if (event->caxis.value > 32000 || event->caxis.value < -32000)
 			input->keyState |= get_axis_motion(event);
 		else
 			input->keyState &= ~get_axis_motion(event);
