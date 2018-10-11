@@ -25,4 +25,4 @@ Sprite *
 tooltip_create(char **content, Camera*);
 
 void
-tooltip_set_controller_mode(bool);
+tooltip_set_controller_mode(Uint8 ctrl_mode);

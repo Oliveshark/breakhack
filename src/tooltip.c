@@ -23,7 +23,7 @@
 #include "gui.h"
 #include "texturecache.h"
 
-static bool controller_mode = false;
+static Uint8 controller_mode = 0;
 
 static bool
 render_button_texture_for(const char *text, Position pos, Camera *cam)
@@ -35,21 +35,21 @@ render_button_texture_for(const char *text, Position pos, Camera *cam)
 	Texture *t = texturecache_add("Extras/Controller.png");
 	SDL_Rect clip;
 	if (strcmp(text, "1") == 0) {
-		clip = CLIP16(0, 0);
+		clip = CONTROLLER_BTN(0, controller_mode);
 	} else if (strcmp(text, "2") == 0) {
-		clip = CLIP16(16, 0);
+		clip = CONTROLLER_BTN(16, controller_mode);
 	} else if (strcmp(text, "3") == 0) {
-		clip = CLIP16(32, 0);
+		clip = CONTROLLER_BTN(32, controller_mode);
 	} else if (strcmp(text, "4") == 0) {
-		clip = CLIP16(48, 0);
+		clip = CONTROLLER_BTN(48, controller_mode);
 	} else if (strcmp(text, "5") == 0) {
-		clip = CLIP16(48, 48);
+		clip = CONTROLLER_BUMPER(32, controller_mode);
 	} else if (strcmp(text, "ESC") == 0) {
-		clip = CLIP16(0, 64);
-	} else if (strcmp(text, "SHIFT") == 0) {
-		clip = CLIP16(16, 48);
+		clip = CONTROLLER_OPT(32, controller_mode);
+	} else if (strcmp(text, "ENTER") == 0) {
+		clip = CONTROLLER_OPT(0, controller_mode);
 	} else if (strcmp(text, "SPACE") == 0) {
-		clip = CLIP16(16, 32);
+		clip = CLIP16(0, 80);
 	} else {
 		return false;
 	}
@@ -118,7 +118,7 @@ tooltip_create(char **content, Camera *cam)
 }
 
 void
-tooltip_set_controller_mode(bool ctrl_mode)
+tooltip_set_controller_mode(Uint8 ctrl_mode)
 {
 	controller_mode = ctrl_mode;
 }

@@ -170,6 +170,7 @@ static SDL_Rect		statsGuiViewport;
 static SDL_Rect		minimapViewport;
 static SDL_Rect		menuViewport;
 static Input		input;
+static Uint8		controllerMode = 0;
 
 #ifdef DEBUG
 static Sprite	*fpsSprite	= NULL;
@@ -217,7 +218,13 @@ bool initSDL(void)
 
 		gController = SDL_GameControllerOpen(i);
 		if (gController) {
-			info("Game controller connected: %s", SDL_GameControllerName(gController));
+			const char *ctrlName = SDL_GameControllerName(gController);
+			info("Game controller connected: %s", ctrlName);
+			if (ctrlName[0] == 'P' && ctrlName[1] == 'S' && ctrlName[2] == '4')
+				controllerMode = 2;
+			else
+				controllerMode = 1;
+
 			break;
 		}
 	}
@@ -301,7 +308,7 @@ initGame(void)
 	gCamera = camera_create(gRenderer);
 	gRoomMatrix = roommatrix_create();
 	gGui = gui_create(gCamera);
-	skillbar_set_controller_mode(gController != NULL);
+	skillbar_set_controller_mode(controllerMode);
 	gSkillBar = skillbar_create(gCamera);
 	item_builder_init(gRenderer);
 #ifdef DEBUG
@@ -543,7 +550,7 @@ init(void)
 	hiscore_init();
 	initMainMenu();
 
-	tooltip_set_controller_mode(gController != NULL);
+	tooltip_set_controller_mode(controllerMode);
 	howto_tooltip = tooltip_create(how_to_play_tooltip, gCamera);
 	new_skill_tooltip = tooltip_create(skills_tooltip, gCamera);
 	new_artifact_tooltip = tooltip_create(artifacts_tooltip, gCamera);

@@ -119,6 +119,7 @@ get_event_button(SDL_Event *event)
 		case SDL_CONTROLLER_BUTTON_BACK:
 			key = KEY_ESC; break;
 		case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+		case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
 			key = KEY_SPACE; break;
 		default:
 			key = 0; break;
@@ -140,11 +141,6 @@ get_axis_motion(SDL_Event *event)
 			key = 0;
 	}
 	return key;
-}
-
-static Uint32
-get_button_modkey(SDL_Event *event) {
-
 }
 
 static Uint32

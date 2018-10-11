@@ -28,10 +28,10 @@
 #include "update_data.h"
 #include "gui.h"
 
-static bool controller_mode = false;
+static Uint8 controller_mode = 0;
 
 void
-skillbar_set_controller_mode(bool ctrl_mode)
+skillbar_set_controller_mode(Uint8 ctrl_mode)
 {
 	controller_mode = ctrl_mode;
 }
@@ -70,11 +70,11 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 		}
 	} else {
 		Uint8 i = 0;
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CLIP16(0, 0)));
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CLIP16(16, 0)));
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CLIP16(32, 0)));
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CLIP16(48, 0)));
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 20), CLIP16(48, 48)));
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(0, controller_mode)));
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(16, controller_mode)));
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(32, controller_mode)));
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(48, controller_mode)));
+		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, controller_mode)));
 	}
 }
 

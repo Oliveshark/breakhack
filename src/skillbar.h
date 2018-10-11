@@ -46,7 +46,7 @@ typedef struct SkillBar {
 } SkillBar;
 
 void
-skillbar_set_controller_mode(bool ctrl_mode);
+skillbar_set_controller_mode(Uint8 ctrl_mode);
 
 SkillBar *
 skillbar_create(Camera*);
