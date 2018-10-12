@@ -63,6 +63,12 @@ Have an idea and able to implement it? Fork and send me a pull request and
 I'll check it out. If I like it I will add it. If it's a big thing I'll add 
 your name to the credits list (once I add it in game).
 
+If you do contribute something you should be aware that if your PR is merged
+into the master code-base your code will eventually make it out with the Steam version
+of the game. I don't make any revenue from those sales so don't expect any other compensation
+than a "I have code on Steam" feeling. Which is quite nice and also why I decided to release
+on Steam.
+
 Links
 -----
 
