@@ -185,7 +185,7 @@ bool initSDL(void)
 {
 	int imgFlags = IMG_INIT_PNG;
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) < 0)
 	{
 		error("Could not initiate SDL2: %s", SDL_GetError());
 		return false;

@@ -35,6 +35,7 @@
 #include "actiontextbuilder.h"
 #include "animation.h"
 #include "trap.h"
+#include "gamecontroller.h"
 
 #ifdef STEAM_BUILD
 #include "steam/steamworks_api_wrapper.h"
@@ -219,6 +220,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 		player->sprite->pos.x -= TILE_DIMENSION * (int)direction.x;
 		player->sprite->pos.y -= TILE_DIMENSION * (int)direction.y;
 
+		gamecontroller_rumble(0.30, 100);
 		if (space->monster) {
 			on_monster_collision(player, space->monster, matrix, direction);
 		} else {
@@ -590,6 +592,8 @@ player_hit(Player *p, unsigned int dmg)
 		actiontextbuilder_create_text(msg,
 					      C_RED,
 					      &p->sprite->pos);
+
+		gamecontroller_rumble(0.50, 100);
 	} else {
 		actiontextbuilder_create_text("Dodged",
 					      C_YELLOW,
