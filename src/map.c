@@ -58,7 +58,6 @@ map_create(void)
 	map->artifacts = linkedlist_create();
 	map->objects = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
-	map->renderTimer = timer_create();
 	map->monsterMoveTimer = timer_create();
 	map->level = 1;
 	
@@ -75,9 +74,9 @@ MapTile*
 map_create_tile(void)
 {
 	MapTile *tile = ec_malloc(sizeof(MapTile));
-	tile->textureIndex0 = -1;
-	tile->textureIndex1 = -1;
-	tile->clip = CLIP16(0, 0);
+	tile->sprite = sprite_create();
+	tile->sprite->clip = CLIP16(0, 0);
+	tile->sprite->dim = DIM(32, 32);
 	tile->collider = false;
 	tile->lethal = false;
 	tile->lightsource = false;
@@ -92,9 +91,13 @@ map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
 	Room *room = map->rooms[cr->x][cr->y];
 	MapTile **oldTile = &room->tiles[tile_pos->x][tile_pos->y];
 
-	// Clear possible decoration
-	if (tile->levelExit && room->tiles[tile_pos->x][tile_pos->y]) {
-		MapTile **decoration = &room->tiles[tile_pos->x][tile_pos->y];
+	// Set the tile sprites position to match tile pos
+	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
+				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
+
+	// If this is the level exit then clear the decoration if one exists
+	if (tile->levelExit && room->decorations[tile_pos->x][tile_pos->y]) {
+		MapTile **decoration = &room->decorations[tile_pos->x][tile_pos->y];
 		free(*decoration);
 		*decoration = NULL;
 	}
@@ -111,6 +114,11 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 {
 	const Position *cr = &map->currentRoom;
 	MapTile **oldTile = &map->rooms[cr->x][cr->y]->decorations[tile_pos->x][tile_pos->y];
+
+	// Set the decoration sprites position to match tile pos
+	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
+				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
+
 	if (*oldTile != NULL) {
 		free(*oldTile);
 		*oldTile = NULL;
@@ -241,39 +249,12 @@ int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
 }
 
 static
-void map_tile_render(Map *map, MapTile *tile, Position *pos, Camera *cam)
+void map_tile_render(MapTile *tile, Camera *cam)
 {
-	static bool second_texture = false;
-
 	if (tile == NULL)
 		return;
 
-	if (timer_get_ticks(map->renderTimer) > 300) {
-		timer_start(map->renderTimer);
-		second_texture = !second_texture;
-	}
-
-	Position camPos = camera_to_camera_position(cam, pos);
-	SDL_Rect draw_box = (SDL_Rect) {
-		camPos.x,
-		camPos.y,
-		TILE_DIMENSION,
-		TILE_DIMENSION
-	};
-
-	Texture *texture;
-	if (tile->textureIndex1 >= 0 && second_texture) {
-		texture = linkedlist_get(&map->textures, tile->textureIndex1);
-	} else {
-		texture = linkedlist_get(&map->textures, tile->textureIndex0);
-	}
-
-	SDL_RenderCopy(cam->renderer,
-		       texture->texture,
-		       &tile->clip,
-		       &draw_box
-		      );
-
+	sprite_render(tile->sprite, cam);
 }
 
 void
@@ -304,28 +285,13 @@ void map_render(Map *map, Camera *cam)
 	unsigned int i, j;
 	Room *room;
 
-	if (!timer_started(map->renderTimer)) {
-		timer_start(map->renderTimer);
-	}
-
 	Position roomPos = { map->currentRoom.x, map->currentRoom.y };
-	Position roomCords = {
-		roomPos.x * MAP_ROOM_WIDTH * TILE_DIMENSION,
-		roomPos.y * MAP_ROOM_HEIGHT * TILE_DIMENSION
-	};
-
 	room = map->rooms[roomPos.x][roomPos.y];
 	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
-			Position tilePos = (Position) {
-				roomCords.x + i*TILE_DIMENSION,
-				roomCords.y + j*TILE_DIMENSION
-			};
-			map_tile_render(map, room->tiles[i][j], &tilePos, cam);
-			map_tile_render(map,
-					room->decorations[i][j],
-					&tilePos,
-					cam);
+			map_tile_render(room->tiles[i][j], cam);
+			map_tile_render(room->decorations[i][j], cam);
+
 			if (room->traps[i][j])
 				trap_render(room->traps[i][j], cam);
 		}
@@ -451,7 +417,6 @@ void map_destroy(Map *map)
 	while (map->objects != NULL)
 		artifact_destroy(linkedlist_pop(&map->objects));
 
-	timer_destroy(map->renderTimer);
 	timer_destroy(map->monsterMoveTimer);
 	free(map);
 }

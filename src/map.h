@@ -37,9 +37,7 @@ typedef struct UpdateData UpdateData;
 typedef struct Trap Trap;
 
 typedef struct MapTile_t {
-	int textureIndex0;
-	int textureIndex1;
-	SDL_Rect clip;
+	Sprite *sprite;
 	bool collider;
 	bool lethal;
 	bool lightsource;
@@ -62,7 +60,6 @@ typedef struct Map_t {
 	LinkedList *artifacts;
 	LinkedList *objects;
 	Position currentRoom;
-	Timer *renderTimer;
 	Timer *monsterMoveTimer;
 	int level;
 } Map;
