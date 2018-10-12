@@ -53,6 +53,7 @@
 #include "hiscore.h"
 #include "io_util.h"
 #include "tooltip.h"
+#include "gamecontroller.h"
 
 #ifdef STEAM_BUILD
 #include "steam/steamworks_api_wrapper.h"
@@ -155,7 +156,6 @@ static Screen		*scoreScreen		= NULL;
 static Sprite		*new_skill_tooltip	= NULL;
 static Sprite		*howto_tooltip		= NULL;
 static Sprite		*new_artifact_tooltip	= NULL;
-static SDL_GameController *gController		= NULL;
 static unsigned int	cLevel			= 1;
 static float		deltaTime		= 1.0;
 static double		renderScale		= 1.0;
@@ -170,7 +170,6 @@ static SDL_Rect		statsGuiViewport;
 static SDL_Rect		minimapViewport;
 static SDL_Rect		menuViewport;
 static Input		input;
-static Uint8		controllerMode = 0;
 
 #ifdef DEBUG
 static Sprite	*fpsSprite	= NULL;
@@ -216,20 +215,9 @@ bool initSDL(void)
 		if (!SDL_IsGameController(i))
 			continue;
 
-		gController = SDL_GameControllerOpen(i);
-		if (gController) {
-			const char *ctrlName = SDL_GameControllerName(gController);
-			info("Game controller connected: %s", ctrlName);
-
-			// Try to determine if this is a PS3/4 controller
-			if (ctrlName[0] == 'P' &&
-			    ctrlName[1] == 'S' &&
-			    (ctrlName[2] == '4' || ctrlName[2] == '3'))
-				controllerMode = 2;
-			else
-				controllerMode = 1;
-
-			break;
+		SDL_GameController *ctrler = SDL_GameControllerOpen(i);
+		if (ctrler) {
+			gamecontroller_set(ctrler);
 		}
 	}
 
@@ -312,7 +300,7 @@ initGame(void)
 	gCamera = camera_create(gRenderer);
 	gRoomMatrix = roommatrix_create();
 	gGui = gui_create(gCamera);
-	skillbar_set_controller_mode(controllerMode);
+	skillbar_set_controller_mode(gamecontroller_mode());
 	gSkillBar = skillbar_create(gCamera);
 	item_builder_init(gRenderer);
 #ifdef DEBUG
@@ -554,7 +542,7 @@ init(void)
 	hiscore_init();
 	initMainMenu();
 
-	tooltip_set_controller_mode(controllerMode);
+	tooltip_set_controller_mode(gamecontroller_mode());
 	howto_tooltip = tooltip_create(how_to_play_tooltip, gCamera);
 	new_skill_tooltip = tooltip_create(skills_tooltip, gCamera);
 	new_artifact_tooltip = tooltip_create(artifacts_tooltip, gCamera);
@@ -1131,8 +1119,7 @@ void close(void)
 	steam_shutdown();
 #endif // STEAM_BUILD
 
-	if (gController)
-		SDL_GameControllerClose(gController);
+	gamecontroller_close();
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;

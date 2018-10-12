@@ -211,6 +211,7 @@ add_executable(breakhack
 	src/object
 	src/gui_util
 	src/tooltip
+	src/gamecontroller
 	${STEAM_SOURCES}
 	)
 
