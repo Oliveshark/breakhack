@@ -200,9 +200,12 @@ extract_tile_data(lua_State *L,
 	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
 
 	MapTile *tile = map_create_tile();
-	tile->textureIndex0 = t_index0;
-	tile->textureIndex1 = t_index1;
-	tile->clip = clip;
+	if (t_index0 >= 0)
+		sprite_set_texture(tile->sprite, linkedlist_get(&map->textures, t_index0), 0);
+	if (t_index1 >= 0)
+		sprite_set_texture(tile->sprite, linkedlist_get(&map->textures, t_index1), 1);
+	tile->sprite->clip = clip;
+
 	tile->collider = collider;
 	tile->lightsource = lightsource;
 	tile->levelExit = levelExit;
