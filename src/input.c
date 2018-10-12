@@ -224,7 +224,7 @@ input_handle_event(Input *input, SDL_Event *event)
 		input->keyState &= ~get_event_button(event);
 	}
 	else if (event->type == SDL_CONTROLLERAXISMOTION) {
-		if (event->caxis.value > 32000 || event->caxis.value < -32000)
+		if (event->caxis.value > 31500 || event->caxis.value < -31500)
 			input->keyState |= get_axis_motion(event);
 		else
 			input->keyState &= ~get_axis_motion(event);
