@@ -541,7 +541,7 @@ create_phase(void)
 	Sprite *s = sprite_create();
 	sprite_set_texture(s, t, 0);
 	s->dim = GAME_DIMENSION;
-	s->clip = CLIP32(32, 0);
+	s->clip = CLIP32(96, 32);
 	s->fixed = true;
 	Skill *skill = create_default("Phase", s);
 	skill->levelcap = 4;
