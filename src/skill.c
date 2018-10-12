@@ -514,7 +514,7 @@ create_backstab(void)
 	Sprite *s = sprite_create();
 	sprite_set_texture(s, t, 0);
 	s->dim = GAME_DIMENSION;
-	s->clip = CLIP32(0, 0);
+	s->clip = CLIP32(0, 32);
 	s->fixed = true;
 	Skill *skill = create_default("Backstab", s);
 	skill->levelcap = 2;
