@@ -84,6 +84,14 @@ map_create_tile(void)
 	return tile;
 }
 
+static void
+map_tile_destroy(MapTile *tile)
+{
+	if (tile->sprite)
+		sprite_destroy(tile->sprite);
+	free(tile);
+}
+
 void
 map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
 {
@@ -98,13 +106,13 @@ map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
 	// If this is the level exit then clear the decoration if one exists
 	if (tile->levelExit && room->decorations[tile_pos->x][tile_pos->y]) {
 		MapTile **decoration = &room->decorations[tile_pos->x][tile_pos->y];
-		free(*decoration);
+		map_tile_destroy(*decoration);
 		*decoration = NULL;
 	}
 
 	// Clear possible tile
 	if (*oldTile != NULL) {
-		free(*oldTile);
+		map_tile_destroy(*oldTile);
 		*oldTile = NULL;
 	}
 	*oldTile = tile;
@@ -120,7 +128,7 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
 
 	if (*oldTile != NULL) {
-		free(*oldTile);
+		map_tile_destroy(*oldTile);
 		*oldTile = NULL;
 	}
 	*oldTile = tile;
@@ -380,10 +388,10 @@ void map_room_destroy(Room *room)
 	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			if (room->tiles[i][j]) {
-				free(room->tiles[i][j]);
+				map_tile_destroy(room->tiles[i][j]);
 			}
 			if (room->decorations[i][j]) {
-				free(room->decorations[i][j]);
+				map_tile_destroy(room->decorations[i][j]);
 			}
 			if (room->traps[i][j]) {
 				trap_destroy(room->traps[i][j]);
