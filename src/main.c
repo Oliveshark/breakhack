@@ -220,7 +220,11 @@ bool initSDL(void)
 		if (gController) {
 			const char *ctrlName = SDL_GameControllerName(gController);
 			info("Game controller connected: %s", ctrlName);
-			if (ctrlName[0] == 'P' && ctrlName[1] == 'S' && ctrlName[2] == '4')
+
+			// Try to determine if this is a PS3/4 controller
+			if (ctrlName[0] == 'P' &&
+			    ctrlName[1] == 'S' &&
+			    (ctrlName[2] == '4' || ctrlName[2] == '3'))
 				controllerMode = 2;
 			else
 				controllerMode = 1;
