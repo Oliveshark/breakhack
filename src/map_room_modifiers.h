@@ -28,7 +28,8 @@ typedef struct RoomMatrix_t RoomMatrix;
 typedef enum RoomModifierType_e {
 	RMOD_TYPE_NONE,
 	RMOD_TYPE_WINDY,
-	RMOD_TYPE_FIRE
+	RMOD_TYPE_FIRE,
+	RMOD_TYPE_FALLING_TILES
 } RoomModifierType;
 
 typedef struct WindData {

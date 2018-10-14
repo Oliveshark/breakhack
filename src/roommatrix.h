@@ -34,6 +34,7 @@ typedef struct Item_t Item;
 typedef struct Node LinkedList;
 typedef struct Trap Trap;
 typedef struct Object Object;
+typedef struct MapTile_t MapTile;
 
 struct UpdateData;
 
@@ -43,6 +44,7 @@ typedef struct RoomSpace {
 	bool lightsource;
 	bool damaging;
 	int light;
+	MapTile *tile;
 	Monster *monster;
 	Player *player;
 	Trap *trap;
