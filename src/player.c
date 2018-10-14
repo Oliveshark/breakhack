@@ -220,7 +220,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 		player->sprite->pos.x -= TILE_DIMENSION * (int)direction.x;
 		player->sprite->pos.y -= TILE_DIMENSION * (int)direction.y;
 
-		gamecontroller_rumble(0.30, 100);
+		gamecontroller_rumble(0.30f, 100);
 		if (space->monster) {
 			on_monster_collision(player, space->monster, matrix, direction);
 		} else {
