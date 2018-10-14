@@ -136,6 +136,8 @@ sprite_update(Sprite *s, UpdateData *data)
 					s->dim.height /2
 				};
 			}
+			if (s->dim.width < 4)
+				s->hidden = true;
 		}
 	}
 

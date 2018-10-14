@@ -46,6 +46,7 @@ roommatrix_reset(RoomMatrix *m)
 			space->monster = NULL;
 			space->player = NULL;
 			space->trap = NULL;
+			space->tile = NULL;
 			while (space->items != NULL)
 				linkedlist_pop(&space->items);
 			while (space->artifacts != NULL)
@@ -116,6 +117,7 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			RoomSpace *space = &rm->spaces[i][j];
 			if (r->tiles[i][j]) {
+				space->tile = r->tiles[i][j];
 				space->occupied =
 					r->tiles[i][j]->collider;
 				space->lightsource =

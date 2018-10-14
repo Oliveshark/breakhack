@@ -286,11 +286,18 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
 	player_turn(player, &direction);
 
+	Position lastPos = position_to_matrix_coords(&player->sprite->pos);
+
 	player->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
 	player->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
 
 	if (!has_collided(player, matrix, direction)) {
 		action_spent(player);
+		if (lastPos.x > 1 &&
+		    lastPos.y > 1 &&
+		    lastPos.x < 14 &&
+		    lastPos.y < 10)
+			map_trigger_tile_fall(matrix->spaces[lastPos.x][lastPos.y].tile);
 	}
 }
 

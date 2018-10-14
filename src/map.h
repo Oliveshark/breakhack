@@ -110,6 +110,9 @@ void
 map_set_current_room(Map*, Position*);
 
 void
+map_trigger_tile_fall(MapTile *tile);
+
+void
 map_destroy(Map*);
 
 #endif // MAP_H_

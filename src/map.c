@@ -286,15 +286,22 @@ map_update(UpdateData *data)
 		monster = monster->next;
 		monster_update(m, data);
 	}
+
+	Position roomPos = { map->currentRoom.x, map->currentRoom.y };
+	Room *room = map->rooms[roomPos.x][roomPos.y];
+	for (size_t i=0; i < MAP_ROOM_WIDTH; ++i) {
+		for (size_t j=0; j < MAP_ROOM_HEIGHT; ++j) {
+			sprite_update(room->tiles[i][j]->sprite, data);
+		}
+	}
 }
 
 void map_render(Map *map, Camera *cam)
 {
 	unsigned int i, j;
-	Room *room;
 
 	Position roomPos = { map->currentRoom.x, map->currentRoom.y };
-	room = map->rooms[roomPos.x][roomPos.y];
+	Room *room = map->rooms[roomPos.x][roomPos.y];
 	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			map_tile_render(room->tiles[i][j], cam);
@@ -401,7 +408,15 @@ void map_room_destroy(Room *room)
 	free(room);
 }
 
-void map_destroy(Map *map)
+void
+map_trigger_tile_fall(MapTile *tile)
+{
+	tile->sprite->state = SPRITE_STATE_FALLING;
+	tile->lethal = true;
+}
+
+void
+map_destroy(Map *map)
 {
 	int i, j;
 	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {
