@@ -300,7 +300,8 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 		    lastPos.y < 10 &&
 		    lastSpace->decoration == NULL &&
 		    lastSpace->trap == NULL &&
-		    lastSpace->objects == NULL
+		    lastSpace->objects == NULL &&
+		    lastSpace->items == NULL
 		    )
 			map_trigger_tile_fall(lastSpace->tile);
 	}
