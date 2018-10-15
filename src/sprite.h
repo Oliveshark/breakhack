@@ -31,6 +31,7 @@ typedef struct UpdateData UpdateData;
 
 typedef enum SpriteState {
 	SPRITE_STATE_FALLING,
+	SPRITE_STATE_PLUMMETED,
 	SPRITE_STATE_DEFAULT
 } SpriteState;
 

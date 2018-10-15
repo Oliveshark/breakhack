@@ -291,7 +291,8 @@ map_update(UpdateData *data)
 	Room *room = map->rooms[roomPos.x][roomPos.y];
 	for (size_t i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (size_t j=0; j < MAP_ROOM_HEIGHT; ++j) {
-			sprite_update(room->tiles[i][j]->sprite, data);
+			if (room->tiles[i][j])
+				sprite_update(room->tiles[i][j]->sprite, data);
 		}
 	}
 }

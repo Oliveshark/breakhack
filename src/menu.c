@@ -104,12 +104,14 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *))
 		s1->clip = CLIP16(0, 48);
 		s1->dim = DIM(64, 64);
 		s1->pos = POS(xoffset - 32, 256);
+		s1->fixed = true;
 
 		Sprite *s2 = sprite_create();
 		sprite_set_texture(s2, texturecache_add(spriteSheets[i]), 0);
 		s2->clip = CLIP16(0, 0);
 		s2->dim = DIM(64, 64);
 		s2->pos = POS(xoffset - 32, 256);
+		s2->fixed = true;
 
 		menu_item_add(menu, s1, s2, (void (*)(void *)) onCharacterSelect);
 		MenuItem *item = linkedlist_get(&menu->items, (Uint32) i);

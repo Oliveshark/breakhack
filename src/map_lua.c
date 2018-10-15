@@ -119,6 +119,9 @@ l_map_set_current_room_modifier(lua_State *L)
 	} else if (strcmp(modifier, "FIRE") == 0) {
 		Room *room = map->rooms[map->currentRoom.x][map->currentRoom.y];
 		room->modifier.type = RMOD_TYPE_FIRE;
+	} else if (strcmp(modifier, "CRUMBLING") == 0) {
+		Room *room = map->rooms[map->currentRoom.x][map->currentRoom.y];
+		room->modifier.type = RMOD_TYPE_CRUMBLING;
 	} else {
 		luaL_error(L, "Unknown room modifier: %s", modifier);
 		return 1;

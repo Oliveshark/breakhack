@@ -138,7 +138,7 @@ sprite_update(Sprite *s, UpdateData *data)
 			}
 			if (s->dim.width < 4) {
 				s->hidden = true;
-				s->state = SPRITE_STATE_DEFAULT;
+				s->state = SPRITE_STATE_PLUMMETED;
 			}
 		}
 	}
