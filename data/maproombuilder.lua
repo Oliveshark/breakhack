@@ -222,28 +222,28 @@ local function add_pits_to_room(room)
 	return true
 end
 
-local function add_tiles_to_room (room)
+local function add_tiles_to_room (room, singletile)
 	for i=0,15 do
 		for j=0,11 do
 			if (i >= 1 and i <= 14 and j >= 1 and j <= 10) then
 				if (i == 1 and j == 1) then
-					room.tiles[i][j] = floor.topleft
+					room.tiles[i][j] = singletile and floor.single or floor.topleft
 				elseif (i == 14 and j == 1) then
-					room.tiles[i][j] = floor.topright
+					room.tiles[i][j] = singletile and floor.single or floor.topright
 				elseif (i == 1 and j == 10) then
-					room.tiles[i][j] = floor.bottomleft
+					room.tiles[i][j] = singletile and floor.single or floor.bottomleft
 				elseif (i == 14 and j == 10) then
-					room.tiles[i][j] = floor.bottomright
+					room.tiles[i][j] = singletile and floor.single or floor.bottomright
 				elseif (i == 1) then
-					room.tiles[i][j] = floor.left
+					room.tiles[i][j] = singletile and floor.single or floor.left
 				elseif (i == 14) then
-					room.tiles[i][j] = floor.right
+					room.tiles[i][j] = singletile and floor.single or floor.right
 				elseif (j == 1) then
-					room.tiles[i][j] = floor.top
+					room.tiles[i][j] = singletile and floor.single or floor.top
 				elseif (j == 10) then
-					room.tiles[i][j] = floor.bottom
+					room.tiles[i][j] = singletile and floor.single or floor.bottom
 				else
-					room.tiles[i][j] = floor.center
+					room.tiles[i][j] = singletile and floor.single or floor.center
 				end
 			end
 		end
@@ -422,17 +422,22 @@ local function add_level_exit(room)
 end
 
 local function build_normal_room(room)
-	add_tiles_to_room(room)
+	local crumbling = CURRENT_LEVEL > 3 and random(8) == 1
+
+	add_tiles_to_room(room, crumbling)
 	add_random_decor_to_room(room)
 	add_walls_to_room(room)
 	add_exits_to_room(room)
-	local pitsAdded = add_pits_to_room(room)
+	local pitsAdded = crumbling or add_pits_to_room(room)
 
 	if room.goal then
 		add_level_exit(room)
 	end
 
-	if CURRENT_LEVEL > 5 and random(8) == 1 then
+	if crumbling then
+		room.modifier.type = "CRUMBLING"
+		room.modifier.arg = ""
+	elseif CURRENT_LEVEL > 3 and random(8) == 1 then
 		room.modifier.type = "FIRE"
 		room.modifier.arg = ""
 	elseif ((not pitsAdded and CURRENT_LEVEL > 1) or CURRENT_LEVEL > 3) and random(8) == 1 then
@@ -546,6 +551,7 @@ function module.load_textures(map)
 	floor.singlebottom	= { t_floor, -1, xo + 48, yo + 32, false }
 	floor.singleleft	= { t_floor, -1, xo + 64, yo + 16, false }
 	floor.singleright	= { t_floor, -1, xo + 96, yo + 16, false }
+	floor.single		= { t_floor, -1, xo + 80, yo +  0, false }
 
 	local pit_yo = (random(5) + random(3)) * (16 * 2)
 	pits.topleft		= { t_pit0, t_pit1, 0, pit_yo, false, false, false, true }

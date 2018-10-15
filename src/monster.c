@@ -586,7 +586,7 @@ monster_update(Monster *m, UpdateData *data)
 
 	sprite_update(m->sprite, data);
 
-	if (m->sprite->hidden == SPRITE_STATE_FALLING && m->sprite->hidden) {
+	if (m->sprite->state == SPRITE_STATE_PLUMMETED) {
 		m->stats.hp = 0;
 		player_monster_kill_check(data->player, m);
 		return;

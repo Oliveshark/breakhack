@@ -294,7 +294,8 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 	if (!has_collided(player, matrix, direction)) {
 		action_spent(player);
 		RoomSpace *lastSpace = &matrix->spaces[lastPos.x][lastPos.y];
-		if (lastPos.x > 1 &&
+		if (matrix->modifier->type == RMOD_TYPE_CRUMBLING &&
+		    lastPos.x > 1 &&
 		    lastPos.y > 1 &&
 		    lastPos.x < 14 &&
 		    lastPos.y < 10 &&
