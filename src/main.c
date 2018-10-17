@@ -250,6 +250,11 @@ bool initSDL(void)
 		       SDL_GetError());
 		return false;
 	}
+
+	if (SDL_IsTextInputActive()) {
+		debug("Disabling text input");
+		SDL_StopTextInput();
+	}
 		
 	return true;
 }
