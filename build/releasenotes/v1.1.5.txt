@@ -1,0 +1,8 @@
+0730eb4 Disable text input since this is on by default in SDL2.0
+7333d3d Update issue templates
+70cc79f Merge pull request #47 from Oliveshark/add-code-of-conduct-1
+bdbb10b Create CODE_OF_CONDUCT.md
+75660a5 Update to readme.
+5d1490b Another README badge fix
+aefbd95 Update readme to match new github url
+90603b4 Fix what my bad build script broke
