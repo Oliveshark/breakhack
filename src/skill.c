@@ -100,7 +100,7 @@ static char *backstab_tooltip[] = {
 	"   You flip over an adjecant enemy taking it's place and", "",
 	"   it taking yours, finnishing off with a stab in the back", "",
 	"   of your foe.", "",
-	"   A successful attack will also leave the enemy stunned." "",
+	"   A successful attack will also leave the enemy stunned.", "",
 	"",
 	"COOLDOWN:", "",
 	"   5 turns", "",
@@ -422,8 +422,9 @@ skill_trip(Skill *skill, SkillData *data)
 	mixer_play_effect(SWING0 + get_random(2));
 	animation_run(data->player->swordAnimation);
 	if (space->monster) {
-		mixer_play_effect(SWORD_HIT);
 		int dmg = stats_fight(&data->player->stats, &space->monster->stats);
+		if (dmg)
+			mixer_play_effect(SWORD_HIT);
 		gui_log("You trip %s causing it to fall away from you", space->monster->lclabel);
 		monster_hit(space->monster, dmg);
 		player_monster_kill_check(data->player, space->monster);
@@ -452,7 +453,7 @@ create_trip(void)
 	Sprite *s = sprite_create();
 	sprite_set_texture(s, t, 0);
 	s->dim = GAME_DIMENSION;
-	s->clip = CLIP32(96, 0);
+	s->clip = CLIP32(32, 32);
 	s->fixed = true;
 	Skill *skill = create_default("Trip", s);
 	skill->levelcap = 3;
@@ -530,6 +531,7 @@ static bool
 skill_phase(Skill *skill, SkillData *data)
 {
 	UNUSED(skill);
+	mixer_play_effect(FADE_OUT);
 	data->player->phase_count = 3;
 	return true;
 }

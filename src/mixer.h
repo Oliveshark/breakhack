@@ -61,6 +61,8 @@ typedef enum Fx_t {
 	SLAM,
 	MAGIC_PICKUP,
 	CHEST_OPEN,
+	FADE_IN,
+	FADE_OUT,
 	LAST_EFFECT
 } Fx;
 
