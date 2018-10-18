@@ -900,6 +900,23 @@ run_game_render(void)
 	SDL_RenderPresent(gRenderer);
 }
 
+#ifdef STEAM_BUILD
+static inline void
+register_scores(void)
+{
+		uint8_t details[4] = { (uint8_t) gPlayer->stats.lvl, (uint8_t) cLevel, 0, 0 };
+		steam_register_score((int) gPlayer->gold, (int32_t*) &details, 1);
+		steam_register_kills((int) gPlayer->stat_data.kills, (int32_t*) &details, 1);
+		if (gPlayer->class == ROGUE) {
+			steam_set_achievement(ROGUE_LIKE);
+			steam_register_rogue_score((int) gPlayer->gold, (int32_t*) &details, 1);
+		}
+		else if (gPlayer->class == WARRIOR) {
+			steam_register_warrior_score((int) gPlayer->gold, (int32_t*) &details, 1);
+		}
+}
+#endif
+
 static void
 run_game(void)
 {
@@ -925,9 +942,7 @@ run_game(void)
 		createInGameGameOverMenu();
 		hiscore_register(gPlayer, cLevel);
 #ifdef STEAM_BUILD
-		uint8_t details[4] = { (uint8_t) gPlayer->stats.lvl, (uint8_t) cLevel, 0, 0 };
-		steam_register_score((int) gPlayer->gold, (int32_t*) &details, 1);
-		steam_register_kills((int) gPlayer->stat_data.kills, (int32_t*) &details, 1);
+		register_scores();
 #endif // STEAM_BUILD
 
 	} else {
@@ -943,6 +958,7 @@ run_game(void)
 		end_game_details();
 #ifdef STEAM_BUILD
 		steam_set_achievement(BACK_TO_WORK);
+		register_scores();
 #endif // STEAM_BUILD
 	}
 }

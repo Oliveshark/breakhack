@@ -11,7 +11,8 @@ typedef enum EAchievement
 	BACK_TO_WORK = 5,
 	DRAGON_SLAYER = 6,
 	BUGGFIXER = 7,
-	BUGGCREATOR = 8
+	BUGGCREATOR = 8,
+	ROGUE_LIKE = 9
 } EAchievement;
 
 
@@ -36,5 +37,9 @@ void steam_run_callbacks(void);
 void steam_set_achievement(EAchievement eAch);
 
 void steam_register_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
+
+void steam_register_warrior_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
+
+void steam_register_rogue_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
 void steam_register_kills(Sint32 nKills, const int32_t *details, int32_t nDetails);
