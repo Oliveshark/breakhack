@@ -107,7 +107,7 @@ action_spent(Player *p)
 		}
 		if (p->phase_count > 0) {
 			p->phase_count--;
-			if (p->phase_count <= 0) {
+			if (!p->phase_count) {
 				mixer_play_effect(FADE_IN);
 			}
 		}
