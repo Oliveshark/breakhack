@@ -625,7 +625,11 @@ handle_main_input(void)
 		switch (gGameState) {
 			case CREDITS:
 			case SCORE_SCREEN:
+				gGameState = MENU;
+				break;
 			case CHARACTER_MENU:
+				menu_destroy(charSelectMenu);
+				charSelectMenu = NULL;
 				gGameState = MENU;
 				break;
 			case MENU:

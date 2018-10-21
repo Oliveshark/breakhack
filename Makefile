@@ -12,7 +12,7 @@ test:
 .PHONY: test
 
 run: $(all)
-	@./_build/debug/breakhack
+	@LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ ./_build/debug/breakhack
 .PHONY: run
 
 lint:
