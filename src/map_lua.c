@@ -526,6 +526,9 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 	lua_pushinteger(L, level);
 	lua_setglobal(L, "CURRENT_LEVEL");
 
+	lua_pushboolean(L, false);
+	lua_setglobal(L, "QUICK_MODE");
+
 	// Add custom searcher
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "searchers");

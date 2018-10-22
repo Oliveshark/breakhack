@@ -50,6 +50,9 @@ local function generate_path ()
 	local lastDirection = 0
 	local coridoor_count = 0
 	local bossLevel = CURRENT_LEVEL % 5 == 0
+	if QUICK_MODE then
+		bossLevel = CURRENT_LEVEL % 3 == 0
+	end
 	local coverage = 8 + CURRENT_LEVEL
 	if bossLevel or CURRENT_LEVEL == 1 then
 		coverage = 5

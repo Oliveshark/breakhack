@@ -303,16 +303,16 @@ if(CURRENT_LEVEL > 0) then
 		enemies = concat(enemies, avian)
 		enemies = concat(enemies, misc)
 		enemies = concat(enemies, dogs)
-	elseif (CURRENT_LEVEL > 15) then
+	elseif (CURRENT_LEVEL > 15 or (QUICK_MODE and CURRENT_LEVEL > 9)) then
 		enemies = {}
 		enemies = concat(enemies, undead)
 		enemies = concat(enemies, orcs)
 		enemies = concat(enemies, assassins)
-	elseif (CURRENT_LEVEL > 10) then
+	elseif (CURRENT_LEVEL > 10 or (QUICK_MODE and CURRENT_LEVEL > 6)) then
 		enemies = {}
 		enemies = concat(enemies, undead)
 		enemies = concat(enemies, avian)
-	elseif (CURRENT_LEVEL > 5) then
+	elseif (CURRENT_LEVEL > 5 or (QUICK_MODE and CURRENT_LEVEL > 3)) then
 		enemies = {}
 		enemies = concat(enemies, orcs)
 		enemies = concat(enemies, avian)
@@ -364,6 +364,9 @@ end
 
 function module.add_boss_to_room(room, roomx, roomy)
 	local boss = bosses[CURRENT_LEVEL / 5]
+	if QUICK_MODE then
+		boss = bosses[CURRENT_LEVEL / 3]
+	end
 	local success = false
 	while not success do
 		local rx = random(13) + 1
