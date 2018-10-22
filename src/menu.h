@@ -27,11 +27,14 @@
 
 typedef struct TEXT_MENU_ITEM {
 	char label[20];
+	char description[100];
 	void (*callback)(void*);
 } TEXT_MENU_ITEM;
 
 typedef struct Menu_t {
 	LinkedList *items;
+	LinkedList *descriptions;
+	Sprite *menuDescription;
 	int selected;
 } Menu;
 
@@ -42,10 +45,10 @@ void
 menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size, SDL_Renderer *);
 
 Menu *
-menu_create_character_selector(void (*onCharacterSelect)(const char *));
+menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *cam);
 
 void
-menu_update(Menu*, Input*);
+menu_update(Menu*, Input*, Camera *cam);
 
 void
 menu_item_add(Menu*, Sprite*, Sprite*, void (*)(void*));

@@ -38,12 +38,25 @@ typedef struct MenuItem {
 	GuiButton *button;
 } MenuItem;
 
+static void redraw_description(Menu *m, Camera *cam);
+
 Menu *
 menu_create(void)
 {
 	Menu *menu = ec_malloc(sizeof(Menu));
 	menu->items = linkedlist_create();
+	menu->descriptions = linkedlist_create();
 	menu->selected = 0;
+	menu->menuDescription = sprite_create();
+	sprite_load_text_texture(menu->menuDescription,
+				 "GUI/SDS_8x8.ttf",
+				 0,
+				 12,
+				 1);
+	menu->menuDescription->fixed = true;
+	menu->menuDescription->pos = POS(20, SCREEN_HEIGHT - 20);
+	menu->menuDescription->hidden = true;
+
 	return menu;
 }
 
@@ -80,11 +93,12 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 		s2->fixed = true;
 
 		menu_item_add(*menu, s1, s2, menu_items[i].callback);
+		linkedlist_append(&(*menu)->descriptions, (void*) menu_items[i].description);
 	}
 }
 
 Menu *
-menu_create_character_selector(void (*onCharacterSelect)(const char *))
+menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *cam)
 {
 	const char *spriteSheets[] = {
 		"Commissions/Warrior.png",
@@ -94,6 +108,11 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *))
 	static char *callbackData[] = {
 		"warrior",
 		"rogue"
+	};
+
+	static char *descriptions[] = {
+		"Play as the warrior",
+		"Play as the rogue",
 	};
 
 	Menu *menu = menu_create();
@@ -117,7 +136,12 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *))
 		MenuItem *item = linkedlist_get(&menu->items, (Uint32) i);
 		item->button->usrdata = callbackData[i];
 		xoffset += 224;
+
+		linkedlist_append(&menu->descriptions, descriptions[i]);
 	}
+
+	menu->selected = 0;
+	redraw_description(menu, cam);
 
 	return menu;
 }
@@ -178,9 +202,31 @@ handle_mouse_motion(Menu *m, Input *input)
 
 }
 
-void
-menu_update(Menu *m, Input *input)
+static void
+redraw_description(Menu *m, Camera *cam)
 {
+	char *description = linkedlist_get(&m->descriptions, m->selected);
+	if (!description || strlen(description) <= 1) {
+		m->menuDescription->hidden = true;
+		return;
+	}
+
+	m->menuDescription->hidden = false;
+	texture_load_from_text(m->menuDescription->textures[0],
+			       description,
+			       C_WHITE,
+			       C_BLACK,
+			       cam->renderer);
+	m->menuDescription->dim = DIM(
+		m->menuDescription->textures[0]->dim.width,
+		m->menuDescription->textures[0]->dim.height);
+}
+
+void
+menu_update(Menu *m, Input *input, Camera *cam)
+{
+	static int lastSelected = -1;
+
 	if (handle_keyboard_input(m, input)) {
 		return;
 	}
@@ -198,6 +244,11 @@ menu_update(Menu *m, Input *input)
 			item->button->event(item->button->usrdata);
 			return;
 		}
+	}
+
+	if (lastSelected != m->selected) {
+		lastSelected = m->selected;
+		redraw_description(m, cam);
 	}
 }
 
@@ -236,6 +287,8 @@ menu_render(Menu *m, Camera *cam)
 		index++;
 	}
 
+	sprite_render(m->menuDescription, cam);
+
 }
 
 static void
@@ -255,6 +308,10 @@ menu_destroy(Menu *m)
 	while (m->items)
 		menu_item_destroy(linkedlist_pop(&m->items));
 
+	while (m->descriptions)
+		linkedlist_pop(&m->descriptions);
+
+	sprite_destroy(m->menuDescription);
 	free(m);
 }
 

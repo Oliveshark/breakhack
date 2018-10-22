@@ -384,7 +384,7 @@ static void
 goToCharacterMenu(void *unused)
 {
 	UNUSED(unused);
-	charSelectMenu = menu_create_character_selector(on_character_select);
+	charSelectMenu = menu_create_character_selector(on_character_select, gCamera);
 	gGameState = CHARACTER_MENU;
 }
 
@@ -415,10 +415,10 @@ static void
 initInGameMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "RESUME", toggleInGameMenu },
-		{ "HOW TO PLAY", showHowToTooltip },
-		{ "MAIN MENU", goToMainMenu },
-		{ "QUIT", exitGame },
+		{ "RESUME", "", toggleInGameMenu },
+		{ "HOW TO PLAY", "", showHowToTooltip },
+		{ "MAIN MENU", "", goToMainMenu },
+		{ "QUIT", "Exit game", exitGame },
 	};
 
 	menu_create_text_menu(&inGameMenu, &menu_items[0], 4, gRenderer);
@@ -428,9 +428,10 @@ static void
 createInGameGameOverMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "NEW GAME", goToCharacterMenu },
-		{ "MAIN MENU", goToMainMenu },
-		{ "QUIT", exitGame },
+		{ "NEW GAME", "Start a new game",
+			goToCharacterMenu },
+		{ "MAIN MENU", "", goToMainMenu },
+		{ "QUIT", "Exit game", exitGame },
 	};
 
 	if (inGameMenu) {
@@ -458,10 +459,10 @@ static void
 initMainMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "PLAY", goToCharacterMenu },
-		{ "SCORES", viewScoreScreen },
-		{ "CREDITS", viewCredits },
-		{ "QUIT", exitGame },
+		{ "PLAY", "Play a standard 20 level game", goToCharacterMenu },
+		{ "SCORES", "View your top 10 scores", viewScoreScreen },
+		{ "CREDITS", "View game credits", viewCredits },
+		{ "QUIT", "Exit game", exitGame },
 	};
 
 	if (gMap)
@@ -780,7 +781,7 @@ run_game_update(void)
 	static UpdateData updateData;
 
 	if (gGameState == IN_GAME_MENU)
-		menu_update(inGameMenu, &input);
+		menu_update(inGameMenu, &input, gCamera);
 
 	populateUpdateData(&updateData, deltaTime);
 
@@ -988,9 +989,9 @@ run_menu(void)
 		return;
 
 	if (gGameState == MENU)
-		menu_update(mainMenu, &input);
+		menu_update(mainMenu, &input, gCamera);
 	else if (gGameState == CHARACTER_MENU)
-		menu_update(charSelectMenu, &input);
+		menu_update(charSelectMenu, &input, gCamera);
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
