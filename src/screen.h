@@ -33,6 +33,9 @@ screen_create_credits(SDL_Renderer*);
 Screen *
 screen_create_hiscore(SDL_Renderer*);
 
+Screen *
+screen_create_characterselect(SDL_Renderer*);
+
 void
 screen_render(Screen *screen, Camera *cam);
 

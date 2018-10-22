@@ -153,6 +153,7 @@ static Timer		*menuTimer		= NULL;
 static Camera		*gCamera		= NULL;
 static Screen		*creditsScreen		= NULL;
 static Screen		*scoreScreen		= NULL;
+static Screen		*characterSelectScreen	= NULL;
 static Sprite		*new_skill_tooltip	= NULL;
 static Sprite		*howto_tooltip		= NULL;
 static Sprite		*new_artifact_tooltip	= NULL;
@@ -474,6 +475,7 @@ initMainMenu(void)
 	mixer_play_music(MENU_MUSIC);
 	creditsScreen = screen_create_credits(gRenderer);
 	scoreScreen = screen_create_hiscore(gRenderer);
+	characterSelectScreen = screen_create_characterselect(gRenderer);
 }
 
 static void
@@ -504,6 +506,10 @@ resetGame(void)
 	if (scoreScreen)
 		screen_destroy(scoreScreen);
 	scoreScreen = NULL;
+
+	if (characterSelectScreen)
+		screen_destroy(characterSelectScreen);
+	characterSelectScreen = NULL;
 
 	if (inGameMenu)
 		menu_destroy(inGameMenu);
@@ -1007,8 +1013,10 @@ run_menu(void)
 
 	if (gGameState == MENU)
 		menu_render(mainMenu, gCamera);
-	if (gGameState == CHARACTER_MENU)
+	if (gGameState == CHARACTER_MENU) {
+		screen_render(characterSelectScreen, gCamera);
 		menu_render(charSelectMenu, gCamera);
+	}
 	else if (gGameState == CREDITS)
 		screen_render(creditsScreen, gCamera);
 	else if (gGameState == SCORE_SCREEN)
@@ -1119,6 +1127,8 @@ void close(void)
 		screen_destroy(creditsScreen);
 	if (scoreScreen)
 		screen_destroy(scoreScreen);
+	if (characterSelectScreen)
+		screen_destroy(characterSelectScreen);
 	if (inGameMenu)
 		menu_destroy(inGameMenu);
 

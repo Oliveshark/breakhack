@@ -169,6 +169,22 @@ screen_create_hiscore(SDL_Renderer *renderer)
 	return screen;
 }
 
+Screen *
+screen_create_characterselect(SDL_Renderer *renderer)
+{
+	Screen *screen = screen_create();
+
+	Sprite *s = sprite_create();
+	sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 18, 1);
+	texture_load_from_text(s->textures[0], "Choose your class:", C_BLUE, C_WHITE, renderer);
+	s->pos = (Position) { (SCREEN_WIDTH - s->textures[0]->dim.width) >> 1,  80 };
+	s->fixed = true;
+	s->dim = s->textures[0]->dim;
+
+	linkedlist_push(&screen->sprites, s);
+	return screen;
+}
+
 void
 screen_render(Screen *screen, Camera *cam)
 {
