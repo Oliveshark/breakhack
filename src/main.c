@@ -477,7 +477,7 @@ initMainMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
 		{ "PLAY",
-			"Play a standard 20 level game. Redommended for new players",
+			"Play a standard 20 level game. Recommended for new players",
 			startRegularGame },
 		{ "QUICK PLAY",
 			"Play a 12 level game with more action earlier in the game",
