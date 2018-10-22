@@ -162,6 +162,7 @@ static float		deltaTime		= 1.0;
 static double		renderScale		= 1.0;
 static Turn		currentTurn		= PLAYER;
 static class_t		playerClass		= WARRIOR;
+static bool		quickGame		= false;
 static GameState	gGameState;
 static SDL_Rect		mainViewport;
 static SDL_Rect		gameViewport;
@@ -386,7 +387,22 @@ goToCharacterMenu(void *unused)
 {
 	UNUSED(unused);
 	charSelectMenu = menu_create_character_selector(on_character_select, gCamera);
+	characterSelectScreen = screen_create_characterselect(gRenderer);
 	gGameState = CHARACTER_MENU;
+}
+
+static void
+startRegularGame(void *unused)
+{
+	quickGame = false;
+	goToCharacterMenu(unused);
+}
+
+static void
+startQuickGame(void *unused)
+{
+	quickGame = true;
+	goToCharacterMenu(unused);
 }
 
 static void
@@ -429,7 +445,7 @@ static void
 createInGameGameOverMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "NEW GAME", "Start a new game",
+		{ "NEW GAME", "Start a new game with the same settings",
 			goToCharacterMenu },
 		{ "MAIN MENU", "", goToMainMenu },
 		{ "QUIT", "Exit game", exitGame },
@@ -460,7 +476,12 @@ static void
 initMainMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "PLAY", "Play a standard 20 level game", goToCharacterMenu },
+		{ "PLAY",
+			"Play a standard 20 level game. Redommended for new players",
+			startRegularGame },
+		{ "QUICK PLAY",
+			"Play a 12 level game with more action earlier in the game",
+			startQuickGame },
 		{ "SCORES", "View your top 10 scores", viewScoreScreen },
 		{ "CREDITS", "View game credits", viewCredits },
 		{ "QUIT", "Exit game", exitGame },
@@ -471,11 +492,10 @@ initMainMenu(void)
 
 	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
 
-	menu_create_text_menu(&mainMenu, &menu_items[0], 4, gRenderer);
+	menu_create_text_menu(&mainMenu, &menu_items[0], 5, gRenderer);
 	mixer_play_music(MENU_MUSIC);
 	creditsScreen = screen_create_credits(gRenderer);
 	scoreScreen = screen_create_hiscore(gRenderer);
-	characterSelectScreen = screen_create_characterselect(gRenderer);
 }
 
 static void
@@ -507,10 +527,6 @@ resetGame(void)
 		screen_destroy(scoreScreen);
 	scoreScreen = NULL;
 
-	if (characterSelectScreen)
-		screen_destroy(characterSelectScreen);
-	characterSelectScreen = NULL;
-
 	if (inGameMenu)
 		menu_destroy(inGameMenu);
 	inGameMenu = NULL;
@@ -522,7 +538,7 @@ resetGame(void)
 	particle_engine_clear();
 
 	info("Building new map");
-	gMap = map_lua_generator_run(cLevel, gRenderer);
+	gMap = map_lua_generator_run(cLevel, quickGame, gRenderer);
 
 	gPlayer->sprite->pos = (Position) {
 		TILE_DIMENSION, TILE_DIMENSION };
@@ -635,6 +651,8 @@ handle_main_input(void)
 				gGameState = MENU;
 				break;
 			case CHARACTER_MENU:
+				screen_destroy(characterSelectScreen);
+				characterSelectScreen = NULL;
 				menu_destroy(charSelectMenu);
 				charSelectMenu = NULL;
 				gGameState = MENU;
@@ -726,9 +744,9 @@ check_next_level(void)
 	if (tile->levelExit) {
 		mixer_play_effect(NEXT_LEVEL);
 		++cLevel;
-		if (cLevel > 19) {
+		if (cLevel > (quickGame ? 11 : 19)) {
 			mixer_play_music(BOSS_MUSIC0);
-		} else if (cLevel % 5 == 0) {
+		} else if (cLevel % (quickGame ? 3 : 5) == 0) {
 			gui_log("You sense something powerful in the vicinity");
 			mixer_play_music(BOSS_MUSIC0);
 		} else {
@@ -960,7 +978,7 @@ run_game(void)
 		check_next_level();
 	}
 
-	if (gGameState == PLAYING && cLevel >= 20) {
+	if (gGameState == PLAYING && (cLevel >= 20 || (quickGame && cLevel >= 12))) {
 		gGameState = COMPLETED;
 		createInGameGameOverMenu();
 		gui_event_message("Your break is over!");
@@ -968,7 +986,8 @@ run_game(void)
 		gui_event_message("Well done!");
 		end_game_details();
 #ifdef STEAM_BUILD
-		steam_set_achievement(BACK_TO_WORK);
+		if (cLevel >= 20)
+			steam_set_achievement(BACK_TO_WORK);
 		register_scores();
 #endif // STEAM_BUILD
 	}

@@ -422,7 +422,7 @@ local function add_level_exit(room)
 end
 
 local function build_normal_room(room)
-	local crumbling = CURRENT_LEVEL > 3 and random(8) == 1
+	local crumbling = (CURRENT_LEVEL > 3 or QUICK_MODE) and random(8) == 1
 
 	add_tiles_to_room(room, crumbling)
 	add_random_decor_to_room(room)
@@ -437,10 +437,10 @@ local function build_normal_room(room)
 	if crumbling then
 		room.modifier.type = "CRUMBLING"
 		room.modifier.arg = ""
-	elseif CURRENT_LEVEL > 3 and random(8) == 1 then
+	elseif (CURRENT_LEVEL > 3 or QUICK_MODE) and random(8) == 1 then
 		room.modifier.type = "FIRE"
 		room.modifier.arg = ""
-	elseif ((not pitsAdded and CURRENT_LEVEL > 1) or CURRENT_LEVEL > 3) and random(8) == 1 then
+	elseif ((not pitsAdded and (CURRENT_LEVEL > 1 or QUICK_MODE)) or CURRENT_LEVEL > 3) and random(8) == 1 then
 		directions = { "LEFT", "RIGHT", "UP", "DOWN" }
 		room.modifier.type = "WINDY"
 		room.modifier.arg = directions[random(#directions)]

@@ -468,7 +468,7 @@ l_read_file(lua_State *L)
 }
 
 static Map*
-generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
+generate_map(unsigned int level, const char *file, bool quickGame, SDL_Renderer *renderer)
 {
 	int status, result;
 
@@ -526,7 +526,7 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 	lua_pushinteger(L, level);
 	lua_setglobal(L, "CURRENT_LEVEL");
 
-	lua_pushboolean(L, false);
+	lua_pushboolean(L, quickGame);
 	lua_setglobal(L, "QUICK_MODE");
 
 	// Add custom searcher
@@ -557,13 +557,13 @@ generate_map(unsigned int level, const char *file, SDL_Renderer *renderer)
 Map* map_lua_generator_single_room__run(unsigned int level, SDL_Renderer *renderer)
 {
 	char file[] = "menumapgen.lua";
-	return generate_map(level, file, renderer);
+	return generate_map(level, file, false, renderer);
 }
 
-Map* map_lua_generator_run(unsigned int level, SDL_Renderer *renderer)
+Map* map_lua_generator_run(unsigned int level, bool quickGame, SDL_Renderer *renderer)
 {
 	char file[] = "mapgen.lua";
-	return generate_map(level, file, renderer);
+	return generate_map(level, file, quickGame, renderer);
 }
 
 

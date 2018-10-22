@@ -51,7 +51,7 @@ menu_create(void)
 	sprite_load_text_texture(menu->menuDescription,
 				 "GUI/SDS_8x8.ttf",
 				 0,
-				 12,
+				 10,
 				 1);
 	menu->menuDescription->fixed = true;
 	menu->menuDescription->pos = POS(20, SCREEN_HEIGHT - 20);
