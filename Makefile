@@ -2,6 +2,10 @@ all:
 	@make -sC _build/debug
 .PHONY: all
 
+release:
+	@make -sC _build/release
+.PHONY: release
+
 clean:
 	@make clean -sC _build/debug
 	@make clean -sC _build/release
