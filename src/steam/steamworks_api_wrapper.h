@@ -38,6 +38,8 @@ void steam_set_achievement(EAchievement eAch);
 
 void steam_register_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
+void steam_register_qp_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
+
 void steam_register_warrior_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
 void steam_register_rogue_score(Sint32 nScore, const int32_t *details, int32_t nDetails);

@@ -662,6 +662,10 @@ handle_main_input(void)
 				characterSelectScreen = NULL;
 				menu_destroy(charSelectMenu);
 				charSelectMenu = NULL;
+				if (mainMenu == NULL) {
+					resetGame();
+					initMainMenu();
+				}
 				gGameState = MENU;
 				break;
 			case MENU:
@@ -940,9 +944,12 @@ run_game_render(void)
 static inline void
 register_scores(void)
 {
-		uint8_t details[4] = { (uint8_t) gPlayer->stats.lvl, (uint8_t) cLevel, 0, 0 };
+		uint8_t details[4] = { (uint8_t) gPlayer->stats.lvl, (uint8_t) cLevel, (uint8_t) (gPlayer->class + 1), 0 };
 		steam_register_score((int) gPlayer->gold, (int32_t*) &details, 1);
 		steam_register_kills((int) gPlayer->stat_data.kills, (int32_t*) &details, 1);
+		if (quickGame) {
+			steam_register_qp_score((int) gPlayer->gold, (int32_t*) &details, 1);
+		}
 		if (gPlayer->class == ROGUE) {
 			steam_set_achievement(ROGUE_LIKE);
 			steam_register_rogue_score((int) gPlayer->gold, (int32_t*) &details, 1);
