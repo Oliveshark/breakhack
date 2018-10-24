@@ -86,7 +86,7 @@ tooltip_create(char **content, Camera *cam)
 	}
 
 	Sprite *sprite = gui_util_create_tooltip_frame_sprite(BOTTOM_GUI_WIDTH/16 - 6,
-							      (Uint32) ((rowCount * 9 + 48)/16),
+							      (Uint32) ((rowCount * 8 + 48)/16),
 							      cam);
 	sprite->pos.x = 48;
 	sprite->pos.y = 48;

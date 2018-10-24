@@ -103,7 +103,7 @@ static char *how_to_play_tooltip[] = {
 	"HOW TO PLAY", "",
 	"",
 	"   NAVIGATION:        Use ARROWS or WASD or HJKL to move", "",
-	"                      Controller: RIGHT STICK or D-PAD", "",
+	"                      Controller: LEFT STICK or D-PAD", "",
 	"",
 	"   ATTACK:            Walk into a monster to attack it", "",
 	"",
