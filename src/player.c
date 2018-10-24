@@ -646,7 +646,14 @@ player_reset_steps(Player *p)
 	p->stat_data.steps = 0;
 }
 
-void player_update(UpdateData *data)
+static void
+reset_dagger_skill(Player *p)
+{
+	p->skills[3]->resetCountdown = 0;
+}
+
+void
+player_update(UpdateData *data)
 {
 	Player *player = data->player;
 	if (player->stats.hp <= 0)
@@ -674,6 +681,8 @@ void player_update(UpdateData *data)
 		} else {
 			projectile_destroy(p);
 			action_spent(player);
+			if (player->class == ROGUE)
+				reset_dagger_skill(player);
 		}
 	}
 

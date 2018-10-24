@@ -436,7 +436,7 @@ skill_trip(Skill *skill, SkillData *data)
 					break;
 				}
 			}
-			monster_set_state(space->monster, STUNNED, (Uint8)(1 + player_has_artifact(data->player, INCREASED_STUN)));
+			monster_set_state(space->monster, STUNNED, (Uint8)(2 + player_has_artifact(data->player, INCREASED_STUN)));
 		}
 
 
@@ -458,7 +458,7 @@ create_trip(void)
 	Skill *skill = create_default("Trip", s);
 	skill->levelcap = 3;
 	skill->instantUse = false;
-	skill->resetTime = 3;
+	skill->resetTime = 2;
 	skill->available = NULL;
 	skill->use = skill_trip;
 	skill->actionRequired = true;
@@ -501,7 +501,7 @@ skill_backstab(Skill *skill, SkillData *data)
 		player_monster_kill_check(data->player, m);
 		if (dmg) {
 			mixer_play_effect(SWORD_HIT);
-			monster_set_state(m, STUNNED, (Uint8)(1 + player_has_artifact(data->player, INCREASED_STUN)));
+			monster_set_state(m, STUNNED, (Uint8)(3 + player_has_artifact(data->player, INCREASED_STUN)));
 		}
 	}
 
@@ -520,7 +520,7 @@ create_backstab(void)
 	Skill *skill = create_default("Backstab", s);
 	skill->levelcap = 2;
 	skill->instantUse = false;
-	skill->resetTime = 5;
+	skill->resetTime = 2;
 	skill->available = NULL;
 	skill->use = skill_backstab;
 	skill->actionRequired = true;
@@ -548,7 +548,7 @@ create_phase(void)
 	Skill *skill = create_default("Phase", s);
 	skill->levelcap = 4;
 	skill->instantUse = true;
-	skill->resetTime = 8;
+	skill->resetTime = 6;
 	skill->available = NULL;
 	skill->use = skill_phase;
 	skill->actionRequired = false;
