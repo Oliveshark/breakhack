@@ -518,6 +518,9 @@ resetGame(void)
 	if (charSelectMenu)
 		menu_destroy(charSelectMenu);
 	charSelectMenu = NULL;
+	if (characterSelectScreen)
+		screen_destroy(characterSelectScreen);
+	charSelectMenu = NULL;
 
 	if (creditsScreen)
 		screen_destroy(creditsScreen);
