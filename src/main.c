@@ -512,27 +512,31 @@ resetGame(void)
 {
 	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 
-	if (mainMenu)
+	if (mainMenu) {
 		menu_destroy(mainMenu);
-	mainMenu = NULL;
-	if (charSelectMenu)
+		mainMenu = NULL;
+	}
+	if (charSelectMenu) {
 		menu_destroy(charSelectMenu);
-	charSelectMenu = NULL;
-	if (characterSelectScreen)
+		charSelectMenu = NULL;
+	}
+	if (characterSelectScreen) {
 		screen_destroy(characterSelectScreen);
-	charSelectMenu = NULL;
-
-	if (creditsScreen)
+		characterSelectScreen = NULL;
+	}
+	if (creditsScreen) {
 		screen_destroy(creditsScreen);
-	creditsScreen = NULL;
-
-	if (scoreScreen)
+		creditsScreen = NULL;
+	}
+	if (scoreScreen) {
 		screen_destroy(scoreScreen);
-	scoreScreen = NULL;
-
-	if (inGameMenu)
+		scoreScreen = NULL;
+	}
+	if (inGameMenu) {
 		menu_destroy(inGameMenu);
-	inGameMenu = NULL;
+		inGameMenu = NULL;
+	}
+
 	initInGameMenu();
 
 	if (gMap)
