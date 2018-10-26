@@ -147,6 +147,7 @@ static RoomMatrix	*gRoomMatrix		= NULL;
 static Gui		*gGui			= NULL;
 static SkillBar		*gSkillBar		= NULL;
 static Menu		*mainMenu		= NULL;
+static Menu		*gameSelectMenu		= NULL;
 static Menu		*inGameMenu		= NULL;
 static Menu		*charSelectMenu		= NULL;
 static Timer		*menuTimer		= NULL;
@@ -427,6 +428,19 @@ goToMainMenu(void *unused)
 }
 
 static void
+goToGameSelectMenu(void *unused)
+{
+	UNUSED(unused);
+	static TEXT_MENU_ITEM menuItems[] = {
+		{ "STANDARD GAME", "", startRegularGame },
+		{ "QUICK GAME", "", startQuickGame },
+	};
+
+	menu_create_text_menu(&gameSelectMenu, &menuItems[0], 2, gRenderer);
+	gGameState = GAME_SELECT;
+}
+
+static void
 showHowToTooltip(void *unused)
 {
 	UNUSED(unused);
@@ -482,12 +496,7 @@ static void
 initMainMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "PLAY",
-			"Play a standard 20 level game. Recommended for new players",
-			startRegularGame },
-		{ "QUICK PLAY",
-			"Play a 12 level game with more action earlier in the game",
-			startQuickGame },
+		{ "PLAY", "Start game", goToGameSelectMenu },
 		{ "SCORES", "View your top 10 scores", viewScoreScreen },
 		{ "CREDITS", "View game credits", viewCredits },
 		{ "QUIT", "Exit game", exitGame },
@@ -498,7 +507,7 @@ initMainMenu(void)
 
 	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
 
-	menu_create_text_menu(&mainMenu, &menu_items[0], 5, gRenderer);
+	menu_create_text_menu(&mainMenu, &menu_items[0], 4, gRenderer);
 	mixer_play_music(MENU_MUSIC);
 	creditsScreen = screen_create_credits(gRenderer);
 	scoreScreen = screen_create_hiscore(gRenderer);
@@ -525,6 +534,10 @@ resetGame(void)
 	if (charSelectMenu) {
 		menu_destroy(charSelectMenu);
 		charSelectMenu = NULL;
+	}
+	if (gameSelectMenu) {
+		menu_destroy(gameSelectMenu);
+		gameSelectMenu = NULL;
 	}
 	if (characterSelectScreen) {
 		screen_destroy(characterSelectScreen);
@@ -663,16 +676,20 @@ handle_main_input(void)
 			case SCORE_SCREEN:
 				gGameState = MENU;
 				break;
+			case GAME_SELECT:
+				menu_destroy(gameSelectMenu);
+				gameSelectMenu = NULL;
+				gGameState = MENU;
+				break;
 			case CHARACTER_MENU:
+				if (mainMenu == NULL)
+					break;
+
 				screen_destroy(characterSelectScreen);
 				characterSelectScreen = NULL;
 				menu_destroy(charSelectMenu);
 				charSelectMenu = NULL;
-				if (mainMenu == NULL) {
-					resetGame();
-					initMainMenu();
-				}
-				gGameState = MENU;
+				gGameState = GAME_SELECT;
 				break;
 			case MENU:
 				gGameState = QUIT;
@@ -1030,6 +1047,7 @@ run_menu(void)
 	if (gGameState != MENU
 	    && gGameState != CREDITS
 	    && gGameState != SCORE_SCREEN
+	    && gGameState != GAME_SELECT
 	    && gGameState != CHARACTER_MENU)
 		return;
 
@@ -1037,6 +1055,8 @@ run_menu(void)
 		menu_update(mainMenu, &input, gCamera);
 	else if (gGameState == CHARACTER_MENU)
 		menu_update(charSelectMenu, &input, gCamera);
+	else if (gGameState == GAME_SELECT)
+		menu_update(gameSelectMenu, &input, gCamera);
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
@@ -1052,10 +1072,12 @@ run_menu(void)
 
 	if (gGameState == MENU)
 		menu_render(mainMenu, gCamera);
-	if (gGameState == CHARACTER_MENU) {
+	else if (gGameState == CHARACTER_MENU) {
 		screen_render(characterSelectScreen, gCamera);
 		menu_render(charSelectMenu, gCamera);
 	}
+	else if (gGameState == GAME_SELECT)
+		menu_render(gameSelectMenu, gCamera);
 	else if (gGameState == CREDITS)
 		screen_render(creditsScreen, gCamera);
 	else if (gGameState == SCORE_SCREEN)
@@ -1111,6 +1133,7 @@ run(void)
 			case MENU:
 			case CREDITS:
 			case SCORE_SCREEN:
+			case GAME_SELECT:
 			case CHARACTER_MENU:
 				run_menu();
 				break;
@@ -1162,14 +1185,18 @@ void close(void)
 		map_destroy(gMap);
 	if (mainMenu)
 		menu_destroy(mainMenu);
+	if (charSelectMenu)
+		menu_destroy(charSelectMenu);
+	if (gameSelectMenu)
+		menu_destroy(gameSelectMenu);
+	if (inGameMenu)
+		menu_destroy(inGameMenu);
 	if (creditsScreen)
 		screen_destroy(creditsScreen);
 	if (scoreScreen)
 		screen_destroy(scoreScreen);
 	if (characterSelectScreen)
 		screen_destroy(characterSelectScreen);
-	if (inGameMenu)
-		menu_destroy(inGameMenu);
 
 	sprite_destroy(howto_tooltip);
 	sprite_destroy(new_skill_tooltip);
