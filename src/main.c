@@ -355,6 +355,12 @@ exitGame(void *unused)
 	gGameState = QUIT;
 }
 
+static bool
+gameCompleted(void)
+{
+	return cLevel >= 20 || (quickGame && cLevel >= 12);
+}
+
 static void
 toggleInGameMenu(void *unused)
 {
@@ -365,7 +371,7 @@ toggleInGameMenu(void *unused)
 		gGameState = IN_GAME_MENU;
 	else if (is_player_dead())
 		gGameState = GAME_OVER;
-	else if (cLevel >= 20)
+	else if (gameCompleted())
 		gGameState = COMPLETED;
 	else
 		gGameState = PLAYING;
@@ -740,7 +746,7 @@ end_game_details(void)
 static void
 check_next_level(void)
 {
-	if (cLevel >= 20) {
+	if (gameCompleted()) {
 		return;
 	}
 
@@ -764,7 +770,7 @@ check_next_level(void)
 			mixer_play_music(GAME_MUSIC0 + get_random(2));
 		}
 
-		if (cLevel < 20) {
+		if (!gameCompleted()) {
 			resetGame();
 		}
 	}
@@ -965,7 +971,7 @@ run_game(void)
 {
 	run_game_update();
 
-	if (cLevel >= 20) {
+	if (gameCompleted()) {
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
 		SDL_RenderClear(gRenderer);
 		render_game_completed();
@@ -992,7 +998,7 @@ run_game(void)
 		check_next_level();
 	}
 
-	if (gGameState == PLAYING && (cLevel >= 20 || (quickGame && cLevel >= 12))) {
+	if (gGameState == PLAYING && (gameCompleted())) {
 		gGameState = COMPLETED;
 		createInGameGameOverMenu();
 		gui_event_message("Your break is over!");
