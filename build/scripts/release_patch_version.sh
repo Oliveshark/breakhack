@@ -13,7 +13,7 @@ NEXT_TAG=v$MAJOR_VERSION.$MINOR_VERSION.$NEXT_PATCH_VERSION
 sed -i -e "s/breakhack_PATCH_VERSION [0-9]\+/breakhack_PATCH_VERSION $NEXT_PATCH_VERSION/" CMakeLists.txt
 git log --oneline $LAST_TAG..HEAD > build/releasenotes/$NEXT_TAG.txt
 git add build/releasenotes/$NEXT_TAG.txt
-git commit -a -m"Patch version raised to $NEXT_VERSION"
+git commit -a -m"Patch version raised to $NEXT_PATCH_VERSION"
 
 # Create the tag
 git tag $NEXT_TAG
