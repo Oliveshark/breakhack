@@ -38,7 +38,7 @@ typedef struct MenuItem {
 	GuiButton *button;
 } MenuItem;
 
-static void redraw_description(Menu *m, Camera *cam);
+static void redraw_description(Menu *m, SDL_Renderer *renderer);
 
 Menu *
 menu_create(void)
@@ -95,6 +95,9 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 		menu_item_add(*menu, s1, s2, menu_items[i].callback);
 		linkedlist_append(&(*menu)->descriptions, (void*) menu_items[i].description);
 	}
+
+	(*menu)->selected = 0;
+	redraw_description(*menu, renderer);
 }
 
 Menu *
@@ -141,7 +144,7 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *
 	}
 
 	menu->selected = 0;
-	redraw_description(menu, cam);
+	redraw_description(menu, cam->renderer);
 
 	return menu;
 }
@@ -203,7 +206,7 @@ handle_mouse_motion(Menu *m, Input *input)
 }
 
 static void
-redraw_description(Menu *m, Camera *cam)
+redraw_description(Menu *m, SDL_Renderer *renderer)
 {
 	char *description = linkedlist_get(&m->descriptions, m->selected);
 	if (!description || strlen(description) <= 1) {
@@ -216,7 +219,7 @@ redraw_description(Menu *m, Camera *cam)
 			       description,
 			       C_WHITE,
 			       C_BLACK,
-			       cam->renderer);
+			       renderer);
 	m->menuDescription->dim = DIM(
 		m->menuDescription->textures[0]->dim.width,
 		m->menuDescription->textures[0]->dim.height);
@@ -248,7 +251,7 @@ menu_update(Menu *m, Input *input, Camera *cam)
 
 	if (lastSelected != m->selected) {
 		lastSelected = m->selected;
-		redraw_description(m, cam);
+		redraw_description(m, cam->renderer);
 	}
 }
 

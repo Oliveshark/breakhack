@@ -129,8 +129,8 @@ l_map_set_current_room_modifier(lua_State *L)
 	return 0;
 }
 
-static
-int l_map_set_current_room(lua_State *L)
+static int
+l_map_set_current_room(lua_State *L)
 {
 	Map *map;
 	unsigned int room_x, room_y;
@@ -144,8 +144,8 @@ int l_map_set_current_room(lua_State *L)
 	return 0;
 }
 
-static
-int l_add_texture(lua_State *L)
+static int
+l_add_texture(lua_State *L)
 {
 	Map *map;
 	const char *path;
@@ -468,7 +468,7 @@ l_read_file(lua_State *L)
 }
 
 static Map*
-generate_map(unsigned int level, const char *file, bool quickGame, SDL_Renderer *renderer)
+generate_map(unsigned int level, const char *file, GameMode gameMode, SDL_Renderer *renderer)
 {
 	int status, result;
 
@@ -526,8 +526,11 @@ generate_map(unsigned int level, const char *file, bool quickGame, SDL_Renderer 
 	lua_pushinteger(L, level);
 	lua_setglobal(L, "CURRENT_LEVEL");
 
-	lua_pushboolean(L, quickGame);
+	lua_pushboolean(L, gameMode == QUICK);
 	lua_setglobal(L, "QUICK_MODE");
+
+	lua_pushboolean(L, gameMode == ARCADE);
+	lua_setglobal(L, "ARCADE_MODE");
 
 	// Add custom searcher
 	lua_getglobal(L, "package");
@@ -557,13 +560,13 @@ generate_map(unsigned int level, const char *file, bool quickGame, SDL_Renderer 
 Map* map_lua_generator_single_room__run(unsigned int level, SDL_Renderer *renderer)
 {
 	char file[] = "menumapgen.lua";
-	return generate_map(level, file, false, renderer);
+	return generate_map(level, file, REGULAR, renderer);
 }
 
-Map* map_lua_generator_run(unsigned int level, bool quickGame, SDL_Renderer *renderer)
+Map* map_lua_generator_run(unsigned int level, GameMode gameMode, SDL_Renderer *renderer)
 {
 	char file[] = "mapgen.lua";
-	return generate_map(level, file, quickGame, renderer);
+	return generate_map(level, file, gameMode, renderer);
 }
 
 

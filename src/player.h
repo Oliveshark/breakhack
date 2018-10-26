@@ -119,6 +119,9 @@ player_turn_over(Player*);
 void
 player_levelup(Player*);
 
+void
+player_set_level(Player*, Uint8 level);
+
 Uint32
 player_has_artifact(Player *, MagicalEffect);
 

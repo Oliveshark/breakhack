@@ -91,6 +91,12 @@ typedef enum Direction_t {
 	UP, DOWN, LEFT, RIGHT
 } Direction;
 
+typedef enum GameMode {
+	REGULAR,
+	QUICK,
+	ARCADE
+} GameMode;
+
 #define CONTROLLER_BTN(xindex, mode) CLIP16(xindex, mode == 1 ? 0 : 16)
 #define CONTROLLER_TRIGGER(xindex, mode) CLIP16(xindex + (mode == 1 ? 16 : 0), 32)
 #define CONTROLLER_BUMPER(xindex, mode) CLIP16(xindex + (mode == 1 ? 16 : 0), 48)

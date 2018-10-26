@@ -57,6 +57,9 @@ local function generate_path ()
 	if bossLevel or CURRENT_LEVEL == 1 then
 		coverage = 5
 	end
+	if ARCADE_GAME then
+		coverage = 40
+	end
 
 	-- Create the first room
 	map_matrix[cx][cy] = room_builder.create_empty_room()

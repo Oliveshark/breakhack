@@ -47,11 +47,9 @@
 #define ROGUE_STATS	{  9,  9, 6, 9, 4, 2, 1, false, false }
 #define WARRIOR_STATS	{ 12, 12, 8, 9, 3, 1, 1, false, false }
 
-void
-player_levelup(Player *player)
+static void
+levelup(Player *player)
 {
-	mixer_play_effect(LEVEL_UP);
-
 	player->stats.lvl += 1;
 	player->stats.maxhp += 9;
 	player->stats.dmg += 5;
@@ -62,6 +60,20 @@ player_levelup(Player *player)
 		player->stats.maxhp = 72;
 
 	player->stats.hp = player->stats.maxhp;
+}
+
+void
+player_levelup(Player *player)
+{
+	mixer_play_effect(LEVEL_UP);
+	levelup(player);
+}
+
+void
+player_set_level(Player *p, Uint8 level)
+{
+	while (p->stats.lvl < level)
+		levelup(p);
 }
 
 static unsigned int

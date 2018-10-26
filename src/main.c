@@ -164,6 +164,7 @@ static double		renderScale		= 1.0;
 static Turn		currentTurn		= PLAYER;
 static class_t		playerClass		= WARRIOR;
 static bool		quickGame		= false;
+static bool		arcadeGame		= false;
 static GameState	gGameState;
 static SDL_Rect		mainViewport;
 static SDL_Rect		gameViewport;
@@ -331,7 +332,11 @@ initGame(void)
 static void
 startGame(void)
 {
-	cLevel = 1;
+	if (arcadeGame)
+		cLevel = 19;
+	else
+		cLevel = 1;
+
 	gGameState = PLAYING;
 	if (gPlayer)
 		player_destroy(gPlayer);
@@ -347,6 +352,9 @@ startGame(void)
 	if (!settings->howto_tooltip_shown)
 		gGui->activeTooltip = howto_tooltip;
 	settings->howto_tooltip_shown = true;
+
+	if (arcadeGame)
+		player_set_level(gPlayer, 22);
 }
 
 static void
@@ -413,6 +421,13 @@ startQuickGame(void *unused)
 }
 
 static void
+startArcadeGame(void *unused)
+{
+	arcadeGame = true;
+	goToCharacterMenu(unused);
+}
+
+static void
 goToMainMenu(void *unused)
 {
 	UNUSED(unused);
@@ -432,11 +447,24 @@ goToGameSelectMenu(void *unused)
 {
 	UNUSED(unused);
 	static TEXT_MENU_ITEM menuItems[] = {
-		{ "STANDARD GAME", "", startRegularGame },
-		{ "QUICK GAME", "", startQuickGame },
+		{
+			"STANDARD GAME",
+			"Standard 20 level game, recommended for new players",
+			startRegularGame
+		},
+		{
+			"QUICK GAME",
+			"Shorter 12 level game, with more action earlier in the game",
+			startQuickGame
+		},
+		{
+			"ARCADE GAME",
+			"One big level with lots of action",
+			startArcadeGame
+		}
 	};
 
-	menu_create_text_menu(&gameSelectMenu, &menuItems[0], 2, gRenderer);
+	menu_create_text_menu(&gameSelectMenu, &menuItems[0], 3, gRenderer);
 	gGameState = GAME_SELECT;
 }
 
@@ -511,6 +539,8 @@ initMainMenu(void)
 	mixer_play_music(MENU_MUSIC);
 	creditsScreen = screen_create_credits(gRenderer);
 	scoreScreen = screen_create_hiscore(gRenderer);
+	quickGame = false;
+	arcadeGame = false;
 }
 
 static void
@@ -563,8 +593,14 @@ resetGame(void)
 
 	particle_engine_clear();
 
+	GameMode mode = REGULAR;
+	if (quickGame)
+		mode = QUICK;
+	else if (arcadeGame)
+		mode = ARCADE;
+
 	info("Building new map");
-	gMap = map_lua_generator_run(cLevel, quickGame, gRenderer);
+	gMap = map_lua_generator_run(cLevel, mode, gRenderer);
 
 	gPlayer->sprite->pos = (Position) {
 		TILE_DIMENSION, TILE_DIMENSION };
@@ -1023,7 +1059,7 @@ run_game(void)
 		gui_event_message("Well done!");
 		end_game_details();
 #ifdef STEAM_BUILD
-		if (cLevel >= 20)
+		if (cLevel >= 20 && !arcadeGame)
 			steam_set_achievement(BACK_TO_WORK);
 		register_scores();
 #endif // STEAM_BUILD
