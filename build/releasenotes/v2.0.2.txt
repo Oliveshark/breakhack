@@ -1,0 +1,93 @@
+cb6bd03 Patch version raised to 2
+b0f2936 Removes beta release type
+76c2f90 Fixes a compiler warning and arcade mode coverage
+8233841 Adds burst sound to eldritch blast
+c2eae7a Adds arcade game leaderboard
+f53703d Introduces arcade mode
+0f66b0f Adds the game type select menu
+7005239 Fixed commit msg in version script
+7991e7c Fixes COMPLETED state for quick games
+aea9995 Reduved stun from trip skill
+a38a21a Incorporates quickplay leaderboard
+deb4638 Fixes a bad help text
+120f8d7 Some tweaks to the rogue character
+5985c3e Fixed a bad pointer reset
+9968b37 Fixes another memory leak
+7e71fcc Build updates
+dd77f29 Fixes a typo
+51d7b67 Completed the QUICK_GAME mode
+97c95da Adds lua support for quick mode
+f895fdb Add a title to char select menu.
+1a0d806 Introduces menu option descriptions
+f5a1c2f Removes a memory leak
+d2fe3fc Fixes a codacy warning
+bcdc9c1 Update README.md
+8d09e8a Adds the new steam achievement and leaderboards
+d034a69 Finnished up with the rogue
+94ec8cf Removed bad options in .clang_complete
+669a2fb Merge branch 'master' into dev
+feed0e2 Completes crumbling rooms.
+6e6f28d Prevent tiles with chests from falling.
+fd8799f Prevent tiles with objects on them from falling.
+ee56143 Initial implementation of the falling tiles room modifier.
+f65bdd0 Add license header to gamecontroller files
+a803578 Fixes a gcc warning
+8792504 Adds the backstab skill icon
+da3ff1a Small thumbstick tweak
+850aae3 Adds controller haptics
+423ff73 Fixes a leak and begins restructure of controller code
+2e0a88e Switches the old MapTile texture system to use sprites instead
+53151b6 Adds the phase skill icon
+e6b5b76 Includes attempt to determine if PS3 controller aswell as PS4
+894e3ba Merge branch 'master' into dev
+c8900e8 Controller button rendering based on controller type
+06d2da1 Controllers are working
+3143236 Completely untested controller mappings.
+bb7f9ef A beginning to controller support
+2919ebf Adds controller button support for skillbar
+c3b2b6f Fixed a typo and made controller layout toggleable.
+e526c03 Completed the button implementation for the help tooltips
+e845195 Got this texture stuff working
+0723f62 New approach where we render button textures in tooltips.
+a162646 More font modifications
+60374c9 Font updates
+2b02ae5 An attempt to group files in msvc
+a4cb234 Re-aligned the credits file
+e59f04b Merge branch 'dev' into feature/phase-skill
+2d25e42 Merge branch 'master' into dev
+c7c5346 Completes testing of phase and fixes some errors
+97ad1dd Introduced the phase artifact
+0dcb658 Merge branch 'dev' into feature/phase-skill
+9610609 Attempt to bring the mouse menu click back
+ee5ed14 Implementd the skill. Still not tested.
+b4fd2cb Added the phase tooltip.
+742d6e2 Untested phase code. Needs more work
+35c3be4 Removed a type warning
+3bbe917 Merge branch 'master' into dev
+c97688a Incorporate artifacts in rogue skills
+47082da Build env changes
+3301437 Tuned the backstab skill slightly
+743e4a3 Implemented the backstab skill
+81ccf8a Fixed a windy room issue
+083834d Maint: Remove CI compiler warnings
+dc6b816 Add slash animation to trip skill
+87b2b9d Fix pits added to room
+5648be4 Merge branch 'master' into dev
+5d5170c Version bump for future release
+583a7d0 Fixes some minor bugs caused by coding without testing
+60359d8 Untested implementation of the TRIP skill
+dbf9fe3 Maint: Removed duplicate code
+0fc1fed Maint: Clean up monster.c
+e1b3364 Maint: Even more cleanup
+620a7e3 Maint: Less complex main
+983875d Maint: Cleaned up a complex function
+e293c21 Rogue preparation
+0ca70c7 Add the dagger skill to the rogue
+c39f05d Fixed the player menu
+02a4407 Got a bit further
+f246c57 Broken commit
+367be69 Buggfix: Prevent clip switching on falling sprite
+988b53a Outline the rogue skillset
+03b60f6 Merge branch 'master' into dev
+5043a86 Cleaned up main a bit and moved some code
+cb732a8 Adds possibility to push monsters into pits and traps.
