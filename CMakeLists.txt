@@ -8,7 +8,7 @@ set(breakhack_GAME_TITLE "BreakHack")
 set(breakhack_MAJOR_VERSION 2)
 set(breakhack_MINOR_VERSION 0)
 set(breakhack_PATCH_VERSION 1)
-set(breakhack_RELEASE_TYPE "(beta)")
+set(breakhack_RELEASE_TYPE "")
 
 include(FindLua)
 include(FindPhysFS)
