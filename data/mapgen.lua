@@ -57,7 +57,7 @@ local function generate_path ()
 	if bossLevel or CURRENT_LEVEL == 1 then
 		coverage = 5
 	end
-	if ARCADE_GAME then
+	if ARCADE_MODE then
 		coverage = 40
 	end
 
