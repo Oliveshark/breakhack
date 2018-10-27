@@ -1009,6 +1009,9 @@ register_scores(void)
 		if (quickGame) {
 			steam_register_qp_score((int) gPlayer->gold, (int32_t*) &details, 1);
 		}
+		if (arcadeGame) {
+			steam_register_arcade_score((int)gPlayer->gold, (int32_t)&details, 1);
+		}
 		if (gPlayer->class == ROGUE) {
 			steam_set_achievement(ROGUE_LIKE);
 			steam_register_rogue_score((int) gPlayer->gold, (int32_t*) &details, 1);

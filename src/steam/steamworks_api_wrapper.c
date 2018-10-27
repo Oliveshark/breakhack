@@ -9,6 +9,7 @@
 
 static const char *LB_HIGHSCORE			= "Highscore";
 static const char *LB_QUICKPLAY_HIGHSCORE	= "Quickplay Highscore";
+static const char *LB_ARCADE_HIGHSCORE	= "Arcade Highscore";
 static const char *LB_ROGUE_HIGHSCORE		= "Rogue Highscore";
 static const char *LB_WARRIOR_HIGHSCORE		= "Warrior Highscore";
 static const char *LB_KILLS			= "Most Kills";
@@ -28,6 +29,7 @@ static bool m_bStatsReceived = false;
 static Sint64 m_AppID = 0;
 static Sint64 m_hHighscoreLeaderboard = 0;
 static Sint64 m_hQpHighscoreLeaderboard = 0;
+static Sint64 m_hArcadeHighscoreLeaderboard = 0;
 static Sint64 m_hKillsLeaderboard = 0;
 static Sint64 m_hRogueHighscore = 0;
 static Sint64 m_hWarriorHighscore = 0;
@@ -69,6 +71,8 @@ leaderboard_received(Sint64 hLeaderboard, const char *name)
 		m_hWarriorHighscore = hLeaderboard;
 	else if (strcmp(LB_QUICKPLAY_HIGHSCORE, name) == 0)
 		m_hQpHighscoreLeaderboard = hLeaderboard;
+	else if (strcmp(LB_ARCADE_HIGHSCORE, name) == 0)
+		m_hArcadeHighscoreLeaderboard = hLeaderboard;
 }
 
 bool
@@ -106,6 +110,8 @@ request_data_queue_run(void)
 			c_SteamUserStats_FindLeaderboard(LB_HIGHSCORE);
 		else if (!m_hQpHighscoreLeaderboard)
 			c_SteamUserStats_FindLeaderboard(LB_QUICKPLAY_HIGHSCORE);
+		else if (!m_hArcadeHighscoreLeaderboard)
+			c_SteamUserStats_FindLeaderboard(LB_ARCADE_HIGHSCORE);
 		else if (!m_hKillsLeaderboard)
 			c_SteamUserStats_FindLeaderboard(LB_KILLS);
 		else if (!m_hRogueHighscore)
@@ -148,6 +154,13 @@ void steam_register_qp_score(Sint32 nScore, const int32_t *details, int32_t nDet
 	if (!m_hQpHighscoreLeaderboard)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hQpHighscoreLeaderboard, nScore, details, nDetails);
+}
+
+void steam_register_arcade_score(Sint32 nScore, const int32_t * details, int32_t nDetails)
+{
+	if (!m_hArcadeHighscoreLeaderboard)
+		return;
+	c_SteamUserStats_UploadLeaderboardScore(m_hArcadeHighscoreLeaderboard, nScore, details, nDetails);
 }
 
 void steam_register_warrior_score(Sint32 nScore, const int32_t * details, int32_t nDetails)

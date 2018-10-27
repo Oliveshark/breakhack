@@ -157,6 +157,8 @@ assassin_cloak_effect(Monster *m, bool cloak)
 	else
 		gui_log("%s reappears, filled with rage", m->label);
 	particle_engine_fire_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+	m->sprite->hidden = cloak;
+	m->stateIndicator.sprite->hidden = cloak;
 }
 
 
@@ -727,9 +729,6 @@ monster_render(Monster *m, Camera *cam)
 	if (m->stats.hp <= 0)
 		return;
 
-	if (m->behaviour == ASSASSIN && m->state.current != AGRESSIVE)
-		return;
-
 	sprite_render(m->sprite, cam);
 }
 
@@ -737,9 +736,6 @@ void
 monster_render_top_layer(Monster *m, RoomMatrix *rm, Camera *cam)
 {
 	if (m->stats.hp <= 0)
-		return;
-
-	if (m->behaviour == ASSASSIN && m->state.current != AGRESSIVE)
 		return;
 
 	Position mPos = position_to_matrix_coords(&m->sprite->pos);
