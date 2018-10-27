@@ -35,6 +35,7 @@
 #include "texturecache.h"
 #include "trap.h"
 #include "object.h"
+#include "mixer.h"
 
 static void
 monster_set_sprite_clip_for_current_state(Monster *m)
@@ -145,6 +146,7 @@ sorcerer_blast(Monster *m, RoomMatrix *rm)
 {
 	gui_log("%s creates a magical explosion", m->label);
 	particle_engine_eldritch_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+	mixer_play_effect(BURST);
 
 	damage_surroundings(m, rm);
 }
@@ -159,6 +161,7 @@ assassin_cloak_effect(Monster *m, bool cloak)
 	particle_engine_fire_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
 	m->sprite->hidden = cloak;
 	m->stateIndicator.sprite->hidden = cloak;
+	mixer_play_effect(cloak ? FADE_OUT : FADE_IN);
 }
 
 

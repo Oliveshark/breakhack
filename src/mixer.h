@@ -63,6 +63,7 @@ typedef enum Fx_t {
 	CHEST_OPEN,
 	FADE_IN,
 	FADE_OUT,
+	BURST,
 	LAST_EFFECT
 } Fx;
 

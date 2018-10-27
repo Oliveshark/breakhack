@@ -87,6 +87,7 @@ load_effects(void)
 	effects[CHEST_OPEN] = load_effect("Sounds/FX/chest_open.wav");
 	effects[FADE_IN] = load_effect("Sounds/FX/fade_in.wav");
 	effects[FADE_OUT] = load_effect("Sounds/FX/fade_out.wav");
+	effects[BURST] = load_effect("Sounds/FX/burst.wav");
 }
 
 void
