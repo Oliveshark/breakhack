@@ -598,13 +598,22 @@ monster_update(Monster *m, UpdateData *data)
 	}
 
 	Position monsterRoomPos = position_to_room_coords(&m->sprite->pos);
-	if (position_equals(&data->matrix->roomPos, &monsterRoomPos)
-	    && !m->stateIndicator.shownOnPlayerRoomEnter)
-	{
-		m->stateIndicator.shownOnPlayerRoomEnter = true;
-		monster_set_state_display_time(m);
-	} else {
-		m->stateIndicator.shownOnPlayerRoomEnter = false;
+	if (position_equals(&data->matrix->roomPos, &monsterRoomPos)) {
+
+		if (!m->stateIndicator.shownOnPlayerRoomEnter) {
+			m->stateIndicator.shownOnPlayerRoomEnter = true;
+			monster_set_state_display_time(m);
+		} else {
+			m->stateIndicator.shownOnPlayerRoomEnter = false;
+		}
+
+		if (m->sprite->state != SPRITE_STATE_FALLING &&
+		    m->sprite->state != SPRITE_STATE_PLUMMETED) {
+			RoomSpace *space = roommatrix_get_space_for(data->matrix, &m->sprite->pos);
+			if (space && space->lethal) {
+				m->sprite->state = SPRITE_STATE_FALLING;
+			}
+		}
 	}
 
 	if (m->state.current == STUNNED) {
@@ -792,9 +801,7 @@ monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 	m->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
 
 	RoomSpace *space = roommatrix_get_space_for(rm, &m->sprite->pos);
-	if (space->lethal) {
-		m->sprite->state = SPRITE_STATE_FALLING;
-	} else if (space->trap) {
+	if (space->trap) {
 		int dmg = space->trap->damage * 3;
 		m->stats.hp -= dmg;
 		monster_hit(m, dmg);
