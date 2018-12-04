@@ -25,6 +25,10 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
 
+macro(set_option option value)
+	set(${option} ${value} CACHE INTERNAL "" FORCE)
+endmacro()
+
 if (EXISTS "${PROJECT_SOURCE_DIR}/steamworks_c_wrapper/sdk")
 	MESSAGE ( STATUS "Steam SDK located, Steam build enabled")
 	set(STEAM 1)
@@ -105,6 +109,8 @@ if (NOT LUA_FOUND OR STEAM)
 endif ()
 
 if (NOT PHYSFS_FOUND OR STEAM)
+	set_option(PHYSFS_BUILD_SHARED off)
+	set_option(PHYSFS_BUILD_TEST off)
 	add_subdirectory(physfs-3.0)
 	include_directories(physfs-3.0/src)
 	set(PHYSFS_LIBRARY physfs-static)

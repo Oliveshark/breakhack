@@ -879,13 +879,20 @@ static DirHandle *openDirectory(PHYSFS_Io *io, const char *d, int forWriting)
 
     if (io == NULL)
     {
+        /* file doesn't exist, etc? Just fail out. */
+        PHYSFS_Stat statbuf;
+        BAIL_IF_ERRPASS(!__PHYSFS_platformStat(d, &statbuf, 1), NULL);
+
         /* DIR gets first shot (unlike the rest, it doesn't deal with files). */
-        retval = tryOpenDir(io, &__PHYSFS_Archiver_DIR, d, forWriting, &claimed);
-        if (retval || claimed)
-            return retval;
+        if (statbuf.filetype == PHYSFS_FILETYPE_DIRECTORY)
+        {
+            retval = tryOpenDir(io, &__PHYSFS_Archiver_DIR, d, forWriting, &claimed);
+            if (retval || claimed)
+                return retval;
+        } /* if */
 
         io = __PHYSFS_createNativeIo(d, forWriting ? 'w' : 'r');
-        BAIL_IF_ERRPASS(!io, 0);
+        BAIL_IF_ERRPASS(!io, NULL);
         created_io = 1;
     } /* if */
 
@@ -2662,7 +2669,6 @@ static int closeHandleInOpenList(FileHandle **list, FileHandle *handle)
 {
     FileHandle *prev = NULL;
     FileHandle *i;
-    int rc = 1;
 
     for (i = *list; i != NULL; i = i->next)
     {
@@ -2670,9 +2676,16 @@ static int closeHandleInOpenList(FileHandle **list, FileHandle *handle)
         {
             PHYSFS_Io *io = handle->io;
             PHYSFS_uint8 *tmp = handle->buffer;
-            rc = PHYSFS_flush((PHYSFS_File *) handle);
-            if (!rc)
+
+            /* send our buffer to io... */
+            if (!PHYSFS_flush((PHYSFS_File *) handle))
                 return -1;
+
+            /* ...then have io send it to the disk... */
+            else if (io->flush && !io->flush(io))
+                return -1;
+
+            /* ...then close the underlying file. */
             io->destroy(io);
 
             if (tmp != NULL)  /* free any associated buffer. */
@@ -2970,7 +2983,7 @@ int PHYSFS_flush(PHYSFS_File *handle)
     rc = io->write(io, fh->buffer + fh->bufpos, fh->buffill - fh->bufpos);
     BAIL_IF_ERRPASS(rc <= 0, 0);
     fh->bufpos = fh->buffill = 0;
-    return io->flush ? io->flush(io) : 1;
+    return 1;
 } /* PHYSFS_flush */
 
 
