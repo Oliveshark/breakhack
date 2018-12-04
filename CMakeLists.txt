@@ -105,10 +105,10 @@ if (NOT LUA_FOUND OR STEAM)
 endif ()
 
 if (NOT PHYSFS_FOUND OR STEAM)
-	add_subdirectory(physfs-3.0.1)
-	include_directories(physfs-3.0.1/src)
+	add_subdirectory(physfs-3.0)
+	include_directories(physfs-3.0/src)
 	set(PHYSFS_LIBRARY physfs-static)
-	set(PHYSFS_INCLUDE_DIR physfs-3.0.1/src)
+	set(PHYSFS_INCLUDE_DIR physfs-3.0/src)
 endif ()
 
 include_directories(
