@@ -21,15 +21,28 @@
 #include <stdbool.h>
 #include "random.h"
 
+static unsigned int seed = 0;
+
+static void
+init_seed(void)
+{
+	if (seed == 0) {
+		seed = (unsigned int) time(NULL);
+		srand(seed);
+	}
+}
+
+unsigned int
+get_seed(void)
+{
+	init_seed();
+	return seed;
+}
+
 unsigned int
 get_random(unsigned int max)
 {
-	static bool seeded = false;
-	if (!seeded) {
-		srand((unsigned int) time(NULL));
-		seeded = true;
-	}
-
+	init_seed();
 	return rand() % (max + 1);
 }
 

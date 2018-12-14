@@ -20,6 +20,9 @@
 #define	RANDOM_H_
 
 unsigned int
+get_seed(void);
+
+unsigned int
 get_random(unsigned int max);
 
 #endif // RANDOM_H_
