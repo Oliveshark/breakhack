@@ -534,7 +534,9 @@ function module.load_textures(map)
 	t_pit0 = add_texture(map, "Objects/Pit0.png")
 	t_pit1 = add_texture(map, "Objects/Pit1.png")
 
-	math.randomseed(os.time())
+	local seed = get_random_seed();
+	info("Map room random seed: " .. seed)
+	math.randomseed(seed)
 	local xo = (random(3) - 1) * 112
 	local yo = (random(8)) * 48
 

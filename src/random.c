@@ -20,6 +20,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include "random.h"
+#include "util.h"
 
 static unsigned int seed = 0;
 
@@ -29,11 +30,19 @@ init_seed(void)
 	if (seed == 0) {
 		seed = (unsigned int) time(NULL);
 		srand(seed);
+		info("Core random seed: %d", seed);
 	}
 }
 
+void
+set_random_seed(unsigned int s)
+{
+	seed = s;
+	info("Core random seed: %d", seed);
+}
+
 unsigned int
-get_seed(void)
+get_random_seed(void)
 {
 	init_seed();
 	return seed;
@@ -45,4 +54,3 @@ get_random(unsigned int max)
 	init_seed();
 	return rand() % (max + 1);
 }
-

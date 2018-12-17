@@ -1282,6 +1282,10 @@ int main(int argc, char *argv[])
 	PHYSFS_mount("data", NULL, 0);
 #endif // DEBUG
 
+	if (argc > 1) {
+		set_random_seed(atoi(argv[1]));
+	}
+
 	if (!init())
 		return 1;
 

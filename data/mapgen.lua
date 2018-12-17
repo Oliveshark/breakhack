@@ -43,7 +43,7 @@ local function generate_path ()
 	end
 
 	local cx, cy = 1, 1
-	local seed = time();
+	local seed = get_random_seed()
 	info("Map generation seed: " .. seed)
 	randomseed(seed)
 	local direction = 0

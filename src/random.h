@@ -20,7 +20,10 @@
 #define	RANDOM_H_
 
 unsigned int
-get_seed(void);
+get_random_seed(void);
+
+void
+set_random_seed(unsigned int s);
 
 unsigned int
 get_random(unsigned int max);

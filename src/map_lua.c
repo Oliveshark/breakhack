@@ -467,6 +467,13 @@ l_read_file(lua_State *L)
 	return 1;
 }
 
+static int
+l_get_random_seed(lua_State *L)
+{
+	lua_pushnumber(L, get_random_seed());
+	return 1;
+}
+
 static Map*
 generate_map(unsigned int level, const char *file, GameMode gameMode, SDL_Renderer *renderer)
 {
@@ -522,6 +529,9 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, SDL_Render
 
 	lua_pushcfunction(L, l_add_monster);
 	lua_setglobal(L, "add_monster");
+
+	lua_pushcfunction(L, l_get_random_seed);
+	lua_setglobal(L, "get_random_seed");
 
 	lua_pushinteger(L, level);
 	lua_setglobal(L, "CURRENT_LEVEL");
