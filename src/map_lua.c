@@ -470,7 +470,8 @@ l_read_file(lua_State *L)
 static int
 l_get_random_seed(lua_State *L)
 {
-	lua_pushnumber(L, get_random_seed());
+	unsigned int level = (unsigned int) luaL_checkinteger(L, 1);
+	lua_pushnumber(L, get_random_map_seed(level));
 	return 1;
 }
 

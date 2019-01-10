@@ -20,6 +20,9 @@
 #define	RANDOM_H_
 
 unsigned int
+get_random_map_seed(unsigned int level);
+
+unsigned int
 get_random_seed(void);
 
 void
