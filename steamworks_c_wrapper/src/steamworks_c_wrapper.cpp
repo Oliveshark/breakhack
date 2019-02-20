@@ -121,6 +121,16 @@ c_SteamUserStats_FindLeaderboard(const char * name)
 	m_CallbackHandler->m_FindLeaderboardCallResult.Set(hSteamAPICall, m_CallbackHandler, &CallbackHandler::OnFindLeaderboard);
 }
 
+extern "C" void
+c_SteamUserStats_FindOrCreateLeaderboard(const char *name)
+{
+	if (!m_Initiated || !m_CallbackHandler)
+		return;
+
+	SteamAPICall_t hSteamAPICall = SteamUserStats()->FindOrCreateLeaderboard(name, k_ELeaderboardSortMethodAscending, k_ELeaderboardDisplayTypeNumeric);
+	m_CallbackHandler->m_FindLeaderboardCallResult.Set(hSteamAPICall, m_CallbackHandler, &CallbackHandler::OnFindLeaderboard);
+}
+
 extern "C" void c_SteamUserStats_UploadLeaderboardScore(int64_t hLeaderboard, int32_t nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!hLeaderboard || !m_Initiated)

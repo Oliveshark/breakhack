@@ -127,7 +127,7 @@ request_data_queue_run(void)
 		else if (!m_hWarriorHighscore)
 			c_SteamUserStats_FindLeaderboard(LB_WARRIOR_HIGHSCORE);
 		else if (!m_hWeeklyHighscore)
-			c_SteamUserStats_FindLeaderboard(lb_weekly);
+			c_SteamUserStats_FindOrCreateLeaderboard(lb_weekly);
 
 		timer_start(requestDataTimer);
 	}
