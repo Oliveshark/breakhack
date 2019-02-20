@@ -443,6 +443,8 @@ static void
 startArcadeGame(void *unused)
 {
 	arcadeGame = true;
+	quickGame = false;
+	weeklyGame = false;
 	goToCharacterMenu(unused);
 }
 
@@ -1052,7 +1054,8 @@ register_scores(void)
 						(int32_t*) &details, 1);
 		}
 		if (weeklyGame) {
-			steam_register_weekly_score((int) gPlayer->gold, (int32_t*) &details, 1);
+			steam_register_weekly_score((int) gPlayer->gold,
+						    (int32_t*) &details, 1);
 		}
 		if (arcadeGame) {
 			steam_register_arcade_score((int)gPlayer->gold,

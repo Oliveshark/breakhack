@@ -127,7 +127,7 @@ c_SteamUserStats_FindOrCreateLeaderboard(const char *name)
 	if (!m_Initiated || !m_CallbackHandler)
 		return;
 
-	SteamAPICall_t hSteamAPICall = SteamUserStats()->FindOrCreateLeaderboard(name, k_ELeaderboardSortMethodAscending, k_ELeaderboardDisplayTypeNumeric);
+	SteamAPICall_t hSteamAPICall = SteamUserStats()->FindOrCreateLeaderboard(name, k_ELeaderboardSortMethodDescending, k_ELeaderboardDisplayTypeNumeric);
 	m_CallbackHandler->m_FindLeaderboardCallResult.Set(hSteamAPICall, m_CallbackHandler, &CallbackHandler::OnFindLeaderboard);
 }
 
