@@ -339,6 +339,11 @@ startGame(void)
 	else
 		cLevel = 1;
 
+	if (weeklyGame)
+		set_random_seed((unsigned int) time_get_weekly_seed());
+	else
+		set_random_seed(0);
+
 	gGameState = PLAYING;
 	if (gPlayer)
 		player_destroy(gPlayer);
@@ -430,7 +435,6 @@ startWeeklyGame(void *unused)
 {
 	quickGame = true;
 	weeklyGame = true;
-	set_random_seed((unsigned int) time_get_weekly_seed());
 	goToCharacterMenu(unused);
 }
 #endif
@@ -649,6 +653,8 @@ init(void)
 		error("%s needs to be started through Steam", GAME_TITLE);
 		return false;
 	}
+#else
+	steam_init();
 #endif
 #endif // STEAM_BUILD
 
@@ -1046,7 +1052,7 @@ register_scores(void)
 						(int32_t*) &details, 1);
 		}
 		if (weeklyGame) {
-			//steam_register_weekly_score((int) gPlayer->gold, (int32_t*) &details, 1);
+			steam_register_weekly_score((int) gPlayer->gold, (int32_t*) &details, 1);
 		}
 		if (arcadeGame) {
 			steam_register_arcade_score((int)gPlayer->gold,
@@ -1088,8 +1094,6 @@ run_game(void)
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
 		hiscore_register(gPlayer, cLevel);
-		if (weeklyGame)
-			set_random_seed(0);
 #ifdef STEAM_BUILD
 		register_scores();
 #endif // STEAM_BUILD
@@ -1105,8 +1109,6 @@ run_game(void)
 		gui_log("Your break is over!");
 		gui_event_message("Well done!");
 		end_game_details();
-		if (weeklyGame)
-			set_random_seed(0);
 #ifdef STEAM_BUILD
 		if (cLevel >= 20 && !arcadeGame)
 			steam_set_achievement(BACK_TO_WORK);

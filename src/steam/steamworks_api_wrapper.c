@@ -6,6 +6,7 @@
 #include "../defines.h"
 #include "../gui.h"
 #include "../timer.h"
+#include "../time.h"
 
 static const char *LB_HIGHSCORE			= "Highscore";
 static const char *LB_QUICKPLAY_HIGHSCORE	= "Quickplay Highscore";
@@ -13,6 +14,7 @@ static const char *LB_ARCADE_HIGHSCORE	= "Arcade Highscore";
 static const char *LB_ROGUE_HIGHSCORE		= "Rogue Highscore";
 static const char *LB_WARRIOR_HIGHSCORE		= "Warrior Highscore";
 static const char *LB_KILLS			= "Most Kills";
+static char *lb_weekly = NULL;
 
 static Achievement g_Achievements[] = {
 	_ACH_ID(BAD_DOG, "Bad Dog"),
@@ -33,6 +35,7 @@ static Sint64 m_hArcadeHighscoreLeaderboard = 0;
 static Sint64 m_hKillsLeaderboard = 0;
 static Sint64 m_hRogueHighscore = 0;
 static Sint64 m_hWarriorHighscore = 0;
+static Sint64 m_hWeeklyHighscore = 0;
 
 static Timer *requestDataTimer = NULL;
 
@@ -73,6 +76,8 @@ leaderboard_received(Sint64 hLeaderboard, const char *name)
 		m_hQpHighscoreLeaderboard = hLeaderboard;
 	else if (strcmp(LB_ARCADE_HIGHSCORE, name) == 0)
 		m_hArcadeHighscoreLeaderboard = hLeaderboard;
+	else if (strcmp(lb_weekly, name) == 0)
+		m_hWeeklyHighscore = hLeaderboard;
 }
 
 bool
@@ -86,6 +91,7 @@ steam_init()
 {
 	m_AppID = c_SteamAPI_Init();
 	m_Initiated = m_AppID != 0;
+	lb_weekly = time_get_weekly_lb_name();
 	if (m_Initiated)
 		c_SteamAPI_SetCallbacks(stats_received, stats_stored, leaderboard_received);
 	requestDataTimer = _timer_create();
@@ -95,6 +101,8 @@ void steam_shutdown(void)
 {
 	c_SteamAPI_Shutdown();
 	timer_destroy(requestDataTimer);
+	if (lb_weekly) 
+		free(lb_weekly);
 }
 
 static void
@@ -118,6 +126,8 @@ request_data_queue_run(void)
 			c_SteamUserStats_FindLeaderboard(LB_ROGUE_HIGHSCORE);
 		else if (!m_hWarriorHighscore)
 			c_SteamUserStats_FindLeaderboard(LB_WARRIOR_HIGHSCORE);
+		else if (!m_hWeeklyHighscore)
+			c_SteamUserStats_FindLeaderboard(lb_weekly);
 
 		timer_start(requestDataTimer);
 	}
@@ -133,6 +143,9 @@ void steam_run_callbacks(void)
 
 void steam_set_achievement(EAchievement eAch)
 {
+	if (!m_Initiated)
+		return;
+
 	for (Uint8 i = 0; i < numAchievements; ++i) {
 		Achievement *a = &g_Achievements[i];
 		if (a->m_eAchievementID == eAch && !a->m_bAchieved) {
@@ -154,6 +167,13 @@ void steam_register_qp_score(Sint32 nScore, const int32_t *details, int32_t nDet
 	if (!m_hQpHighscoreLeaderboard)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hQpHighscoreLeaderboard, nScore, details, nDetails);
+}
+
+void steam_register_weekly_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
+{
+	if (!m_hWeeklyHighscore)
+		return;
+	c_SteamUserStats_UploadLeaderboardScore(m_hWeeklyHighscore, nScore, details, nDetails);
 }
 
 void steam_register_arcade_score(Sint32 nScore, const int32_t * details, int32_t nDetails)

@@ -41,6 +41,8 @@ void steam_register_score(Sint32 nScore, const int32_t *details, int32_t nDetail
 
 void steam_register_qp_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
+void steam_register_weekly_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
+
 void steam_register_arcade_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
 void steam_register_warrior_score(Sint32 nScore, const int32_t *details, int32_t nDetails);

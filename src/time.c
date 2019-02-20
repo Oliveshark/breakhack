@@ -23,7 +23,22 @@ time_get_weekly_seed(void)
 	unsigned int dayOfWeek = tm->tm_wday;
 	now -= (dayOfWeek == 0 ? 6 : dayOfWeek - 1) * SECONDS_PER_DAY;
 
-	info("Monday: %s", ctime(&now));
-
 	return now;
+}
+
+// Example: 190225_weekly
+char *
+time_get_weekly_lb_name(void)
+{
+	time_t seed = time_get_weekly_seed();
+	struct tm *tm = localtime(&seed);
+	char *name = ec_malloc(sizeof(char) * 15);
+	m_sprintf(name,
+		  15,
+		  "%u%.2u%.2u_weekly",
+		  tm->tm_year % 100,
+		  tm->tm_mon + 1,
+		  tm->tm_mday
+		 );
+	return name;
 }
