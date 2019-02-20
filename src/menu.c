@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "menu.h"
 #include "util.h"
 #include "sprite.h"
