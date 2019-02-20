@@ -88,7 +88,7 @@ steam_init()
 	m_Initiated = m_AppID != 0;
 	if (m_Initiated)
 		c_SteamAPI_SetCallbacks(stats_received, stats_stored, leaderboard_received);
-	requestDataTimer = timer_create();
+	requestDataTimer = _timer_create();
 }
 
 void steam_shutdown(void)

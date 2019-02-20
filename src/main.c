@@ -54,6 +54,7 @@
 #include "io_util.h"
 #include "tooltip.h"
 #include "gamecontroller.h"
+#include "time.h"
 
 #ifdef STEAM_BUILD
 #include "steam/steamworks_api_wrapper.h"
@@ -165,6 +166,7 @@ static Turn		currentTurn		= PLAYER;
 static class_t		playerClass		= WARRIOR;
 static bool		quickGame		= false;
 static bool		arcadeGame		= false;
+static bool		weeklyGame		= false;
 static GameState	gGameState;
 static SDL_Rect		mainViewport;
 static SDL_Rect		gameViewport;
@@ -316,7 +318,7 @@ initGame(void)
 	gPointer = pointer_create(gRenderer);
 #endif // DEBUG
 	particle_engine_init();
-	menuTimer = timer_create();
+	menuTimer = _timer_create();
 	actiontextbuilder_init(gRenderer);
 
 #ifdef DEBUG
@@ -410,6 +412,7 @@ static void
 startRegularGame(void *unused)
 {
 	quickGame = false;
+	weeklyGame = false;
 	goToCharacterMenu(unused);
 }
 
@@ -417,8 +420,20 @@ static void
 startQuickGame(void *unused)
 {
 	quickGame = true;
+	weeklyGame = false;
 	goToCharacterMenu(unused);
 }
+
+#ifdef STEAM_BUILD
+static void
+startWeeklyGame(void *unused)
+{
+	quickGame = true;
+	weeklyGame = true;
+	set_random_seed((unsigned int) time_get_weekly_seed());
+	goToCharacterMenu(unused);
+}
+#endif
 
 static void
 startArcadeGame(void *unused)
@@ -452,6 +467,13 @@ goToGameSelectMenu(void *unused)
 			"Standard 20 level game, recommended for new players",
 			startRegularGame
 		},
+#ifdef STEAM_BUILD
+		{
+			"WEEKLY CHALLENGE",
+			"Quck game with weekly leaderboards at breakhack.net",
+			startWeeklyGame
+		},
+#endif
 		{
 			"QUICK GAME",
 			"Shorter 12 level game, with more action earlier in the game",
@@ -464,7 +486,12 @@ goToGameSelectMenu(void *unused)
 		}
 	};
 
-	menu_create_text_menu(&gameSelectMenu, &menuItems[0], 3, gRenderer);
+#ifdef STEAM_BUILD
+	int count = 4;
+#else
+	int count = 3;
+#endif
+	menu_create_text_menu(&gameSelectMenu, &menuItems[0], count, gRenderer);
 	gGameState = GAME_SELECT;
 }
 
@@ -540,6 +567,7 @@ initMainMenu(void)
 	creditsScreen = screen_create_credits(gRenderer);
 	scoreScreen = screen_create_hiscore(gRenderer);
 	quickGame = false;
+	weeklyGame = false;
 	arcadeGame = false;
 }
 
@@ -614,12 +642,14 @@ static bool
 init(void)
 {
 #ifdef STEAM_BUILD
+#ifndef DEBUG
 	if (!steam_restart_needed()) {
 		steam_init();
 	} else {
 		error("%s needs to be started through Steam", GAME_TITLE);
 		return false;
 	}
+#endif
 #endif // STEAM_BUILD
 
 	if (!initSDL()) {
@@ -1003,21 +1033,33 @@ run_game_render(void)
 static inline void
 register_scores(void)
 {
-		uint8_t details[4] = { (uint8_t) gPlayer->stats.lvl, (uint8_t) cLevel, (uint8_t) (gPlayer->class + 1), 0 };
-		steam_register_score((int) gPlayer->gold, (int32_t*) &details, 1);
-		steam_register_kills((int) gPlayer->stat_data.kills, (int32_t*) &details, 1);
+		uint8_t details[4] = {
+			(uint8_t) gPlayer->stats.lvl,
+			(uint8_t) cLevel, (uint8_t) (gPlayer->class + 1), 0
+		};
+		steam_register_score((int) gPlayer->gold, (int32_t*)
+				     &details, 1);
+		steam_register_kills((int) gPlayer->stat_data.kills,
+				     (int32_t*) &details, 1);
 		if (quickGame) {
-			steam_register_qp_score((int) gPlayer->gold, (int32_t*) &details, 1);
+			steam_register_qp_score((int) gPlayer->gold,
+						(int32_t*) &details, 1);
+		}
+		if (weeklyGame) {
+			//steam_register_weekly_score((int) gPlayer->gold, (int32_t*) &details, 1);
 		}
 		if (arcadeGame) {
-			steam_register_arcade_score((int)gPlayer->gold, (int32_t*) &details, 1);
+			steam_register_arcade_score((int)gPlayer->gold,
+						    (int32_t*) &details, 1);
 		}
 		if (gPlayer->class == ROGUE) {
 			steam_set_achievement(ROGUE_LIKE);
-			steam_register_rogue_score((int) gPlayer->gold, (int32_t*) &details, 1);
+			steam_register_rogue_score((int) gPlayer->gold,
+						   (int32_t*) &details, 1);
 		}
 		else if (gPlayer->class == WARRIOR) {
-			steam_register_warrior_score((int) gPlayer->gold, (int32_t*) &details, 1);
+			steam_register_warrior_score((int) gPlayer->gold,
+						     (int32_t*) &details, 1);
 		}
 }
 #endif
@@ -1046,6 +1088,8 @@ run_game(void)
 		gGameState = GAME_OVER;
 		createInGameGameOverMenu();
 		hiscore_register(gPlayer, cLevel);
+		if (weeklyGame)
+			set_random_seed(0);
 #ifdef STEAM_BUILD
 		register_scores();
 #endif // STEAM_BUILD
@@ -1061,6 +1105,8 @@ run_game(void)
 		gui_log("Your break is over!");
 		gui_event_message("Well done!");
 		end_game_details();
+		if (weeklyGame)
+			set_random_seed(0);
 #ifdef STEAM_BUILD
 		if (cLevel >= 20 && !arcadeGame)
 			steam_set_achievement(BACK_TO_WORK);
@@ -1140,13 +1186,13 @@ run(void)
 
 #ifdef DEBUG
 	Uint32 frame = 0;
-	Timer *fpsTime = timer_create();
-	Timer *updateTimer = timer_create();
+	Timer *fpsTime = _timer_create();
+	Timer *updateTimer = _timer_create();
 	timer_start(fpsTime);
 	timer_start(updateTimer);
 #endif // DEBUG
 
-	Timer *fpsTimer = timer_create();
+	Timer *fpsTimer = _timer_create();
 
 	while (!quit)
 	{

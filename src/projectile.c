@@ -62,7 +62,7 @@ projectile_create(void)
 	p->sprite = sprite_create();
 	p->velocity = VECTOR2D_NODIR;
 	p->alive = true;
-	p->lifetime = timer_create();
+	p->lifetime = _timer_create();
 	p->onRender = NULL;
 	timer_start(p->lifetime);
 	return p;

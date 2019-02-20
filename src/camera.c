@@ -30,7 +30,7 @@ Camera *camera_create(SDL_Renderer *renderer)
 {
 	gCamera = ec_malloc(sizeof(Camera));
 	gCamera->renderer = renderer;
-	gCamera->shakeTimer = timer_create();
+	gCamera->shakeTimer = _timer_create();
 	gCamera->velocity = VECTOR2D_NODIR;
 	gCamera->pos = (Position) { 0, 0 };
 	gCamera->basePos = (Position) { 0, 0 };

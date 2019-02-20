@@ -27,7 +27,7 @@ actiontext_create(Sprite *sprite)
 	ActionText *t = ec_malloc(sizeof(ActionText));
 	t->pos = (Position) { 0, 0 };
 	t->sprite = sprite;
-	t->timer = timer_create();
+	t->timer = _timer_create();
 	t->dead = false;
 	t->velocity = (Vector2d) { 0, -100 };
 	t->color = C_WHITE;

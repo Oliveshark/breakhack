@@ -25,7 +25,7 @@ typedef struct Timer {
 	unsigned int startTime;
 } Timer;
 
-Timer* timer_create(void);
+Timer* _timer_create(void);
 void timer_start(Timer*);
 void timer_stop(Timer*);
 bool timer_started(Timer*);

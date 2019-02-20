@@ -513,7 +513,7 @@ player_create(class_t class, Camera *cam)
 	player->class			= class;
 	player->state			= ALIVE;
 	player->projectiles		= linkedlist_create();
-	player->animationTimer		= timer_create();
+	player->animationTimer		= _timer_create();
 	player->swordAnimation		= animation_create(5);
 	player->equipment.hasArtifacts	= false;
 

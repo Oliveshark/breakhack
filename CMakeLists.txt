@@ -184,6 +184,7 @@ add_executable(breakhack
 	src/stats
 	src/actiontext
 	src/random
+	src/time
 	src/linkedlist
 	src/hashtable
 	src/gui

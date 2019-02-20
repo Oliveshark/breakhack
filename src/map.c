@@ -58,7 +58,7 @@ map_create(void)
 	map->artifacts = linkedlist_create();
 	map->objects = linkedlist_create();
 	map->currentRoom = (Position) { 0, 0 };
-	map->monsterMoveTimer = timer_create();
+	map->monsterMoveTimer = _timer_create();
 	map->level = 1;
 	
 	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {

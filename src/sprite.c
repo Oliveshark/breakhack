@@ -35,8 +35,8 @@ sprite_create_default(void)
 	s->angle = 0;
 	s->rotationPoint = (SDL_Point) { 0, 0 };
 	s->flip = SDL_FLIP_NONE;
-	s->renderTimer = timer_create();
-	s->animationTimer = timer_create();
+	s->renderTimer = _timer_create();
+	s->animationTimer = _timer_create();
 	s->texture_index = 0;
 	s->fixed = false;
 	s->animate = true;

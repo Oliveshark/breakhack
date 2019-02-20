@@ -181,8 +181,8 @@ skillbar_create(Camera *cam)
 {
 	SkillBar *bar = ec_malloc(sizeof(SkillBar));
 	bar->sprites = linkedlist_create();
-	bar->activationTimer = timer_create();
-	bar->skillSparkleTimer = timer_create();
+	bar->activationTimer = _timer_create();
+	bar->skillSparkleTimer = _timer_create();
 	bar->lastActivation = 0;
 	bar->frame = create_frame_sprite(cam);
 	bar->artifactDisplayOffset = 5 * 32 + 8;

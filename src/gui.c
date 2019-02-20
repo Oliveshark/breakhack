@@ -195,7 +195,7 @@ gui_create(Camera *cam)
 
 	gui->event_message = texture_create();
 	texture_load_font(gui->event_message, "GUI/SDS_8x8.ttf", EVENT_MESSAGE_FONT_SIZE, 2);
-	gui->event_message_timer = timer_create();
+	gui->event_message_timer = _timer_create();
 
 	gui->labels[CURRENT_XP_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 });
 	gui->labels[LEVEL_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 + 14  });

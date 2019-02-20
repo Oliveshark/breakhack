@@ -27,7 +27,7 @@ animation_create(unsigned int clipCount)
 {
 	Animation *animation = ec_malloc(sizeof(Animation)
 					 + clipCount * sizeof(AnimationClip));
-	animation->clipTimer = timer_create();
+	animation->clipTimer = _timer_create();
 	animation->clipCount = clipCount;
 	animation->currentClip = 0;
 	animation->loop = true;
