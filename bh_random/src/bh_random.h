@@ -18,10 +18,8 @@
 
 #pragma once
 
-#include <time.h>
+void
+bh_srand(unsigned int);
 
-time_t
-time_get_weekly_seed(void);
-
-char *
-time_get_weekly_lb_name(void);
+unsigned int
+bh_rand(void);

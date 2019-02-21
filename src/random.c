@@ -20,6 +20,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include "random.h"
+#include "bh_random.h"
 #include "util.h"
 
 static unsigned int seed = 0;
@@ -30,15 +31,15 @@ static void
 generate_random_seeds(void)
 {
 	// Use seed for generating map seeds
-	srand(seed);
+	bh_srand(seed);
 	info("Core random seed: %d", seed);
 	for (int i = 0; i < 20; ++i) {
-		map_seeds[i] = rand();
+		map_seeds[i] = bh_rand();
 	}
 
 	// Set a more random seed for runtime random
 	runtime_seed = (unsigned int) time(NULL);
-	srand(runtime_seed);
+	bh_srand(runtime_seed);
 	info("Runtime random seed: %d", runtime_seed);
 }
 
@@ -75,5 +76,5 @@ unsigned int
 get_random(unsigned int max)
 {
 	init_seed();
-	return rand() % (max + 1);
+	return bh_rand() % (max + 1);
 }

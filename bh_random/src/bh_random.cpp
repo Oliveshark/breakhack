@@ -16,12 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include <random>
+#include <climits>
+extern "C" {
+#include "bh_random.h"
+}
 
-#include <time.h>
+static std::mt19937 generator;
+static std::uniform_int_distribution<int> distribution(0, INT_MAX);
 
-time_t
-time_get_weekly_seed(void);
+extern "C" void
+bh_srand(unsigned int seed)
+{
+	generator.seed(seed);
+}
 
-char *
-time_get_weekly_lb_name(void);
+
+extern "C" unsigned int
+bh_rand(void)
+{
+	return distribution(generator);
+}

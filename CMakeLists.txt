@@ -39,6 +39,7 @@ endif()
 if (STEAM)
 	add_subdirectory(steamworks_c_wrapper)
 endif()
+add_subdirectory(bh_random)
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
 	set(CLANG 1)
@@ -126,6 +127,7 @@ include_directories(
 	${PHYSFS_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
 	sqlite3
+	bh_random/src
 	)
 
 if (CMOCKA_FOUND)
@@ -239,6 +241,7 @@ target_link_libraries(breakhack
 	${SDL2_MIXER_LIBRARY}
 	${LUA_LIBRARIES}
 	${PHYSFS_LIBRARY}
+	bh_random
 	)
 
 if (STEAM)
