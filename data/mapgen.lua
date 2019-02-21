@@ -5,8 +5,8 @@ local chest_gen = require "chestgen"
 
 -- Setting up some functions
 local time = os.time
-local random = math.random
-local randomseed = math.randomseed
+local random = map_random
+local randomseed = map_randomseed
 
 -- CONSTANTS
 local UP	= 1

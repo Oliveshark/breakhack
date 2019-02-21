@@ -1,5 +1,5 @@
 -- FUNCTIONS
-local random = math.random
+local random = map_random
 
 -- CONSTANTS
 local UP	= 1
@@ -536,7 +536,7 @@ function module.load_textures(map)
 
 	local seed = get_random_seed(CURRENT_LEVEL);
 	info("Map room random seed: " .. seed)
-	math.randomseed(seed)
+	map_randomseed(seed)
 	local xo = (random(3) - 1) * 112
 	local yo = (random(8)) * 48
 

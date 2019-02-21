@@ -23,3 +23,9 @@ bh_srand(unsigned int);
 
 unsigned int
 bh_rand(void);
+
+void
+bh_map_srand(unsigned int);
+
+unsigned int
+bh_map_rand(void);

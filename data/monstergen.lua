@@ -1,6 +1,6 @@
 local room_builder = require "maproombuilder"
 local module = {}
-local random = math.random
+local random = map_random
 
 local texturePaths = {
 	aquatic0 = "Characters/Aquatic0.png",

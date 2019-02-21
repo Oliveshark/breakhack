@@ -23,6 +23,7 @@ extern "C" {
 }
 
 static std::mt19937 generator;
+static std::mt19937 map_generator;
 static std::uniform_int_distribution<int> distribution(0, INT_MAX);
 
 extern "C" void
@@ -36,4 +37,17 @@ extern "C" unsigned int
 bh_rand(void)
 {
 	return distribution(generator);
+}
+
+extern "C" void
+bh_map_srand(unsigned int seed)
+{
+	map_generator.seed(seed);
+}
+
+
+extern "C" unsigned int
+bh_map_rand(void)
+{
+	return distribution(map_generator);
 }

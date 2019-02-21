@@ -36,6 +36,7 @@
 #include "item.h"
 #include "item_builder.h"
 #include "random.h"
+#include "bh_random.h"
 
 static
 lua_State* load_lua_state(void)
@@ -475,6 +476,22 @@ l_get_random_seed(lua_State *L)
 	return 1;
 }
 
+static int
+l_set_random_seed(lua_State *L)
+{
+	unsigned int seed = (unsigned int) luaL_checkinteger(L, 1);
+	bh_map_srand(seed);
+	return 0;
+}
+
+static int
+l_get_random(lua_State *L)
+{
+	unsigned int max = (unsigned int) luaL_checkinteger(L, 1);
+	lua_pushnumber(L, (bh_map_rand() % max) + 1);
+	return 1;
+}
+
 static Map*
 generate_map(unsigned int level, const char *file, GameMode gameMode, SDL_Renderer *renderer)
 {
@@ -533,6 +550,12 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, SDL_Render
 
 	lua_pushcfunction(L, l_get_random_seed);
 	lua_setglobal(L, "get_random_seed");
+
+	lua_pushcfunction(L, l_set_random_seed);
+	lua_setglobal(L, "map_randomseed");
+
+	lua_pushcfunction(L, l_get_random);
+	lua_setglobal(L, "map_random");
 
 	lua_pushinteger(L, level);
 	lua_setglobal(L, "CURRENT_LEVEL");
