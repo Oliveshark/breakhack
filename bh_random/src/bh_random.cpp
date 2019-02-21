@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
 #include <random>
 #include <climits>
 extern "C" {
@@ -44,7 +43,6 @@ bh_map_srand(unsigned int seed)
 {
 	map_generator.seed(seed);
 }
-
 
 extern "C" unsigned int
 bh_map_rand(void)
