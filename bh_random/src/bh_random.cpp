@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <iostream>
 #include <random>
 #include <climits>
 extern "C" {
@@ -24,7 +25,6 @@ extern "C" {
 
 static std::mt19937 generator;
 static std::mt19937 map_generator;
-static std::uniform_int_distribution<int> distribution(0, INT_MAX);
 
 extern "C" void
 bh_srand(unsigned int seed)
@@ -36,7 +36,7 @@ bh_srand(unsigned int seed)
 extern "C" unsigned int
 bh_rand(void)
 {
-	return distribution(generator);
+	return generator();
 }
 
 extern "C" void
@@ -49,5 +49,5 @@ bh_map_srand(unsigned int seed)
 extern "C" unsigned int
 bh_map_rand(void)
 {
-	return distribution(map_generator);
+	return map_generator();
 }
