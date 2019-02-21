@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
-project(bh_random)
+project(bh_random cxx)
+
+add_definitions(-std=c++11)
 
 if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
