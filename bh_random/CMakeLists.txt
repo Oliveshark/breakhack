@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(bh_random cxx)
+project(bh_random CXX)
 
 add_definitions(-std=c++11)
 
