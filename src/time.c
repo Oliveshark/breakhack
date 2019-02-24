@@ -25,32 +25,44 @@
 #define SECONDS_PER_MINUTE 60
 
 #ifdef _MSC_VER
-#define m_gmtime gmtime_s
+#define m_gmtime(time, obj) gmtime_s(obj, time)
 #else
 #define m_gmtime gmtime_r
 #endif
+
+static time_t
+get_last_monday(time_t time, struct tm *tm)
+{
+	// Zero out the hour and minutes to 00:01:00
+	time -= tm->tm_hour * SECONDS_PER_HOUR;
+	time -= tm->tm_min * SECONDS_PER_MINUTE;
+	time -= tm->tm_sec;
+	time += 60; // Set it to one minute past midnight
+
+	// Reverse time back to last monday
+	unsigned int dayOfWeek = tm->tm_wday;
+	time -= (dayOfWeek == 0 ? 6 : dayOfWeek - 1) * SECONDS_PER_DAY;
+
+	return time;
+}
 
 time_t
 time_get_weekly_seed(void)
 {
 	time_t now = time(NULL);
 
+#ifdef _MINGW32_
+	struct tm *tm;
+	tm = gmtime(&now);
+	time_t lastMonday = get_last_monday(now, tm);
+#else
 	struct tm tm;
 	m_gmtime(&now, &tm);
+	time_t lastMonday = get_last_monday(now, &tm);
+#endif
 
-	// Zero out the hour and minutes to 00:00:01
-	now -= tm.tm_hour * SECONDS_PER_HOUR;
-	now -= tm.tm_min * SECONDS_PER_MINUTE;
-	now -= tm.tm_sec;
-	now += 60; // Set it to one minute past midnight
-
-	// Reverse time back to last monday
-	unsigned int dayOfWeek = tm.tm_wday;
-	now -= (dayOfWeek == 0 ? 6 : dayOfWeek - 1) * SECONDS_PER_DAY;
-
-	debug("Weekly seed: %u", now);
-
-	return now;
+	debug("Weekly seed: %u", lastMonday);
+	return lastMonday;
 }
 
 // Example: 190225_weekly
