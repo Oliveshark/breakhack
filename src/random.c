@@ -69,6 +69,7 @@ get_random_seed(void)
 unsigned int
 get_random_map_seed(unsigned int level)
 {
+	init_seed();
 	return map_seeds[level-1];
 }
 
