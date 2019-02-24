@@ -1,0 +1,16 @@
+ee4dd27 Patch version raised to 1
+5ee20c9 Shifted to safer time functions and utc time
+563ebf9 Adds another build fix
+3533d5c Fixes build again
+97b097a Fixes builds
+685bf97 Makes the custom random generator deterministic across platforms
+cc375bb Implements control over lua random numbers
+1205856 Attempt att syncing random generation
+d1efa84 Create new leaderboards with attribute 'Descending'
+2775780 Makes weekly leaderboards creatable from app.
+269b25b Removes a mingw warning
+72c3817 Adds weekly challenge seed play and leaderboard saving
+1212b1a Weekly challenge option added to play menu
+ce2a348 Generate seeds from the core seed so that levels will look different.
+bc9d37e Connects the random seed through all the generators
+3c7dcb5 Begins new random impl
