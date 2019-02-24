@@ -65,21 +65,34 @@ time_get_weekly_seed(void)
 	return lastMonday;
 }
 
+static char *
+create_lb_name(struct tm *tm)
+{
+	char *name = ec_malloc(sizeof(char) * 15);
+	m_sprintf(name,
+		  15,
+		  "%u%.2u%.2u_weekly",
+		  tm->tm_year % 100,
+		  tm->tm_mon + 1,
+		  tm->tm_mday
+		 );
+	return name;
+}
+
 // Example: 190225_weekly
 char *
 time_get_weekly_lb_name(void)
 {
 	time_t seed = time_get_weekly_seed();
+#ifdef MINGW
+	struct tm *tm;
+	tm = gmtime(&seed);
+	char *name = create_lb_name(tm);
+#else
 	struct tm tm;
 	m_gmtime(&seed, &tm);
-	char *name = ec_malloc(sizeof(char) * 15);
-	m_sprintf(name,
-		  15,
-		  "%u%.2u%.2u_weekly",
-		  tm.tm_year % 100,
-		  tm.tm_mon + 1,
-		  tm.tm_mday
-		 );
+	char *name = create_lb_name(&tm);
+#endif
 	debug("Weekly leaderboard: %s", name);
 	return name;
 }
