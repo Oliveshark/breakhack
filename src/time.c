@@ -24,7 +24,7 @@
 #define SECONDS_PER_HOUR 3600
 #define SECONDS_PER_MINUTE 60
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #define m_gmtime gmtime_s
 #else
 #define m_gmtime gmtime_r
