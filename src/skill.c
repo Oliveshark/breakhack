@@ -198,6 +198,40 @@ static char *health_tooltip[] = {
 	NULL
 };
 
+static void
+perform_pickups_for_space(RoomSpace *space, Player *player)
+{
+	// Pick up items in the path
+	LinkedList *items = space->items;
+	while (items != NULL) {
+		Item *item = items->data;
+		items = items->next;
+		item_collected(item, player);
+	}
+	LinkedList *artifacts = space->artifacts;
+	while (artifacts != NULL) {
+		Artifact *artifact = artifacts->data;
+		artifacts = artifacts->next;
+		player_add_artifact(player, artifact);
+	}
+}
+
+static void
+handle_space_effects(RoomSpace *space,
+		     Player *player)
+{
+	if (space->lethal)
+		player_set_falling(player);
+	else if (space->trap)
+		trap_activate(space->trap, player);
+
+	LinkedList *objects = space->objects;
+	while (objects) {
+		object_damage(objects->data, player);
+		objects = objects->next;
+	}
+}
+
 static Skill *
 create_default(const char *s_label, Sprite *s)
 {
@@ -505,6 +539,9 @@ skill_backstab(Skill *skill, SkillData *data)
 		}
 	}
 
+	perform_pickups_for_space(targetSpace, data->player);
+	handle_space_effects(targetSpace, data->player);
+
 	return true;
 }
 
@@ -617,19 +654,7 @@ skill_charge_check_path(SkillData *data,
 			player_monster_kill_check(data->player, monster);
 		}
 
-		// Pick up items in the path
-		LinkedList *items = space->items;
-		while (items != NULL) {
-			Item *item = items->data;
-			items = items->next;
-			item_collected(item, player);
-		}
-		LinkedList *artifacts = space->artifacts;
-		while (artifacts != NULL) {
-			Artifact *artifact = artifacts->data;
-			artifacts = artifacts->next;
-			player_add_artifact(player, artifact);
-		}
+		perform_pickups_for_space(space, player);
 
 		if (space->trap)
 			space->trap->sprite->animate = true;
@@ -707,16 +732,7 @@ skill_charge(Skill *skill, SkillData *data)
 
 	Position lastTilePos = position_to_matrix_coords(&playerDestinationPos);
 	RoomSpace *destSpace = &matrix->spaces[lastTilePos.x][lastTilePos.y];
-	if (destSpace->lethal)
-		player_set_falling(player);
-	else if (destSpace->trap)
-		trap_activate(destSpace->trap, player);
-
-	LinkedList *objects = destSpace->objects;
-	while (objects) {
-		object_damage(objects->data, player);
-		objects = objects->next;
-	}
+	handle_space_effects(destSpace, player);
 
 	return true;
 }
