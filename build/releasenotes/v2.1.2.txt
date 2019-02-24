@@ -1,0 +1,9 @@
+a03aec7 Handles the second mingw special case which I kept forgetting.
+0de018f Fix mingw preprocessor define from cmake
+3eeb4d0 Include mingw32 64bit in the exclusion
+5f369da Fixed preprocessor command for mingw
+c98e6e6 Fix wonky mingw errors in appveyor
+499f015 Only use gmtime_s for MSVC
+9b9a0ca Fixed bad include
+926054b Ensure that we have seed when making a map
+49b7ebb Include patch notes for v2.2.1
