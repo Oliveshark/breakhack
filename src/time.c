@@ -51,7 +51,7 @@ time_get_weekly_seed(void)
 {
 	time_t now = time(NULL);
 
-#ifdef _MINGW32_
+#ifdef __MINGW32__
 	struct tm *tm;
 	tm = gmtime(&now);
 	time_t lastMonday = get_last_monday(now, tm);
