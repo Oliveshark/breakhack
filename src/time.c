@@ -23,23 +23,31 @@
 #define SECONDS_PER_HOUR 3600
 #define SECONDS_PER_MINUTE 60
 
+#ifdef WIN32
+#define m_gmtime gmtime_s
+#else
+#define m_gmtime gmtime_r
+#endif
+
 time_t
 time_get_weekly_seed(void)
 {
 	time_t now = time(NULL);
 
-	struct tm *tm;
-	tm = localtime(&now);
+	struct tm tm;
+	m_gmtime(&now, &tm);
 
 	// Zero out the hour and minutes to 00:00:01
-	now -= tm->tm_hour * SECONDS_PER_HOUR;
-	now -= tm->tm_min * SECONDS_PER_MINUTE;
-	now -= tm->tm_sec;
-	now += 1;
+	now -= tm.tm_hour * SECONDS_PER_HOUR;
+	now -= tm.tm_min * SECONDS_PER_MINUTE;
+	now -= tm.tm_sec;
+	now += 60; // Set it to one minute past midnight
 
 	// Reverse time back to last monday
-	unsigned int dayOfWeek = tm->tm_wday;
+	unsigned int dayOfWeek = tm.tm_wday;
 	now -= (dayOfWeek == 0 ? 6 : dayOfWeek - 1) * SECONDS_PER_DAY;
+
+	debug("Weekly seed: %u", now);
 
 	return now;
 }
@@ -49,14 +57,16 @@ char *
 time_get_weekly_lb_name(void)
 {
 	time_t seed = time_get_weekly_seed();
-	struct tm *tm = localtime(&seed);
+	struct tm tm;
+	m_gmtime(&seed, &tm);
 	char *name = ec_malloc(sizeof(char) * 15);
 	m_sprintf(name,
 		  15,
 		  "%u%.2u%.2u_weekly",
-		  tm->tm_year % 100,
-		  tm->tm_mon + 1,
-		  tm->tm_mday
+		  tm.tm_year % 100,
+		  tm.tm_mon + 1,
+		  tm.tm_mday
 		 );
+	debug("Weekly leaderboard: %s", name);
 	return name;
 }

@@ -32,7 +32,7 @@ generate_random_seeds(void)
 {
 	// Use seed for generating map seeds
 	bh_srand(seed);
-	info("Core random seed: %d", seed);
+	debug("Core random seed: %d", seed);
 	for (int i = 0; i < 20; ++i) {
 		map_seeds[i] = bh_rand();
 	}
@@ -40,7 +40,7 @@ generate_random_seeds(void)
 	// Set a more random seed for runtime random
 	runtime_seed = (unsigned int) time(NULL);
 	bh_srand(runtime_seed);
-	info("Runtime random seed: %d", runtime_seed);
+	debug("Runtime random seed: %d", runtime_seed);
 }
 
 static void
