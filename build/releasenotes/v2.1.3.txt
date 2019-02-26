@@ -1,0 +1,4 @@
+e455523 Update README.md
+791dd7e Removes cppcheck warning
+b08ef10 Code maintenance and cleanup
+fffcac1 Makes sure til effects and items apply after backstab
