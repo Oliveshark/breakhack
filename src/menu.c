@@ -229,6 +229,9 @@ redraw_description(Menu *m, SDL_Renderer *renderer)
 void
 menu_update(Menu *m, Input *input, Camera *cam)
 {
+	if (!m)
+		return;
+
 	static int lastSelected = -1;
 
 	if (handle_keyboard_input(m, input)) {
@@ -278,6 +281,9 @@ menu_item_add(Menu *m, Sprite *s1, Sprite *s2, void (*event)(void*))
 void
 menu_render(Menu *m, Camera *cam)
 {
+	if (!m)
+		return;
+
 	LinkedList *items = m->items;
 
 	int index = 0;

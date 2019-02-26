@@ -1120,6 +1120,39 @@ run_game(void)
 	}
 }
 
+static Menu *
+get_active_menu(void)
+{
+	switch (gGameState) {
+		case MENU:
+			return mainMenu;
+		case CHARACTER_MENU:
+			return charSelectMenu;
+		case GAME_SELECT:
+			return gameSelectMenu;
+		default:
+			return NULL;
+	}
+}
+
+static inline void
+render_current_screen(void)
+{
+	switch (gGameState) {
+		case CHARACTER_MENU:
+			screen_render(characterSelectScreen, gCamera);
+			break;
+		case CREDITS:
+			screen_render(creditsScreen, gCamera);
+			break;
+		case SCORE_SCREEN:
+			screen_render(scoreScreen, gCamera);
+			break;
+		default:
+			break;
+	}
+}
+
 static void
 run_menu(void)
 {
@@ -1141,12 +1174,8 @@ run_menu(void)
 	    && gGameState != CHARACTER_MENU)
 		return;
 
-	if (gGameState == MENU)
-		menu_update(mainMenu, &input, gCamera);
-	else if (gGameState == CHARACTER_MENU)
-		menu_update(charSelectMenu, &input, gCamera);
-	else if (gGameState == GAME_SELECT)
-		menu_update(gameSelectMenu, &input, gCamera);
+
+	menu_update(get_active_menu(), &input, gCamera);
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
@@ -1160,18 +1189,8 @@ run_menu(void)
 
 	SDL_RenderSetViewport(gRenderer, &mainViewport);
 
-	if (gGameState == MENU)
-		menu_render(mainMenu, gCamera);
-	else if (gGameState == CHARACTER_MENU) {
-		screen_render(characterSelectScreen, gCamera);
-		menu_render(charSelectMenu, gCamera);
-	}
-	else if (gGameState == GAME_SELECT)
-		menu_render(gameSelectMenu, gCamera);
-	else if (gGameState == CREDITS)
-		screen_render(creditsScreen, gCamera);
-	else if (gGameState == SCORE_SCREEN)
-		screen_render(scoreScreen, gCamera);
+	render_current_screen();
+	menu_render(get_active_menu(), gCamera);
 
 #ifdef DEBUG
 	sprite_render(fpsSprite, gCamera);
