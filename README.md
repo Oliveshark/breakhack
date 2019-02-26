@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/Oliveshark/breakhack.svg?branch=master)](https://travis-ci.org/Oliveshark/breakhack)
 [![Build status](https://ci.appveyor.com/api/projects/status/2a18npdntkmlx3dc?svg=true)](https://ci.appveyor.com/project/LiquidityC/breakhack)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fc02d56fa7194e61b2c7d260fd2e4186)](https://www.codacy.com/app/LiquidityC/breakhack?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Oliveshark/breakhack&amp;utm_campaign=Badge_Grade)
-[![CodeFactor](https://www.codefactor.io/repository/github/oliveshark/breakhack/badge/master)](https://www.codefactor.io/repository/github/oliveshark/breakhack/overview/master)
+[![CodeFactor](https://www.codefactor.io/repository/github/oliveshark/breakhack/badge/dev)](https://www.codefactor.io/repository/github/oliveshark/breakhack/overview/master)
 <!--[![Coverity Scan](https://scan.coverity.com/projects/15218/badge.svg)](https://scan.coverity.com/projects/oliveshark-breakhack)-->
 [![GitHub issues](https://img.shields.io/github/issues/oliveshark/breakhack.svg)](https://github.com/oliveshark/breakhack/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed/oliveshark/breakhack.svg)](https://github.com/oliveshark/breakhack/issues)
