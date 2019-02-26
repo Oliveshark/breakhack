@@ -476,7 +476,7 @@ goToGameSelectMenu(void *unused)
 #ifdef STEAM_BUILD
 		{
 			"WEEKLY CHALLENGE",
-			"Quck game with weekly leaderboards at breakhack.net",
+			"Quick game with weekly leaderboards at breakhack.net",
 			startWeeklyGame
 		},
 #endif
