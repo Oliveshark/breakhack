@@ -33,7 +33,6 @@ CSteamLeaderboard::SetCurrent(SteamLeaderboard_t hCurrentLeaderboard)
 void
 CSteamLeaderboard::FindLeaderboard(const char *pchLeaderboardName )
 {
-
 	SteamAPICall_t hSteamAPICall = SteamUserStats()->FindLeaderboard(pchLeaderboardName);
 	m_callResultFindLeaderboard.Set(hSteamAPICall,
 									this,
