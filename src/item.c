@@ -21,16 +21,19 @@
 #include "util.h"
 #include "mixer.h"
 #include "gui.h"
+#include "actiontextbuilder.h"
 
 Item *
 item_create(void)
 {
 	Item *item = ec_malloc(sizeof(Item));
 	item->sprite = NULL;
+	item->subsprites = NULL;
 	item->collected = false;
 	item->openable = false;
 	item->opened = false;
 	m_strcpy(item->label, 50, "");
+	item->price = 0.0;
 	item->value = 0.0;
 	item->items = NULL;
 	item->effect = NULL;
@@ -41,11 +44,20 @@ void
 item_render(Item *item, Camera *cam)
 {
 	sprite_render(item->sprite, cam);
+
+	LinkedList *subsprites = item->subsprites;
+	while (subsprites)
+		sprite_render(linkedlist_pop(&subsprites), cam);
 }
 
 void
 item_collected(Item *item, Player *player)
 {
+	if (item->price > player->gold){
+		gui_log("You don't have enough gold to buy %s", item->label);
+		return;
+	}
+
 	if (item->collected || item->opened)
 		return;
 
@@ -58,6 +70,13 @@ item_collected(Item *item, Player *player)
 		item->sprite->texture_index = 1;
 		if (!item->items)
 			gui_log("You find nothing inside");
+	}
+
+	if (item->price) {
+	    player->gold -= item->price;
+	    char costLabel[10];
+	    m_sprintf(costLabel, 10, "-%d", item->price);
+	    actiontextbuilder_create_text(costLabel, C_YELLOW, &player->sprite->pos);
 	}
 
 	if (item->effect != NULL)
@@ -75,6 +94,9 @@ item_destroy(Item *item)
 {
 	if (item->sprite)
 		sprite_destroy(item->sprite);
+
+	while (item->subsprites != NULL)
+		sprite_destroy(linkedlist_pop(&item->subsprites));
 
 	while (item->items != NULL)
 		item_destroy(linkedlist_pop(&item->items));

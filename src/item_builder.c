@@ -100,6 +100,26 @@ create_item(const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item
 	return item;
 }
 
+static Item *
+create_priced_item(double price, const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item *, Player*))
+{
+	Item *item = create_item(path0, path1, clip, cb);
+	item->price = price;
+	Sprite *priceSprite = sprite_create();
+	sprite_load_text_texture(priceSprite, "GUI/SDS_8x8.ttf", 0, 8, 1);
+	char priceLabel[10];
+	m_sprintf(priceLabel, 10, "%d", item->price);
+	texture_load_from_text(priceSprite->textures[0],
+			       priceLabel,
+			       C_YELLOW,
+			       C_BLACK,
+			       builder->renderer);
+
+	priceSprite->pos = item->sprite->pos;
+	linkedlist_append(&item->subsprites, priceSprite);
+	return item;
+}
+
 static void
 pickup_gold(Item *item, Player *player)
 {

@@ -29,10 +29,12 @@
 
 typedef struct Item_t {
 	Sprite *sprite;
+	LinkedList *subsprites;
 	bool collected;
 	bool openable;
 	bool opened;
 	char label[50];
+	double price;
 	double value;
 	LinkedList *items;
 	void (*effect)(struct Item_t *, Player *);
