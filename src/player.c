@@ -516,6 +516,7 @@ player_create(class_t class, Camera *cam)
 	player->animationTimer		= _timer_create();
 	player->swordAnimation		= animation_create(5);
 	player->equipment.hasArtifacts	= false;
+	player->stateData.shopOwnerKiller = false;
 
 	build_sword_animation(player, cam->renderer);
 

@@ -62,6 +62,10 @@ typedef struct PlayerEquipment {
 	bool hasArtifacts;
 } PlayerEquipment;
 
+typedef struct PlayerStateData {
+	bool shopOwnerKiller;
+} PlayerStateData;
+
 typedef struct Player {
 	Sprite *sprite;
 	Stats stats;
@@ -78,6 +82,7 @@ typedef struct Player {
 	Timer *animationTimer;
 	Animation *swordAnimation;
 	PlayerEquipment equipment;
+	PlayerStateData stateData;
 } Player;
 
 Player*

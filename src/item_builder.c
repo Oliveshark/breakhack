@@ -108,14 +108,14 @@ create_priced_item(double price, const char *path0, const char *path1, SDL_Rect 
 	Sprite *priceSprite = sprite_create();
 	sprite_load_text_texture(priceSprite, "GUI/SDS_8x8.ttf", 0, 8, 1);
 	char priceLabel[10];
-	m_sprintf(priceLabel, 10, "%d", item->price);
+	m_sprintf(priceLabel, 10, "$%.0f", item->price);
 	texture_load_from_text(priceSprite->textures[0],
 			       priceLabel,
 			       C_YELLOW,
 			       C_BLACK,
 			       builder->renderer);
 
-	priceSprite->pos = item->sprite->pos;
+	priceSprite->dim = priceSprite->textures[0]->dim;
 	linkedlist_append(&item->subsprites, priceSprite);
 	return item;
 }

@@ -46,8 +46,13 @@ item_render(Item *item, Camera *cam)
 	sprite_render(item->sprite, cam);
 
 	LinkedList *subsprites = item->subsprites;
-	while (subsprites)
-		sprite_render(linkedlist_pop(&subsprites), cam);
+	while (subsprites != NULL) {
+		Sprite *sprite = subsprites->data;
+		sprite->pos = item->sprite->pos;
+		sprite->pos.x + 15 - sprite->dim.width / 2;
+		sprite_render(sprite, cam);
+		subsprites = subsprites->next;
+	}
 }
 
 void
@@ -75,7 +80,7 @@ item_collected(Item *item, Player *player)
 	if (item->price) {
 	    player->gold -= item->price;
 	    char costLabel[10];
-	    m_sprintf(costLabel, 10, "-%d", item->price);
+	    m_sprintf(costLabel, 10, "-$%.0f", item->price);
 	    actiontextbuilder_create_text(costLabel, C_YELLOW, &player->sprite->pos);
 	}
 
