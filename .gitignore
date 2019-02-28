@@ -1,4 +1,5 @@
 /.vscode/
+/vscode_build/
 /CMakeSettings.json
 /_build/
 /*.dll
