@@ -41,16 +41,25 @@ item_create(void)
 }
 
 void
+item_update(Item *item)
+{
+	LinkedList *subsprites = item->subsprites;
+	while (subsprites != NULL) {
+		Sprite *sprite = subsprites->data;
+		sprite->pos = item->sprite->pos;
+		sprite->pos.x += 15 - sprite->dim.width / 2;
+		subsprites = subsprites->next;
+	}
+}
+
+void
 item_render(Item *item, Camera *cam)
 {
 	sprite_render(item->sprite, cam);
 
 	LinkedList *subsprites = item->subsprites;
 	while (subsprites != NULL) {
-		Sprite *sprite = subsprites->data;
-		sprite->pos = item->sprite->pos;
-		sprite->pos.x + 15 - sprite->dim.width / 2;
-		sprite_render(sprite, cam);
+		sprite_render(subsprites->data, cam);
 		subsprites = subsprites->next;
 	}
 }

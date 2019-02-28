@@ -295,6 +295,12 @@ map_update(UpdateData *data)
 				sprite_update(room->tiles[i][j]->sprite, data);
 		}
 	}
+
+	LinkedList *items = map->items;
+	while (items) {
+		item_update(items->data);
+		items = items->next;
+	}
 }
 
 void map_render(Map *map, Camera *cam)

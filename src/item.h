@@ -47,6 +47,9 @@ void
 item_collected(Item*, Player*);
 
 void
+item_update(Item*);
+
+void
 item_render(Item*, Camera*);
 
 void
