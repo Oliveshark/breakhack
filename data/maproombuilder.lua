@@ -1,5 +1,6 @@
 -- FUNCTIONS
 local random = map_random
+local layoutparser = require "layoutparser" 
 
 -- CONSTANTS
 local UP	= 1
@@ -26,15 +27,6 @@ local wall = {
 	bottomright = nil,
 	vertical = nil,
 	horizontal = nil
-}
-
-local pits = {
-	center = nil,
-	top = nil,
-	left = nil,
-	right = nil,
-	topleft = nil,
-	topright = nil,
 }
 
 local special = { level_exit = nil }
@@ -152,74 +144,6 @@ local function add_random_decor_to_room(room)
 	if random(2) == 1 then
 		room.decor[11][9] = lightDecor.candle2
 	end
-end
-
-local function add_pits_to_room(room)
-
-	if CURRENT_LEVEL < 2 or random(5) ~= 1 then
-		return false
-	end
-
-	local pitdata = read_file("pitlayouts.dat")
-
-	local cleanData = ""
-	for i=1, #pitdata do
-		local c = pitdata:sub(i+1, i+1)
-		if c == "#" or c == "-" then
-			cleanData = cleanData .. c
-		end
-	end
-
-	local matrix = {}
-	for i=0, #cleanData-1 do
-		local c = cleanData:sub(i, i)
-		local col = i % 16
-		local row = (i - col)/16
-		local layout = 1 + (row - (row % 12))/12
-		local row = row % 12
-		if not matrix[layout] then matrix[layout] = {} end
-		if not matrix[layout][col] then matrix[layout][col] = {} end
-		if c == "#" then
-			matrix[layout][col][row] = true
-		else
-			matrix[layout][col][row] = false
-		end
-	end
-	
-	-- Chose a random layout
-	matrix = matrix[random(#matrix)]
-	for i=2,13 do
-		for j=2,10 do
-			if matrix[i][j] then
-				room.decor[i][j] = nil
-				if not matrix[i-1][j-1] and not matrix[i+1][j-1] and matrix[i-1][j] and matrix[i+1][j] and matrix[i][j-1] then
-					room.tiles[i][j] = pits.innermid
-				elseif not matrix[i-1][j-1] and matrix[i-1][j] and matrix[i][j-1] then
-					room.tiles[i][j] = pits.innerleft
-				elseif not matrix[i+1][j-1] and matrix[i+1][j] and matrix[i][j-1] then
-					room.tiles[i][j] = pits.innerright
-				elseif not matrix[i-1][j] and not matrix[i][j-1] and not matrix[i+1][j] then
-					room.tiles[i][j] = pits.topcrevice
-				elseif not matrix[i-1][j] and not matrix[i+1][j] then
-					room.tiles[i][j] = pits.bottomcrevice
-				elseif not matrix[i-1][j] and not matrix[i][j-1] then
-					room.tiles[i][j] = pits.topleft
-				elseif not matrix[i+1][j] and not matrix[i][j-1] then
-					room.tiles[i][j] = pits.topright
-				elseif not matrix[i-1][j] then
-					room.tiles[i][j] = pits.left
-				elseif not matrix[i+1][j] then
-					room.tiles[i][j] = pits.right
-				elseif not matrix[i][j-1] then
-					room.tiles[i][j] = pits.top
-				else
-					room.tiles[i][j] = pits.center
-				end
-			end
-		end
-	end
-
-	return true
 end
 
 local function add_tiles_to_room (room, singletile)
@@ -428,7 +352,7 @@ local function build_normal_room(room)
 	add_random_decor_to_room(room)
 	add_walls_to_room(room)
 	add_exits_to_room(room)
-	local pitsAdded = crumbling or add_pits_to_room(room)
+	local pitsAdded = crumbling or layoutparser.add_pits_to_room(room)
 
 	if room.goal then
 		add_level_exit(room)
@@ -531,8 +455,7 @@ end
 function module.load_textures(map)
 	t_floor = add_texture(map, "Objects/Floor.png")
 	t_wall = add_texture(map, "Objects/Wall.png")
-	t_pit0 = add_texture(map, "Objects/Pit0.png")
-	t_pit1 = add_texture(map, "Objects/Pit1.png")
+	layoutparser.load_textures(map)
 
 	local seed = get_random_seed(CURRENT_LEVEL);
 	info("Map room random seed: " .. seed)
@@ -554,19 +477,6 @@ function module.load_textures(map)
 	floor.singleleft	= { t_floor, -1, xo + 64, yo + 16, false }
 	floor.singleright	= { t_floor, -1, xo + 96, yo + 16, false }
 	floor.single		= { t_floor, -1, xo + 80, yo +  0, false }
-
-	local pit_yo = (random(5) + random(3)) * (16 * 2)
-	pits.topleft		= { t_pit0, t_pit1, 0, pit_yo, false, false, false, true }
-	pits.top			= { t_pit0, t_pit1, 16, pit_yo, false, false, false, true }
-	pits.topright		= { t_pit0, t_pit1, 32, pit_yo, false, false, false, true }
-	pits.left	   		= { t_pit0, t_pit1, 0, pit_yo + 16, false, false, false, true }
-	pits.center			= { t_pit0, t_pit1, 16, pit_yo + 16, false, false, false, true }
-	pits.right			= { t_pit0, t_pit1, 32, pit_yo + 16, false, false, false, true }
-	pits.innerleft		= { t_pit0, t_pit1, 80, pit_yo, false, false, false, true }
-	pits.innermid		= { t_pit0, t_pit1, 96, pit_yo, false, false, false, true }
-	pits.innerright		= { t_pit0, t_pit1, 112, pit_yo, false, false, false, true }
-	pits.topcrevice		= { t_pit0, t_pit1, 64, pit_yo, false, false, false, true }
-	pits.bottomcrevice	= { t_pit0, t_pit1, 64, pit_yo + 16, false, false, false, true }
 
 	wall.topleft		= { t_wall, -1, xo +  0, yo +  0, true }
 	wall.topright		= { t_wall, -1, xo + 32, yo +  0, true }
