@@ -7,7 +7,7 @@ local function readLayoutFile(file)
 	local cleanData = ""
 	for i=1, #layoutfile do
 		local c = layoutfile:sub(i+1, i+1)
-		if c == "#" or c == "-" then
+		if c ~= " " and c ~= "\n" and c ~= "\r" then
 			cleanData = cleanData .. c
 		end
 	end
@@ -21,14 +21,57 @@ local function readLayoutFile(file)
 		local row = row % 12
 		if not matrix[layout] then matrix[layout] = {} end
 		if not matrix[layout][col] then matrix[layout][col] = {} end
-		if c == "#" then
-			matrix[layout][col][row] = true
-		else
-			matrix[layout][col][row] = false
-		end
+		matrix[layout][col][row] = c
 	end
 
 	return matrix;
+end
+
+local function getTileStateFor(matrix, i, j, c)
+	local above = matrix[i][j-1] == c;
+	local below = matrix[i][j+1] == c;
+	local left = matrix[i-1][j] == c;
+	local right = matrix[i+1][j] == c;
+
+	local above_left = matrix[i-1][j-1] == c;
+	local above_right = matrix[i+1][j-1] == c;
+	local below_left = matrix[i-1][j+1] == c;
+	local below_right = matrix[i+1][j+1] == c;
+
+	return above, below, left, right, above_left, above_right, below_left, below_right
+end
+
+local function setPitTile(room, matrix, i, j)
+	if matrix[i][j] ~= "p" then
+		return
+	end
+
+	local above, below, left, right, above_left, above_right, below_left, below_right = getTileStateFor(matrix, i, j, "p");
+
+	room.decor[i][j] = nil
+	if not above_left and not above_right and left and right and above then
+		room.tiles[i][j] = pits.innermid
+	elseif not above_left and left and above then
+		room.tiles[i][j] = pits.innerleft
+	elseif not above_right and right and above then
+		room.tiles[i][j] = pits.innerright
+	elseif not left and not above and not right then
+		room.tiles[i][j] = pits.topcrevice
+	elseif not left and not right then
+		room.tiles[i][j] = pits.bottomcrevice
+	elseif not left and not above then
+		room.tiles[i][j] = pits.topleft
+	elseif not right and not above then
+		room.tiles[i][j] = pits.topright
+	elseif not left then
+		room.tiles[i][j] = pits.left
+	elseif not right then
+		room.tiles[i][j] = pits.right
+	elseif not above then
+		room.tiles[i][j] = pits.top
+	else
+		room.tiles[i][j] = pits.center
+	end
 end
 
 local module = {}
@@ -53,9 +96,9 @@ function module.load_textures(map)
 end
 
 function module.add_pits_to_room(room)
-	if CURRENT_LEVEL < 2 or random(5) ~= 1 then
-		return false
-	end
+	--if CURRENT_LEVEL < 2 or random(5) ~= 1 then
+		--return false
+	--end
 
 	local matrix = readLayoutFile("pitlayouts.dat")
 
@@ -63,32 +106,7 @@ function module.add_pits_to_room(room)
 	matrix = matrix[random(#matrix)]
 	for i=2,13 do
 		for j=2,10 do
-			if matrix[i][j] then
-				room.decor[i][j] = nil
-				if not matrix[i-1][j-1] and not matrix[i+1][j-1] and matrix[i-1][j] and matrix[i+1][j] and matrix[i][j-1] then
-					room.tiles[i][j] = pits.innermid
-				elseif not matrix[i-1][j-1] and matrix[i-1][j] and matrix[i][j-1] then
-					room.tiles[i][j] = pits.innerleft
-				elseif not matrix[i+1][j-1] and matrix[i+1][j] and matrix[i][j-1] then
-					room.tiles[i][j] = pits.innerright
-				elseif not matrix[i-1][j] and not matrix[i][j-1] and not matrix[i+1][j] then
-					room.tiles[i][j] = pits.topcrevice
-				elseif not matrix[i-1][j] and not matrix[i+1][j] then
-					room.tiles[i][j] = pits.bottomcrevice
-				elseif not matrix[i-1][j] and not matrix[i][j-1] then
-					room.tiles[i][j] = pits.topleft
-				elseif not matrix[i+1][j] and not matrix[i][j-1] then
-					room.tiles[i][j] = pits.topright
-				elseif not matrix[i-1][j] then
-					room.tiles[i][j] = pits.left
-				elseif not matrix[i+1][j] then
-					room.tiles[i][j] = pits.right
-				elseif not matrix[i][j-1] then
-					room.tiles[i][j] = pits.top
-				else
-					room.tiles[i][j] = pits.center
-				end
-			end
+			setPitTile(room, matrix, i, j);
 		end
 	end
 
