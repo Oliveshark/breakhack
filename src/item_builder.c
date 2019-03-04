@@ -79,27 +79,6 @@ pickup_dagger(Item *item, Player *player)
 		gui_log("You collect a dagger");
 }
 
-static Item *
-create_item(const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item*, Player*))
-{
-	Item *item;
-
-	item = item_create();
-	Texture *t0 = texturecache_add(path0);
-	Texture *t1 = NULL;
-	if (path1)
-		t1 = texturecache_add(path1);
-
-	item->sprite = sprite_create();
-	sprite_set_texture(item->sprite, t0, 0);
-	sprite_set_texture(item->sprite, t1, 1);
-	item->sprite->dim = GAME_DIMENSION;
-	item->sprite->clip = clip;
-	item->effect = cb;
-
-	return item;
-}
-
 static Sprite *
 create_number_subsprite(SDL_Color fg,
 			SDL_Color outline,
@@ -122,6 +101,27 @@ create_number_subsprite(SDL_Color fg,
 }
 
 static Item *
+create_item(const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item*, Player*))
+{
+	Item *item;
+
+	item = item_create();
+	Texture *t0 = texturecache_add(path0);
+	Texture *t1 = NULL;
+	if (path1)
+		t1 = texturecache_add(path1);
+
+	item->sprite = sprite_create();
+	sprite_set_texture(item->sprite, t0, 0);
+	sprite_set_texture(item->sprite, t1, 1);
+	item->sprite->dim = GAME_DIMENSION;
+	item->sprite->clip = clip;
+	item->effect = cb;
+
+	return item;
+}
+
+static Item *
 create_priced_item(double price,
 		   const char *path0,
 		   const char *path1,
@@ -133,11 +133,6 @@ create_priced_item(double price,
 
 	Sprite *priceSprite = create_number_subsprite(C_YELLOW, C_BLACK, "$%.0f", item->price);
 	linkedlist_append(&item->subsprites, priceSprite);
-
-	Sprite *valueSprite = create_number_subsprite(C_BLUE, C_BLACK, "$.1f", item->value);
-	valueSprite->offset.x = item->sprite->dim.width - valueSprite->dim.width;
-	valueSprite->offset.y = item->sprite->dim.height - valueSprite->dim.height;
-	linkedlist_append(&item->subsprites, valueSprite);
 
 	return item;
 }
@@ -245,6 +240,13 @@ item_builder_build_item(ItemKey key, int level)
 		default:
 			fatal("in item_builder_build() : Unhandled item key %d", key);
 			break;
+	}
+
+	if (item->value != 1) {
+		Sprite *valueSprite = create_number_subsprite(C_BLUE, C_BLACK, "%.1f", item->value);
+		valueSprite->offset.x = item->sprite->dim.width - valueSprite->dim.width;
+		valueSprite->offset.y = item->sprite->dim.height - valueSprite->dim.height;
+		linkedlist_append(&item->subsprites, valueSprite);
 	}
 
 	return item;
