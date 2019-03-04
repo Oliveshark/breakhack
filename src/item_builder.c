@@ -87,8 +87,29 @@ create_number_subsprite(SDL_Color fg,
 {
 	Sprite *sprite = sprite_create();
 	sprite_load_text_texture(sprite, "GUI/SDS_8x8.ttf", 0, 8, 1);
-	char priceLabel[10];
-	m_sprintf(priceLabel, 10, format, value);
+	char priceLabel[9];
+	m_sprintf(priceLabel, 9, format, value);
+	texture_load_from_text(sprite->textures[0],
+			       priceLabel,
+			       fg,
+			       outline,
+			       builder->renderer);
+
+	sprite->dim = sprite->textures[0]->dim;
+
+	return sprite;
+}
+
+static Sprite *
+create_small_number_subsprite(SDL_Color fg,
+			SDL_Color outline,
+			const char *format,
+			double value)
+{
+	Sprite *sprite = sprite_create();
+	sprite_load_text_texture(sprite, "GUI/SDS_6x6.ttf", 0, 6, 1);
+	char priceLabel[9];
+	m_sprintf(priceLabel, 9, format, value);
 	texture_load_from_text(sprite->textures[0],
 			       priceLabel,
 			       fg,
@@ -131,7 +152,7 @@ create_priced_item(double price,
 	Item *item = create_item(path0, path1, clip, cb);
 	item->price = price;
 
-	Sprite *priceSprite = create_number_subsprite(C_YELLOW, C_BLACK, "$%.0f", item->price);
+	Sprite *priceSprite = create_number_subsprite(C_YELLOW, C_BLACK, "$.0f", item->price);
 	linkedlist_append(&item->subsprites, priceSprite);
 
 	return item;
@@ -243,7 +264,7 @@ item_builder_build_item(ItemKey key, int level)
 	}
 
 	if (item->value != 1) {
-		Sprite *valueSprite = create_number_subsprite(C_BLUE, C_BLACK, "%.1f", item->value);
+		Sprite *valueSprite = create_small_number_subsprite(C_BLUE, C_BLACK, "%g", item->value);
 		valueSprite->offset.x = item->sprite->dim.width - valueSprite->dim.width;
 		valueSprite->offset.y = item->sprite->dim.height - valueSprite->dim.height;
 		linkedlist_append(&item->subsprites, valueSprite);
