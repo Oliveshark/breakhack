@@ -152,7 +152,7 @@ function module.load_textures(map)
 	fences = {
 		topleft			= { t_fence, nil, 0, yoffset, true },
 		top				= { t_fence, nil, 16, yoffset, true },
-		single			= { t_wall, nil, 16, yoffset + 16, true },
+		single			= { t_fence, nil, 16, yoffset + 16, true },
 		topright		= { t_fence, nil, 32, yoffset, true },
 		left			= { t_fence, nil, 0, yoffset + 16, true },
 		bottomleft		= { t_fence, nil, 0, yoffset + 32, true },
