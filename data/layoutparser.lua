@@ -166,21 +166,11 @@ function module.load_textures(map)
 	}
 end
 
-function module.add_pits_to_room(room)
-	--if CURRENT_LEVEL < 2 or random(5) ~= 1 then
-		--return false
-	--end
-
-	local matrix = readLayoutFile("walllayouts.dat")
-	--local matrix = readLayoutFile("pitlayouts.dat")
-
+function draw_layout_to_room(room, matrix)
 	-- Chose a random layout
 	matrix = matrix[random(#matrix)]
 	for i=2,13 do
 		for j=2,10 do
-			if matrix[i][j] ~= nil then
-				io.write("" .. matrix[i][j])
-			end
 			if matrix[i][j] == "p" then
 				setPitTile(room, matrix, i, j);
 			elseif matrix[i][j] == "#" then
@@ -189,9 +179,24 @@ function module.add_pits_to_room(room)
 				setBlockTile(room, matrix, i, j, fences, "f", true)
 			end
 		end
-		print("")
+	end
+end
+
+function module.add_walls_to_room(room)
+	if random(4) ~= 1 then
+		return false
 	end
 
+	draw_layout_to_room(room, readLayoutFile("walllayouts.dat"))
+	return true
+end
+
+function module.add_pits_to_room(room)
+	if CURRENT_LEVEL < 2 or random(5) ~= 1 then
+		return false
+	end
+
+	draw_layout_to_room(room, readLayoutFile("pitlayouts.dat"))
 	return true
 end
 
