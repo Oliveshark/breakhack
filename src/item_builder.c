@@ -27,6 +27,7 @@
 #include "random.h"
 #include "texturecache.h"
 #include "sprite.h"
+#include "sprite_util.h"
 
 static ItemBuilder *builder = NULL;
 
@@ -79,48 +80,6 @@ pickup_dagger(Item *item, Player *player)
 		gui_log("You collect a dagger");
 }
 
-static Sprite *
-create_number_subsprite(SDL_Color fg,
-			SDL_Color outline,
-			const char *format,
-			double value)
-{
-	Sprite *sprite = sprite_create();
-	sprite_load_text_texture(sprite, "GUI/SDS_8x8.ttf", 0, 8, 1);
-	char priceLabel[9];
-	m_sprintf(priceLabel, 9, format, value);
-	texture_load_from_text(sprite->textures[0],
-			       priceLabel,
-			       fg,
-			       outline,
-			       builder->renderer);
-
-	sprite->dim = sprite->textures[0]->dim;
-
-	return sprite;
-}
-
-static Sprite *
-create_small_number_subsprite(SDL_Color fg,
-			SDL_Color outline,
-			const char *format,
-			double value)
-{
-	Sprite *sprite = sprite_create();
-	sprite_load_text_texture(sprite, "GUI/SDS_6x6.ttf", 0, 6, 1);
-	char priceLabel[9];
-	m_sprintf(priceLabel, 9, format, value);
-	texture_load_from_text(sprite->textures[0],
-			       priceLabel,
-			       fg,
-			       outline,
-			       builder->renderer);
-
-	sprite->dim = sprite->textures[0]->dim;
-
-	return sprite;
-}
-
 static Item *
 create_item(const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item*, Player*))
 {
@@ -152,7 +111,12 @@ create_priced_item(double price,
 	Item *item = create_item(path0, path1, clip, cb);
 	item->price = price;
 
-	Sprite *priceSprite = create_number_subsprite(C_YELLOW, C_BLACK, "$.0f", item->price);
+	Sprite *priceSprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf",
+							     8,
+							     C_YELLOW,
+							     C_BLACK,
+							     "$%.0f",
+							     price);
 	linkedlist_append(&item->subsprites, priceSprite);
 
 	return item;
@@ -264,7 +228,12 @@ item_builder_build_item(ItemKey key, int level)
 	}
 
 	if (item->value != 1) {
-		Sprite *valueSprite = create_small_number_subsprite(C_BLUE, C_BLACK, "%g", item->value);
+		Sprite *valueSprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf",
+								     8,
+								     C_BLUE,
+								     C_BLACK,
+								     "%g",
+								     item->value);
 		valueSprite->offset.x = item->sprite->dim.width - valueSprite->dim.width;
 		valueSprite->offset.y = item->sprite->dim.height - valueSprite->dim.height;
 		linkedlist_append(&item->subsprites, valueSprite);

@@ -751,8 +751,19 @@ player_has_artifact(Player *p, MagicalEffect effect)
 void
 player_add_artifact(Player *p, Artifact *a)
 {
+	if (a->price > p->gold) {
+		gui_log("You don't have enough gold to buy a %s",
+			a->info.name);
+		return;
+	}
+
 	if (a->collected)
 		return;
+
+	if (a->price) {
+		gui_log("You pay %d gold for %s", a->price, a->info.name);
+		p->gold -= a->price;
+	}
 
 	mixer_play_effect(MAGIC_PICKUP);
 	a->collected = true;

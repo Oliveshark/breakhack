@@ -55,6 +55,7 @@
 #include "tooltip.h"
 #include "gamecontroller.h"
 #include "time.h"
+#include "sprite_util.h"
 
 #ifdef STEAM_BUILD
 #include "steam/steamworks_api_wrapper.h"
@@ -308,6 +309,7 @@ initGame(void)
 	initViewports(0);
 	input_init(&input);
 	texturecache_init(gRenderer);
+	sprite_util_init(gRenderer);
 	gCamera = camera_create(gRenderer);
 	gRoomMatrix = roommatrix_create();
 	gGui = gui_create(gCamera);

@@ -113,6 +113,26 @@ artifact_create_random(Player *p, Uint8 level)
 	return a;
 }
 
+void
+artifact_add_price(Artifact *a, unsigned int price, SDL_Renderer *renderer)
+{
+	
+	Sprite *sprite = sprite_create();
+	sprite_load_text_texture(sprite, "GUI/SDS_8x8.ttf", 0, 8, 1);
+	char priceLabel[9];
+	m_sprintf(priceLabel, 9, "$%d", price);
+	texture_load_from_text(sprite->textures[0],
+			       priceLabel,
+			       C_YELLOW,
+			       C_BLACK,
+			       renderer);
+
+	sprite->dim = sprite->textures[0]->dim;
+
+	a->price = price;
+	a->priceSprite = sprite;
+}
+
 Sprite *
 artifact_sprite_for(MagicalEffect effect)
 {
@@ -175,9 +195,11 @@ artifact_create(MagicalEffect effect)
 {
 	Artifact *a = ec_malloc(sizeof(Artifact));
 	a->sprite = artifact_sprite_for(effect);
+	a->priceSprite = NULL;
 	a->sprite->dim = GAME_DIMENSION;
 	a->collected = false;
 	a->level = 1;
+	a->price = 0;
 	artifact_set_effect(a, effect);
 	return a;
 }
@@ -198,11 +220,15 @@ artifact_render(Artifact *a, Camera *cam)
 	pos.x += 4;
 	pos.y += 4;
 	particle_engine_sparkle(pos, (Dimension) { 24, 24 }, C_PURPLE, false);
+	if (a->priceSprite)
+		sprite_render(a->priceSprite, cam);
 }
 
 void
 artifact_destroy(Artifact *a)
 {
 	sprite_destroy(a->sprite);
+	if (a->priceSprite)
+		sprite_destroy(a->priceSprite);
 	free(a);
 }

@@ -177,6 +177,7 @@ add_executable(breakhack
 	src/texture
 	src/screenresolution
 	src/sprite
+	src/sprite_util
 	src/util
 	src/player
 	src/map
