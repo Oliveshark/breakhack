@@ -109,3 +109,9 @@ position_to_tile_pos(const Position *p)
 		p->y - (p->y % TILE_DIMENSION)
 	};
 }
+
+Position
+position_add(const Position *a, const Position *b)
+{
+	return POS(a->x + b->x, a->y + b->y);
+}

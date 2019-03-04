@@ -41,6 +41,7 @@ typedef struct Sprite {
 	SDL_Rect clip;
 	bool destroyTextures;
 	Position pos;
+	Position offset;
 	Dimension dim;
 	double angle;
 	SDL_Point rotationPoint;

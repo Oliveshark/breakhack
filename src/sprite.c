@@ -30,7 +30,8 @@ sprite_create_default(void)
 	s->textures[1] = NULL;
 	s->clip = (SDL_Rect) { 0, 0, 0, 0 };
 	s->destroyTextures = false;
-	s->pos = (Position) { 0, 0 };
+	s->pos = POS(0, 0);
+	s->offset = POS(0, 0);
 	s->dim = DEFAULT_DIMENSION;
 	s->angle = 0;
 	s->rotationPoint = (SDL_Point) { 0, 0 };
@@ -168,6 +169,8 @@ sprite_render(Sprite *s, Camera *cam)
 		cameraPos = camera_to_camera_position(cam, &s->pos);
 	else
 		cameraPos = s->pos;
+
+	cameraPos = position_add(&cameraPos, &s->offset);
 
 	SDL_Rect box = {
 		cameraPos.x, cameraPos.y, s->dim.width, s->dim.height

@@ -71,4 +71,10 @@ position_in_roommatrix(const Position*);
 Position
 position_to_tile_pos(const Position*);
 
+/*
+ * Add two positions
+ */
+Position
+position_add(const Position*, const Position*);
+
 #endif // POSITION_H_
