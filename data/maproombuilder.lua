@@ -353,6 +353,7 @@ local function build_normal_room(room)
 	add_walls_to_room(room)
 	add_exits_to_room(room)
 	local pitsAdded = crumbling or layoutparser.add_pits_to_room(room)
+	layoutparser.add_walls_to_room(room)
 
 	if room.goal then
 		add_level_exit(room)
