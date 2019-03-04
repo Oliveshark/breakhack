@@ -1,5 +1,7 @@
 local random = map_random
 local pits = {}
+local walls = {}
+local fences = {}
 
 local function readLayoutFile(file)
 	local layoutfile = read_file(file)
@@ -41,11 +43,44 @@ local function getTileStateFor(matrix, i, j, c)
 	return above, below, left, right, above_left, above_right, below_left, below_right
 end
 
-local function setPitTile(room, matrix, i, j)
-	if matrix[i][j] ~= "p" then
-		return
-	end
+local function setBlockTile(room, matrix, i, j, tiles, char, decorTiles)
+	local above, below, left, right, above_left, above_right, below_left, below_right = getTileStateFor(matrix, i, j, char);
 
+	room.decor[i][j] = nil
+	local tile = nil
+	if above and below and left and right then
+		tile = tiles.cross
+	elseif not above and below and left and right then
+		tile = tiles.top_t
+	elseif not below and above and left and right then
+		tile = tiles.bottom_t
+	elseif not left and above and below and right then
+		tile = tiles.left_t
+	elseif not right and above and below and left then
+		tile = tiles.right_t
+	elseif not above and not left and right and below then
+		tile = tiles.topleft
+	elseif not above and not right and left and below then
+		tile = tiles.topright
+	elseif not below and not left and above and right then
+		tile = tiles.bottomleft
+	elseif not below and not right and above and left then
+		tile = tiles.bottomright
+	elseif not left and not right and below then
+		tile = tiles.left
+	elseif not above and not below and (left or right) then
+		tile = tiles.top
+	else
+		tile = tiles.single
+	end
+	if decorTiles then
+		room.decor[i][j] = tile
+	else
+		room.tiles[i][j] = tile
+	end
+end
+
+local function setPitTile(room, matrix, i, j)
 	local above, below, left, right, above_left, above_right, below_left, below_right = getTileStateFor(matrix, i, j, "p");
 
 	room.decor[i][j] = nil
@@ -78,20 +113,56 @@ local module = {}
 function module.load_textures(map)
 	local t_pit0 = add_texture(map, "Objects/Pit0.png")
 	local t_pit1 = add_texture(map, "Objects/Pit1.png")
-	local pit_yo = (random(5) + random(3)) * (16 * 2)
+	local t_wall = add_texture(map, "Objects/Wall.png")
+	local t_fence = add_texture(map, "Objects/Fence.png")
 
+	local yoffset = (random(5) + random(3)) * (16 * 2)
 	pits = {
-		center			= { t_pit0, t_pit1, 16, pit_yo + 16, false, false, false, true },
-		top				= { t_pit0, t_pit1, 16, pit_yo, false, false, false, true },
-		left			= { t_pit0, t_pit1, 0, pit_yo + 16, false, false, false, true },
-		right			= { t_pit0, t_pit1, 32, pit_yo + 16, false, false, false, true },
-		topleft			= { t_pit0, t_pit1, 0, pit_yo, false, false, false, true },
-		topright		= { t_pit0, t_pit1, 32, pit_yo, false, false, false, true },
-		innerleft		= { t_pit0, t_pit1, 80, pit_yo, false, false, false, true },
-		innermid		= { t_pit0, t_pit1, 96, pit_yo, false, false, false, true },
-		innerright		= { t_pit0, t_pit1, 112, pit_yo, false, false, false, true },
-		topcrevice		= { t_pit0, t_pit1, 64, pit_yo, false, false, false, true },
-		bottomcrevice	= { t_pit0, t_pit1, 64, pit_yo + 16, false, false, false, true },
+		center			= { t_pit0, t_pit1, 16, yoffset + 16, false, false, false, true },
+		top				= { t_pit0, t_pit1, 16, yoffset, false, false, false, true },
+		left			= { t_pit0, t_pit1, 0, yoffset + 16, false, false, false, true },
+		right			= { t_pit0, t_pit1, 32, yoffset + 16, false, false, false, true },
+		topleft			= { t_pit0, t_pit1, 0, yoffset, false, false, false, true },
+		topright		= { t_pit0, t_pit1, 32, yoffset, false, false, false, true },
+		innerleft		= { t_pit0, t_pit1, 80, yoffset, false, false, false, true },
+		innermid		= { t_pit0, t_pit1, 96, yoffset, false, false, false, true },
+		innerright		= { t_pit0, t_pit1, 112, yoffset, false, false, false, true },
+		topcrevice		= { t_pit0, t_pit1, 64, yoffset, false, false, false, true },
+		bottomcrevice	= { t_pit0, t_pit1, 64, yoffset + 16, false, false, false, true },
+	}
+
+	local yoffset = 48
+	walls = {
+		topleft			= { t_wall, nil, 0, yoffset, true },
+		top				= { t_wall, nil, 16, yoffset, true },
+		single			= { t_wall, nil, 16, yoffset + 16, true },
+		topright		= { t_wall, nil, 32, yoffset, true },
+		left			= { t_wall, nil, 0, yoffset + 16, true },
+		bottomleft		= { t_wall, nil, 0, yoffset + 32, true },
+		bottomright		= { t_wall, nil, 32, yoffset + 32, true },
+		center			= { t_wall, nil, 48, yoffset, true },
+		top_t			= { t_wall, nil, 64, yoffset, true },
+		left_t			= { t_wall, nil, 48, yoffset + 16, true },
+		cross			= { t_wall, nil, 64, yoffset + 16, true },
+		right_t			= { t_wall, nil, 80, yoffset + 16, true },
+		bottom_t		= { t_wall, nil, 64, yoffset + 32, true },
+	}
+
+	local yoffset = 48
+	fences = {
+		topleft			= { t_fence, nil, 0, yoffset, true },
+		top				= { t_fence, nil, 16, yoffset, true },
+		single			= { t_wall, nil, 16, yoffset + 16, true },
+		topright		= { t_fence, nil, 32, yoffset, true },
+		left			= { t_fence, nil, 0, yoffset + 16, true },
+		bottomleft		= { t_fence, nil, 0, yoffset + 32, true },
+		bottomright		= { t_fence, nil, 32, yoffset + 32, true },
+		center			= { t_fence, nil, 48, yoffset, true },
+		top_t			= { t_fence, nil, 64, yoffset, true },
+		left_t			= { t_fence, nil, 48, yoffset + 16, true },
+		cross			= { t_fence, nil, 64, yoffset + 16, true },
+		right_t			= { t_fence, nil, 80, yoffset + 16, true },
+		bottom_t		= { t_fence, nil, 64, yoffset + 32, true },
 	}
 end
 
@@ -100,14 +171,25 @@ function module.add_pits_to_room(room)
 		--return false
 	--end
 
-	local matrix = readLayoutFile("pitlayouts.dat")
+	local matrix = readLayoutFile("walllayouts.dat")
+	--local matrix = readLayoutFile("pitlayouts.dat")
 
 	-- Chose a random layout
 	matrix = matrix[random(#matrix)]
 	for i=2,13 do
 		for j=2,10 do
-			setPitTile(room, matrix, i, j);
+			if matrix[i][j] ~= nil then
+				io.write("" .. matrix[i][j])
+			end
+			if matrix[i][j] == "p" then
+				setPitTile(room, matrix, i, j);
+			elseif matrix[i][j] == "#" then
+				setBlockTile(room, matrix, i, j, walls, "#", false)
+			elseif matrix[i][j] == "f" then
+				setBlockTile(room, matrix, i, j, fences, "f", true)
+			end
 		end
+		print("")
 	end
 
 	return true
