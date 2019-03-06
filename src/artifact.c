@@ -219,7 +219,7 @@ artifact_render(Artifact *a, Camera *cam)
 	Position pos = a->sprite->pos;
 	pos.x += 4;
 	pos.y += 4;
-	particle_engine_sparkle(pos, (Dimension) { 24, 24 }, C_PURPLE, false);
+	particle_engine_sparkle(pos, DIM(24, 24), C_PURPLE, false);
 	if (a->priceSprite)
 		sprite_render(a->priceSprite, cam);
 }

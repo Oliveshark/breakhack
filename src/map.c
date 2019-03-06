@@ -445,7 +445,7 @@ map_destroy(Map *map)
 		artifact_destroy(linkedlist_pop(&map->artifacts));
 
 	while (map->objects != NULL)
-		artifact_destroy(linkedlist_pop(&map->objects));
+		object_destroy(linkedlist_pop(&map->objects));
 
 	timer_destroy(map->monsterMoveTimer);
 	free(map);
