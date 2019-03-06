@@ -110,59 +110,60 @@ local function setPitTile(room, matrix, i, j)
 end
 
 local module = {}
-function module.load_textures(map)
+function module.load_textures(map, wall_xoffset, wall_yoffset)
 	local t_pit0 = add_texture(map, "Objects/Pit0.png")
 	local t_pit1 = add_texture(map, "Objects/Pit1.png")
 	local t_wall = add_texture(map, "Objects/Wall.png")
 	local t_fence = add_texture(map, "Objects/Fence.png")
 
-	local yoffset = (random(5) + random(3)) * (16 * 2)
+	local yo = (random(5) + random(3)) * (16 * 2)
 	pits = {
-		center			= { t_pit0, t_pit1, 16, yoffset + 16, false, false, false, true },
-		top				= { t_pit0, t_pit1, 16, yoffset, false, false, false, true },
-		left			= { t_pit0, t_pit1, 0, yoffset + 16, false, false, false, true },
-		right			= { t_pit0, t_pit1, 32, yoffset + 16, false, false, false, true },
-		topleft			= { t_pit0, t_pit1, 0, yoffset, false, false, false, true },
-		topright		= { t_pit0, t_pit1, 32, yoffset, false, false, false, true },
-		innerleft		= { t_pit0, t_pit1, 80, yoffset, false, false, false, true },
-		innermid		= { t_pit0, t_pit1, 96, yoffset, false, false, false, true },
-		innerright		= { t_pit0, t_pit1, 112, yoffset, false, false, false, true },
-		topcrevice		= { t_pit0, t_pit1, 64, yoffset, false, false, false, true },
-		bottomcrevice	= { t_pit0, t_pit1, 64, yoffset + 16, false, false, false, true },
+		center			= { t_pit0, t_pit1, 16, yo + 16, false, false, false, true },
+		top				= { t_pit0, t_pit1, 16, yo, false, false, false, true },
+		left			= { t_pit0, t_pit1, 0, yo + 16, false, false, false, true },
+		right			= { t_pit0, t_pit1, 32, yo + 16, false, false, false, true },
+		topleft			= { t_pit0, t_pit1, 0, yo, false, false, false, true },
+		topright		= { t_pit0, t_pit1, 32, yo, false, false, false, true },
+		innerleft		= { t_pit0, t_pit1, 80, yo, false, false, false, true },
+		innermid		= { t_pit0, t_pit1, 96, yo, false, false, false, true },
+		innerright		= { t_pit0, t_pit1, 112, yo, false, false, false, true },
+		topcrevice		= { t_pit0, t_pit1, 64, yo, false, false, false, true },
+		bottomcrevice	= { t_pit0, t_pit1, 64, yo + 16, false, false, false, true },
 	}
 
-	local yoffset = 48
+	local xo = wall_xoffset
+	yo = wall_yoffset
 	walls = {
-		topleft			= { t_wall, nil, 0, yoffset, true },
-		top				= { t_wall, nil, 16, yoffset, true },
-		single			= { t_wall, nil, 16, yoffset + 16, true },
-		topright		= { t_wall, nil, 32, yoffset, true },
-		left			= { t_wall, nil, 0, yoffset + 16, true },
-		bottomleft		= { t_wall, nil, 0, yoffset + 32, true },
-		bottomright		= { t_wall, nil, 32, yoffset + 32, true },
-		center			= { t_wall, nil, 48, yoffset, true },
-		top_t			= { t_wall, nil, 64, yoffset, true },
-		left_t			= { t_wall, nil, 48, yoffset + 16, true },
-		cross			= { t_wall, nil, 64, yoffset + 16, true },
-		right_t			= { t_wall, nil, 80, yoffset + 16, true },
-		bottom_t		= { t_wall, nil, 64, yoffset + 32, true },
+		topleft			= { t_wall, nil, xo + 0, yo, true },
+		top				= { t_wall, nil, xo + 16, yo, true },
+		single			= { t_wall, nil, xo + 16, yo + 16, true },
+		topright		= { t_wall, nil, xo + 32, yo, true },
+		left			= { t_wall, nil, xo + 0, yo + 16, true },
+		bottomleft		= { t_wall, nil, xo + 0, yo + 32, true },
+		bottomright		= { t_wall, nil, xo + 32, yo + 32, true },
+		center			= { t_wall, nil, xo + 48, yo, true },
+		top_t			= { t_wall, nil, xo + 64, yo, true },
+		left_t			= { t_wall, nil, xo + 48, yo + 16, true },
+		cross			= { t_wall, nil, xo + 64, yo + 16, true },
+		right_t			= { t_wall, nil, xo + 80, yo + 16, true },
+		bottom_t		= { t_wall, nil, xo + 64, yo + 32, true },
 	}
 
-	local yoffset = 48
+	yo = 48
 	fences = {
-		topleft			= { t_fence, nil, 0, yoffset, true },
-		top				= { t_fence, nil, 16, yoffset, true },
-		single			= { t_fence, nil, 16, yoffset + 16, true },
-		topright		= { t_fence, nil, 32, yoffset, true },
-		left			= { t_fence, nil, 0, yoffset + 16, true },
-		bottomleft		= { t_fence, nil, 0, yoffset + 32, true },
-		bottomright		= { t_fence, nil, 32, yoffset + 32, true },
-		center			= { t_fence, nil, 48, yoffset, true },
-		top_t			= { t_fence, nil, 64, yoffset, true },
-		left_t			= { t_fence, nil, 48, yoffset + 16, true },
-		cross			= { t_fence, nil, 64, yoffset + 16, true },
-		right_t			= { t_fence, nil, 80, yoffset + 16, true },
-		bottom_t		= { t_fence, nil, 64, yoffset + 32, true },
+		topleft			= { t_fence, nil, 0, yo, true },
+		top				= { t_fence, nil, 16, yo, true },
+		single			= { t_fence, nil, 16, yo + 16, true },
+		topright		= { t_fence, nil, 32, yo, true },
+		left			= { t_fence, nil, 0, yo + 16, true },
+		bottomleft		= { t_fence, nil, 0, yo + 32, true },
+		bottomright		= { t_fence, nil, 32, yo + 32, true },
+		center			= { t_fence, nil, 48, yo, true },
+		top_t			= { t_fence, nil, 64, yo, true },
+		left_t			= { t_fence, nil, 48, yo + 16, true },
+		cross			= { t_fence, nil, 64, yo + 16, true },
+		right_t			= { t_fence, nil, 80, yo + 16, true },
+		bottom_t		= { t_fence, nil, 64, yo + 32, true },
 	}
 end
 

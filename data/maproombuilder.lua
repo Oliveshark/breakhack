@@ -456,13 +456,15 @@ end
 function module.load_textures(map)
 	t_floor = add_texture(map, "Objects/Floor.png")
 	t_wall = add_texture(map, "Objects/Wall.png")
-	layoutparser.load_textures(map)
 
 	local seed = get_random_seed(CURRENT_LEVEL);
 	info("Map room random seed: " .. seed)
 	map_randomseed(seed)
+
 	local xo = (random(3) - 1) * 112
 	local yo = (random(8)) * 48
+
+	layoutparser.load_textures(map, xo, yo)
 
 	floor.center		= { t_floor, -1, xo + 16, yo + 16, false }
 	floor.top			= { t_floor, -1, xo + 16, yo +  0, false }
