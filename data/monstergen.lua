@@ -106,6 +106,13 @@ local stats = {
 		atk = 0,
 		def = 0,
 		speed = 1
+	},
+	shopkeeper = {
+		hp = 100,
+		dmg = 10,
+		atk = 2,
+		def = 0,
+		speed = 1
 	}
 }
 
@@ -266,9 +273,20 @@ local eastereggs = {
 	{ stats.misc,  0*16, 7*16, "Adnis, the Ranger", behaviour.passive },
 	{ stats.misc,  7*16, 8*16, "Ti, the Mage", behaviour.passive },
 }
+
 for i=1,#eastereggs do
 	eastereggs[i] = concat({ texturePaths.player0, texturePaths.player1 }, eastereggs[i])
 end
+
+local shopkeeper = {
+	texturePaths.humanoid1,
+	texturePaths.humanoid2,
+	stats.shopkeeper,
+	12*16,
+	16,
+	"The Trader",
+	behaviour.passive
+}
 
 -- Add Platino
 table.insert(eastereggs, {
@@ -378,6 +396,24 @@ function module.add_boss_to_room(room, roomx, roomy)
 				x,
 				y,
 				boss
+			}
+			success = true
+		end
+	end
+end
+
+function module.add_shopkeeper_to_room(room, roomx, roomy)
+	local success = false
+	while not success do
+		local rx = random(13) + 1
+		local ry = random(9) + 1
+		if room_builder.is_tile_avilable(room, rx, ry) then
+			local x = (roomx * 512) + rx * 32
+			local y = (roomy * 384) + ry * 32
+			room.monsters[rx][ry] = {
+				x,
+				y,
+				shopkeeper
 			}
 			success = true
 		end
