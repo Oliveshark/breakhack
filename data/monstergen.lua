@@ -113,7 +113,7 @@ local stats = {
 		atk = 2,
 		def = 0,
 		speed = 1
-	}
+	},
 }
 
 local function concat(table1, table2)
@@ -279,11 +279,11 @@ for i=1,#eastereggs do
 end
 
 local shopkeeper = {
+	texturePaths.humanoid0,
 	texturePaths.humanoid1,
-	texturePaths.humanoid2,
 	stats.shopkeeper,
-	12*16,
 	16,
+	12*16,
 	"The Trader",
 	behaviour.passive
 }

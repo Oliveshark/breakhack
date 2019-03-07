@@ -350,9 +350,6 @@ startGame(void)
 	if (gPlayer)
 		player_destroy(gPlayer);
 	gPlayer = player_create(playerClass, gCamera);
-#ifdef DEBUG
-	gPlayer->gold = 400;
-#endif
 	mixer_play_music(GAME_MUSIC0 + get_random(2));
 	resetGame();
 	skillbar_reset(gSkillBar);

@@ -2,6 +2,7 @@ local random = map_random
 local pits = {}
 local walls = {}
 local fences = {}
+local lights = {}
 
 local function readLayoutFile(file)
 	local layoutfile = read_file(file)
@@ -29,16 +30,29 @@ local function readLayoutFile(file)
 	return matrix;
 end
 
-local function getTileStateFor(matrix, i, j, c)
-	local above = matrix[i][j-1] == c;
-	local below = matrix[i][j+1] == c;
-	local left = matrix[i-1][j] == c;
-	local right = matrix[i+1][j] == c;
+local function has_value(list, char)
+	for _, value in ipairs(list) do
+		if value == char then return true end
+	end
+	return false
+end
 
-	local above_left = matrix[i-1][j-1] == c;
-	local above_right = matrix[i+1][j-1] == c;
-	local below_left = matrix[i-1][j+1] == c;
-	local below_right = matrix[i+1][j+1] == c;
+local function getTileStateFor(matrix, i, j, c)
+	local charList
+	if type(c) == "string" then
+		charList = { c }
+	else
+		charList = c
+	end
+	local above = has_value(charList, matrix[i][j-1])
+	local below = has_value(charList, matrix[i][j+1])
+	local left = has_value(charList, matrix[i-1][j])
+	local right = has_value(charList, matrix[i+1][j])
+
+	local above_left = has_value(charList, matrix[i-1][j-1])
+	local above_right = has_value(charList, matrix[i+1][j-1])
+	local below_left = has_value(charList, matrix[i-1][j+1])
+	local below_right = has_value(charList, matrix[i+1][j+1])
 
 	return above, below, left, right, above_left, above_right, below_left, below_right
 end
@@ -115,6 +129,8 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 	local t_pit1 = add_texture(map, "Objects/Pit1.png")
 	local t_wall = add_texture(map, "Objects/Wall.png")
 	local t_fence = add_texture(map, "Objects/Fence.png")
+	local t_decor0 = add_texture(map, "Objects/Decor0.png")
+	local t_decor1 = add_texture(map, "Objects/Decor1.png")
 
 	local yo = (random(5) + random(3)) * (16 * 2)
 	pits = {
@@ -149,7 +165,7 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 		bottom_t		= { t_wall, nil, xo + 64, yo + 32, true },
 	}
 
-	yo = 48
+	yo = 48 * random(3)
 	fences = {
 		topleft			= { t_fence, nil, 0, yo, true },
 		top				= { t_fence, nil, 16, yo, true },
@@ -165,6 +181,11 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 		right_t			= { t_fence, nil, 80, yo + 16, true },
 		bottom_t		= { t_fence, nil, 64, yo + 32, true },
 	}
+
+	lights = {
+		candle0 = { t_decor0, t_decor1,  3 * 16, 8 * 16, true, true },
+		candle1 = { t_decor0, t_decor1,  1 * 16, 8 * 16, true, true }
+	}
 end
 
 function draw_layout_to_room(room, matrix, roomx, roomy)
@@ -175,11 +196,16 @@ function draw_layout_to_room(room, matrix, roomx, roomy)
 			if matrix[i][j] == "p" then
 				setPitTile(room, matrix, i, j);
 			elseif matrix[i][j] == "#" then
-				setBlockTile(room, matrix, i, j, walls, "#", false)
+				setBlockTile(room, matrix, i, j, walls, {"#", "\""}, false)
+			elseif matrix[i][j] == "\"" then
+				setBlockTile(room, matrix, i, j, walls, {"#", "\""}, false)
+				room.decor[i][j] = lights.candle1
 			elseif matrix[i][j] == "f" then
 				setBlockTile(room, matrix, i, j, fences, "f", true)
 			elseif matrix[i][j] == "a" then
 				create_shop_artifact(map, (roomx*512) + i*32, (roomy * 384) + j*32)
+			elseif matrix[i][j] == "l" then
+				room.decor[i][j] = lights.candle0
 			end
 		end
 	end

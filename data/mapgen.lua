@@ -128,7 +128,7 @@ local function generate_path ()
 		for j=1,10 do
 			room = map_matrix[i][j]
 			if room then
-				if roomCount > 3 and shopLevel and not shopAdded then
+				if roomCount > 5 and shopLevel and not shopAdded then
 					room.type = "shop"
 					shopAdded = true
 				end
@@ -138,6 +138,8 @@ local function generate_path ()
 					monster_gen.add_monsters_to_room(room, i-1, j-1)
 					trap_gen.add_traps_to_room(room, i-1, j-1)
 					chest_gen.add_chests_to_room(room, i-1, j-1)
+				else
+					monster_gen.add_shopkeeper_to_room(room, i-1, j-1)
 				end
 				if roomCount > 3 and bossLevel and not bossAdded then
 					bossAdded = true
