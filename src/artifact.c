@@ -22,6 +22,7 @@
 #include "particle_engine.h"
 #include "player.h"
 #include "random.h"
+#include "sprite_util.h"
 
 static void
 artifact_set_effect(Artifact *a, MagicalEffect effect)
@@ -91,6 +92,20 @@ static int RogueArtifacts[] = {
 	PHASE_IMPROVEMENT	// 7
 };
 
+static void
+add_level_sprite(Artifact *a)
+{
+	Sprite *sprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf",
+							8,
+							C_BLUE,
+							C_BLACK,
+							"%u",
+							a->level);
+	sprite->pos = a->sprite->pos;
+	sprite->offset = POS(32 - sprite->dim.width, 32 - sprite->dim.height);
+	a->levelSprite = sprite;
+}
+
 Artifact *
 artifact_create_random(Player *p, Uint8 level)
 {
@@ -110,25 +125,22 @@ artifact_create_random(Player *p, Uint8 level)
 
 	Artifact *a = artifact_create(artifactPool[option]);
 	a->level = level;
+	if (level > 1)
+		add_level_sprite(a);
 	return a;
 }
 
 void
-artifact_add_price(Artifact *a, unsigned int price, SDL_Renderer *renderer)
+artifact_add_price(Artifact *a, unsigned int price)
 {
 	
-	Sprite *sprite = sprite_create();
-	sprite_load_text_texture(sprite, "GUI/SDS_8x8.ttf", 0, 8, 1);
-	char priceLabel[9];
-	m_sprintf(priceLabel, 9, "$%d", price);
-	texture_load_from_text(sprite->textures[0],
-			       priceLabel,
-			       C_YELLOW,
-			       C_BLACK,
-			       renderer);
-
-	sprite->dim = sprite->textures[0]->dim;
-
+	Sprite *sprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf",
+							8,
+							C_YELLOW,
+							C_BLACK,
+							"$%u",
+							price);
+	sprite->pos = a->sprite->pos;
 	a->price = price;
 	a->priceSprite = sprite;
 }
@@ -196,6 +208,7 @@ artifact_create(MagicalEffect effect)
 	Artifact *a = ec_malloc(sizeof(Artifact));
 	a->sprite = artifact_sprite_for(effect);
 	a->priceSprite = NULL;
+	a->levelSprite = NULL;
 	a->sprite->dim = GAME_DIMENSION;
 	a->collected = false;
 	a->level = 1;
@@ -220,8 +233,14 @@ artifact_render(Artifact *a, Camera *cam)
 	pos.x += 4;
 	pos.y += 4;
 	particle_engine_sparkle(pos, DIM(24, 24), C_PURPLE, false);
-	if (a->priceSprite)
+	if (a->priceSprite) {
+		a->priceSprite->pos = a->sprite->pos;
 		sprite_render(a->priceSprite, cam);
+	}
+	if (a->levelSprite) {
+		a->levelSprite->pos = a->sprite->pos;
+		sprite_render(a->levelSprite, cam);
+	}
 }
 
 void
@@ -230,5 +249,7 @@ artifact_destroy(Artifact *a)
 	sprite_destroy(a->sprite);
 	if (a->priceSprite)
 		sprite_destroy(a->priceSprite);
+	if (a->levelSprite)
+		sprite_destroy(a->levelSprite);
 	free(a);
 }

@@ -350,6 +350,9 @@ startGame(void)
 	if (gPlayer)
 		player_destroy(gPlayer);
 	gPlayer = player_create(playerClass, gCamera);
+#ifdef DEBUG
+	gPlayer->gold = 400;
+#endif
 	mixer_play_music(GAME_MUSIC0 + get_random(2));
 	resetGame();
 	skillbar_reset(gSkillBar);
@@ -636,7 +639,7 @@ resetGame(void)
 		mode = ARCADE;
 
 	info("Building new map");
-	gMap = map_lua_generator_run(cLevel, mode, gRenderer);
+	gMap = map_lua_generator_run(cLevel, mode, gPlayer, gRenderer);
 
 	gPlayer->sprite->pos = (Position) {
 		TILE_DIMENSION, TILE_DIMENSION };

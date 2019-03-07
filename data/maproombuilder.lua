@@ -345,6 +345,14 @@ local function add_level_exit(room)
 	end
 end
 
+local function build_shop_room(room, roomx, roomy)
+	add_tiles_to_room(room, false)
+	add_walls_to_room(room)
+	add_exits_to_room(room)
+	layoutparser.add_shop_layout(room, roomx, roomy)
+	return room
+end
+
 local function build_normal_room(room)
 	local crumbling = (CURRENT_LEVEL > 3 or QUICK_MODE) and random(8) == 1
 
@@ -429,9 +437,11 @@ function module.create_empty_room()
 	return room
 end
 
-function module.build_room(room)
+function module.build_room(room, roomx, roomy)
 	if room.type == "coridoor" then
 		build_coridoor_room(room)
+	elseif room.type == "shop" then
+		build_shop_room(room, roomx, roomy)
 	else
 		build_normal_room(room)
 	end

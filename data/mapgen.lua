@@ -49,9 +49,11 @@ local function generate_path ()
 	local direction = 0
 	local lastDirection = 0
 	local coridoor_count = 0
+	local shopLevel = CURRENT_LEVEL % 4 == 0
 	local bossLevel = CURRENT_LEVEL % 5 == 0
 	if QUICK_MODE then
 		bossLevel = CURRENT_LEVEL % 3 == 0
+		shopLevel = CURRENT_LEVEL % 2 == 0
 	end
 	local coverage = 8 + CURRENT_LEVEL
 	if bossLevel or CURRENT_LEVEL == 1 then
@@ -59,6 +61,11 @@ local function generate_path ()
 	end
 	if ARCADE_MODE then
 		coverage = 40
+		shopLevel = true
+	end
+
+	if shopLevel then
+		coverage = coverage + 1
 	end
 
 	-- Create the first room
@@ -114,17 +121,24 @@ local function generate_path ()
 
 	local roomCount = 0
 	local bossAdded = false
+	local shopAdded = false
 
 	-- Build all the rooms
 	for i=1,10 do
 		for j=1,10 do
 			room = map_matrix[i][j]
 			if room then
+				if roomCount > 3 and shopLevel and not shopAdded then
+					room.type = "shop"
+					shopAdded = true
+				end
 				roomCount = roomCount + 1
-				room_builder.build_room(room)
-				monster_gen.add_monsters_to_room(room, i-1, j-1)
-				trap_gen.add_traps_to_room(room, i-1, j-1)
-				chest_gen.add_chests_to_room(room, i-1, j-1)
+				room_builder.build_room(room, i-1, j-1)
+				if room.type ~= "shop" then
+					monster_gen.add_monsters_to_room(room, i-1, j-1)
+					trap_gen.add_traps_to_room(room, i-1, j-1)
+					chest_gen.add_chests_to_room(room, i-1, j-1)
+				end
 				if roomCount > 3 and bossLevel and not bossAdded then
 					bossAdded = true
 					monster_gen.add_boss_to_room(room, i-1, j-1)

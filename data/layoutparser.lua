@@ -153,7 +153,7 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 	fences = {
 		topleft			= { t_fence, nil, 0, yo, true },
 		top				= { t_fence, nil, 16, yo, true },
-		single			= { t_fence, nil, 16, yo + 16, true },
+		single			= { t_fence, nil, 0, yo + 16, true },
 		topright		= { t_fence, nil, 32, yo, true },
 		left			= { t_fence, nil, 0, yo + 16, true },
 		bottomleft		= { t_fence, nil, 0, yo + 32, true },
@@ -167,7 +167,7 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 	}
 end
 
-function draw_layout_to_room(room, matrix)
+function draw_layout_to_room(room, matrix, roomx, roomy)
 	-- Chose a random layout
 	matrix = matrix[random(#matrix)]
 	for i=2,13 do
@@ -178,6 +178,8 @@ function draw_layout_to_room(room, matrix)
 				setBlockTile(room, matrix, i, j, walls, "#", false)
 			elseif matrix[i][j] == "f" then
 				setBlockTile(room, matrix, i, j, fences, "f", true)
+			elseif matrix[i][j] == "a" then
+				create_shop_artifact(map, (roomx*512) + i*32, (roomy * 384) + j*32)
 			end
 		end
 	end
@@ -198,6 +200,11 @@ function module.add_pits_to_room(room)
 	end
 
 	draw_layout_to_room(room, readLayoutFile("pitlayouts.dat"))
+	return true
+end
+
+function module.add_shop_layout(room, roomx, roomy)
+	draw_layout_to_room(room, readLayoutFile("shoplayouts.dat"), roomx, roomy)
 	return true
 end
 

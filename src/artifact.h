@@ -41,6 +41,7 @@ typedef struct ArtifactInfo {
 typedef struct Artifact {
 	Sprite *sprite;
 	Sprite *priceSprite;
+	Sprite *levelSprite;
 	MagicalEffect effect;
 	ArtifactInfo info;
 	bool collected;
@@ -55,7 +56,7 @@ Artifact *
 artifact_create_random(Player*, Uint8 level);
 
 void
-artifact_add_price(Artifact*, unsigned int price, SDL_Renderer *renderer);
+artifact_add_price(Artifact*, unsigned int price);
 
 Artifact *
 artifact_create(MagicalEffect);

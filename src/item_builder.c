@@ -101,27 +101,6 @@ create_item(const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item
 	return item;
 }
 
-static Item *
-create_priced_item(double price,
-		   const char *path0,
-		   const char *path1,
-		   SDL_Rect clip,
-		   void (*cb)(Item *, Player*))
-{
-	Item *item = create_item(path0, path1, clip, cb);
-	item->price = price;
-
-	Sprite *priceSprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf",
-							     8,
-							     C_YELLOW,
-							     C_BLACK,
-							     "$%.0f",
-							     price);
-	linkedlist_append(&item->subsprites, priceSprite);
-
-	return item;
-}
-
 static void
 pickup_gold(Item *item, Player *player)
 {

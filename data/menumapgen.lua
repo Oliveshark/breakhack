@@ -9,7 +9,7 @@ room_builder.load_textures(map)
 
 set_current_room(map, 0, 0)
 local room = room_builder.create_empty_room()
-room_builder.build_room(room)
+room_builder.build_room(room, 0, 0)
 room_builder.add_full_lighting(room)
 monster_gen.add_monsters_to_room(room, 0, 0)
 trap_gen.add_traps_to_room(room, 0, 0)

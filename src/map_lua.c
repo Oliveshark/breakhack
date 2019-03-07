@@ -37,6 +37,7 @@
 #include "item_builder.h"
 #include "random.h"
 #include "bh_random.h"
+#include "artifact.h"
 
 static
 lua_State* load_lua_state(void)
@@ -92,6 +93,18 @@ SDL_Renderer* luaL_checksdlrenderer(lua_State *L)
 		fatal("in luaL_checksdlrenderer(), bad SDL_Renderer pointer");
 
 	return renderer;
+}
+
+static Player*
+luaL_checkplayer(lua_State *L)
+{
+	Player *player;
+	lua_getglobal(L, "_game_player");
+	if (!lua_islightuserdata(L, -1))
+		fatal("in luaL_checkplayer(), pointer lost in lua script");
+
+	player = lua_touserdata(L, -1);
+	return player;
 }
 
 static int
@@ -492,8 +505,29 @@ l_get_random(lua_State *L)
 	return 1;
 }
 
+static int
+l_create_shop_artifact(lua_State *L)
+{
+	Player *player = luaL_checkplayer(L);
+
+	if (player == NULL)
+		return 0;
+
+	Map *map = luaL_checkmap(L, 1);
+	int x = (int) luaL_checkinteger(L, 2);
+	int y = (int) luaL_checkinteger(L, 3);
+
+	Artifact *a = artifact_create_random(player, 2);
+	a->sprite->pos = POS(x, y);
+	artifact_add_price(a, map->level * 50);
+
+	linkedlist_append(&map->artifacts, a);
+
+	return 0;
+}
+
 static Map*
-generate_map(unsigned int level, const char *file, GameMode gameMode, SDL_Renderer *renderer)
+generate_map(unsigned int level, const char *file, GameMode gameMode, Player *player, SDL_Renderer *renderer)
 {
 	int status, result;
 
@@ -514,6 +548,12 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, SDL_Render
 	// Present stuff to lua
 	lua_pushlightuserdata(L, renderer);
 	lua_setglobal(L, "_sdl_renderer");
+
+	lua_pushlightuserdata(L, player);
+	lua_setglobal(L, "_game_player");
+
+	lua_pushcfunction(L, l_create_shop_artifact);
+	lua_setglobal(L, "create_shop_artifact");
 
 	lua_pushcfunction(L, l_create_map);
 	lua_setglobal(L, "create_map");
@@ -594,13 +634,13 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, SDL_Render
 Map* map_lua_generator_single_room__run(unsigned int level, SDL_Renderer *renderer)
 {
 	char file[] = "menumapgen.lua";
-	return generate_map(level, file, REGULAR, renderer);
+	return generate_map(level, file, REGULAR, NULL, renderer);
 }
 
-Map* map_lua_generator_run(unsigned int level, GameMode gameMode, SDL_Renderer *renderer)
+Map* map_lua_generator_run(unsigned int level, GameMode gameMode, Player *player, SDL_Renderer *renderer)
 {
 	char file[] = "mapgen.lua";
-	return generate_map(level, file, gameMode, renderer);
+	return generate_map(level, file, gameMode, player, renderer);
 }
 
 
