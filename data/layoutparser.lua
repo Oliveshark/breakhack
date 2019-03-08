@@ -189,9 +189,37 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 	}
 end
 
+function createJumbleLayout(matrix)
+	local room1 = matrix[random(#matrix)]
+	local room2 = matrix[random(#matrix)]
+	local room3 = matrix[random(#matrix)]
+	local room4 = matrix[random(#matrix)]
+
+	local room = {}
+	for i=0,15 do
+		for j=0,12 do
+			if not room[i] then room[i] = {} end
+			if not room[i][j] then room[i][j] = {} end
+			if i < 7 then
+				if j < 6 then
+					room[i][j] = room1[i][j]
+				else
+					room[i][j] = room2[i][j]
+				end
+			else
+				if j < 6 then
+					room[i][j] = room3[i][j]
+				else
+					room[i][j] = room4[i][j]
+				end
+			end
+		end
+	end
+
+	return room
+end
+
 function draw_layout_to_room(room, matrix, roomx, roomy)
-	-- Chose a random layout
-	matrix = matrix[random(#matrix)]
 	for i=2,13 do
 		for j=2,10 do
 			if matrix[i][j] == "p" then
@@ -219,12 +247,21 @@ function draw_layout_to_room(room, matrix, roomx, roomy)
 	end
 end
 
+function pickARoom(matrix)
+	-- Chose a random layout
+	if random(2) == 1 then
+		matrix = matrix[random(#matrix)]
+	else
+		matrix = createJumbleLayout(matrix)
+	end
+end
+
 function module.add_walls_to_room(room)
 	if random(4) ~= 1 then
 		return false
 	end
 
-	draw_layout_to_room(room, readLayoutFile("walllayouts.dat"))
+	draw_layout_to_room(room, pickARoom(readLayoutFile("walllayouts.dat")))
 	return true
 end
 
@@ -233,12 +270,13 @@ function module.add_pits_to_room(room)
 		return false
 	end
 
-	draw_layout_to_room(room, readLayoutFile("pitlayouts.dat"))
+	draw_layout_to_room(room, pickARoom(readLayoutFile("pitlayouts.dat")))
 	return true
 end
 
 function module.add_shop_layout(room, roomx, roomy)
-	draw_layout_to_room(room, readLayoutFile("shoplayouts.dat"), roomx, roomy)
+	local matrix = readLayoutFile("shoplayouts.dat")
+	draw_layout_to_room(room, matrix[random(#matrix)], roomx, roomy)
 	return true
 end
 
