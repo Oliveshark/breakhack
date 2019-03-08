@@ -3,7 +3,7 @@ local pits = {}
 local walls = {}
 local fences = {}
 local lights = {}
-local decor = {}
+local walldecor = {}
 
 local function readLayoutFile(file)
 	local layoutfile = read_file(file)
@@ -58,40 +58,58 @@ local function getTileStateFor(matrix, i, j, c)
 	return above, below, left, right, above_left, above_right, below_left, below_right
 end
 
-local function setBlockTile(room, matrix, i, j, tiles, char, decorTiles)
+local function getRandomWallDecorFrom(wallDecorations)
+	return wallDecorations[random(#wallDecorations)]
+end
+
+local function setBlockTile(room, matrix, i, j, tiles, char, decor)
 	local above, below, left, right, above_left, above_right, below_left, below_right = getTileStateFor(matrix, i, j, char);
 
 	room.decor[i][j] = nil
 	local tile = nil
+	local decorTile = nil
 	if above and below and left and right then
 		tile = tiles.cross
 	elseif not above and below and left and right then
 		tile = tiles.top_t
 	elseif not below and above and left and right then
 		tile = tiles.bottom_t
+		decorTile = getRandomWallDecorFrom(walldecor.bottom_t)
 	elseif not left and above and below and right then
 		tile = tiles.left_t
+		decorTile = getRandomWallDecorFrom(walldecor.left_t)
 	elseif not right and above and below and left then
 		tile = tiles.right_t
+		decorTile = getRandomWallDecorFrom(walldecor.right_t)
 	elseif not above and not left and right and below then
 		tile = tiles.topleft
+		decorTile = getRandomWallDecorFrom(walldecor.topleft)
 	elseif not above and not right and left and below then
 		tile = tiles.topright
+		decorTile = getRandomWallDecorFrom(walldecor.topright)
 	elseif not below and not left and above and right then
 		tile = tiles.bottomleft
+		decorTile = getRandomWallDecorFrom(walldecor.bottomleft)
 	elseif not below and not right and above and left then
 		tile = tiles.bottomright
+		decorTile = getRandomWallDecorFrom(walldecor.bottomright)
 	elseif not left and not right and below then
 		tile = tiles.left
+		decorTile = getRandomWallDecorFrom(walldecor.left)
 	elseif not above and not below and (left or right) then
 		tile = tiles.top
+		decorTile = getRandomWallDecorFrom(walldecor.top)
 	else
 		tile = tiles.single
+		decorTile = getRandomWallDecorFrom(walldecor.single)
 	end
-	if decorTiles then
+	if decor then
 		room.decor[i][j] = tile
 	else
 		room.tiles[i][j] = tile
+		if random(8) == 1 then
+			room.decor[i][j] = decorTile
+		end
 	end
 end
 
@@ -188,22 +206,63 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 		candle1 = { t_decor0, t_decor1,  1 * 16, 8 * 16, true, true },
 		candle2 = { t_decor0, t_decor1,  5 * 16, 8 * 16, true, false },
 	}
-
-	decor = {
-		-- Webs
-		{ t_decor0, nil,  0 * 16, 19 * 16, false },
-		{ t_decor0, nil,  1 * 16, 19 * 16, false },
-		{ t_decor0, nil,  2 * 16, 19 * 16, false },
-		{ t_decor0, nil,  3 * 16, 19 * 16, false },
-		{ t_decor0, nil,  4 * 16, 19 * 16, false },
-
-		-- Cracks
-		{ t_decor0, nil,  0 * 16, 2 * 16, false },
-		{ t_decor0, nil,  1 * 16, 2 * 16, false },
-
-		-- Vines
-		{ t_decor0, nil,  4 * 16, 2 * 16, false },
-		{ t_decor0, nil,  5 * 16, 2 * 16, false },
+	walldecor = {
+		topleft	= {
+			{ t_decor0, nil,  2 * 16, 2 * 16, false },
+			{ t_decor0, nil,  6 * 16, 2 * 16, false },
+			{ t_decor0, nil,  7 * 16, 2 * 16, false },
+		},
+		top	= {
+			{ t_decor0, nil,  0 * 16, 2 * 16, false },
+			{ t_decor0, nil,  1 * 16, 2 * 16, false },
+			{ t_decor0, nil,  4 * 16, 2 * 16, false },
+			{ t_decor0, nil,  5 * 16, 2 * 16, false },
+		},
+		single = {
+			{ t_decor0, nil,  0 * 16, 2 * 16, false },
+			{ t_decor0, nil,  1 * 16, 2 * 16, false },
+			{ t_decor0, nil,  4 * 16, 2 * 16, false },
+			{ t_decor0, nil,  5 * 16, 2 * 16, false },
+		},
+		topright = {
+			{ t_decor0, nil,  3 * 16, 2 * 16, false },
+		},
+		left = {
+			{ t_decor0, nil,  2 * 16, 2 * 16, false },
+			{ t_decor0, nil,  3 * 16, 2 * 16, false },
+			{ t_decor0, nil,  6 * 16, 2 * 16, false },
+			{ t_decor0, nil,  7 * 16, 2 * 16, false },
+		},
+		bottomleft = {
+			{ t_decor0, nil,  0 * 16, 2 * 16, false },
+			{ t_decor0, nil,  1 * 16, 2 * 16, false },
+			{ t_decor0, nil,  2 * 16, 2 * 16, false },
+			{ t_decor0, nil,  4 * 16, 2 * 16, false },
+			{ t_decor0, nil,  5 * 16, 2 * 16, false },
+			{ t_decor0, nil,  6 * 16, 2 * 16, false },
+			{ t_decor0, nil,  7 * 16, 2 * 16, false },
+		},
+		bottomright = {
+			{ t_decor0, nil,  0 * 16, 2 * 16, false },
+			{ t_decor0, nil,  1 * 16, 2 * 16, false },
+			{ t_decor0, nil,  3 * 16, 2 * 16, false },
+			{ t_decor0, nil,  4 * 16, 2 * 16, false },
+			{ t_decor0, nil,  5 * 16, 2 * 16, false },
+		},
+		left_t = {
+			{ t_decor0, nil,  2 * 16, 2 * 16, false },
+			{ t_decor0, nil,  6 * 16, 2 * 16, false },
+			{ t_decor0, nil,  7 * 16, 2 * 16, false },
+		},
+		right_t = {
+			{ t_decor0, nil,  3 * 16, 2 * 16, false },
+		},
+		bottom_t = {
+			{ t_decor0, nil,  0 * 16, 2 * 16, false },
+			{ t_decor0, nil,  1 * 16, 2 * 16, false },
+			{ t_decor0, nil,  4 * 16, 2 * 16, false },
+			{ t_decor0, nil,  5 * 16, 2 * 16, false },
+		},
 	}
 end
 
@@ -244,9 +303,6 @@ function draw_layout_to_room(room, matrix, roomx, roomy)
 				setPitTile(room, matrix, i, j);
 			elseif matrix[i][j] == "#" then
 				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
-				if (random(4) == 1) then
-					room.decor[i][j] = decor[random(#decor)]
-				end
 			elseif matrix[i][j] == "\"" then
 				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
 				room.decor[i][j] = lights.candle1
@@ -268,7 +324,7 @@ function draw_layout_to_room(room, matrix, roomx, roomy)
 	end
 end
 
-function pickARoom(matrix)
+function pickALayout(matrix)
 	-- Chose a random layout
 	if random(2) == 1 then
 		return matrix[random(#matrix)]
@@ -282,7 +338,7 @@ function module.add_walls_to_room(room)
 		return false
 	end
 
-	draw_layout_to_room(room, pickARoom(readLayoutFile("walllayouts.dat")))
+	draw_layout_to_room(room, pickALayout(readLayoutFile("walllayouts.dat")))
 	return true
 end
 
@@ -291,7 +347,7 @@ function module.add_pits_to_room(room)
 		return false
 	end
 
-	draw_layout_to_room(room, pickARoom(readLayoutFile("pitlayouts.dat")))
+	draw_layout_to_room(room, pickALayout(readLayoutFile("pitlayouts.dat")))
 	return true
 end
 
