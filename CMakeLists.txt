@@ -68,15 +68,17 @@ endif()
 
 IF ( MSVC )
     MESSAGE ( STATUS "Setting MSVC MT switches")
-    SET (
-      CMAKE_C_FLAGS_DEBUG
-      "${CMAKE_C_FLAGS_DEBUG} /MTd"
-        CACHE STRING "MSVC MT flags " FORCE
+		string (REPLACE
+			"/MDd"
+			"/MTd"
+			CMAKE_C_FLAGS_DEBUG
+			${CMAKE_C_FLAGS_DEBUG}
     )
-    SET (
-      CMAKE_C_FLAGS_RELEASE
-      "${CMAKE_C_FLAGS_RELEASE} /MT"
-        CACHE STRING "MSVC MT flags " FORCE
+		string (REPLACE
+			"/MDd"
+			"/MTd"
+			CMAKE_C_FLAGS_RELEASE
+			${CMAKE_C_FLAGS_RELEASE}
     )
 ELSEIF ( WIN32 )
     SET (
@@ -320,16 +322,12 @@ if (NOT DEBUG_BUILD)
 			"monstergen.lua"
 			"trapgen.lua"
 			"chestgen.lua"
+			"layoutparser.lua"
 			"pitlayouts.dat"
+			"walllayouts.dat"
+			"shoplayouts.dat"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
 		)
-	if (WIN32 AND NOT MSVC)
-		add_definitions(-mwindows)
-	endif()
-else()
-	if (WIN32)
-		add_definitions(-mconsole)
-	endif()
 endif ()
 
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT "Release")

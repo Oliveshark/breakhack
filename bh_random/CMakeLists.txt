@@ -13,15 +13,17 @@ add_library(bh_random STATIC
 
 IF ( MSVC )
     MESSAGE ( STATUS "Setting MSVC MT switches")
-    SET (
-      CMAKE_CXX_FLAGS_DEBUG
-        "${CMAKE_CXX_FLAGS_DEBUG} /MTd"
-        CACHE STRING "MSVC MT flags " FORCE
+		string (REPLACE
+			"/MDd"
+			"/MTd"
+			CMAKE_C_FLAGS_DEBUG
+			${CMAKE_C_FLAGS_DEBUG}
     )
-    SET (
-      CMAKE_CXX_FLAGS_RELEASE
-        "${CMAKE_CXX_FLAGS_RELEASE} /MT"
-        CACHE STRING "MSVC MT flags " FORCE
+		string (REPLACE
+			"/MDd"
+			"/MTd"
+			CMAKE_C_FLAGS_RELEASE
+			${CMAKE_C_FLAGS_RELEASE}
     )
 endif ()
 

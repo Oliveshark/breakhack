@@ -3,6 +3,7 @@ local pits = {}
 local walls = {}
 local fences = {}
 local lights = {}
+local decor = {}
 
 local function readLayoutFile(file)
 	local layoutfile = read_file(file)
@@ -187,6 +188,23 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 		candle1 = { t_decor0, t_decor1,  1 * 16, 8 * 16, true, true },
 		candle2 = { t_decor0, t_decor1,  5 * 16, 8 * 16, true, false },
 	}
+
+	decor = {
+		-- Webs
+		{ t_decor0, nil,  0 * 16, 19 * 16, false },
+		{ t_decor0, nil,  1 * 16, 19 * 16, false },
+		{ t_decor0, nil,  2 * 16, 19 * 16, false },
+		{ t_decor0, nil,  3 * 16, 19 * 16, false },
+		{ t_decor0, nil,  4 * 16, 19 * 16, false },
+
+		-- Cracks
+		{ t_decor0, nil,  0 * 16, 2 * 16, false },
+		{ t_decor0, nil,  1 * 16, 2 * 16, false },
+
+		-- Vines
+		{ t_decor0, nil,  4 * 16, 2 * 16, false },
+		{ t_decor0, nil,  5 * 16, 2 * 16, false },
+	}
 end
 
 function createJumbleLayout(matrix)
@@ -226,6 +244,9 @@ function draw_layout_to_room(room, matrix, roomx, roomy)
 				setPitTile(room, matrix, i, j);
 			elseif matrix[i][j] == "#" then
 				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
+				if (random(4) == 1) then
+					room.decor[i][j] = decor[random(#decor)]
+				end
 			elseif matrix[i][j] == "\"" then
 				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
 				room.decor[i][j] = lights.candle1

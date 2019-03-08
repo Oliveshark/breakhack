@@ -54,11 +54,11 @@ local function load_decor_textures()
 	table.insert(floorDecor, { td0, td1,     48, 13 * 16, false, false })
 
 	-- Webs
-	table.insert(floorDecor, { td0, td1,  0 * 16, 19 * 16, false })
-	table.insert(floorDecor, { td0, td1,  1 * 16, 19 * 16, false })
-	table.insert(floorDecor, { td0, td1,  2 * 16, 19 * 16, false })
-	table.insert(floorDecor, { td0, td1,  3 * 16, 19 * 16, false })
-	table.insert(floorDecor, { td0, td1,  4 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { td0, td1,  0 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { td0, td1,  1 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { td0, td1,  2 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { td0, td1,  3 * 16, 19 * 16, false })
+	--table.insert(floorDecor, { td0, td1,  4 * 16, 19 * 16, false })
 
 	-- Urns
 	table.insert(floorDecor, { td0, td1, 6 * 16,      48, false, false })

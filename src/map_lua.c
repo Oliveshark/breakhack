@@ -375,7 +375,6 @@ l_add_chest(lua_State *L)
 static int
 l_add_monster(lua_State *L)
 {
-	Player *player = luaL_checkplayer(L);
 	Monster *monster;
 	Map *map;
 	int x, y, clip_x, clip_y, behaviour;
@@ -419,10 +418,6 @@ l_add_monster(lua_State *L)
 	lua_pop(L, 8);
 
 	// Make sure traders stay hostile if you've killed one
-	if (strcmp(label, "The Trader") == 0 && player->stateData.shopOwnerKiller) {
-		behaviour = HOSTILE;
-	}
-
 	monster = monster_create();
 	monster->sprite->clip = (SDL_Rect) { clip_x, clip_y, 16, 16 };
 	monster_update_pos(monster, (Position) { x, y });
@@ -532,6 +527,17 @@ l_create_shop_artifact(lua_State *L)
 	return 0;
 }
 
+static void
+build_player_state_table(lua_State *L, Player *player)
+{
+	lua_createtable(L, 0, 1);
+	lua_pushboolean(L, player ? player->stateData.shopOwnerKiller : false);
+	lua_setfield(L, -2, "shopOwnerKiller");
+	lua_pushnumber(L, player ? player->stats.lvl : 1);
+	lua_setfield(L, -2, "level");
+	lua_setglobal(L, "PlayerData");
+}
+
 static Map*
 generate_map(unsigned int level, const char *file, GameMode gameMode, Player *player, SDL_Renderer *renderer)
 {
@@ -552,6 +558,8 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, Player *pl
 	}
 
 	// Present stuff to lua
+	build_player_state_table(L, player);
+
 	lua_pushlightuserdata(L, renderer);
 	lua_setglobal(L, "_sdl_renderer");
 

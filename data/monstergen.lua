@@ -278,6 +278,11 @@ for i=1,#eastereggs do
 	eastereggs[i] = concat({ texturePaths.player0, texturePaths.player1 }, eastereggs[i])
 end
 
+local shopkeeperBehaviour = behaviour.passive
+if PlayerData.shopOwnerKiller then
+	shopkeeperBehaviour = behaviour.hostile
+end
+
 local shopkeeper = {
 	texturePaths.humanoid0,
 	texturePaths.humanoid1,
@@ -285,7 +290,17 @@ local shopkeeper = {
 	16,
 	12*16,
 	"The Trader",
-	behaviour.passive
+	shopkeeperBehaviour
+}
+
+local bodyguard = {
+	texturePaths.humanoid0,
+	texturePaths.humanoid1,
+	stats.orc,
+	32,
+	12*16,
+	"A Bodyguard",
+	behaviour.hostile
 }
 
 -- Add Platino
@@ -414,6 +429,24 @@ function module.add_shopkeeper_to_room(room, roomx, roomy)
 				x,
 				y,
 				shopkeeper
+			}
+			success = true
+		end
+	end
+end
+
+function module.add_bodyguard_to_room(room, roomx, roomy)
+	local success = false
+	while not success do
+		local rx = random(13) + 1
+		local ry = random(9) + 1
+		if room_builder.is_tile_avilable(room, rx, ry) then
+			local x = (roomx * 512) + rx * 32
+			local y = (roomy * 384) + ry * 32
+			room.monsters[rx][ry] = {
+				x,
+				y,
+				bodyguard
 			}
 			success = true
 		end
