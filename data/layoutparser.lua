@@ -250,14 +250,14 @@ end
 function pickARoom(matrix)
 	-- Chose a random layout
 	if random(2) == 1 then
-		matrix = matrix[random(#matrix)]
+		return matrix[random(#matrix)]
 	else
-		matrix = createJumbleLayout(matrix)
+		return createJumbleLayout(matrix)
 	end
 end
 
 function module.add_walls_to_room(room)
-	if random(4) ~= 1 then
+	if random(3) ~= 1 then
 		return false
 	end
 
