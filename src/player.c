@@ -607,6 +607,9 @@ player_monster_kill_check(Player *player, Monster *monster)
 		else if (strcmp("Ti, the Mage", monster->label) == 0)
 			steam_set_achievement(BUGGCREATOR);
 #endif // STEAM_BUILD
+		if (strcmp("The Trader", monster->label) == 0) {
+			player->stateData.shopOwnerKiller = true;
+		}
 	}
 }
 

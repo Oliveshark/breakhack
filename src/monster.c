@@ -690,6 +690,12 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		linkedlist_append(&map->items, treasure);
 	}
 
+	if (strcmp(monster->label, "The Trader") == 0) {
+		Item *treasure = item_builder_build_treasure(PLATINUM, 25 * monster->stats.lvl);
+		treasure->sprite->pos = monsterTilePos;
+		linkedlist_append(&map->items, treasure);
+	}
+
 	if (monster->stats.lvl > 2 && get_random(29) == 0) {
 		Artifact *a = artifact_create_random(player, 1);
 		a->sprite->pos = monsterTilePos;

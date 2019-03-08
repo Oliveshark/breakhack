@@ -32,6 +32,7 @@ local wall = {
 local special = { level_exit = nil }
 
 local floorDecor = { }
+local blockingFloorDecor = { }
 local lightDecor = { }
 
 local function load_decor_textures()
@@ -41,9 +42,9 @@ local function load_decor_textures()
 	-- Skulls
 	table.insert(floorDecor, { td0, td1,      0, 12 * 16, false, false })
 	table.insert(floorDecor, { td0, td1,     32, 12 * 16, false, false })
-	table.insert(floorDecor, { td0, td1,     64, 12 * 16, false, true })
 	table.insert(floorDecor, { td0, td1,      0, 13 * 16, false, false })
 	table.insert(floorDecor, { td0, td1,     32, 13 * 16, false, false })
+	table.insert(floorDecor, { td0, td1,     64, 12 * 16, false, true })
 	table.insert(floorDecor, { td0, td1,     64, 13 * 16, false, true })
 
 	-- Bones
@@ -52,52 +53,54 @@ local function load_decor_textures()
 	table.insert(floorDecor, { td0, td1,     16, 13 * 16, false, false })
 	table.insert(floorDecor, { td0, td1,     48, 13 * 16, false, false })
 
+	-- Webs
+	table.insert(floorDecor, { td0, td1,  0 * 16, 19 * 16, false })
+	table.insert(floorDecor, { td0, td1,  1 * 16, 19 * 16, false })
+	table.insert(floorDecor, { td0, td1,  2 * 16, 19 * 16, false })
+	table.insert(floorDecor, { td0, td1,  3 * 16, 19 * 16, false })
+	table.insert(floorDecor, { td0, td1,  4 * 16, 19 * 16, false })
+
 	-- Urns
-	--table.insert(floorDecor, { td0, td1, 0 * 16,      48, true, false })
-	--table.insert(floorDecor, { td0, td1, 1 * 16,      48, true, false })
-	--table.insert(floorDecor, { td0, td1, 2 * 16,      48, true, false })
-	--table.insert(floorDecor, { td0, td1, 3 * 16,      48, true, false })
-	--table.insert(floorDecor, { td0, td1, 4 * 16,      48, true, false })
-	--table.insert(floorDecor, { td0, td1, 5 * 16,      48, true, false })
-	--table.insert(floorDecor, { td0, td1, 6 * 16,      48, false, false })
-	--table.insert(floorDecor, { td0, td1, 7 * 16,      48, false, false })
+	table.insert(floorDecor, { td0, td1, 6 * 16,      48, false, false })
+	table.insert(floorDecor, { td0, td1, 7 * 16,      48, false, false })
+
+	-- Urns
+	--table.insert(blockingFloorDecor, { td0, td1, 0 * 16,      48, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 1 * 16,      48, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 2 * 16,      48, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 3 * 16,      48, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 4 * 16,      48, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 5 * 16,      48, true, false })
 
 	-- Racks
-	--table.insert(floorDecor, { td0, td1, 0 * 16, 11 * 16, true, false })
-	--table.insert(floorDecor, { td0, td1, 1 * 16, 11 * 16, true, false })
-	--table.insert(floorDecor, { td0, td1, 2 * 16, 11 * 16, true, false })
-	--table.insert(floorDecor, { td0, td1, 3 * 16, 11 * 16, true, false })
-	--table.insert(floorDecor, { td0, td1, 4 * 16, 11 * 16, true, false })
-	--table.insert(floorDecor, { td0, td1, 5 * 16, 11 * 16, true, false })
-	--table.insert(floorDecor, { td0, td1, 6 * 16, 11 * 16, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 0 * 16, 11 * 16, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 1 * 16, 11 * 16, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 2 * 16, 11 * 16, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 3 * 16, 11 * 16, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 4 * 16, 11 * 16, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 5 * 16, 11 * 16, true, false })
+	--table.insert(blockingFloorDecor, { td0, td1, 6 * 16, 11 * 16, true, false })
 
 	-- Headstones
-	table.insert(floorDecor, { td0, td1, 0 * 16, 17 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 1 * 16, 17 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 2 * 16, 17 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 3 * 16, 17 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 4 * 16, 17 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 0 * 16, 18 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 1 * 16, 18 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 2 * 16, 18 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 3 * 16, 18 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 4 * 16, 18 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 0 * 16, 17 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 1 * 16, 17 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 2 * 16, 17 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 3 * 16, 17 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 4 * 16, 17 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 0 * 16, 18 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 1 * 16, 18 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 2 * 16, 18 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 3 * 16, 18 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 4 * 16, 18 * 16, true, false })
 
 	-- Altars
-	table.insert(floorDecor, { td0, td1, 0 * 16, 20 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 1 * 16, 20 * 16, true, false })
-	table.insert(floorDecor, { td0, td1, 2 * 16, 20 * 16, true, false })
-
-	-- Webs
-	--table.insert(floorDecor, { td0, td1,  0 * 16, 19 * 16, false })
-	--table.insert(floorDecor, { td0, td1,  1 * 16, 19 * 16, false })
-	--table.insert(floorDecor, { td0, td1,  2 * 16, 19 * 16, false })
-	--table.insert(floorDecor, { td0, td1,  3 * 16, 19 * 16, false })
-	--table.insert(floorDecor, { td0, td1,  4 * 16, 19 * 16, false })
+	table.insert(blockingFloorDecor, { td0, td1, 0 * 16, 20 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 1 * 16, 20 * 16, true, false })
+	table.insert(blockingFloorDecor, { td0, td1, 2 * 16, 20 * 16, true, false })
 
 	-- Statues
-	--table.insert(floorDecor, { td0, td1,  3 * 16, 20 * 16, true })
-	--table.insert(floorDecor, { td0, td1,  4 * 16, 20 * 16, true })
+	--table.insert(blockingFloorDecor, { td0, td1,  3 * 16, 20 * 16, true })
+	--table.insert(blockingFloorDecor, { td0, td1,  4 * 16, 20 * 16, true })
 
 	lightDecor.candle0 = { td0, td1,  0, 8 * 16, false, true }
 	lightDecor.candle1 = { td0, td1, 16, 8 * 16, false, true }
@@ -122,27 +125,63 @@ local function repack(data)
 	}
 end
 
-local function add_random_decor_to_room(room)
+local function room_tile_available(room, rx, ry)
+	return not room.chests[rx][ry]
+		and not room.traps[rx][ry]
+		and not room.monsters[rx][ry]
+		and not room.decor[rx][ry]
+		and (room.tiles[rx][ry]
+			and not room.tiles[rx][ry][5]
+			and not room.tiles[rx][ry][7]
+			and not room.tiles[rx][ry][8])
+end
+
+
+local function add_random_decor_to_room(room, blockingDecor)
 	local decor_count = random(8)
+	if blockingDecor then
+		decor_count = random(4)
+	end
 	for i=1,decor_count do
-		x = random(11) + 1
-		y = random(8) + 1
-		if not room.decor[x][y] then
-			room.decor[x][y] = floorDecor[random(#floorDecor)]
+		local success = false
+		while not success do
+			x = random(11) + 1
+			y = random(8) + 1
+			if room_tile_available(room, x, y) then
+				room.decor[x][y] = floorDecor[random(#floorDecor)]
+				success = true
+			end
 		end
 	end
 
-	if random(2) == 1 then
-		room.decor[4][3] = lightDecor.candle2
+	if blockingDecor then
+		decor_count = random(4)
+		for i=1,decor_count do
+			local success = false
+			while not success do
+				x = random(11) + 1
+				y = random(8) + 1
+				if room_tile_available(room, x, y) then
+					room.decor[x][y] = blockingFloorDecor[random(#blockingFloorDecor)]
+					success = true
+				end
+			end
+		end
 	end
-	if random(2) == 1 then
-		room.decor[11][3] = lightDecor.candle2
-	end
-	if random(2) == 1 then
-		room.decor[4][9] = lightDecor.candle2
-	end
-	if random(2) == 1 then
-		room.decor[11][9] = lightDecor.candle2
+
+	if blockingDecor then
+		if random(2) == 1 and room_tile_available(room, 4, 3) then
+			room.decor[4][3] = lightDecor.candle2
+		end
+		if random(2) == 1 and room_tile_available(room, 11, 3) then
+			room.decor[11][3] = lightDecor.candle2
+		end
+		if random(2) == 1 and room_tile_available(room, 4, 9) then
+			room.decor[4][9] = lightDecor.candle2
+		end
+		if random(2) == 1 and room_tile_available(room, 11, 9) then
+			room.decor[11][9] = lightDecor.candle2
+		end
 	end
 end
 
@@ -322,19 +361,8 @@ local function build_coridoor_room(room)
 	build_center_corner_walls(room, exits)
 end
 
-local function room_tile_available(room, rx, ry)
-	return not room.chests[rx][ry]
-		and not room.traps[rx][ry]
-		and not room.monsters[rx][ry]
-		and not room.decor[rx][ry]
-		and (room.tiles[rx][ry]
-			and not room.tiles[rx][ry][5]
-			and not room.tiles[rx][ry][7]
-			and not room.tiles[rx][ry][8])
-end
-
 local function add_level_exit(room)
-	success = false
+	local success = false
 	while not success do
 		x = random(14)
 		y = random(10)
@@ -355,13 +383,21 @@ end
 
 local function build_normal_room(room)
 	local crumbling = (CURRENT_LEVEL > 3 or QUICK_MODE) and random(8) == 1
+	local pitsAdded = false;
+	local interiorWallsAdded = false
 
 	add_tiles_to_room(room, crumbling)
-	add_random_decor_to_room(room)
 	add_walls_to_room(room)
 	add_exits_to_room(room)
-	local pitsAdded = crumbling or layoutparser.add_pits_to_room(room)
-	layoutparser.add_walls_to_room(room)
+
+	if not crumbling then
+		pitsAdded = layoutparser.add_pits_to_room(room)
+	end
+	if not pitsAdded then
+		interiorWallsAdded = layoutparser.add_walls_to_room(room)
+	end
+
+	add_random_decor_to_room(room, not interiorWallsAdded)
 
 	if room.goal then
 		add_level_exit(room)
@@ -373,7 +409,7 @@ local function build_normal_room(room)
 	elseif (CURRENT_LEVEL > 3 or QUICK_MODE) and random(8) == 1 then
 		room.modifier.type = "FIRE"
 		room.modifier.arg = ""
-	elseif ((not pitsAdded and (CURRENT_LEVEL > 1 or QUICK_MODE)) or CURRENT_LEVEL > 3) and random(8) == 1 then
+	elseif ((not pitsAdded and not crumbling and (CURRENT_LEVEL > 1 or QUICK_MODE)) or CURRENT_LEVEL > 3) and random(8) == 1 then
 		directions = { "LEFT", "RIGHT", "UP", "DOWN" }
 		room.modifier.type = "WINDY"
 		room.modifier.arg = directions[random(#directions)]

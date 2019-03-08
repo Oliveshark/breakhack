@@ -109,29 +109,13 @@ pickup_gold(Item *item, Player *player)
 	gui_log("You pick up %s", &item->label);
 }
 
-static Item *
-create_treasure(int current_level)
+Item *
+item_builder_build_treasure(Treasure type, double goldAmt)
 {
-	double amt;
+	double amt = goldAmt;
 	char label[50] = "";
-	unsigned int highest_treasure;
-	unsigned int value;
-
-	amt = (unsigned int) 1 + get_random(5*current_level) % 40;
-	amt = amt == 0 ? 1 : amt;
-
-	if (current_level > 9) {
-		highest_treasure = PLATINUM;
-	} else if (current_level > 3) {
-		highest_treasure = GOLD;
-	} else {
-		highest_treasure = SILVER;
-	}
-
-	value = get_random(highest_treasure);
-
 	SDL_Rect clip = CLIP16(0, 0);
-	switch (value) {
+	switch (type) {
 		case COPPER:
 			m_sprintf(label, 50, "%.0f copper", amt);
 			amt /= 100;
@@ -164,6 +148,28 @@ create_treasure(int current_level)
 	m_strcpy(item->label, 50, label);
 	item->value = amt;
 	return item;
+}
+
+static Item *
+create_treasure(int current_level)
+{
+	double amt;
+	unsigned int highest_treasure;
+	unsigned int value;
+
+	amt = (unsigned int) 1 + get_random(5*current_level) % 40;
+	amt = amt == 0 ? 1 : amt;
+
+	if (current_level > 9) {
+		highest_treasure = PLATINUM;
+	} else if (current_level > 3) {
+		highest_treasure = GOLD;
+	} else {
+		highest_treasure = SILVER;
+	}
+
+	value = get_random(highest_treasure);
+	return item_builder_build_treasure((Treasure) value, amt);
 }
 
 Item *

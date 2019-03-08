@@ -108,7 +108,7 @@ local stats = {
 		speed = 1
 	},
 	shopkeeper = {
-		hp = 100,
+		hp = 200,
 		dmg = 10,
 		atk = 2,
 		def = 0,

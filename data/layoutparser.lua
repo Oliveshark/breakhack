@@ -184,7 +184,8 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 
 	lights = {
 		candle0 = { t_decor0, t_decor1,  3 * 16, 8 * 16, true, true },
-		candle1 = { t_decor0, t_decor1,  1 * 16, 8 * 16, true, true }
+		candle1 = { t_decor0, t_decor1,  1 * 16, 8 * 16, true, true },
+		candle2 = { t_decor0, t_decor1,  5 * 16, 8 * 16, true, false },
 	}
 end
 
@@ -196,10 +197,17 @@ function draw_layout_to_room(room, matrix, roomx, roomy)
 			if matrix[i][j] == "p" then
 				setPitTile(room, matrix, i, j);
 			elseif matrix[i][j] == "#" then
-				setBlockTile(room, matrix, i, j, walls, {"#", "\""}, false)
+				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
 			elseif matrix[i][j] == "\"" then
-				setBlockTile(room, matrix, i, j, walls, {"#", "\""}, false)
+				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
 				room.decor[i][j] = lights.candle1
+			elseif matrix[i][j] == "/" then
+				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
+				if random(2) == 1 then
+					room.decor[i][j] = lights.candle1
+				else
+					room.decor[i][j] = lights.candle2
+				end
 			elseif matrix[i][j] == "f" then
 				setBlockTile(room, matrix, i, j, fences, "f", true)
 			elseif matrix[i][j] == "a" then

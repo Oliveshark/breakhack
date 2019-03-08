@@ -375,6 +375,7 @@ l_add_chest(lua_State *L)
 static int
 l_add_monster(lua_State *L)
 {
+	Player *player = luaL_checkplayer(L);
 	Monster *monster;
 	Map *map;
 	int x, y, clip_x, clip_y, behaviour;
@@ -416,6 +417,11 @@ l_add_monster(lua_State *L)
 	label = strdup(tmp_label);
 
 	lua_pop(L, 8);
+
+	// Make sure traders stay hostile if you've killed one
+	if (strcmp(label, "The Trader") == 0 && player->stateData.shopOwnerKiller) {
+		behaviour = HOSTILE;
+	}
 
 	monster = monster_create();
 	monster->sprite->clip = (SDL_Rect) { clip_x, clip_y, 16, 16 };
