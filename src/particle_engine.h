@@ -38,6 +38,9 @@ void
 particle_engine_eldritch_explosion(Position, Dimension);
 
 void
+particle_engine_dust_puff(Position, Dimension);
+
+void
 particle_engine_speed_lines(Position, Dimension, bool horizontal);
 
 void

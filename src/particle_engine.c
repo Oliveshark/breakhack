@@ -189,6 +189,38 @@ particle_engine_eldritch_explosion(Position pos, Dimension dim)
 }
 
 void
+particle_engine_dust_puff(Position pos, Dimension dim)
+{
+	check_engine();
+	for (unsigned int i = 0; i < 50; ++i) {
+		int x, y, xv, yv, w, h;
+		unsigned int lt;
+		Particle *p;
+
+		x = get_random(dim.width) + pos.x;
+		y = get_random(dim.height) + pos.y;
+
+		xv = get_random(200) - 100;
+		yv = get_random(200) - 100;
+
+		lt = get_random(10) + 10;
+
+		w = get_random(3);
+		h = get_random(3);
+
+		p = create_rect_particle();
+		p->particle.rect.pos = (Position) { x, y };
+		p->particle.rect.dim = (Dimension) { w, h };
+		p->velocity = (Vector2d) { (float) xv, (float) yv };
+		p->movetime = lt;
+		p->lifetime = lt;
+		p->color = C_GREY;
+		p->blend_mode = SDL_BLENDMODE_BLEND;
+		linkedlist_append(&engine->game_particles, p);
+	}
+}
+
+void
 particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 {
 	static SDL_Color color = { 0, 0, 255, 200 };

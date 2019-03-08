@@ -418,6 +418,9 @@ void map_room_destroy(Room *room)
 void
 map_trigger_tile_fall(MapTile *tile)
 {
+	if (tile->sprite->state != SPRITE_STATE_FALLING && tile->sprite->state != SPRITE_STATE_PLUMMETED)
+		particle_engine_dust_puff(tile->sprite->pos, tile->sprite->dim);
+
 	tile->sprite->state = SPRITE_STATE_FALLING;
 	tile->lethal = true;
 }

@@ -525,7 +525,7 @@ l_create_shop_artifact(lua_State *L)
 
 	Artifact *a = artifact_create_random(player, 2);
 	a->sprite->pos = POS(x, y);
-	artifact_add_price(a, map->level * 50);
+	artifact_add_price(a, 100);
 
 	linkedlist_append(&map->artifacts, a);
 

@@ -70,6 +70,7 @@
 #define C_YELLOW (SDL_Color)	{	255, 255,   0, 255 }
 #define C_BLACK (SDL_Color)		{	  0,   0,   0, 255 }
 #define C_PURPLE (SDL_Color)	{	137,  16, 229, 255 }
+#define C_GREY (SDL_Color)		{	 89,  89,  89, 255 }
 
 // MSVC seems to have min/max defined.
 // Haven't looked into it further.
