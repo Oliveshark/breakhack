@@ -36,6 +36,7 @@
 #include "animation.h"
 #include "trap.h"
 #include "gamecontroller.h"
+#include "event.h"
 
 #ifdef STEAM_BUILD
 #include "steam/steamworks_api_wrapper.h"
@@ -610,6 +611,12 @@ player_monster_kill_check(Player *player, Monster *monster)
 		if (strcmp("The Trader", monster->label) == 0) {
 			player->stateData.shopOwnerKiller = true;
 		}
+
+		Event event;
+		event.type = MONSTER_KILLED_EVENT;
+		event.monsterKilled.monster = monster;
+		event.monsterKilled.player = player;
+		event_trigger(&event);
 	}
 }
 

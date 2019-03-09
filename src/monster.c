@@ -265,6 +265,7 @@ monster_create(void)
 	m->stateIndicator.shownOnPlayerRoomEnter = false;
 	m->state.forceCount = 0;
 	m->boss = false;
+	m->bloodlust = false;
 	monster_set_behaviour(m, NORMAL);
 
 	return m;
@@ -697,6 +698,12 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		linkedlist_append(&map->items, treasure);
 	}
 
+	if (strcmp(monster->label, "A Fairy") == 0) {
+		Item *treasure = item_builder_build_treasure(PLATINUM, 3 * monster->stats.lvl);
+		treasure->sprite->pos = monsterTilePos;
+		linkedlist_append(&map->items, treasure);
+	}
+
 	if (monster->stats.lvl > 2 && get_random(29) == 0) {
 		Artifact *a = artifact_create_random(player, 1);
 		a->sprite->pos = monsterTilePos;
@@ -747,6 +754,13 @@ monster_render(Monster *m, Camera *cam)
 {
 	if (m->stats.hp <= 0)
 		return;
+
+	if (m->bloodlust) {
+		Position pos = m->sprite->pos;
+		pos.x += 6;
+		pos.y += 6;
+		particle_engine_sparkle(pos, DIM(20, 20), C_RED, false);
+	}
 
 	sprite_render(m->sprite, cam);
 }
@@ -830,6 +844,35 @@ monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 
 	monster_update_pos(m, m->sprite->pos);
 	player_monster_kill_check(p, m);
+}
+
+void
+monster_set_bloodlust(Monster *m, bool bloodlust)
+{
+	if (m->bloodlust == bloodlust || m->stats.hp <= 0) {
+		return;
+	}
+
+	m->bloodlust = bloodlust;
+	if (bloodlust) {
+		gui_log("%s rages with bloodlust", m->label);
+		monster_set_behaviour(m, HOSTILE);
+		m->stats.advantage = true;
+		m->stats.atk += 2;
+		m->stats.def += 2;
+		m->stats.dmg += 2;
+		m->stats.hp += 10;
+		m->stats.maxhp += 10;
+	} else {
+		gui_log("%s calms down from it's bloodlust", m->label);
+		monster_set_behaviour(m, NORMAL);
+		m->stats.advantage = false;
+		m->stats.atk -= 2;
+		m->stats.def -= 2;
+		m->stats.dmg -= 2;
+		m->stats.hp -= 10;
+		m->stats.maxhp -= 10;
+	}
 }
 
 void

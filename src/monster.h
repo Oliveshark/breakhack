@@ -73,6 +73,7 @@ typedef struct Monster {
 	MonsterBehaviour behaviour;
 	unsigned int steps;
 	bool boss;
+	bool bloodlust;
 } Monster;
 
 Monster* monster_create(void);
@@ -112,6 +113,9 @@ monster_push(Monster *, Player *, RoomMatrix*, Vector2d dir);
 
 void
 monster_reset_steps(Monster *m);
+
+void
+monster_set_bloodlust(Monster*, bool bloodlust);
 
 void
 monster_destroy(Monster*);

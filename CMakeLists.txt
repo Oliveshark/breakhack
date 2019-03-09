@@ -181,6 +181,7 @@ add_executable(breakhack
 	src/sprite
 	src/sprite_util
 	src/util
+	src/event
 	src/player
 	src/map
 	src/map_lua

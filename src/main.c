@@ -56,6 +56,7 @@
 #include "gamecontroller.h"
 #include "time.h"
 #include "sprite_util.h"
+#include "event.h"
 
 #ifdef STEAM_BUILD
 #include "steam/steamworks_api_wrapper.h"
@@ -646,6 +647,22 @@ resetGame(void)
 	repopulate_roommatrix();
 }
 
+static void
+on_event_callback(Event *event)
+{
+	if (event->type == MONSTER_KILLED_EVENT) {
+		if (strcmp(event->monsterKilled.monster->label, "A Fairy") == 0) {
+			LinkedList *monsters = gMap->monsters;
+			while (monsters) {
+				Monster *monster = monsters->data;
+				monsters = monsters->next;
+				if (position_in_room(&monster->sprite->pos, &gMap->currentRoom))
+					monster_set_bloodlust(monster, true);
+			}
+		}
+	}
+}
+
 static bool
 init(void)
 {
@@ -667,6 +684,8 @@ init(void)
 	} else if (!initGame()) {
 		return false;
 	}
+
+	event_register_listener(on_event_callback);
 
 	settings_init();
 	hiscore_init();
@@ -1333,6 +1352,7 @@ void close(void)
 #endif // STEAM_BUILD
 
 	gamecontroller_close();
+	event_clear_listeners();
 	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;

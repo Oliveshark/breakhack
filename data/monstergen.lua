@@ -169,6 +169,18 @@ for i=1,#misc do
 	misc[i] = concat({ texturePaths.misc0, texturePaths.misc1 }, misc[i])
 end
 
+local fairies = {
+	{ stats.misc,    0, 48, "A Fairy", behaviour.pacifist },
+	{ stats.misc,   16, 48, "A Fairy", behaviour.pacifist },
+	{ stats.misc,   32, 48, "A Fairy", behaviour.pacifist },
+	{ stats.misc,   48, 48, "A Fairy", behaviour.pacifist },
+	{ stats.misc,   64, 48, "A Fairy", behaviour.pacifist },
+	{ stats.misc,   80, 48, "A Fairy", behaviour.pacifist },
+}
+for i=1,#fairies do
+	fairies[i] = concat({ texturePaths.humanoid0, texturePaths.humanoid1 }, fairies[i])
+end
+
 local reanimated = {
 	{ stats.undead,   0, 32, "A Skeleton", behaviour.normal },
 	{ stats.undead,  48, 32, "A Black Skeleton", behaviour.normal },
@@ -273,7 +285,6 @@ local eastereggs = {
 	{ stats.misc,  0*16, 7*16, "Adnis, the Ranger", behaviour.passive },
 	{ stats.misc,  7*16, 8*16, "Ti, the Mage", behaviour.passive },
 }
-
 for i=1,#eastereggs do
 	eastereggs[i] = concat({ texturePaths.player0, texturePaths.player1 }, eastereggs[i])
 end
@@ -360,6 +371,7 @@ if(CURRENT_LEVEL > 0) then
 end
 
 local addSpecialInLevel = random(100) == 1
+local addFairyToLevel = random(3) == 1;
 
 local function add_monster_to_tile(room, roomx, roomy, rx, ry, monster)
 	local x = (roomx * 512) + rx * 32
@@ -372,7 +384,8 @@ local function add_monster_to_tile(room, roomx, roomy, rx, ry, monster)
 end
 
 function module.add_monsters_to_room(room, roomx, roomy)
-	local addSpecial = addSpecialInLevel and random(5) == 1
+	local addSpecial = addSpecialInLevel and random(2) == 1
+	local addFairy = random(2) == 1
 	local count = random(3)
 	if (CURRENT_LEVEL > 3) then
 		count = random(4)
@@ -387,6 +400,9 @@ function module.add_monsters_to_room(room, roomx, roomy)
 				addSpecialInLevel = false
 				addSpecial = false
 				add_monster_to_tile(room, roomx, roomy, rx, ry, eastereggs[random(#eastereggs)])
+			elseif addFairyToLevel and addFairy then
+				addFairyToLevel = false
+				add_monster_to_tile(room, roomx, roomy, rx, ry, fairies[random(#fairies)])
 			else
 				add_monster_to_tile(room, roomx, roomy, rx, ry, enemies[random(#enemies)])
 			end
