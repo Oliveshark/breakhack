@@ -326,7 +326,7 @@ end
 
 function pickALayout(matrix)
 	-- Chose a random layout
-	if random(2) == 1 then
+	if random(3) == 1 then
 		return matrix[random(#matrix)]
 	else
 		return createJumbleLayout(matrix)
