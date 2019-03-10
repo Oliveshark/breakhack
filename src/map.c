@@ -35,12 +35,13 @@ create_room(void)
 
 	room = ec_malloc(sizeof(Room));
 	room->modifier.type = RMOD_TYPE_NONE;
+	room->visited = false;
 	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			room->tiles[i][j] = NULL;
 			room->decorations[i][j] = NULL;
 			room->traps[i][j] = NULL;
-			room->visited = false;
+			room->doors[i][j] = NULL;
 		}
 	}
 	return room;
@@ -131,6 +132,26 @@ void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 		map_tile_destroy(*oldTile);
 		*oldTile = NULL;
 	}
+	*oldTile = tile;
+}
+
+void
+map_add_door(Map *map, Position *tile_pos, MapTile *tile)
+{
+	const Position *cr = &map->currentRoom;
+	MapTile **oldTile = &map->rooms[cr->x][cr->y]->doors[tile_pos->x][tile_pos->y];
+
+	// Set the decoration sprites position to match tile pos
+	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
+				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
+
+	if (*oldTile != NULL) {
+		map_tile_destroy(*oldTile);
+		*oldTile = NULL;
+	}
+
+	tile->sprite->animate = false;
+
 	*oldTile = tile;
 }
 
@@ -313,6 +334,7 @@ void map_render(Map *map, Camera *cam)
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			map_tile_render(room->tiles[i][j], cam);
 			map_tile_render(room->decorations[i][j], cam);
+			map_tile_render(room->doors[i][j], cam);
 
 			if (room->traps[i][j])
 				trap_render(room->traps[i][j], cam);

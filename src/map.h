@@ -47,6 +47,7 @@ typedef struct MapTile_t {
 typedef struct Room_t {
 	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	MapTile* doors[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	Trap* traps[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	RoomModifierData modifier;
 	bool visited;
@@ -78,6 +79,9 @@ map_add_tile(Map *map, Position *tile_pos, MapTile*);
 
 void
 map_add_decoration(Map *map, Position *tile_pos, MapTile*);
+
+void
+map_add_door(Map *map, Position *tile_pos, MapTile*);
 
 void
 map_add_trap(Map*, Position*, Trap*);
