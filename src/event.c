@@ -22,25 +22,27 @@
 
 static LinkedList *callbacks = NULL;
 
-void
+	void
 event_register_listener(EventCallback cb)
 {
-    linkedlist_append(&callbacks, cb);
+	// Cast a pointer to a pointer to avoid -wpedantic iso warning
+	linkedlist_append(&callbacks, *(void**)(&cb));
 }
 
-void
+	void
 event_clear_listeners(void)
 {
-    while (callbacks)
-        linkedlist_pop(&callbacks);
+	while (callbacks)
+		linkedlist_pop(&callbacks);
 }
 
-void
+	void
 event_trigger(Event *event)
 {
-    LinkedList *cbs = callbacks;
-    while (cbs) {
-        ((EventCallback) cbs->data)(event);
-        cbs = cbs->next;
-    }
+	LinkedList *cbs = callbacks;
+	while (cbs) {
+		// Reverse the cast from the register (-pedantic ISO warning)
+		(*(EventCallback*)(&cbs->data))(event);
+		cbs = cbs->next;
+	}
 }

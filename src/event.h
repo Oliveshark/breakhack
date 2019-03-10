@@ -21,18 +21,18 @@
 #include "player.h"
 
 typedef enum EventType {
-    MONSTER_KILLED_EVENT
+	MONSTER_KILLED_EVENT
 } EventType;
 
 typedef struct MonsterKilledEvent {
-    EventType *type;
-    Player *player;
-    Monster *monster;
+	EventType *type;
+	Player *player;
+	Monster *monster;
 } MonsterKilledEvent;
 
 typedef union Event {
-    EventType type;
-    MonsterKilledEvent monsterKilled;
+	EventType type;
+	MonsterKilledEvent monsterKilled;
 } Event;
 
 typedef void (*EventCallback)(Event*);
