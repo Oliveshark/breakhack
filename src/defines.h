@@ -22,6 +22,10 @@
 #include <stdint.h>
 #include "config.h"
 
+/* Checksums */
+#define SO_LIBSTEAM_CHECKSUM 	0x19ba253
+#define DLL_LIBSTEAM_CHECKSUM 	0x19ba253
+
 /* Room/Map dimensions */
 #define MAP_ROOM_WIDTH		16
 #define MAP_ROOM_HEIGHT		12
