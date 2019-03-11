@@ -57,9 +57,9 @@
 #include "time.h"
 #include "sprite_util.h"
 #include "event.h"
-#include "checksum.h"
 
 #ifdef STEAM_BUILD
+#include "checksum.h"
 #include "steam/steamworks_api_wrapper.h"
 #endif // STEAM_BUILD
 
@@ -1362,6 +1362,7 @@ void close(void)
 	SDL_Quit();
 }
 
+#ifdef STEAM_BUILD
 static void
 validate_lib_checksum(void)
 {
@@ -1369,16 +1370,17 @@ validate_lib_checksum(void)
 #ifdef WIN32
 	const char *file = "./steam_api.dll";
 	unsigned int expected = DLL_LIBSTEAM_CHECKSUM;
-#else
+	fopen_s(&fp, file, "rb");
+#else // WIN32
 	const char *file = "./libsteam_api.so";
 	unsigned int expected = SO_LIBSTEAM_CHECKSUM;
-#endif
+	fp = fopen(file, "rb");
+#endif // WIN32
 
-	fopen_s(&fp, file, "rb");
-	if (!fp)
-	{
+	if (!fp) {
 		fatal("Unable to open %s for reading\n", file);
 	}
+
 	unsigned calculated = checksum_fp(fp);	
 	fclose(fp);
 
@@ -1388,6 +1390,7 @@ validate_lib_checksum(void)
 		info("Checksum validated: %#x", calculated);
 	}
 }
+#endif // STEAM_BUILD
 
 int main(int argc, char *argv[])
 {
