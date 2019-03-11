@@ -103,13 +103,10 @@ local function setBlockTile(room, matrix, i, j, tiles, char, decor)
 		tile = tiles.single
 		decorTile = getRandomWallDecorFrom(walldecor.single)
 	end
-	if decor then
-		room.decor[i][j] = tile
-	else
-		room.tiles[i][j] = tile
-		if random(8) == 1 then
-			room.decor[i][j] = decorTile
-		end
+
+	room.walls[i][j] = tile
+	if random(8) == 1 and decor then
+		room.decor[i][j] = decorTile
 	end
 end
 

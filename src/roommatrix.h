@@ -45,6 +45,8 @@ typedef struct RoomSpace {
 	bool damaging;
 	int light;
 	MapTile *tile;
+	MapTile *wall;
+	MapTile *door;
 	MapTile *decoration;
 	Monster *monster;
 	Player *player;

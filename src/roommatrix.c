@@ -47,6 +47,8 @@ roommatrix_reset(RoomMatrix *m)
 			space->player = NULL;
 			space->trap = NULL;
 			space->tile = NULL;
+			space->wall = NULL;
+			space->door = NULL;
 			space->decoration = NULL;
 			while (space->items != NULL)
 				linkedlist_pop(&space->items);
@@ -125,6 +127,20 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 					r->tiles[i][j]->lightsource;
 				space->lethal =
 					r->tiles[i][j]->lethal;
+			}
+			if (r->walls[i][j]) {
+				space->wall = r->walls[i][j];
+				space->occupied =
+					r->walls[i][j]->collider;
+				space->lightsource =
+					r->walls[i][j]->lightsource;
+			}
+			if (r->doors[i][j]) {
+				space->door = r->doors[i][j];
+				space->occupied =
+					r->doors[i][j]->collider;
+				space->lightsource =
+					r->doors[i][j]->lightsource;
 			}
 			if (r->decorations[i][j]) {
 				space->decoration = r->decorations[i][j];

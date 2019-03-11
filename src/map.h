@@ -42,10 +42,12 @@ typedef struct MapTile_t {
 	bool lethal;
 	bool lightsource;
 	bool levelExit;
+	bool door;
 } MapTile;
 
 typedef struct Room_t {
 	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	MapTile* walls[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	MapTile* doors[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	Trap* traps[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
@@ -76,6 +78,9 @@ map_add_texture(Map*, const char *path, SDL_Renderer*);
 
 void
 map_add_tile(Map *map, Position *tile_pos, MapTile*);
+
+void
+map_add_wall(Map *map, Position *tile_pos, MapTile*);
 
 void
 map_add_decoration(Map *map, Position *tile_pos, MapTile*);

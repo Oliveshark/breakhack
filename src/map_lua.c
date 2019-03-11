@@ -271,6 +271,18 @@ l_add_tile(lua_State *L)
 	return 0;
 }
 
+l_add_wall(lua_State *L)
+{
+	extract_tile_data(L, &map_add_wall);
+	return 0;
+}
+
+l_add_door(lua_State *L)
+{
+	extract_tile_data(L, &map_add_door);
+	return 0;
+}
+
 static int
 l_add_decoration(lua_State *L)
 {
@@ -577,6 +589,12 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, Player *pl
 
 	lua_pushcfunction(L, l_add_tile);
 	lua_setglobal(L, "add_tile");
+
+	lua_pushcfunction(L, l_add_wall);
+	lua_setglobal(L, "add_wall");
+
+	lua_pushcfunction(L, l_add_door);
+	lua_setglobal(L, "add_door");
 
 	lua_pushcfunction(L, l_add_decoration);
 	lua_setglobal(L, "add_decoration");

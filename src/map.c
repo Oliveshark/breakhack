@@ -39,6 +39,7 @@ create_room(void)
 	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			room->tiles[i][j] = NULL;
+			room->walls[i][j] = NULL;
 			room->decorations[i][j] = NULL;
 			room->traps[i][j] = NULL;
 			room->doors[i][j] = NULL;
@@ -93,16 +94,28 @@ map_tile_destroy(MapTile *tile)
 	free(tile);
 }
 
+static void
+switch_tile(Map *map, Position *tile_pos, MapTile *tile, MapTile **oldTile)
+{
+	const Position *cr = &map->currentRoom;
+
+	// Set the decoration sprites position to match tile pos
+	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
+				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
+
+	if (*oldTile != NULL) {
+		map_tile_destroy(*oldTile);
+		*oldTile = NULL;
+	}
+	*oldTile = tile;
+}
+
 void
 map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
 {
 	const Position *cr = &map->currentRoom;
 	Room *room = map->rooms[cr->x][cr->y];
-	MapTile **oldTile = &room->tiles[tile_pos->x][tile_pos->y];
-
-	// Set the tile sprites position to match tile pos
-	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
-				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
+	switch_tile(map, tile_pos, tile, &room->tiles[tile_pos->x][tile_pos->y]);
 
 	// If this is the level exit then clear the decoration if one exists
 	if (tile->levelExit && room->decorations[tile_pos->x][tile_pos->y]) {
@@ -110,49 +123,29 @@ map_add_tile(Map *map, Position *tile_pos, MapTile *tile)
 		map_tile_destroy(*decoration);
 		*decoration = NULL;
 	}
+}
 
-	// Clear possible tile
-	if (*oldTile != NULL) {
-		map_tile_destroy(*oldTile);
-		*oldTile = NULL;
-	}
-	*oldTile = tile;
+void
+map_add_wall(Map *map, Position *tile_pos, MapTile *tile)
+{
+	const Position *cr = &map->currentRoom;
+	Room *room = map->rooms[cr->x][cr->y];
+	switch_tile(map, tile_pos, tile, &room->walls[tile_pos->x][tile_pos->y]);
 }
 
 void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 {
 	const Position *cr = &map->currentRoom;
-	MapTile **oldTile = &map->rooms[cr->x][cr->y]->decorations[tile_pos->x][tile_pos->y];
-
-	// Set the decoration sprites position to match tile pos
-	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
-				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
-
-	if (*oldTile != NULL) {
-		map_tile_destroy(*oldTile);
-		*oldTile = NULL;
-	}
-	*oldTile = tile;
+	Room *room = map->rooms[cr->x][cr->y];
+	switch_tile(map, tile_pos, tile, &room->decorations[tile_pos->x][tile_pos->y]);
 }
 
 void
 map_add_door(Map *map, Position *tile_pos, MapTile *tile)
 {
 	const Position *cr = &map->currentRoom;
-	MapTile **oldTile = &map->rooms[cr->x][cr->y]->doors[tile_pos->x][tile_pos->y];
-
-	// Set the decoration sprites position to match tile pos
-	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
-				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
-
-	if (*oldTile != NULL) {
-		map_tile_destroy(*oldTile);
-		*oldTile = NULL;
-	}
-
-	tile->sprite->animate = false;
-
-	*oldTile = tile;
+	Room *room = map->rooms[cr->x][cr->y];
+	switch_tile(map, tile_pos, tile, &room->doors[tile_pos->x][tile_pos->y]);
 }
 
 void
@@ -333,8 +326,9 @@ void map_render(Map *map, Camera *cam)
 	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			map_tile_render(room->tiles[i][j], cam);
-			map_tile_render(room->decorations[i][j], cam);
+			map_tile_render(room->walls[i][j], cam);
 			map_tile_render(room->doors[i][j], cam);
+			map_tile_render(room->decorations[i][j], cam);
 
 			if (room->traps[i][j])
 				trap_render(room->traps[i][j], cam);

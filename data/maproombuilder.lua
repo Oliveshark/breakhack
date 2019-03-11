@@ -128,6 +128,8 @@ end
 local function room_tile_available(room, rx, ry)
 	return not room.chests[rx][ry]
 		and not room.traps[rx][ry]
+		and not room.walls[rx][ry]
+		and not room.doors[rx][ry]
 		and not room.monsters[rx][ry]
 		and not room.decor[rx][ry]
 		and (room.tiles[rx][ry]
@@ -208,6 +210,8 @@ local function add_tiles_to_room (room, singletile)
 				else
 					room.tiles[i][j] = singletile and floor.single or floor.center
 				end
+			else
+				room.tiles[i][j] = floor.single
 			end
 		end
 	end
@@ -217,17 +221,17 @@ local function add_walls_to_room (room)
 	for i=0,15 do
 		for j=0,11 do
 			if (i == 0 and j == 0) then
-				room.tiles[i][j] = wall.topleft
+				room.walls[i][j] = wall.topleft
 			elseif (i == 15 and j == 0) then
-				room.tiles[i][j] = wall.topright
+				room.walls[i][j] = wall.topright
 			elseif (i == 0 and j == 11) then
-				room.tiles[i][j] = wall.bottomleft
+				room.walls[i][j] = wall.bottomleft
 			elseif (i == 15 and j == 11) then
-				room.tiles[i][j] = wall.bottomright
+				room.walls[i][j] = wall.bottomright
 			elseif (i == 0 or i == 15) then
-				room.tiles[i][j] = wall.vertical
+				room.walls[i][j] = wall.vertical
 			elseif (j == 0 or j == 11) then
-				room.tiles[i][j] = wall.horizontal
+				room.walls[i][j] = wall.horizontal
 			end
 		end
 	end
@@ -235,10 +239,12 @@ end
 
 local function build_vert_center_coridoor(room, offset)
 	for i=0,4 do
-		room.tiles[6][offset+i] = wall.vertical
+		room.walls[6][offset+i] = wall.vertical
 		room.tiles[7][offset+i] = floor.center
 		room.tiles[8][offset+i] = floor.center
-		room.tiles[9][offset+i] = wall.vertical
+		room.walls[7][offset+i] = nil
+		room.walls[8][offset+i] = nil
+		room.walls[9][offset+i] = wall.vertical
 	end
 	if random(2) == 1 then
 		room.decor[6][offset+2] = lightDecor.candle1
@@ -250,10 +256,12 @@ end
 
 local function build_horiz_center_coridoor(room, offset)
 	for i=0,6 do
-		room.tiles[offset+i][4] = wall.horizontal
+		room.walls[offset+i][4] = wall.horizontal
 		room.tiles[offset+i][5] = floor.center
 		room.tiles[offset+i][6] = floor.center
-		room.tiles[offset+i][7] = wall.horizontal
+		room.walls[offset+i][5] = nil
+		room.walls[offset+i][6] = nil
+		room.walls[offset+i][7] = wall.horizontal
 	end
 	if random(2) == 1 then
 		room.decor[offset+3][4] = lightDecor.candle1
@@ -266,32 +274,32 @@ end
 local function build_center_corner_walls(room, exits)
 	if exits.down then
 		if exits.left then
-			room.tiles[6][7] = wall.topright
+			room.walls[6][7] = wall.topright
 		end
 		if exits.right then
-			room.tiles[9][7] = wall.topleft
+			room.walls[9][7] = wall.topleft
 		end
 	else
 		if not exits.left then
-			room.tiles[6][7] = wall.bottomleft
+			room.walls[6][7] = wall.bottomleft
 		end
 		if not exits.right then
-			room.tiles[9][7] = wall.bottomright
+			room.walls[9][7] = wall.bottomright
 		end
 	end
 	if exits.up then
 		if exits.left then
-			room.tiles[6][4] = wall.bottomright
+			room.walls[6][4] = wall.bottomright
 		end
 		if exits.right then
-			room.tiles[9][4] = wall.bottomleft
+			room.walls[9][4] = wall.bottomleft
 		end
 	else
 		if not exits.left then
-			room.tiles[6][4] = wall.topleft
+			room.walls[6][4] = wall.topleft
 		end
 		if not exits.right then
-			room.tiles[9][4] = wall.topright
+			room.walls[9][4] = wall.topright
 		end
 	end
 end
@@ -299,25 +307,33 @@ end
 local function add_exits_to_room(room)
 	for _,direction in ipairs(room.exits) do
 		if direction == UP then
-			room.tiles[6][0] = wall.bottomright
+			room.walls[6][0] = wall.bottomright
 			room.tiles[7][0] = floor.singleleft
 			room.tiles[8][0] = floor.singleright
-			room.tiles[9][0] = wall.bottomleft
+			room.walls[7][0] = nil
+			room.walls[8][0] = nil
+			room.walls[9][0] = wall.bottomleft
 		elseif direction == LEFT then
-			room.tiles[0][4] = wall.bottomright
+			room.walls[0][4] = wall.bottomright
 			room.tiles[0][5] = floor.singletop
 			room.tiles[0][6] = floor.singlebottom
-			room.tiles[0][7] = wall.topright
+			room.walls[0][5] = nil
+			room.walls[0][6] = nil
+			room.walls[0][7] = wall.topright
 		elseif direction == RIGHT then
-			room.tiles[15][4] = wall.bottomleft
+			room.walls[15][4] = wall.bottomleft
 			room.tiles[15][5] = floor.singletop
 			room.tiles[15][6] = floor.singlebottom
-			room.tiles[15][7] = wall.topleft
+			room.walls[15][5] = nil
+			room.walls[15][6] = nil
+			room.walls[15][7] = wall.topleft
 		elseif direction == DOWN then
-			room.tiles[6][11] = wall.topright
+			room.walls[6][11] = wall.topright
 			room.tiles[7][11] = floor.singleleft
 			room.tiles[8][11] = floor.singleright
-			room.tiles[9][11] = wall.topleft
+			room.walls[7][11] = nil
+			room.walls[8][11] = nil
+			room.walls[9][11] = wall.topleft
 		end
 	end
 end
@@ -339,18 +355,19 @@ local function build_coridoor_room(room)
 	end
 
 	-- Fill the center
-	room.tiles[6][5] = wall.vertical
-	room.tiles[6][6] = wall.vertical
-	room.tiles[7][4] = wall.horizontal
 	room.tiles[7][5] = floor.center
 	room.tiles[7][6] = floor.center
-	room.tiles[7][7] = wall.horizontal
-	room.tiles[8][4] = wall.horizontal
 	room.tiles[8][5] = floor.center
 	room.tiles[8][6] = floor.center
-	room.tiles[8][7] = wall.horizontal
-	room.tiles[9][5] = wall.vertical
-	room.tiles[9][6] = wall.vertical
+
+	room.walls[6][5] = wall.vertical
+	room.walls[6][6] = wall.vertical
+	room.walls[7][4] = wall.horizontal
+	room.walls[7][7] = wall.horizontal
+	room.walls[8][4] = wall.horizontal
+	room.walls[8][7] = wall.horizontal
+	room.walls[9][5] = wall.vertical
+	room.walls[9][6] = wall.vertical
 
 	-- Build the coridoors
 	if exits.down then build_vert_center_coridoor(room, 7) end
@@ -447,6 +464,8 @@ function module.create_empty_room()
 		path_dir = 0,
 		type = "room",
 		tiles = {},
+		walls = {},
+		doors = {},
 		decor = {},
 		modifier = {
 			type = nil,
@@ -458,12 +477,16 @@ function module.create_empty_room()
 	}
 	for i=0,15 do
 		room.tiles[i] = {}
+		room.walls[i] = {}
+		room.doors[i] = {}
 		room.decor[i] = {}
 		room.monsters[i] = {}
 		room.traps[i] = {}
 		room.chests[i] = {}
 		for j=0,11 do
 			room.tiles[i][j] = nil
+			room.walls[i][j] = nil
+			room.doors[i][j] = nil
 			room.decor[i][j] = nil
 			room.monsters[i][j] = nil
 			room.traps[i][j] = nil
@@ -488,6 +511,12 @@ function module.load_room(map, room)
 		for j=0, 11 do
 			if room.tiles[i][j] then
 				add_tile(map, i, j, repack(room.tiles[i][j]))
+			end
+			if room.walls[i][j] then
+				add_wall(map, i, j, repack(room.walls[i][j]))
+			end
+			if room.doors[i][j] then
+				add_door(map, i, j, repack(room.doors[i][j]))
 			end
 			if room.decor[i][j] then
 				add_decoration(map, i, j, repack(room.decor[i][j]))
