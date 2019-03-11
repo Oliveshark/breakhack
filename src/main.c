@@ -874,7 +874,7 @@ check_next_level(void)
 	if (tile->levelExit) {
 		mixer_play_effect(NEXT_LEVEL);
 		++cLevel;
-		if (cLevel > (quickGame ? 11 : 19)) {
+		if (cLevel > (unsigned int) (quickGame ? 11 : 19)) {
 			mixer_play_music(BOSS_MUSIC0);
 		} else if (cLevel % (quickGame ? 3 : 5) == 0) {
 			gui_log("You sense something powerful in the vicinity");
@@ -1374,11 +1374,13 @@ validate_lib_checksum(void)
 	unsigned int expected = SO_LIBSTEAM_CHECKSUM;
 #endif
 
-	if (NULL == (fp = fopen(file, "rb")))
+	fopen_s(&fp, file, "rb");
+	if (!fp)
 	{
 		fatal("Unable to open %s for reading\n", file);
 	}
 	unsigned calculated = checksum_fp(fp);	
+	fclose(fp);
 
 	if (calculated != expected) {
 		fatal("Checksum validation failiure: %#x != %#x", calculated, expected);
