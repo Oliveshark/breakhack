@@ -24,7 +24,7 @@
 
 /* Checksums */
 #define SO_LIBSTEAM_CHECKSUM 	0x19ba253
-#define DLL_LIBSTEAM_CHECKSUM 	0x19ba253
+#define DLL_LIBSTEAM_CHECKSUM 	0x14e4709
 
 /* Room/Map dimensions */
 #define MAP_ROOM_WIDTH		16

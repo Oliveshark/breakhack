@@ -1367,7 +1367,7 @@ validate_lib_checksum(void)
 {
 	FILE *fp;
 #ifdef WIN32
-	const char *file = "./libsteam_api.dll";
+	const char *file = "./steam_api.dll";
 	unsigned int expected = DLL_LIBSTEAM_CHECKSUM;
 #else
 	const char *file = "./libsteam_api.so";
