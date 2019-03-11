@@ -83,6 +83,8 @@ map_create_tile(void)
 	tile->lethal = false;
 	tile->lightsource = false;
 	tile->levelExit = false;
+	tile->door = false;
+	tile->lockType = LOCK_NONE;
 	return tile;
 }
 
@@ -147,7 +149,7 @@ map_add_door(Map *map, Position *tile_pos, MapTile *tile)
 	Room *room = map->rooms[cr->x][cr->y];
 	switch_tile(map, tile_pos, tile, &room->doors[tile_pos->x][tile_pos->y]);
 	tile->door = true;
-	tile->animate = false;
+	tile->sprite->animate = false;
 }
 
 void

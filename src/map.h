@@ -36,6 +36,12 @@
 typedef struct UpdateData UpdateData;
 typedef struct Trap Trap;
 
+typedef enum DoorLockType {
+	LOCK_NONE,
+	LOCK_SILVER,
+	LOCK_GOLD
+} DoorLockType;
+
 typedef struct MapTile_t {
 	Sprite *sprite;
 	bool collider;
@@ -43,6 +49,7 @@ typedef struct MapTile_t {
 	bool lightsource;
 	bool levelExit;
 	bool door;
+	DoorLockType lockType;
 } MapTile;
 
 typedef struct Room_t {
