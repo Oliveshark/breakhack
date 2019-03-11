@@ -146,6 +146,8 @@ map_add_door(Map *map, Position *tile_pos, MapTile *tile)
 	const Position *cr = &map->currentRoom;
 	Room *room = map->rooms[cr->x][cr->y];
 	switch_tile(map, tile_pos, tile, &room->doors[tile_pos->x][tile_pos->y]);
+	tile->door = true;
+	tile->animate = false;
 }
 
 void
