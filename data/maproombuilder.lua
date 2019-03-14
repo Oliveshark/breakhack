@@ -398,6 +398,14 @@ local function build_shop_room(room, roomx, roomy)
 	return room
 end
 
+local function build_locked_room(room, roomx, roomy)
+	add_tiles_to_room(room, false)
+	add_walls_to_room(room)
+	add_exits_to_room(room)
+	layoutparser.add_locked_room_layout(room, roomx, roomy)
+	return room
+end
+
 local function build_normal_room(room)
 	local crumbling = (CURRENT_LEVEL > 3 or QUICK_MODE) and random(8) == 1
 	local pitsAdded = false;
@@ -503,6 +511,7 @@ function module.build_room(room, roomx, roomy)
 		build_shop_room(room, roomx, roomy)
 	else
 		build_normal_room(room)
+		--build_locked_room(room, roomx, roomy)
 	end
 end
 

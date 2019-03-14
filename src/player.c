@@ -239,6 +239,10 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 		gamecontroller_rumble(0.30f, 100);
 		if (space->monster) {
 			on_monster_collision(player, space->monster, matrix, direction);
+		} else if (space->door) {
+			mixer_play_effect(DOOR_OPEN);
+			space->door->sprite->texture_index = 1;
+			space->door->collider = false;
 		} else {
 			mixer_play_effect(BONK);
 			camera_shake(direction, 100);

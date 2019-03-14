@@ -3,7 +3,9 @@ local pits = {}
 local walls = {}
 local fences = {}
 local lights = {}
+local doors = {}
 local walldecor = {}
+local chest
 
 local function readLayoutFile(file)
 	local layoutfile = read_file(file)
@@ -139,6 +141,15 @@ local function setPitTile(room, matrix, i, j)
 	end
 end
 
+local function getDoor(matrix, i, j, topDoor, leftDoor)
+	local above, below, left, right, above_left, above_right, below_left, below_right = getTileStateFor(matrix, i, j, { "#", "\"", "/"});
+	if above and below then
+		return leftDoor
+	else
+		return topDoor
+	end
+end
+
 local module = {}
 function module.load_textures(map, wall_xoffset, wall_yoffset)
 	local t_pit0 = add_texture(map, "Objects/Pit0.png")
@@ -147,6 +158,8 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 	local t_fence = add_texture(map, "Objects/Fence.png")
 	local t_decor0 = add_texture(map, "Objects/Decor0.png")
 	local t_decor1 = add_texture(map, "Objects/Decor1.png")
+	local t_door0 = add_texture(map, "Objects/Door0.png")
+	local t_door1 = add_texture(map, "Objects/Door1.png")
 
 	local yo = (random(5) + random(3)) * (16 * 2)
 	pits = {
@@ -198,11 +211,27 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 		bottom_t		= { t_fence, nil, 64, yo + 32, true },
 	}
 
+	doors = {
+		door_top_nolock			= { t_door0, t_door1, 0, 0, true },
+		door_left_nolock		= { t_door0, t_door1, 16, 0, true },
+		door_top_silverlock		= { t_door0, t_door1, 32, 0, true },
+		door_left_silverlock	= { t_door0, t_door1, 48, 0, true },
+		door_top_goldlock		= { t_door0, t_door1, 64, 0, true },
+		door_left_goldlock		= { t_door0, t_door1, 80, 0, true },
+		gate_top_nolock			= { t_door0, t_door1, 0, 32, true },
+		gate_left_nolock		= { t_door0, t_door1, 16, 32, true },
+		gate_top_silverlock		= { t_door0, t_door1, 32, 32, true },
+		gate_left_silverlock	= { t_door0, t_door1, 48, 32, true },
+		gate_top_goldlock		= { t_door0, t_door1, 64, 32, true },
+		gate_left_goldlock		= { t_door0, t_door1, 80, 32, true },
+	}
+
 	lights = {
 		candle0 = { t_decor0, t_decor1,  3 * 16, 8 * 16, true, true },
 		candle1 = { t_decor0, t_decor1,  1 * 16, 8 * 16, true, true },
 		candle2 = { t_decor0, t_decor1,  5 * 16, 8 * 16, true, false },
 	}
+
 	walldecor = {
 		topleft	= {
 			{ t_decor0, nil,  2 * 16, 2 * 16, false },
@@ -261,6 +290,8 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 			{ t_decor0, nil,  5 * 16, 2 * 16, false },
 		},
 	}
+
+	chest = { "Items/Chest0.png", "Items/Chest1.png", 16, 0}
 end
 
 function createJumbleLayout(matrix)
@@ -299,12 +330,12 @@ function draw_layout_to_room(room, matrix, roomx, roomy)
 			if matrix[i][j] == "p" then
 				setPitTile(room, matrix, i, j);
 			elseif matrix[i][j] == "#" then
-				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
+				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/", "d", "g"}, false)
 			elseif matrix[i][j] == "\"" then
-				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
+				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/", "d", "g"}, false)
 				room.decor[i][j] = lights.candle1
 			elseif matrix[i][j] == "/" then
-				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/"}, false)
+				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/", "d", "g"}, false)
 				if random(2) == 1 then
 					room.decor[i][j] = lights.candle1
 				else
@@ -316,6 +347,12 @@ function draw_layout_to_room(room, matrix, roomx, roomy)
 				create_shop_artifact(map, (roomx*512) + i*32, (roomy * 384) + j*32)
 			elseif matrix[i][j] == "l" then
 				room.decor[i][j] = lights.candle0
+			elseif matrix[i][j] == "c" then
+				room.chests[i][j] = chest
+			elseif matrix[i][j] == "d" then
+				room.doors[i][j] = getDoor(matrix, i, j, doors.door_top_nolock, doors.door_left_nolock)
+			elseif matrix[i][j] == "g" then
+				room.doors[i][j] = getDoor(matrix, i, j, doors.gate_top_nolock, doors.gate_left_nolock)
 			end
 		end
 	end
@@ -331,7 +368,7 @@ function pickALayout(matrix)
 end
 
 function module.add_walls_to_room(room)
-	if random(3) ~= 1 then
+	if random(2) == 1 then
 		return false
 	end
 
@@ -350,6 +387,12 @@ end
 
 function module.add_shop_layout(room, roomx, roomy)
 	local matrix = readLayoutFile("shoplayouts.dat")
+	draw_layout_to_room(room, matrix[random(#matrix)], roomx, roomy)
+	return true
+end
+
+function module.add_locked_room_layout(room, roomx, roomy)
+	local matrix = readLayoutFile("lockedroomlayouts.dat")
 	draw_layout_to_room(room, matrix[random(#matrix)], roomx, roomy)
 	return true
 end

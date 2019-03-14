@@ -64,6 +64,7 @@ typedef enum Fx_t {
 	FADE_IN,
 	FADE_OUT,
 	BURST,
+	DOOR_OPEN,
 	LAST_EFFECT
 } Fx;
 
