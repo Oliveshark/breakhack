@@ -271,12 +271,14 @@ l_add_tile(lua_State *L)
 	return 0;
 }
 
+static int
 l_add_wall(lua_State *L)
 {
 	extract_tile_data(L, &map_add_wall);
 	return 0;
 }
 
+static int
 l_add_door(lua_State *L)
 {
 	extract_tile_data(L, &map_add_door);
