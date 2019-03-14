@@ -385,7 +385,7 @@ end
 
 function module.add_monsters_to_room(room, roomx, roomy)
 	local addSpecial = addSpecialInLevel and random(2) == 1
-	local addFairy = random(2) == 1
+	local addFairy = random(4) == 1
 	local count = random(3)
 	if (CURRENT_LEVEL > 3) then
 		count = random(4)
