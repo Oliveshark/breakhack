@@ -99,8 +99,6 @@ map_tile_destroy(MapTile *tile)
 static void
 switch_tile(Map *map, Position *tile_pos, MapTile *tile, MapTile **oldTile)
 {
-	const Position *cr = &map->currentRoom;
-
 	// Set the decoration sprites position to match tile pos
 	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
 				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
@@ -424,6 +422,12 @@ void map_room_destroy(Room *room)
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			if (room->tiles[i][j]) {
 				map_tile_destroy(room->tiles[i][j]);
+			}
+			if (room->doors[i][j]) {
+				map_tile_destroy(room->doors[i][j]);
+			}
+			if (room->walls[i][j]) {
+				map_tile_destroy(room->walls[i][j]);
 			}
 			if (room->decorations[i][j]) {
 				map_tile_destroy(room->decorations[i][j]);
