@@ -330,6 +330,7 @@ if (NOT DEBUG_BUILD)
 			"pitlayouts.dat"
 			"walllayouts.dat"
 			"shoplayouts.dat"
+			"lockedroomlayouts.dat"
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/data
 		)
 endif ()
