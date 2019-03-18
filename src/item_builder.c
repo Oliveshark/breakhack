@@ -18,6 +18,7 @@
 
 #include <SDL.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "item_builder.h"
 #include "texture.h"
@@ -28,6 +29,7 @@
 #include "texturecache.h"
 #include "sprite.h"
 #include "sprite_util.h"
+#include "map.h"
 
 static ItemBuilder *builder = NULL;
 
@@ -147,6 +149,44 @@ item_builder_build_treasure(Treasure type, double goldAmt)
 	Item *item = create_item("Items/Money.png", NULL, clip, &pickup_gold);
 	m_strcpy(item->label, 50, label);
 	item->value = amt;
+	return item;
+}
+
+static void
+pickup_silver_key(Item *item, Player *player)
+{
+	UNUSED(item);
+	player->equipment.keys &= LOCK_SILVER;
+}
+
+static void
+pickup_gold_key(Item *item, Player *player)
+{
+	UNUSED(item);
+	player->equipment.keys &= LOCK_GOLD;
+}
+
+Item *
+item_builder_build_key(unsigned int type)
+{
+	char label[20];
+	SDL_Rect clip = CLIP16(0, 0);
+	Item *item;
+	switch (type) {
+		case 1:
+			m_sprintf(label, 20, "a silver key");
+			item = create_item("Items/Key.png", NULL, clip, &pickup_silver_key);
+			break;
+		case 2:
+			m_sprintf(label, 20, "a gold key");
+			item = create_item("Items/Key.png", NULL, clip, &pickup_gold_key);
+			clip.x = 16;
+			break;
+		default:
+			fatal("Bad keytype provided");
+	}
+
+	m_strcpy(item->label, 20, label);
 	return item;
 }
 

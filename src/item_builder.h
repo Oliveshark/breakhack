@@ -56,6 +56,9 @@ item_builder_build_container(const char *path0, const char *path1, SDL_Rect clip
 Item *
 item_builder_build_treasure(Treasure type, double goldAmt);
 
+Item *
+item_builder_build_key(unsigned int type);
+
 void
 item_builder_close(void);
 

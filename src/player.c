@@ -240,6 +240,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 		if (space->monster) {
 			on_monster_collision(player, space->monster, matrix, direction);
 		} else if (space->door) {
+			// Open the door
 			mixer_play_effect(DOOR_OPEN);
 			space->door->sprite->texture_index = 1;
 			space->door->collider = false;
@@ -521,6 +522,7 @@ player_create(class_t class, Camera *cam)
 	player->animationTimer		= _timer_create();
 	player->swordAnimation		= animation_create(5);
 	player->equipment.hasArtifacts	= false;
+	player->equipment.keys		= 0;
 	player->stateData.shopOwnerKiller = false;
 
 	build_sword_animation(player, cam->renderer);
@@ -572,6 +574,14 @@ player_create(class_t class, Camera *cam)
 	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
 
 	return player;
+}
+
+void
+player_reset_on_levelchange(Player *player)
+{
+	player->sprite->pos = (Position) {
+		TILE_DIMENSION, TILE_DIMENSION };
+	player->equipment.keys = 0;
 }
 
 ExperienceData player_get_xp_data(Player *p)

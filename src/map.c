@@ -26,6 +26,7 @@
 #include "particle_engine.h"
 #include "update_data.h"
 #include "trap.h"
+#include "mixer.h"
 
 static Room*
 create_room(void)
@@ -448,6 +449,19 @@ map_trigger_tile_fall(MapTile *tile)
 
 	tile->sprite->state = SPRITE_STATE_FALLING;
 	tile->lethal = true;
+}
+
+bool
+map_open_door(MapTile *tile, Player *player)
+{
+	if (tile->lockType == LOCK_NONE || tile->lockType & player->equipment.keys) {
+		// Open the door
+		mixer_play_effect(DOOR_OPEN);
+		tile->sprite->texture_index = 1;
+		tile->collider = false;
+		return true;
+	}
+	return false;
 }
 
 void

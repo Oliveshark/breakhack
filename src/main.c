@@ -640,8 +640,7 @@ resetGame(void)
 	info("Building new map");
 	gMap = map_lua_generator_run(cLevel, mode, gPlayer, gRenderer);
 
-	gPlayer->sprite->pos = (Position) {
-		TILE_DIMENSION, TILE_DIMENSION };
+	player_reset_on_levelchange(gPlayer);
 
 	map_set_current_room(gMap, &gPlayer->sprite->pos);
 	camera_follow_position(gCamera, &gPlayer->sprite->pos);

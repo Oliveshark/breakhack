@@ -60,6 +60,7 @@ typedef struct ArtifactData {
 typedef struct PlayerEquipment {
 	ArtifactData artifacts[LAST_ARTIFACT_EFFECT];
 	bool hasArtifacts;
+	Uint32 keys;
 } PlayerEquipment;
 
 typedef struct PlayerStateData {
@@ -87,6 +88,9 @@ typedef struct Player {
 
 Player*
 player_create(class_t, Camera*);
+
+void
+player_reset_on_levelchange(Player *player);
 
 ExperienceData
 player_get_xp_data(Player*);

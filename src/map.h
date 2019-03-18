@@ -128,6 +128,9 @@ map_set_current_room(Map*, Position*);
 void
 map_trigger_tile_fall(MapTile *tile);
 
+bool
+map_open_door(MapTile *tile, Player *player);
+
 void
 map_destroy(Map*);
 
