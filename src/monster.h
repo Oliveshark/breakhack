@@ -27,6 +27,7 @@
 #include "linkedlist.h"
 
 struct UpdateData;
+enum DoorLockType;
 
 typedef enum {
 	PACIFIST,
@@ -63,6 +64,10 @@ typedef struct MonsterStateIndicator {
 	int displayCount;
 } MonsterStateIndicator;
 
+typedef struct MonsterItems {
+	enum DoorLockType keyType;
+} MonsterItems;
+
 typedef struct Monster {
 	char *label;
 	char *lclabel;
@@ -71,6 +76,7 @@ typedef struct Monster {
 	State state;
 	MonsterStateIndicator stateIndicator;
 	MonsterBehaviour behaviour;
+	MonsterItems items;
 	unsigned int steps;
 	bool boss;
 	bool bloodlust;

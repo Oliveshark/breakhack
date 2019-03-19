@@ -214,16 +214,16 @@ function module.load_textures(map, wall_xoffset, wall_yoffset)
 	doors = {
 		door_top_nolock			= { t_door0, t_door1, 0, 0, true },
 		door_left_nolock		= { t_door0, t_door1, 16, 0, true },
-		door_top_silverlock		= { t_door0, t_door1, 32, 0, true },
-		door_left_silverlock	= { t_door0, t_door1, 48, 0, true },
-		door_top_goldlock		= { t_door0, t_door1, 64, 0, true },
-		door_left_goldlock		= { t_door0, t_door1, 80, 0, true },
+		door_top_silverlock		= { t_door0, t_door1, 32, 0, true, false, false, false, 1 },
+		door_left_silverlock	= { t_door0, t_door1, 48, 0, true, false, false, false, 1 },
+		door_top_goldlock		= { t_door0, t_door1, 64, 0, true, false, false, false, 2 },
+		door_left_goldlock		= { t_door0, t_door1, 80, 0, true, false, false, false, 2 },
 		gate_top_nolock			= { t_door0, t_door1, 0, 32, true },
 		gate_left_nolock		= { t_door0, t_door1, 16, 32, true },
-		gate_top_silverlock		= { t_door0, t_door1, 32, 32, true },
-		gate_left_silverlock	= { t_door0, t_door1, 48, 32, true },
-		gate_top_goldlock		= { t_door0, t_door1, 64, 32, true },
-		gate_left_goldlock		= { t_door0, t_door1, 80, 32, true },
+		gate_top_silverlock		= { t_door0, t_door1, 32, 32, true, false, false, false, 1 },
+		gate_left_silverlock	= { t_door0, t_door1, 48, 32, true, false, false, false, 1 },
+		gate_top_goldlock		= { t_door0, t_door1, 64, 32, true, false, false, false, 2 },
+		gate_left_goldlock		= { t_door0, t_door1, 80, 32, true, false, false, false, 2 },
 	}
 
 	lights = {
@@ -351,6 +351,10 @@ function draw_layout_to_room(room, matrix, roomx, roomy)
 				room.chests[i][j] = chest
 			elseif matrix[i][j] == "d" then
 				room.doors[i][j] = getDoor(matrix, i, j, doors.door_top_nolock, doors.door_left_nolock)
+			elseif matrix[i][j] == "S" then
+				room.doors[i][j] = getDoor(matrix, i, j, doors.door_top_silverlock, doors.door_left_silverlock)
+			elseif matrix[i][j] == "G" then
+				room.doors[i][j] = getDoor(matrix, i, j, doors.door_top_goldlock, doors.door_left_goldlock)
 			elseif matrix[i][j] == "g" then
 				room.doors[i][j] = getDoor(matrix, i, j, doors.gate_top_nolock, doors.gate_left_nolock)
 			end

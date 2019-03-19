@@ -239,15 +239,15 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 		gamecontroller_rumble(0.30f, 100);
 		if (space->monster) {
 			on_monster_collision(player, space->monster, matrix, direction);
-		} else if (space->door) {
-			// Open the door
-			mixer_play_effect(DOOR_OPEN);
-			space->door->sprite->texture_index = 1;
-			space->door->collider = false;
+		} else if (space->door && map_open_door(space->door, player)) {
+			// Door opened, pass
 		} else {
 			mixer_play_effect(BONK);
 			camera_shake(direction, 100);
-			gui_log("Ouch! There is something in the way");
+			if (space->door)
+				gui_log("Ouch! That door seems to be locked");
+			else
+				gui_log("Ouch! There is something in the way");
 		}
 		return true;
 	}

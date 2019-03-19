@@ -121,7 +121,8 @@ local function repack(data)
 		isCollider		= data[5] or false,
 		isLightSource	= data[6] or false,
 		isLevelExit		= data[7] or false,
-		isLethal		= data[8] or false
+		isLethal		= data[8] or false,
+		lockType		= data[9] or 0
 	}
 end
 
@@ -509,6 +510,8 @@ function module.build_room(room, roomx, roomy)
 		build_coridoor_room(room)
 	elseif room.type == "shop" then
 		build_shop_room(room, roomx, roomy)
+	elseif room.type == "locked" then
+		build_locked_room(room, roomx, roomy)
 	else
 		build_normal_room(room)
 		--build_locked_room(room, roomx, roomy)

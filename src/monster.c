@@ -266,6 +266,7 @@ monster_create(void)
 	m->state.forceCount = 0;
 	m->boss = false;
 	m->bloodlust = false;
+	m->items.keyType = LOCK_NONE;
 	monster_set_behaviour(m, NORMAL);
 
 	return m;
@@ -702,6 +703,12 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		Item *treasure = item_builder_build_treasure(PLATINUM, 3 * monster->stats.lvl);
 		treasure->sprite->pos = monsterTilePos;
 		linkedlist_append(&map->items, treasure);
+	}
+
+	if (monster->items.keyType != LOCK_NONE) {
+		Item *key = item_builder_build_key(monster->items.keyType);
+		key->sprite->pos = monsterTilePos;
+		linkedlist_append(&map->items, key);
 	}
 
 	if (monster->stats.lvl > 2 && get_random(29) == 0) {

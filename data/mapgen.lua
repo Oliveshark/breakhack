@@ -132,6 +132,7 @@ local function generate_path ()
 					room.type = "shop"
 					shopAdded = true
 				end
+				room.type = "locked"
 				roomCount = roomCount + 1
 				room_builder.build_room(room, i-1, j-1)
 				if room.type ~= "shop" then

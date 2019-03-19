@@ -182,6 +182,7 @@ extract_tile_data(lua_State *L,
 	int tile_x, tile_y;
 	int t_index0, t_index1, tile_clip_x, tile_clip_y;
 	bool collider, lightsource, levelExit, lethal;
+	int lockType;
 
 	map = luaL_checkmap(L, 1);
 	tile_x = (int) luaL_checkinteger(L, 2);
@@ -200,18 +201,20 @@ extract_tile_data(lua_State *L,
 	lua_getfield(L, 4, "isLightSource");
 	lua_getfield(L, 4, "isLevelExit");
 	lua_getfield(L, 4, "isLethal");
+	lua_getfield(L, 4, "lockType");
 
-	t_index0 = (int) luaL_checkinteger(L, -8);
-	t_index1 = (int) luaL_checkinteger(L, -7);
-	tile_clip_x = (int) luaL_checkinteger(L, -6);
-	tile_clip_y = (int) luaL_checkinteger(L, -5);
-	collider = lua_toboolean(L, -4);
-	lightsource = lua_toboolean(L, -3);
-	levelExit = lua_toboolean(L, -2);
-	lethal = lua_toboolean(L, -1);
+	t_index0 = (int) luaL_checkinteger(L, -9);
+	t_index1 = (int) luaL_checkinteger(L, -8);
+	tile_clip_x = (int) luaL_checkinteger(L, -7);
+	tile_clip_y = (int) luaL_checkinteger(L, -6);
+	collider = lua_toboolean(L, -5);
+	lightsource = lua_toboolean(L, -4);
+	levelExit = lua_toboolean(L, -3);
+	lethal = lua_toboolean(L, -2);
+	lockType = (int) luaL_checkinteger(L, -1);
 
 	// Clear the stack
-	lua_pop(L, 8);
+	lua_pop(L, 9);
 
 	Position tilePos = (Position) { tile_x, tile_y };
 	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
@@ -227,6 +230,7 @@ extract_tile_data(lua_State *L,
 	tile->lightsource = lightsource;
 	tile->levelExit = levelExit;
 	tile->lethal = lethal;
+	tile->lockType = lockType;
 
 	f_add_tile(map, &tilePos, tile);
 }
@@ -382,6 +386,24 @@ l_add_chest(lua_State *L)
 	}
 
 	linkedlist_append(&map->items, chest);
+
+	return 0;
+}
+
+static int
+l_add_key_to_random_monster(lua_State *L)
+{
+	Map *map = luaL_checkmap(L, 0);
+	int keytype = (int) luaL_checkinteger(L, 1);
+
+	unsigned int max = linkedlist_size(&map->monsters);
+	unsigned int index = bh_map_rand(max - 1);
+
+	Monster *m = linkedlist_get(&map->monsters, index);
+	if (!m)
+		return 0;
+	
+	m->items.keyType = keytype;
 
 	return 0;
 }

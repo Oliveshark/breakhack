@@ -456,6 +456,9 @@ map_open_door(MapTile *tile, Player *player)
 {
 	if (tile->lockType == LOCK_NONE || tile->lockType & player->equipment.keys) {
 		// Open the door
+		if (tile->lockType != LOCK_NONE)
+			gui_log("You unlocked a door!");
+
 		mixer_play_effect(DOOR_OPEN);
 		tile->sprite->texture_index = 1;
 		tile->collider = false;
