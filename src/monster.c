@@ -690,25 +690,25 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 		linkedlist_append(&map->artifacts, a);
 		Item *treasure = item_builder_build_item(TREASURE, map->level*2);
 		treasure->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->items, treasure);
-	}
-
-	if (strcmp(monster->label, "The Trader") == 0) {
-		Item *treasure = item_builder_build_treasure(PLATINUM, 10 * monster->stats.lvl);
-		treasure->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->items, treasure);
-	}
-
-	if (strcmp(monster->label, "A Fairy") == 0) {
-		Item *treasure = item_builder_build_treasure(PLATINUM, 3 * monster->stats.lvl);
-		treasure->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->items, treasure);
+		linkedlist_push(&map->items, treasure);
 	}
 
 	if (monster->items.keyType != LOCK_NONE) {
 		Item *key = item_builder_build_key(monster->items.keyType);
 		key->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->items, key);
+		linkedlist_push(&map->items, key);
+	}
+
+	if (strcmp(monster->label, "The Trader") == 0) {
+		Item *treasure = item_builder_build_treasure(PLATINUM, 10 * monster->stats.lvl);
+		treasure->sprite->pos = monsterTilePos;
+		linkedlist_push(&map->items, treasure);
+	}
+
+	if (strcmp(monster->label, "A Fairy") == 0) {
+		Item *treasure = item_builder_build_treasure(PLATINUM, 3 * monster->stats.lvl);
+		treasure->sprite->pos = monsterTilePos;
+		linkedlist_push(&map->items, treasure);
 	}
 
 	if (monster->stats.lvl > 2 && get_random(29) == 0) {

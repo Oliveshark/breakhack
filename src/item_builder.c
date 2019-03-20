@@ -155,15 +155,15 @@ item_builder_build_treasure(Treasure type, double goldAmt)
 static void
 pickup_silver_key(Item *item, Player *player)
 {
-	UNUSED(item);
-	player->equipment.keys &= LOCK_SILVER;
+	gui_log("You pickup %s", item->label);
+	player->equipment.keys |= LOCK_SILVER;
 }
 
 static void
 pickup_gold_key(Item *item, Player *player)
 {
-	UNUSED(item);
-	player->equipment.keys &= LOCK_GOLD;
+	gui_log("You pickup %s", item->label);
+	player->equipment.keys |= LOCK_GOLD;
 }
 
 Item *

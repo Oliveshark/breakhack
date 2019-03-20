@@ -60,6 +60,7 @@ typedef struct Room_t {
 	Trap* traps[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	RoomModifierData modifier;
 	bool visited;
+	unsigned int lockTypes;
 } Room;
 
 typedef struct Map_t {
@@ -72,6 +73,7 @@ typedef struct Map_t {
 	Position currentRoom;
 	Timer *monsterMoveTimer;
 	int level;
+	unsigned int lockTypes;
 } Map;
 
 Map*

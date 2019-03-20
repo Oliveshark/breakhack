@@ -37,6 +37,7 @@ create_room(void)
 	room = ec_malloc(sizeof(Room));
 	room->modifier.type = RMOD_TYPE_NONE;
 	room->visited = false;
+	room->lockTypes = 0;
 	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
 			room->tiles[i][j] = NULL;
@@ -63,6 +64,7 @@ map_create(void)
 	map->currentRoom = (Position) { 0, 0 };
 	map->monsterMoveTimer = _timer_create();
 	map->level = 1;
+	map->lockTypes = 0;
 	
 	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {
 		for (j=0; j < MAP_V_ROOM_COUNT; ++j) {
@@ -150,6 +152,9 @@ map_add_door(Map *map, Position *tile_pos, MapTile *tile)
 	tile->door = true;
 	tile->sprite->texture_index = 0;
 	tile->sprite->animate = false;
+
+	map->lockTypes |= tile->lockType;
+	room->lockTypes |= tile->lockType;
 }
 
 void

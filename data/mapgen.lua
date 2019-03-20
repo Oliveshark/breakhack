@@ -14,6 +14,8 @@ local LEFT	= 2
 local RIGHT	= 3
 local DOWN	= 4
 
+local lockedDoorsAdded = false
+
 -- BEGIN FUNCTIONS
 local function matrix_coverage (matrix)
 	local cov = 0
@@ -128,11 +130,13 @@ local function generate_path ()
 		for j=1,10 do
 			room = map_matrix[i][j]
 			if room then
-				if roomCount > 4 and shopLevel and not shopAdded then
+				if roomCount > 4 and shopLevel and not shopAdded and not room.goal then
 					room.type = "shop"
 					shopAdded = true
+				elseif random(8) == 1 and not room.goal then
+					room.type = "locked"
+					lockedDoorsAdded = true
 				end
-				room.type = "locked"
 				roomCount = roomCount + 1
 				room_builder.build_room(room, i-1, j-1)
 				if room.type ~= "shop" then
@@ -177,5 +181,9 @@ for i=1,10 do
 			chest_gen.load_chests(map, room.chests)
 		end
 	end
+end
+
+if lockedDoorsAdded then
+	add_keybearers(map)
 end
 -- END SCRIPT

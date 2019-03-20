@@ -390,20 +390,48 @@ l_add_chest(lua_State *L)
 	return 0;
 }
 
-static int
-l_add_key_to_random_monster(lua_State *L)
+static bool
+monster_is_in_room_with_locktype(Map *map, Monster *m, DoorLockType lockType)
 {
-	Map *map = luaL_checkmap(L, 0);
-	int keytype = (int) luaL_checkinteger(L, 1);
+	Position roomPos = position_to_room_coords(&m->sprite->pos);
+	Room *room = map->rooms[roomPos.x][roomPos.y];
+	return room->lockTypes & lockType;
+}
 
-	unsigned int max = linkedlist_size(&map->monsters);
-	unsigned int index = bh_map_rand(max - 1);
+static void
+add_keybearer_to_map(Map *map, int keyType)
+{
+	for (size_t tries = 0; tries < 10; tries++) {
+		unsigned int max = linkedlist_size(map->monsters);
+		unsigned int index = bh_map_rand() % max;
 
-	Monster *m = linkedlist_get(&map->monsters, index);
-	if (!m)
-		return 0;
-	
-	m->items.keyType = keytype;
+		Monster *m = linkedlist_get(&map->monsters, index);
+		if (!m)
+			continue;
+
+		if (m->items.keyType != LOCK_NONE)
+			continue;
+
+		if (!monster_is_in_room_with_locktype(map, m, keyType)) {
+			debug("Adding key %d to monster '%s' (%u)", keyType, m->label, index);
+			m->items.keyType = keyType;
+			return;
+		} else {
+			debug("Looking for another monster to be the keybearer");
+		}
+	}
+
+	error("Failed to find a suitable keybearer (%d)", keyType);
+}
+
+static int
+l_add_key_to_random_monsters(lua_State *L)
+{
+	Map *map = luaL_checkmap(L, 1);
+	if (map->lockTypes & LOCK_GOLD)
+		add_keybearer_to_map(map, LOCK_GOLD);
+	if (map->lockTypes & LOCK_SILVER)
+		add_keybearer_to_map(map, LOCK_SILVER);
 
 	return 0;
 }
@@ -643,6 +671,9 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, Player *pl
 
 	lua_pushcfunction(L, l_add_monster);
 	lua_setglobal(L, "add_monster");
+
+	lua_pushcfunction(L, l_add_key_to_random_monsters);
+	lua_setglobal(L, "add_keybearers");
 
 	lua_pushcfunction(L, l_get_random_seed);
 	lua_setglobal(L, "get_random_seed");
