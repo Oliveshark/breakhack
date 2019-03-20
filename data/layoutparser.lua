@@ -325,17 +325,19 @@ function createJumbleLayout(matrix)
 end
 
 function draw_layout_to_room(room, matrix, roomx, roomy)
+	local wallTypes = {"#", "\"", "/", "d", "g", "S", "G"}
+
 	for i=2,13 do
 		for j=2,10 do
 			if matrix[i][j] == "p" then
 				setPitTile(room, matrix, i, j);
 			elseif matrix[i][j] == "#" then
-				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/", "d", "g"}, false)
+				setBlockTile(room, matrix, i, j, walls, wallTypes, false)
 			elseif matrix[i][j] == "\"" then
-				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/", "d", "g"}, false)
+				setBlockTile(room, matrix, i, j, walls, wallTypes, false)
 				room.decor[i][j] = lights.candle1
 			elseif matrix[i][j] == "/" then
-				setBlockTile(room, matrix, i, j, walls, {"#", "\"", "/", "d", "g"}, false)
+				setBlockTile(room, matrix, i, j, walls, wallTypes, false)
 				if random(2) == 1 then
 					room.decor[i][j] = lights.candle1
 				else

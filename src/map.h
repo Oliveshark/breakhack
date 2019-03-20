@@ -32,15 +32,10 @@
 #include "player.h"
 #include "map_room_modifiers.h"
 #include "object.h"
+#include "doorlocktype.h"
 
 typedef struct UpdateData UpdateData;
 typedef struct Trap Trap;
-
-typedef enum DoorLockType {
-	LOCK_NONE,
-	LOCK_SILVER,
-	LOCK_GOLD
-} DoorLockType;
 
 typedef struct MapTile_t {
 	Sprite *sprite;

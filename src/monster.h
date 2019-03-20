@@ -25,9 +25,9 @@
 #include "actiontext.h"
 #include "player.h"
 #include "linkedlist.h"
+#include "doorlocktype.h"
 
 struct UpdateData;
-enum DoorLockType;
 
 typedef enum {
 	PACIFIST,
