@@ -5,9 +5,9 @@ SET(CMAKE_COLOR_MAKEFILE ON)
 project(breakhack C)
 
 set(breakhack_GAME_TITLE "BreakHack")
-set(breakhack_MAJOR_VERSION 2)
-set(breakhack_MINOR_VERSION 1)
-set(breakhack_PATCH_VERSION 4)
+set(breakhack_MAJOR_VERSION 3)
+set(breakhack_MINOR_VERSION 0)
+set(breakhack_PATCH_VERSION 1)
 set(breakhack_RELEASE_TYPE "")
 
 include(FindLua)
