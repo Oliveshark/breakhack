@@ -1,0 +1,56 @@
+53703f1 Patch version raised to 1
+ce182ad Updates checksums
+ebfe271 Fixes compile error and some graphical issues
+2ae6ada Completes locked room generation
+18987e2 Incomplete monster key fixes
+59a1e81 Implementation of keys. Completely untested
+1065216 Include all files in pack files
+68533f0 Remove memory leaks from map destruction
+38dc3de Merge branch 'dev' of github.com:liquidityc/breakhack into dev
+beda4f6 Reduces fairy frequency
+e50d40f Adds doors and greater chance of walls
+0983bd1 Fixes a weird issue with missing code
+184b42f Fixes door logic
+e42e024 Adds some door logic
+756afba Separates walls from regular tiles
+40a20e9 Adapts fopen/fopen_s to WIN32/GCC compile
+af930f6 Fixes win compiler warnings
+c4fd16d Updated dll checksums for windows build
+f840b28 Adds mediocre crack protection
+7fbeaa3 Introduced base structure for doors in maps
+3e43c30 Adds funny casting to avoid pedantic ISO C warning
+fd3a625 Adds monster bloodlust
+d749861 Make jumbled rooms more likely
+7ab5ece Nicer wall decorations on interior walls
+8c9622d Shopkeeper now has bodyguards next time you meet after kiling him
+af0c616 Adds juice
+46fbdc1 Fixed jumble layout logic
+b40c54a Layouts can now be jumbled with each other
+8f20f36 Lighting on wall layouts and aggro shopkeepers
+3ba33d8 Adds light tiles to layout files and a shopkeeper
+447c1a7 Monster shopkeeper logic
+7e1dffb Shops implemented
+6009aa1 Merge branch 'dev' into shops
+9b4a7b6 Removes crazy old bug that never presented itself before
+63812fb More wall layouts and cordinated walls
+c6a022e Moved text sprite logic to sprite_util
+06ca6c3 Not finnished yet, commit
+bab5fd7 Merge branch 'dev' into shops
+68f4409 Add amt sprite to all items where value != 0
+959fae1 Add value sprite to items.
+ca41520 Wall layouts added to regular build
+88f4703 Some more fence layouts
+486c1bb Merge branch 'dev' into shops
+206f95f Fences and walls in layout files
+1c4e600 Wall layout data
+57a1688 Merge branch 'dev' into shops
+13ca11c Begins refactoring of layout parser to accomodate more layout details
+33efba8 Merge branch 'dev' into shops
+5d61a91 Split pit layout logic into separate file
+6542e4f Moves item update to its own function
+7b47c6a Completes buyable items
+16d9035 Merge branch 'dev' into shops
+4054c37 Ignore vscode_build dir
+ad227f1 A start to "priced" items
+37ba189 Suppress cppcheck issues
+645a02c Ignore .vscode folder
