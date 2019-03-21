@@ -1,3 +1,7 @@
+c4811ed Fixes checksumtool output again
+eceb241 Removes useless text from checksumtool output
+cea891f Move checksum configuration to CMakeLists.txt and config.h
+8e28230 Fixes release notes
 53703f1 Patch version raised to 1
 ce182ad Updates checksums
 ebfe271 Fixes compile error and some graphical issues
