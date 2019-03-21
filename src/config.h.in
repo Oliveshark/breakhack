@@ -27,4 +27,9 @@
 #define PATCH_VERSION	@breakhack_PATCH_VERSION@
 #define RELEASE_TYPE	"@breakhack_RELEASE_TYPE@"
 
+
+/* Checksums */
+#define SO_LIBSTEAM_CHECKSUM 	@breakhack_STEAMAPI_SO_CHECKSUM@
+#define DLL_LIBSTEAM_CHECKSUM 	@breakhack_STEAMAPI_DLL_CHECKSUM@
+
 #endif // CONFIG_H_

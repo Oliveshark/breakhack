@@ -10,6 +10,10 @@ set(breakhack_MINOR_VERSION 0)
 set(breakhack_PATCH_VERSION 1)
 set(breakhack_RELEASE_TYPE "")
 
+# Checksums
+set(breakhack_STEAMAPI_DLL_CHECKSUM 0x18dba28)
+set(breakhack_STEAMAPI_SO_CHECKSUM 0x1f5786b)
+
 include(FindLua)
 include(FindPhysFS)
 include(build/cmake/FindSDL2.cmake)

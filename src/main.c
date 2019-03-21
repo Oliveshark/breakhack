@@ -57,6 +57,7 @@
 #include "time.h"
 #include "sprite_util.h"
 #include "event.h"
+#include "config.h"
 
 #ifdef STEAM_BUILD
 #include "checksum.h"
