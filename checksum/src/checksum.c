@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
             return -1;
       }
 
-      printf("The checksum of %s is %#x\n", file, checksum_fp(fp));
+      printf("%#x\n", file, checksum_fp(fp));
 
       return 0;
 }
