@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
             return -1;
       }
 
-      printf("%#x\n", file, checksum_fp(fp));
+      printf("%#x\n", checksum_fp(fp));
 
       return 0;
 }
