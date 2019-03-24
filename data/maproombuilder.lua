@@ -419,7 +419,7 @@ local function build_normal_room(room)
 	if not crumbling then
 		pitsAdded = layoutparser.add_pits_to_room(room)
 	end
-	if not pitsAdded then
+	if not pitsAdded and (not crumbling or CURRENT_LEVEL > 3) then
 		interiorWallsAdded = layoutparser.add_walls_to_room(room)
 	end
 
