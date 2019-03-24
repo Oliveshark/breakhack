@@ -156,6 +156,7 @@ static void
 pickup_silver_key(Item *item, Player *player)
 {
 	gui_log("You pickup %s", item->label);
+	mixer_play_effect(KEY_PICKUP);
 	player->equipment.keys |= LOCK_SILVER;
 }
 
@@ -163,6 +164,7 @@ static void
 pickup_gold_key(Item *item, Player *player)
 {
 	gui_log("You pickup %s", item->label);
+	mixer_play_effect(KEY_PICKUP);
 	player->equipment.keys |= LOCK_GOLD;
 }
 

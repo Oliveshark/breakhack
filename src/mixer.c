@@ -89,6 +89,7 @@ load_effects(void)
 	effects[FADE_OUT] = load_effect("Sounds/FX/fade_out.wav");
 	effects[BURST] = load_effect("Sounds/FX/burst.wav");
 	effects[DOOR_OPEN] = load_effect("Sounds/FX/door_open.wav");
+	effects[KEY_PICKUP] = load_effect("Sounds/FX/key_pickup.wav");
 }
 
 void
