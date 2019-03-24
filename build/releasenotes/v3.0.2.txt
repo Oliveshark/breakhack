@@ -1,0 +1,6 @@
+c2b8fd4 Adds key pickup SFX
+7a59d15 Don't add walls to crumbling rooms before lvl 4
+c9fde8d Updated releasenotes
+c4811ed Fixes checksumtool output again
+eceb241 Removes useless text from checksumtool output
+cea891f Move checksum configuration to CMakeLists.txt and config.h
