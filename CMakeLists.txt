@@ -52,6 +52,10 @@ elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 	set(GCC 1)
 endif()
 
+if ("${CMAKE_GENERATOR}" STREQUAL "Ninja")
+	set(NINJA 1)
+endif()
+
 if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 	set(OSX 1)
 endif()
@@ -161,22 +165,23 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 if (STEAM)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSTEAM_BUILD")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DSTEAM_BUILD")
-endif ()
-if (MINGW)
-	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DMINGW")
-endif (MINGW)
-if (NOT MSVC)
-	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
-else (NOT MSVC)
-	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__=__FILE__")
-endif (NOT MSVC)
-
-if (STEAM)
 	set(STEAM_SOURCES
 		src/steam/steamworks_api_wrapper
 		)
 else ()
 	set(STEAM_SOURCES "")
+endif ()
+
+if (MINGW)
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DMINGW")
+endif (MINGW)
+
+if (NOT MSVC AND NOT NINJA)
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
+elseif (NINJA)
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__='\"$$(subst ${CMAKE_SOURCE_DIR}/,,$$(abspath $$<))\"'")
+else ()
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__=__FILE__")
 endif ()
 
 # PROGRAMS:

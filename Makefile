@@ -1,18 +1,18 @@
 all:
-	@make -sC _build/debug
+	@ninja -C _build/debug
 .PHONY: all
 
 release:
-	@make -sC _build/release
+	@ninja -C _build/release
 .PHONY: release
 
 clean:
-	@make clean -sC _build/debug
-	@make clean -sC _build/release
+	@ninja clean -C _build/debug
+	@ninja clean -C _build/release
 .PHONY: clean
 
 test:
-	@make test -sC _build/debug
+	@ninja test -C _build/debug
 .PHONY: test
 
 run: $(all)
@@ -24,9 +24,9 @@ playtest: $(all)
 .PHONY: run
 
 lint:
-	@make lint -sC _build/debug
+	@ninja lint -C _build/debug
 .PHONY: lint
 
 package:
-	@make package -sC _build/release
+	@ninja package -C _build/release
 .PHONY: package
