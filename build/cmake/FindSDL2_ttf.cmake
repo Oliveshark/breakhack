@@ -28,6 +28,14 @@
 # See the License for more information.
 #=============================================================================
 
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(SDL2_ARCH_64 TRUE)
+  set(SDL2_PROCESSOR_ARCH "x64")
+else()
+  set(SDL2_ARCH_64 FALSE)
+  set(SDL2_PROCESSOR_ARCH "x86")
+endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
+
 if(NOT SDL2_TTF_INCLUDE_DIR AND SDL2TTF_INCLUDE_DIR)
   set(SDL2_TTF_INCLUDE_DIR ${SDL2TTF_INCLUDE_DIR} CACHE PATH "directory cache
 entry initialized from old variable name")
@@ -48,7 +56,7 @@ find_library(SDL2_TTF_LIBRARY
   HINTS
     ENV SDLTTFDIR
     ENV SDLDIR
-  PATH_SUFFIXES lib
+  PATH_SUFFIXES lib lib/${SDL2_PROCESSOR_ARCH}
 )
 
 if(SDL2_TTF_INCLUDE_DIR AND EXISTS "${SDL2_TTF_INCLUDE_DIR}/SDL_ttf.h")
