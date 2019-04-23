@@ -46,8 +46,8 @@ BreakHack is released under two different licenses.
 
 Compile
 -------
-[Linux](LINUX_BUILD_INSTRUCTIONS.md)
-[Windows (Visual Studio)](MSVC_BUILD_INSTRUCTIONS.md)
+* [Linux](LINUX_BUILD_INSTRUCTIONS.md)
+* [Windows (Visual Studio)](MSVC_BUILD_INSTRUCTIONS.md)
 
 Contribute
 ----------
