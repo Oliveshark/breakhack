@@ -405,6 +405,8 @@ on_character_select(const char *str)
 		playerClass = WARRIOR;
 	else if (strcmp(str, "rogue") == 0)
 		playerClass = ROGUE;
+	else if (strcmp(str, "mage") == 0)
+		playerClass = MAGE;
 
 	startGame();
 }

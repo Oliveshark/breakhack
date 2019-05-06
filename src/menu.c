@@ -106,22 +106,25 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *
 {
 	const char *spriteSheets[] = {
 		"Commissions/Warrior.png",
-		"Commissions/Rogue.png"
+		"Commissions/Rogue.png",
+		"Commissions/Mage.png"
 	};
 
 	static char *callbackData[] = {
 		"warrior",
-		"rogue"
+		"rogue",
+		"mage"
 	};
 
 	static char *descriptions[] = {
 		"Play as the warrior",
 		"Play as the rogue",
+		"Play as the mage"
 	};
 
 	Menu *menu = menu_create();
-	int xoffset = 224;
-	for (size_t i = 0; i < 2; ++i) {
+	int xoffset = 168;
+	for (size_t i = 0; i < 3; ++i) {
 		Sprite *s1 = sprite_create();
 		sprite_set_texture(s1, texturecache_add(spriteSheets[i]), 0);
 		s1->clip = CLIP16(0, 48);
@@ -139,7 +142,7 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *
 		menu_item_add(menu, s1, s2, (void (*)(void *)) onCharacterSelect);
 		MenuItem *item = linkedlist_get(&menu->items, (Uint32) i);
 		item->button->usrdata = callbackData[i];
-		xoffset += 224;
+		xoffset += 168;
 
 		linkedlist_append(&menu->descriptions, descriptions[i]);
 	}

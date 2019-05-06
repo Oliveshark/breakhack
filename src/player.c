@@ -553,7 +553,6 @@ player_create(class_t class, Camera *cam)
 			player->skills[0] = skill_create(BACKSTAB, cam);
 			player->skills[1] = skill_create(TRIP, cam);
 			player->skills[2] = skill_create(PHASE, cam);
-			player->skills[3] = skill_create(DAGGER_THROW, cam);
 			player->daggers = 10;
 			break;
 		case WARRIOR:
@@ -562,10 +561,10 @@ player_create(class_t class, Camera *cam)
 			player->skills[0] = skill_create(FLURRY, cam);
 			player->skills[1] = skill_create(BASH, cam);
 			player->skills[2] = skill_create(CHARGE, cam);
-			player->skills[3] = skill_create(DAGGER_THROW, cam);
 			break;
 	}
 
+	player->skills[3] = skill_create(DAGGER_THROW, cam);
 	player->skills[4] = skill_create(SIP_HEALTH, cam);
 
 	sprite_load_texture(player->sprite, asset, 0, cam->renderer);
