@@ -26,6 +26,7 @@
 #include "player.h"
 #include "linkedlist.h"
 #include "doorlocktype.h"
+#include "particle_emitter.h"
 
 struct UpdateData;
 
@@ -68,6 +69,11 @@ typedef struct MonsterItems {
 	enum DoorLockType keyType;
 } MonsterItems;
 
+typedef struct ParticleEmitters {
+	ParticleEmitter *bloodlust;
+	ParticleEmitter *bleed;
+} ParticleEmitters;
+
 typedef struct Monster {
 	char *label;
 	char *lclabel;
@@ -77,9 +83,9 @@ typedef struct Monster {
 	MonsterStateIndicator stateIndicator;
 	MonsterBehaviour behaviour;
 	MonsterItems items;
+	ParticleEmitters emitters;
 	unsigned int steps;
 	bool boss;
-	bool bloodlust;
 } Monster;
 
 Monster* monster_create(void);
@@ -122,6 +128,9 @@ monster_reset_steps(Monster *m);
 
 void
 monster_set_bloodlust(Monster*, bool bloodlust);
+
+void
+monster_set_bleeding(Monster*);
 
 void
 monster_destroy(Monster*);

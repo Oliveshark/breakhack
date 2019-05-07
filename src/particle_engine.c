@@ -101,6 +101,12 @@ particle_engine_init(void)
 }
 
 void
+particle_engine_bleed(Position pos, Dimension dim)
+{
+	particle_engine_bloodspray(pos, dim, 5);
+}
+
+void
 particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 {
 	check_engine();
@@ -252,6 +258,12 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 			p->particle.rect.dim = (Dimension) { 2, 20 };
 		linkedlist_append(&engine->game_particles, p);
 	}
+}
+
+void
+particle_engine_bloodlust(Position pos, Dimension dim)
+{
+	particle_engine_sparkle(pos, dim, C_RED, false);
 }
 
 void

@@ -213,6 +213,7 @@ add_executable(breakhack
 	src/pointer
 	src/gui_button
 	src/particle_engine
+	src/particle_emitter
 	src/menu
 	src/collisions
 	src/keyboard

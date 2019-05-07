@@ -233,6 +233,24 @@ monster_behaviour_check(Monster *m, RoomMatrix *rm)
 	}
 }
 
+static void
+create_emitters(Monster *m)
+{
+	// Bloodlust
+	ParticleEmitter *emitter = particle_emitter_create();
+	emitter->timestep = 0;
+	emitter->enabled = false;
+	emitter->particle_func = particle_engine_bloodlust;
+	m->emitters.bloodlust = emitter;
+
+	emitter = particle_emitter_create();
+	emitter->timestep = 1000;
+	emitter->enabled = false;
+	emitter->particle_func = particle_engine_bleed;
+	m->emitters.bleed = emitter;
+
+}
+
 Monster*
 monster_create(void)
 {
@@ -265,9 +283,9 @@ monster_create(void)
 	m->stateIndicator.shownOnPlayerRoomEnter = false;
 	m->state.forceCount = 0;
 	m->boss = false;
-	m->bloodlust = false;
 	m->items.keyType = LOCK_NONE;
 	monster_set_behaviour(m, NORMAL);
+	create_emitters(m);
 
 	return m;
 }
@@ -586,6 +604,19 @@ monster_reset_steps(Monster *m)
 	m->steps = 0;
 }
 
+static void
+update_emitters(Monster *m)
+{
+	Position pos = m->sprite->pos;
+	pos.x += 6;
+	pos.y += 6;
+	particle_emitter_update(m->emitters.bloodlust, pos, DIM(20, 20));
+
+	pos.x += 5;
+	pos.y += 5;
+	particle_emitter_update(m->emitters.bleed, pos, DIM(10, 10));
+}
+
 void
 monster_update(Monster *m, UpdateData *data)
 {
@@ -593,6 +624,7 @@ monster_update(Monster *m, UpdateData *data)
 		return;
 
 	sprite_update(m->sprite, data);
+	update_emitters(m);
 
 	if (m->sprite->state == SPRITE_STATE_PLUMMETED) {
 		m->stats.hp = 0;
@@ -762,13 +794,8 @@ monster_render(Monster *m, Camera *cam)
 	if (m->stats.hp <= 0)
 		return;
 
-	if (m->bloodlust) {
-		Position pos = m->sprite->pos;
-		pos.x += 6;
-		pos.y += 6;
-		particle_engine_sparkle(pos, DIM(20, 20), C_RED, false);
-	}
-
+	particle_emitter_render(m->emitters.bloodlust);
+	particle_emitter_render(m->emitters.bleed);
 	sprite_render(m->sprite, cam);
 }
 
@@ -856,11 +883,11 @@ monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 void
 monster_set_bloodlust(Monster *m, bool bloodlust)
 {
-	if (m->bloodlust == bloodlust || m->stats.hp <= 0) {
+	if (m->emitters.bloodlust->enabled == bloodlust || m->stats.hp <= 0) {
 		return;
 	}
 
-	m->bloodlust = bloodlust;
+	m->emitters.bloodlust->enabled = bloodlust;
 	if (bloodlust) {
 		gui_log("%s rages with bloodlust", m->label);
 		monster_set_behaviour(m, HOSTILE);
@@ -883,6 +910,12 @@ monster_set_bloodlust(Monster *m, bool bloodlust)
 }
 
 void
+monster_set_bleeding(Monster *m)
+{
+	m->emitters.bleed->enabled = true;
+}
+
+void
 monster_destroy(Monster *m)
 {
 	sprite_destroy(m->sprite);
@@ -890,6 +923,10 @@ monster_destroy(Monster *m)
 		free(m->label);
 	if (m->lclabel)
 		free(m->lclabel);
+
+	particle_emitter_destroy(m->emitters.bloodlust);
+	particle_emitter_destroy(m->emitters.bleed);
+
 	sprite_destroy(m->stateIndicator.sprite);
 	free(m);
 }
