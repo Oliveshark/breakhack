@@ -551,9 +551,22 @@ monster_perform_aoe_attack(Monster *m, RoomMatrix *rm)
 	return false;
 }
 
+static void
+apply_bleed_damage(Monster *m)
+{
+	if (!m->emitters.bleed->enabled)
+		return;
+
+	uint32_t dmg = m->stats.lvl * 2;
+	monster_hit(m, dmg);
+	m->stats.hp -= dmg;
+}
+
 bool
 monster_move(Monster *m, RoomMatrix *rm, Map *map)
 {
+	apply_bleed_damage(m);
+
 	Player *player = roommatrix_get_player(rm);
 	if (player && player->phase_count)
 		return true;
@@ -913,6 +926,7 @@ void
 monster_set_bleeding(Monster *m)
 {
 	m->emitters.bleed->enabled = true;
+	gui_log("%s starts bleeding profusely", m->label);
 }
 
 void
