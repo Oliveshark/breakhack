@@ -36,7 +36,8 @@ enum SkillType {
 	BACKSTAB,
 	TRIP,
 	PHASE,
-	BLINK
+	BLINK,
+	ERUPT
 };
 
 typedef struct SkillData_t {

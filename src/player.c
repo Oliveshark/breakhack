@@ -542,6 +542,7 @@ player_create(class_t class, Camera *cam)
 		case MAGE:
 			m_strcpy(asset, 100, "Commissions/Mage.png");
 			player->stats = (Stats) MAGE_STATS;
+			player->skills[1] = skill_create(ERUPT, cam);
 			player->skills[2] = skill_create(BLINK, cam);
 			break;
 		case PALADIN:

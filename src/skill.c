@@ -163,11 +163,28 @@ static char *blink_tooltip[] = {
 	"   object. Monsters will not obstruct your blink.", "",
 	"",
 	"COOLDOWN:", "",
-	"   5 turns", "",
+	"   4 turns", "",
 	"",
 	"USAGE:",
 	"   activate the skill (press ", "3", ")", "",
 	"   followed by a direction (left, right, up or down)", "",
+	"",
+	"",
+	"Press ", "ESC", " to close", "",
+	NULL
+};
+
+static char *erupt_tooltip[] = {
+	"ERUPT", "",
+	"",
+	"   You erupt in a magical explosion damaging monsters", "",
+	"   around you and causing bleeding.", "",
+	"",
+	"COOLDOWN:", "",
+	"   3 turns", "",
+	"",
+	"USAGE:",
+	"   Erupt (press ", "2", ")", "",
 	"",
 	"",
 	"Press ", "ESC", " to close", "",
@@ -835,8 +852,60 @@ create_blink(void)
 	s->clip = CLIP32(32, 0);
 	s->fixed = true;
 	Skill *skill = create_default("Blink", s);
-	skill->levelcap = 4;
+	skill->levelcap = 3;
 	skill->use = skill_blink;
+	skill->resetTime = 4;
+	return skill;
+}
+
+static bool
+skill_erupt(Skill *skill, SkillData *data)
+{
+	UNUSED(skill);
+
+	Player *player = data->player;
+	RoomMatrix *rm = data->matrix;
+
+	gui_log("You erupt in a magical explosion");
+	particle_engine_eldritch_explosion(player->sprite->pos, DIM(32, 32));
+	mixer_play_effect(BLAST_EFFECT);
+
+	Position playerMPos = position_to_matrix_coords(&player->sprite->pos);
+	for (Sint32 i = -1; i <= 1; ++i) {
+		for (Sint32 j = -1; j <= 1; ++j) {
+
+			if (i == 0 && j == 0)
+				continue;
+
+			RoomSpace *r = &rm->spaces[playerMPos.x + i][playerMPos.y + j];
+			if (r->monster) {
+				player->stats.advantage = true;
+				int dmg = stats_fight(&player->stats, &r->monster->stats);
+				player->stats.advantage = false;
+				monster_hit(r->monster, dmg);
+				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
+				monster_set_bleeding(r->monster);
+			}
+		}
+	}
+
+	return true;
+}
+
+static Skill *
+create_erupt(void)
+{
+	Texture *t = texturecache_add("Extras/Skills.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(32, 0);
+	s->fixed = true;
+	Skill *skill = create_default("Erupt", s);
+	skill->levelcap = 3;
+	skill->use = skill_erupt;
+	skill->instantUse = true;
+	skill->resetTime = 3;
 	return skill;
 }
 
@@ -860,6 +929,10 @@ skill_create(enum SkillType t, Camera *cam)
 		case BLINK:
 			skill = create_blink();
 			skill->tooltip = tooltip_create(blink_tooltip, cam);
+			break;
+		case ERUPT:
+			skill = create_erupt();
+			skill->tooltip = tooltip_create(erupt_tooltip, cam);
 			break;
 		case DAGGER_THROW:
 			skill = create_throw_dagger();
