@@ -571,6 +571,7 @@ skill_backstab(Skill *skill, SkillData *data)
 		if (dmg) {
 			mixer_play_effect(SWORD_HIT);
 			monster_set_state(m, STUNNED, (Uint8)(2 + player_has_artifact(data->player, INCREASED_STUN)));
+			monster_set_bleeding(m);
 		}
 	}
 
