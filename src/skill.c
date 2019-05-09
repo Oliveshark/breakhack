@@ -850,7 +850,7 @@ create_blink(void)
 	Sprite *s = sprite_create();
 	sprite_set_texture(s, t, 0);
 	s->dim = GAME_DIMENSION;
-	s->clip = CLIP32(32, 0);
+	s->clip = CLIP32(64, 64);
 	s->fixed = true;
 	Skill *skill = create_default("Blink", s);
 	skill->levelcap = 3;
@@ -900,7 +900,7 @@ create_erupt(void)
 	Sprite *s = sprite_create();
 	sprite_set_texture(s, t, 0);
 	s->dim = GAME_DIMENSION;
-	s->clip = CLIP32(32, 0);
+	s->clip = CLIP32(32, 64);
 	s->fixed = true;
 	Skill *skill = create_default("Erupt", s);
 	skill->levelcap = 3;
