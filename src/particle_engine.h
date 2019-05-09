@@ -38,6 +38,9 @@ void
 particle_engine_fire_explosion(Position, Dimension);
 
 void
+particle_engine_blink(Position, Dimension);
+
+void
 particle_engine_eldritch_explosion(Position, Dimension);
 
 void

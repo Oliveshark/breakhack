@@ -42,8 +42,8 @@
 #include "steam/steamworks_api_wrapper.h"
 #endif // STEAM_BUILD
 
-#define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 2, 1, false, false }
-#define MAGE_STATS	{ 12, 12, 5, 7, 1, 2, 1, false, false }
+#define ENGINEER_STATS	{ 12, 12, 5, 7, 2, 1, 1, false, false }
+#define MAGE_STATS	{ 12, 12, 5, 7, 1, 1, 1, false, false }
 #define PALADIN_STATS	{ 12, 12, 8, 9, 3, 1, 1, false, false }
 #define ROGUE_STATS	{  9,  9, 6, 9, 4, 2, 1, false, false }
 #define WARRIOR_STATS	{ 12, 12, 8, 9, 3, 1, 1, false, false }
@@ -542,6 +542,7 @@ player_create(class_t class, Camera *cam)
 		case MAGE:
 			m_strcpy(asset, 100, "Commissions/Mage.png");
 			player->stats = (Stats) MAGE_STATS;
+			player->skills[2] = skill_create(BLINK, cam);
 			break;
 		case PALADIN:
 			m_strcpy(asset, 100, "Commissions/Paladin.png");

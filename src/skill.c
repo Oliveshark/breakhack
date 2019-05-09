@@ -156,6 +156,24 @@ static char *charge_tooltip[] = {
 	NULL
 };
 
+static char *blink_tooltip[] = {
+	"BLINK", "",
+	"",
+	"   You blink in a chosen direction into the first obstructing", "",
+	"   object. Monsters will not obstruct your blink.", "",
+	"",
+	"COOLDOWN:", "",
+	"   5 turns", "",
+	"",
+	"USAGE:",
+	"   activate the skill (press ", "3", ")", "",
+	"   followed by a direction (left, right, up or down)", "",
+	"",
+	"",
+	"Press ", "ESC", " to close", "",
+	NULL
+};
+
 static char *dagger_tooltip[] = {
 	"THROW DAGGER", "",
 	"",
@@ -752,6 +770,76 @@ create_charge(void)
 	return skill;
 }
 
+static bool
+skill_blink(Skill *skill, SkillData *data)
+{
+	UNUSED(skill);
+
+	Player *player = data->player;
+	RoomMatrix *matrix = data->matrix;
+
+	Position playerStartPos = position_to_matrix_coords(&player->sprite->pos);
+	Position destination = playerStartPos;
+
+	// Find collider
+	destination.x += (int) data->direction.x;
+	destination.y += (int) data->direction.y;
+	RoomSpace *space = &matrix->spaces[destination.x][destination.y];
+	Position lastAvailableDest = playerStartPos;
+	while (position_in_roommatrix(&destination))
+	{
+		if (space->occupied) {
+			break;
+		}
+
+		if (!space->monster) {
+			lastAvailableDest = destination;
+		}
+
+		destination.x += (int) data->direction.x;
+		destination.y += (int) data->direction.y;
+		space = &matrix->spaces[destination.x][destination.y];
+	}
+
+	destination = lastAvailableDest;
+
+	// Move player
+	Position playerOriginPos = player->sprite->pos;
+	Sint32 xdiff = destination.x - playerStartPos.x;
+	Sint32 ydiff = destination.y - playerStartPos.y;
+	player->sprite->pos.x += xdiff * TILE_DIMENSION;
+	player->sprite->pos.y += ydiff * TILE_DIMENSION;
+	Position playerDestinationPos = player->sprite->pos;
+	player_turn(data->player, &data->direction);
+
+	particle_engine_blink(playerOriginPos, DIM(32, 32));
+	particle_engine_blink(playerDestinationPos, DIM(32, 32));
+	mixer_play_effect(BLINK_EFFECT);
+
+	Position lastTilePos = position_to_matrix_coords(&playerDestinationPos);
+	RoomSpace *destSpace = &matrix->spaces[lastTilePos.x][lastTilePos.y];
+
+	perform_pickups_for_space(destSpace, player);
+	handle_space_effects(destSpace, player);
+
+	return true;
+}
+
+static Skill *
+create_blink(void)
+{
+	Texture *t = texturecache_add("Extras/Skills.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(32, 0);
+	s->fixed = true;
+	Skill *skill = create_default("Blink", s);
+	skill->levelcap = 4;
+	skill->use = skill_blink;
+	return skill;
+}
+
 Skill*
 skill_create(enum SkillType t, Camera *cam)
 {
@@ -768,6 +856,10 @@ skill_create(enum SkillType t, Camera *cam)
 		case CHARGE:
 			skill = create_charge();
 			skill->tooltip = tooltip_create(charge_tooltip, cam);
+			break;
+		case BLINK:
+			skill = create_blink();
+			skill->tooltip = tooltip_create(blink_tooltip, cam);
 			break;
 		case DAGGER_THROW:
 			skill = create_throw_dagger();

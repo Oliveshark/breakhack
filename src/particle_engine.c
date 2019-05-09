@@ -188,6 +188,13 @@ particle_engine_fire_explosion(Position pos, Dimension dim)
 }
 
 void
+particle_engine_blink(Position pos, Dimension dim)
+{
+	check_engine();
+	create_explosion(pos, dim, 3, (SDL_Color) { 0, 0, 255, 255 }, C_BLUE, C_LIGHTBLUE);
+}
+
+void
 particle_engine_eldritch_explosion(Position pos, Dimension dim)
 {
 	check_engine();

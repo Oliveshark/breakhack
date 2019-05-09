@@ -66,6 +66,7 @@ typedef enum Fx_t {
 	BURST,
 	DOOR_OPEN,
 	KEY_PICKUP,
+	BLINK_EFFECT,
 	LAST_EFFECT
 } Fx;
 
