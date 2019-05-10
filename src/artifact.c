@@ -65,6 +65,9 @@ artifact_set_effect(Artifact *a, MagicalEffect effect)
 			a->info.name = "Shadow cloak";
 			a->info.desc = "You feel more in phase with the world";
 			break;
+		case SKILL_RADIUS:
+			a->info.name = "Magic wand";
+			a->info.desc = "Your magic has greater reach";
 		default:
 			break;
 	}
@@ -92,6 +95,41 @@ static int RogueArtifacts[] = {
 	PHASE_IMPROVEMENT	// 7
 };
 
+static int MageArtifacts[] = {
+	IMPROVED_HEARING,	// 0
+	TRAP_AVOIDANCE,		// 1
+	PIERCING_DAGGERS,	// 2
+	DAGGER_RECOVERY,	// 3
+	PUSH_BACK,		// 4
+	FEAR_INDUCING,		// 5
+	INCREASED_STUN,		// 6
+	SKILL_RADIUS		// 7
+};
+
+/* Not in play yet */
+static int PaladinArtifacts[] = {
+	IMPROVED_HEARING,	// 0
+	TRAP_AVOIDANCE,		// 1
+	PIERCING_DAGGERS,	// 2
+	DAGGER_RECOVERY,	// 3
+	PUSH_BACK,		// 4
+	FEAR_INDUCING,		// 5
+	INCREASED_STUN,		// 6
+	SKILL_RADIUS		// 7
+};
+
+/* Not in play yet */
+static int EngineerArtifacts[] = {
+	IMPROVED_HEARING,	// 0
+	TRAP_AVOIDANCE,		// 1
+	PIERCING_DAGGERS,	// 2
+	DAGGER_RECOVERY,	// 3
+	PUSH_BACK,		// 4
+	FEAR_INDUCING,		// 5
+	INCREASED_STUN,		// 6
+	PHASE_IMPROVEMENT	// 7
+};
+
 static void
 add_level_sprite(Artifact *a)
 {
@@ -109,17 +147,17 @@ add_level_sprite(Artifact *a)
 Artifact *
 artifact_create_random(Player *p, Uint8 level)
 {
-	int option = -1;
-	if (p->stats.lvl >= 4)
-		option = get_random(7);
-	else if (p->stats.lvl >= 3)
-		option = get_random(6);
-	else
-		option = get_random(5);
+	int option = get_random(7);
 
 	int * artifactPool = NULL;
 	if (p->class == ROGUE)
 		artifactPool = RogueArtifacts;
+	else if (p->class == MAGE)
+		artifactPool = MageArtifacts;
+	else if (p->class == PALADIN)
+		artifactPool = PaladinArtifacts;
+	else if (p->class == ENGINEER)
+		artifactPool = EngineerArtifacts;
 	else
 		artifactPool = WarriorArtifacts;
 
@@ -195,6 +233,11 @@ artifact_sprite_for(MagicalEffect effect)
 			t = texturecache_add("Items/Armor.png");
 			sprite_set_texture(sprite, t, 0);
 			sprite->clip = CLIP16(1*16, 5*16);
+			break;
+		case SKILL_RADIUS:
+			t = texturecache_add("Items/Wand.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(2*16, 0);
 			break;
 		default:
 			break;

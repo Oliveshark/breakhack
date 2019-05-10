@@ -30,6 +30,7 @@ typedef enum MagicalEffect {
 	INCREASED_STUN,
 	CHARGE_THROUGH,
 	PHASE_IMPROVEMENT,
+	SKILL_RADIUS,
 	LAST_ARTIFACT_EFFECT // Sentinel
 } MagicalEffect;
 
