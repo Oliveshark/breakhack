@@ -504,6 +504,7 @@ player_create(class_t class, Camera *cam)
 	player->sprite = sprite_create();
 #ifdef DEBUG
 	player->daggers			= 10;
+	player->gold			= 500;
 #else
 	player->daggers			= 0;
 #endif
