@@ -975,7 +975,7 @@ skill_erupt(Skill *skill, SkillData *data)
 				gui_log("%s takes %d damage from the explosion", r->monster->label, result.dmg);
 				monster_set_state(r->monster, SCARED, 3);
 
-				int lvl = 2;//player_has_artifact(player, PUSH_BACK);
+				int lvl = player_has_artifact(player, PUSH_BACK);
 				Vector2d dir = vector2d_to_direction(&VEC2D((float) i, (float) j));
 				for (int k = 0; k < lvl; ++k) {
 					monster_push(r->monster,
