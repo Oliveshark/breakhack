@@ -198,7 +198,8 @@ static char *erupt_tooltip[] = {
 	"ERUPT", "",
 	"",
 	"   You erupt in a magical explosion damaging monsters", "",
-	"   around you pushing them back and causing bleeding.", "",
+	"   around you pushing them back and causing fear", "",
+	"   for 3 turns.", "",
 	"",
 	"COOLDOWN:", "",
 	"   3 turns", "",
@@ -972,16 +973,17 @@ skill_erupt(Skill *skill, SkillData *data)
 				player->stats.advantage = false;
 				monster_hit(r->monster, result.dmg, result.critical);
 				gui_log("%s takes %d damage from the explosion", r->monster->label, result.dmg);
-				monster_set_bleeding(r->monster);
+				monster_set_state(r->monster, SCARED, 3);
 
 				int lvl = 2;//player_has_artifact(player, PUSH_BACK);
 				Vector2d dir = vector2d_to_direction(&VEC2D((float) i, (float) j));
-				monster_push(r->monster,
-					     player,
-					     rm,
-					     VEC2D(dir.x * (float) lvl,
-						   dir.y * (float) lvl)
-					    );
+				for (int k = 0; k < lvl; ++k) {
+					monster_push(r->monster,
+						     player,
+						     rm,
+						     dir
+						    );
+				}
 			}
 		}
 	}
