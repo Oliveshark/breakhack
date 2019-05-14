@@ -178,7 +178,7 @@ static char *erupt_tooltip[] = {
 	"ERUPT", "",
 	"",
 	"   You erupt in a magical explosion damaging monsters", "",
-	"   around you and causing bleeding.", "",
+	"   around you pushing them back and causing bleeding.", "",
 	"",
 	"COOLDOWN:", "",
 	"   3 turns", "",
