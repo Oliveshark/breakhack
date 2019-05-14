@@ -378,7 +378,7 @@ create_vampiric_blow(void)
 	Sprite *s = sprite_create();
 	sprite_set_texture(s, t, 0);
 	s->dim = GAME_DIMENSION;
-	s->clip = CLIP32(0, 0);
+	s->clip = CLIP32(0, 64);
 	s->fixed = true;
 	Skill *skill = create_default("Vampiric blow", s);
 	skill->levelcap = 2;
