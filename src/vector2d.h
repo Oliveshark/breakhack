@@ -27,6 +27,8 @@
 #define VECTOR2D_UP		(Vector2d) {  0, -1 }
 #define VECTOR2D_DOWN	(Vector2d) {  0,  1 }
 
+#define VEC2D(x, y)		(Vector2d) { x, y }
+
 typedef struct Vector2d_t {
 	float x;
 	float y;

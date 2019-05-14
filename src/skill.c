@@ -872,8 +872,9 @@ skill_erupt(Skill *skill, SkillData *data)
 	mixer_play_effect(BLAST_EFFECT);
 
 	Position playerMPos = position_to_matrix_coords(&player->sprite->pos);
-	for (Sint32 i = -1; i <= 1; ++i) {
-		for (Sint32 j = -1; j <= 1; ++j) {
+	int range = player_has_artifact(player, SKILL_RADIUS);
+	for (Sint32 i = -1 - range; i <= 1 + range; ++i) {
+		for (Sint32 j = -1 - range; j <= 1 + range; ++j) {
 
 			if (i == 0 && j == 0)
 				continue;
@@ -886,6 +887,15 @@ skill_erupt(Skill *skill, SkillData *data)
 				monster_hit(r->monster, dmg);
 				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
 				monster_set_bleeding(r->monster);
+				if (player_has_artifact(player, PUSH_BACK)) {
+					int lvl = player_has_artifact(player, PUSH_BACK);
+					monster_push(r->monster,
+						     player,
+						     rm,
+						     VEC2D((float) (i*lvl),
+							   (float) (j*lvl))
+						     );
+				}
 			}
 		}
 	}
