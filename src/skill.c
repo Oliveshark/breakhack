@@ -891,15 +891,14 @@ skill_erupt(Skill *skill, SkillData *data)
 				monster_hit(r->monster, dmg);
 				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
 				monster_set_bleeding(r->monster);
-				if (player_has_artifact(player, PUSH_BACK)) {
-					int lvl = player_has_artifact(player, PUSH_BACK);
-					monster_push(r->monster,
-						     player,
-						     rm,
-						     VEC2D((float) (i*lvl),
-							   (float) (j*lvl))
-						     );
-				}
+
+				int lvl = 1 + player_has_artifact(player, PUSH_BACK);
+				monster_push(r->monster,
+					     player,
+					     rm,
+					     VEC2D((float) (i*lvl),
+						   (float) (j*lvl))
+					    );
 			}
 		}
 	}
