@@ -896,8 +896,8 @@ skill_erupt(Skill *skill, SkillData *data)
 				monster_push(r->monster,
 					     player,
 					     rm,
-					     VEC2D((float) (i*lvl),
-						   (float) (j*lvl))
+					     VEC2D((float) ((i > 0 ? 1 : -1) * lvl),
+						   (float) ((j > 0 ? 1 : -1) * lvl))
 					    );
 			}
 		}
