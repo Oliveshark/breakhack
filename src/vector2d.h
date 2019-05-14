@@ -40,4 +40,7 @@ vector2d_equals(Vector2d, Vector2d);
 bool
 vector2d_is_opposite(Vector2d, Vector2d);
 
+Vector2d
+vector2d_to_direction(const Vector2d*);
+
 #endif // VECTOR2D_H_
