@@ -31,7 +31,12 @@ typedef struct Stats_t {
 	bool disadvantage;
 } Stats;
 
-unsigned int
+typedef struct CombatResult {
+	unsigned int dmg;
+	bool critical;
+} CombatResult;
+
+CombatResult
 stats_fight(Stats *attacker, Stats *defender);
 
 #endif // STATS_H_

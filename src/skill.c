@@ -319,12 +319,12 @@ skill_use_flurry(Skill *skill, SkillData *data)
 		unsigned int hitCount = 0;
 		for (size_t i = 0; i < 3; ++i) {
 			unsigned int originalHp = monster->stats.hp;
-			unsigned int dmg = stats_fight(&data->player->stats, &monster->stats);
-			if (dmg > 0 && originalHp > 0) {
-				gui_log("You hit for %u damage", dmg);
+			CombatResult result = stats_fight(&data->player->stats, &monster->stats);
+			if (result.dmg > 0 && originalHp > 0) {
+				gui_log("You hit for %u damage", result.dmg);
 				hitCount++;
 			}
-			monster_hit(monster, dmg);
+			monster_hit(monster, result.dmg, result.critical);
 		}
 		if (hitCount == 1) {
 			mixer_play_effect(SWORD_HIT);
@@ -436,9 +436,9 @@ skill_bash(Skill *skill, SkillData *data)
 	mixer_play_effect(SWING0);
 	if (monster) {
 		gui_log("You bash %s with your shield", monster->lclabel);
-		unsigned int dmg = stats_fight(&data->player->stats, &monster->stats);
-		if (dmg > 0) {
-			gui_log("You hit for %u damage", dmg);
+		CombatResult result = stats_fight(&data->player->stats, &monster->stats);
+		if (result.dmg > 0) {
+			gui_log("You hit for %u damage", result.dmg);
 			if (monster->stats.hp > 0) {
 				gui_log("%s seems dazed and confused", monster->label);
 				monster_set_state(monster, STUNNED,
@@ -449,7 +449,7 @@ skill_bash(Skill *skill, SkillData *data)
 		} else {
 			gui_log("You missed %s", monster->lclabel);
 		}
-		monster_hit(monster, dmg);
+		monster_hit(monster, result.dmg, result.critical);
 	} else {
 		gui_log("You bash your shield at nothing");
 	}
@@ -491,13 +491,13 @@ skill_trip(Skill *skill, SkillData *data)
 	mixer_play_effect(SWING0 + get_random(2));
 	animation_run(data->player->swordAnimation);
 	if (space->monster) {
-		int dmg = stats_fight(&data->player->stats, &space->monster->stats);
-		if (dmg)
+		CombatResult result = stats_fight(&data->player->stats, &space->monster->stats);
+		if (result.dmg)
 			mixer_play_effect(SWORD_HIT);
 		gui_log("You trip %s causing it to fall away from you", space->monster->lclabel);
-		monster_hit(space->monster, dmg);
+		monster_hit(space->monster, result.dmg, result.critical);
 		player_monster_kill_check(data->player, space->monster);
-		if (dmg && space->monster->stats.hp > 0) {
+		if (result.dmg && space->monster->stats.hp > 0) {
 			Uint32 pushCount = 1 + player_has_artifact(data->player, PUSH_BACK);
 			for (Uint32 i = 0; i < pushCount; ++i) {
 				monster_push(space->monster, data->player, data->matrix, data->direction);
@@ -564,11 +564,11 @@ skill_backstab(Skill *skill, SkillData *data)
 		monster_push(m, data->player, data->matrix, reverseDirection);
 
 		m->stats.disadvantage = true;
-		int dmg = stats_fight(&data->player->stats, &m->stats);
+		CombatResult result = stats_fight(&data->player->stats, &m->stats);
 		m->stats.disadvantage = false;
-		monster_hit(m, dmg);
+		monster_hit(m, result.dmg, result.critical);
 		player_monster_kill_check(data->player, m);
-		if (dmg) {
+		if (result.dmg) {
 			mixer_play_effect(SWORD_HIT);
 			monster_set_state(m, STUNNED, (Uint8)(2 + player_has_artifact(data->player, INCREASED_STUN)));
 			monster_set_bleeding(m);
@@ -680,13 +680,13 @@ skill_charge_check_path(SkillData *data,
 			Stats tmpStats = player->stats;
 			tmpStats.dmg *= steps > 0 ? steps : 1;
 			mixer_play_effect(SWING0 + get_random(2));
-			unsigned int dmg = stats_fight(&tmpStats, &monster->stats);
-			if (dmg > 0) {
-				gui_log("You charged %s for %u damage", monster->lclabel, dmg);
+			CombatResult result = stats_fight(&tmpStats, &monster->stats);
+			if (result.dmg > 0) {
+				gui_log("You charged %s for %u damage", monster->lclabel, result.dmg);
 				mixer_play_effect(SWORD_HIT);
 				data->player->stat_data.hits += 1;
 			}
-			monster_hit(monster, dmg);
+			monster_hit(monster, result.dmg, result.critical);
 			player_monster_kill_check(data->player, monster);
 		}
 
@@ -886,10 +886,10 @@ skill_erupt(Skill *skill, SkillData *data)
 			RoomSpace *r = &rm->spaces[matrixPos.x][matrixPos.y];
 			if (r->monster) {
 				player->stats.advantage = true;
-				int dmg = stats_fight(&player->stats, &r->monster->stats);
+				CombatResult result = stats_fight(&player->stats, &r->monster->stats);
 				player->stats.advantage = false;
-				monster_hit(r->monster, dmg);
-				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
+				monster_hit(r->monster, result.dmg, result.critical);
+				gui_log("%s takes %d damage from the explosion", r->monster->label, result.dmg);
 				monster_set_bleeding(r->monster);
 
 				int lvl = 1 + player_has_artifact(player, PUSH_BACK);

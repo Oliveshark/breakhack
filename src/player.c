@@ -133,16 +133,16 @@ on_monster_collision(Player *player,
 		     RoomMatrix *matrix,
 		     Vector2d direction)
 {
-	unsigned int hit = stats_fight(&player->stats,
-				       &monster->stats);
+	CombatResult result = stats_fight(&player->stats,
+					  &monster->stats);
 
 	mixer_play_effect(SWING0 + get_random(2));
-	monster_hit(monster, hit);
+	monster_hit(monster, result.dmg, result.critical);
 	animation_run(player->swordAnimation);
 
-	if (hit > 0) {
+	if (result.dmg > 0) {
 		gui_log("You hit %s for %u damage",
-			monster->lclabel, hit);
+			monster->lclabel, result.dmg);
 		player->stat_data.hits += 1;
 		mixer_play_effect(SWORD_HIT);
 	} else {

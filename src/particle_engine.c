@@ -103,7 +103,7 @@ particle_engine_init(void)
 void
 particle_engine_bleed(Position pos, Dimension dim)
 {
-	particle_engine_bloodspray(pos, dim, 5);
+	particle_engine_bloodspray(pos, dim, 10);
 }
 
 void

@@ -119,14 +119,14 @@ projectile_update(Projectile *p, UpdateData *data)
 	if (space->monster) {
 		Stats tmpStats = data->player->stats;
 		tmpStats.dmg *= 2;
-		Uint32 dmg = stats_fight(&tmpStats, &space->monster->stats);
-		if (dmg > 0) {
-			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, dmg);
+		CombatResult result = stats_fight(&tmpStats, &space->monster->stats);
+		if (result.dmg > 0) {
+			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, result.dmg);
 			data->player->stat_data.hits += 1;
 		} else {
 			gui_log("%s dodged your dagger", space->monster->label);
 		}
-		monster_hit(space->monster, dmg);
+		monster_hit(space->monster, result.dmg, result.critical);
 		player_monster_kill_check(data->player, space->monster);
 		alive = player_has_artifact(data->player, PIERCING_DAGGERS) > p->collisionCount;
 		projectilePos = space->monster->sprite->pos;

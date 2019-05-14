@@ -103,7 +103,7 @@ void
 monster_render_top_layer(Monster*, RoomMatrix*, Camera*);
 
 void
-monster_hit(Monster*, unsigned int dmg);
+monster_hit(Monster*, unsigned int dmg, bool critical);
 
 void
 monster_update_stats_for_level(Monster*, unsigned int level);

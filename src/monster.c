@@ -135,13 +135,13 @@ damage_surroundings(Monster *m, RoomMatrix *rm)
 
 			RoomSpace *r = &rm->spaces[matrixPos.x][matrixPos.y];
 			if (r->monster) {
-				int dmg = stats_fight(&m->stats, &r->monster->stats);
-				monster_hit(r->monster, dmg);
-				gui_log("%s takes %d damage from the explosion", r->monster->label, dmg);
+				CombatResult result = stats_fight(&m->stats, &r->monster->stats);
+				monster_hit(r->monster, result.dmg, result.critical);
+				gui_log("%s takes %d damage from the explosion", r->monster->label, result.dmg);
 			} else if (r->player) {
-				int dmg = stats_fight(&m->stats, &r->player->stats);
-				player_hit(r->player, dmg);
-				gui_log("You take %d damage from the explosion", dmg);
+				CombatResult result = stats_fight(&m->stats, &r->player->stats);
+				player_hit(r->player, result.dmg);
+				gui_log("You take %d damage from the explosion", result.dmg);
 			}
 		}
 	}
@@ -314,14 +314,14 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 	RoomSpace *space = roommatrix_get_space_for(matrix, &monster->sprite->pos);
 
 	if (space->player && monster->state.current == AGRESSIVE) {
-		unsigned int dmg = stats_fight(&monster->stats,
-					       &space->player->stats);
+		CombatResult result = stats_fight(&monster->stats,
+						  &space->player->stats);
 
-		player_hit(space->player, dmg);
+		player_hit(space->player, result.dmg);
 
-		if (dmg > 0) {
+		if (result.dmg > 0) {
 			gui_log("%s hit you for %u damage",
-				monster->label, dmg);
+				monster->label, result.dmg);
 			camera_shake(direction, 300);
 		} else {
 			gui_log("%s missed you", monster->label);
@@ -563,7 +563,7 @@ apply_bleed_damage(Player *p, Monster *m)
 		return;
 
 	uint32_t dmg = m->stats.lvl * 2;
-	monster_hit(m, dmg);
+	monster_hit(m, dmg, false);
 	m->stats.hp -= dmg;
 	player_monster_kill_check(p, m);
 }
@@ -685,7 +685,7 @@ monster_update(Monster *m, UpdateData *data)
 }
 
 void
-monster_hit(Monster *monster, unsigned int dmg)
+monster_hit(Monster *monster, unsigned int dmg, bool critical)
 {
 	if (dmg > 0) {
 		Position p = monster->sprite->pos;
@@ -703,6 +703,9 @@ monster_hit(Monster *monster, unsigned int dmg)
 					      C_YELLOW,
 					      &monster->sprite->pos);
 	}
+	if (critical)
+		monster_set_bleeding(monster);
+
 	monster_behaviour_check_post_hit(monster);
 }
 
@@ -878,7 +881,7 @@ monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 	if (space->trap) {
 		int dmg = space->trap->damage * 3;
 		m->stats.hp -= dmg;
-		monster_hit(m, dmg);
+		monster_hit(m, dmg, false);
 		gui_log("%s takes %d damage from a trap", m->label, dmg);
 	} else if (space->damaging) {
 		LinkedList *objects = space->objects;
@@ -888,7 +891,7 @@ monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 			if (!o->damage)
 				return;
 			m->stats.hp -= o->damage * 3;
-			monster_hit(m, o->damage * 3);
+			monster_hit(m, o->damage * 3, false);
 		}
 	} else if (has_collided(m, rm, direction)) {
 		m->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;

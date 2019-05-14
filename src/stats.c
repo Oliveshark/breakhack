@@ -61,31 +61,30 @@ get_defence_roll(Stats *defender)
 	return roll + defender->def;
 }
 
-unsigned int
+CombatResult
 stats_fight(Stats *attacker, Stats *defender)
 {
-	bool critical = false;
+	CombatResult result = { 0, false };
 
 	int atkRoll = get_attack_roll(attacker);
 	int defRoll = get_defence_roll(defender);
 
 	if (atkRoll - attacker->atk == 20)
-		critical = get_attack_roll(attacker) > defRoll;
+		result.critical = get_attack_roll(attacker) > defRoll;
 
-	int dmgRoll = 0;
 	if (atkRoll >= defRoll) {
 		if (attacker->dmg > 0)
-			dmgRoll = get_random(attacker->dmg - 1) + 1;
+			result.dmg = get_random(attacker->dmg - 1) + 1;
 		else
-			dmgRoll = 1;
+			result.dmg = 1;
 
-		if (critical) {
-			dmgRoll = dmgRoll * 2;
+		if (result.critical) {
+			result.dmg = result.dmg * 2;
 			gui_log("CRITICAL HIT!");
 		}
 
-		defender->hp -= dmgRoll;
+		defender->hp -= result.dmg;
 	}
 
-	return dmgRoll;
+	return result;
 }
