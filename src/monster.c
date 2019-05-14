@@ -214,6 +214,9 @@ handle_sentinel_behaviour(Monster *m, RoomMatrix *rm)
 static void
 monster_behaviour_check(Monster *m, RoomMatrix *rm)
 {
+	if (m->state.stepsSinceChange < m->state.forceCount)
+		return;
+
 	switch (m->behaviour) {
 		case GUERILLA:
 		case SORCERER:
