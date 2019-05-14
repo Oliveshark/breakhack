@@ -879,7 +879,11 @@ skill_erupt(Skill *skill, SkillData *data)
 			if (i == 0 && j == 0)
 				continue;
 
-			RoomSpace *r = &rm->spaces[playerMPos.x + i][playerMPos.y + j];
+			Position matrixPos = POS(playerMPos.x + i, playerMPos.y + j);
+			if (!position_in_roommatrix(&matrixPos))
+				continue;
+
+			RoomSpace *r = &rm->spaces[matrixPos.x][matrixPos.y];
 			if (r->monster) {
 				player->stats.advantage = true;
 				int dmg = stats_fight(&player->stats, &r->monster->stats);

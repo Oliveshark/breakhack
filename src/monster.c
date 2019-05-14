@@ -128,7 +128,12 @@ damage_surroundings(Monster *m, RoomMatrix *rm)
 		for (Sint32 j = -1; j <= 1; ++j) {
 			if (i == 0 && j == 0)
 				continue;
-			RoomSpace *r = &rm->spaces[roomPos.x + i][roomPos.y + j];
+
+			Position matrixPos = POS(roomPos.x + i, roomPos.y + j);
+			if (!position_in_roommatrix(&matrixPos))
+				continue;
+
+			RoomSpace *r = &rm->spaces[matrixPos.x][matrixPos.y];
 			if (r->monster) {
 				int dmg = stats_fight(&m->stats, &r->monster->stats);
 				monster_hit(r->monster, dmg);
