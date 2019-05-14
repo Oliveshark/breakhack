@@ -172,17 +172,21 @@ Item *
 item_builder_build_key(unsigned int type)
 {
 	char label[20];
-	SDL_Rect clip = CLIP16(0, 0);
 	Item *item;
 	switch (type) {
 		case 1:
 			m_sprintf(label, 20, "a silver key");
-			item = create_item("Items/Key.png", NULL, clip, &pickup_silver_key);
+			item = create_item("Extras/Keys.png",
+					   NULL,
+					   CLIP16(0, 0),
+					   &pickup_silver_key);
 			break;
 		case 2:
 			m_sprintf(label, 20, "a gold key");
-			item = create_item("Items/Key.png", NULL, clip, &pickup_gold_key);
-			clip.x = 16;
+			item = create_item("Extras/Keys.png",
+					   NULL,
+					   CLIP16(16, 0),
+					   &pickup_gold_key);
 			break;
 		default:
 			fatal("Bad keytype provided");

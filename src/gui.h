@@ -37,6 +37,7 @@ typedef enum Label_e {
 	CURRENT_XP_LABEL,
 	GOLD_LABEL,
 	DUNGEON_LEVEL_LABEL,
+	KEY_LABEL,
 	HEALTH_POTION_LABEL,
 	DAGGER_LABEL,
 	LABEL_COUNT
@@ -51,6 +52,8 @@ typedef struct Gui {
 	Sprite *miniMapFrame;
 	Sprite *labels[LABEL_COUNT];
 	Sprite *activeTooltip;
+	Sprite *goldKey;
+	Sprite *silverKey;
 	Texture *log_lines[LOG_LINES_COUNT];
 	Texture *event_message;
 	Timer *event_message_timer;

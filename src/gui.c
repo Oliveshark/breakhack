@@ -112,21 +112,21 @@ init_sprites(Gui *gui, Camera *cam)
 	linkedlist_append(&gui->sprites, create_xp_sprite(
 		t,
 		(SDL_Rect) { 6 * 16, 0, 16, 16 },
-		(Position) { 16, POS_Y_XPBAR }
+		POS(16, POS_Y_XPBAR)
 	));
 
 	// Right end
 	linkedlist_append(&gui->sprites, create_xp_sprite(
 		t,
 		(SDL_Rect) { 8 * 16, 0, 16, 16 },
-		(Position) { 16 + (16 * 7), POS_Y_XPBAR }
+		POS(16 + (16 * 7), POS_Y_XPBAR)
 	));
 
 	for (i = 1; i < 7; ++i) {
 		linkedlist_append(&gui->sprites, create_xp_sprite(
 			t,
 			(SDL_Rect) { 7 * 16, 0, 16, 16 },
-			(Position) { 16 + (i * 16), POS_Y_XPBAR }
+			POS(16 + (i * 16), POS_Y_XPBAR)
 		));
 	}
 
@@ -134,7 +134,7 @@ init_sprites(Gui *gui, Camera *cam)
 		linkedlist_append(&gui->xp_bar, create_xp_sprite(
 			t,
 			(SDL_Rect) { 6 * 16, 4 * 16, 16, 16 },
-			(Position) { 16 + (i * 16), POS_Y_XPBAR }
+			POS(16 + (i * 16), POS_Y_XPBAR)
 		));
 	}
 
@@ -144,7 +144,7 @@ init_sprites(Gui *gui, Camera *cam)
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
 	s->clip = CLIP16(0, 0);
-	s->pos = (Position) { 16, POS_Y_COLLECTABLES };
+	s->pos = POS(16, POS_Y_COLLECTABLES);
 	linkedlist_append(&gui->sprites, s);
 
 	t = texturecache_add("Items/Money.png");
@@ -152,7 +152,7 @@ init_sprites(Gui *gui, Camera *cam)
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
 	s->clip = CLIP16(16, 16);
-	s->pos = (Position) { 16, POS_Y_COLLECTABLES + 16 };
+	s->pos = POS(16, POS_Y_COLLECTABLES + 16);
 	linkedlist_append(&gui->sprites, s);
 
 	t = texturecache_add("Items/ShortWep.png");
@@ -160,8 +160,24 @@ init_sprites(Gui *gui, Camera *cam)
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
 	s->clip = CLIP16(0, 0);
-	s->pos = (Position) { 16, POS_Y_COLLECTABLES + 32 };
+	s->pos = POS(16, POS_Y_COLLECTABLES + 32);
 	linkedlist_append(&gui->sprites, s);
+
+	t = texturecache_add("Extras/Keys.png");
+	s = sprite_create();
+	s->fixed = true;
+	sprite_set_texture(s, t, 0);
+	s->clip = CLIP16(0, 0);
+	s->pos = POS(58, POS_Y_XPBAR + 15 + (3*14));
+	gui->silverKey = s;
+
+	t = texturecache_add("Extras/Keys.png");
+	s = sprite_create();
+	s->fixed = true;
+	sprite_set_texture(s, t, 0);
+	s->clip = CLIP16(16, 0);
+	s->pos = POS(74, POS_Y_XPBAR + 15 + (3*14));
+	gui->goldKey = s;
 
 	gui->statsFrame = gui_util_create_frame_sprite(RIGHT_GUI_WIDTH/16,
 						       STATS_GUI_HEIGHT/16,
@@ -173,6 +189,10 @@ init_sprites(Gui *gui, Camera *cam)
 	gui->miniMapFrame = gui_util_create_frame_sprite(RIGHT_GUI_WIDTH/16,
 							 MINIMAP_GUI_HEIGHT/16,
 							 cam);
+
+
+	texture_load_from_text(gui->labels[KEY_LABEL]->textures[0], "Keys:", C_WHITE, C_BLACK, cam->renderer);
+	gui->labels[KEY_LABEL]->dim = gui->labels[KEY_LABEL]->textures[0]->dim;
 }
 
 Gui*
@@ -197,28 +217,33 @@ gui_create(Camera *cam)
 	texture_load_font(gui->event_message, "GUI/SDS_8x8.ttf", EVENT_MESSAGE_FONT_SIZE, 2);
 	gui->event_message_timer = _timer_create();
 
-	gui->labels[CURRENT_XP_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 });
-	gui->labels[LEVEL_LABEL] = create_label_sprite((Position) { 16, POS_Y_XPBAR + 18 + 14  });
+	gui->labels[CURRENT_XP_LABEL] = create_label_sprite(POS(16, POS_Y_XPBAR + 18));
+	gui->labels[LEVEL_LABEL] = create_label_sprite(POS(16, POS_Y_XPBAR + 18 + 14));
 	gui->labels[DUNGEON_LEVEL_LABEL] =
-		create_label_sprite((Position) {
+		create_label_sprite(POS(
 				    16,
 				    POS_Y_XPBAR + 18 + (2*14)
-				    });
+				    ));
+	gui->labels[KEY_LABEL] =
+		create_label_sprite(POS(
+				    16,
+				    POS_Y_XPBAR + 18 + (3*14)
+				    ));
 	gui->labels[HEALTH_POTION_LABEL] =
-		create_label_sprite((Position) {
+		create_label_sprite(POS(
 				    32,
 				    POS_Y_COLLECTABLES + 5
-				    });
+				    ));
 	gui->labels[GOLD_LABEL] =
-		create_label_sprite((Position) {
+		create_label_sprite(POS(
 				    32,
 				    POS_Y_COLLECTABLES + 16 + 5
-				    });
+				    ));
 	gui->labels[DAGGER_LABEL] =
-		create_label_sprite((Position) {
+		create_label_sprite(POS(
 				    32,
 				    POS_Y_COLLECTABLES + 32 + 5
-				    });
+				    ));
 
 	gui_malloc_log();
 	gui_malloc_eventmessages();
@@ -251,7 +276,7 @@ set_max_health(Gui *gui, int max)
 		sprite->fixed = true;
 		sprite->animate = false;
 		sprite->clip = (SDL_Rect) { 0, 16, 16, 16 };
-		sprite->pos = (Position) { 16 + (i%8)*16, 16 + ((i-(i%8))/8)*16 };
+		sprite->pos = POS(16 + (i%8)*16, 16 + ((i-(i%8))/8)*16);
 		sprite_set_texture(sprite, texture0, 0);
 		sprite_set_texture(sprite, texture1, 1);
 		linkedlist_append(&gui->health, sprite);
@@ -392,6 +417,10 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 		gui->labels[LEVEL_LABEL]->dim = gui->labels[LEVEL_LABEL]->textures[0]->dim;
 		last_level = data.level;
 	}
+
+	gui->silverKey->hidden = !(player->equipment.keys & LOCK_SILVER);
+	gui->goldKey->hidden = !(player->equipment.keys & LOCK_GOLD);
+	gui->goldKey->pos.x = gui->silverKey->hidden ? 58 : 74;
 }
 
 void
@@ -410,6 +439,8 @@ gui_render_panel(Gui *gui, Camera *cam)
 		sprite_render(s, cam);
 		item = item->next;
 	}
+	sprite_render(gui->silverKey, cam);
+	sprite_render(gui->goldKey, cam);
 	item = gui->sprites;
 	while (item != NULL) {
 		Sprite *s = item->data;
@@ -621,6 +652,9 @@ gui_destroy(Gui *gui)
 
 	for (int i = 0; i < LABEL_COUNT; ++i)
 		sprite_destroy(gui->labels[i]);
+
+	sprite_destroy(gui->silverKey);
+	sprite_destroy(gui->goldKey);
 
 	free(gui);
 }
