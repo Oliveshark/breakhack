@@ -334,8 +334,13 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 void
 player_sip_health(Player *player)
 {
-	if (player->potion_sips > 0) {
+	bool hasSips = player->class == MAGE ?
+		player->potion_sips > 1 : player->potion_sips > 0;
+
+	if (hasSips) {
 		--player->potion_sips;
+		if (player->class == MAGE)
+			--player->potion_sips;
 		++player->stats.hp;
 		mixer_play_effect(BUBBLE0 + get_random(2));
 		gui_log("You take a sip from a health potion");
@@ -543,6 +548,7 @@ player_create(class_t class, Camera *cam)
 		case MAGE:
 			m_strcpy(asset, 100, "Commissions/Mage.png");
 			player->stats = (Stats) MAGE_STATS;
+			player->skills[0] = skill_create(VAMPIRIC_BLOW, cam);
 			player->skills[1] = skill_create(ERUPT, cam);
 			player->skills[2] = skill_create(BLINK, cam);
 			break;

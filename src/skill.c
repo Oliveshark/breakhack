@@ -36,12 +36,32 @@
 #include "artifact.h"
 #include "trap.h"
 #include "tooltip.h"
+#include "actiontextbuilder.h"
 
 static char *flurry_tooltip[] = {
 	"FLURRY", "",
 	"",
 	"   Hits an adjecant enemy with a flurry of three strikes.", "",
 	"   Each strike has the same odds of hitting as a regular attack", "",
+	"",
+	"COOLDOWN:", "",
+	"   5 turns", "",
+	"",
+	"USAGE:", "",
+	"   activate the skill (press ", "1", ")", "",
+	"   followed by a direction (left, right, up or down)", "",
+	"",
+	"",
+	"Press ", "ESC", " to close", "", "",
+	NULL
+};
+
+static char *vampiric_blow_tooltip[] = {
+	"VAMPIRIC BLOW", "",
+	"",
+	"   Hits an adjecant enemy with a vampiric blow.", "",
+	"   Upon hitting you will siphon life from the target", "",
+	"   and cause the target to bleed.", "",
 	"",
 	"COOLDOWN:", "",
 	"   5 turns", "",
@@ -302,6 +322,71 @@ check_skill_validity(Position *playerPos, Position *targetPos, SkillData *data)
 }
 
 static bool
+vampiric_blow_skill(Skill *skill, SkillData *data)
+{
+	UNUSED (skill);
+
+	Position playerPos, targetPos;
+	Player *player = data->player;
+	if (!check_skill_validity(&playerPos, &targetPos, data)) {
+		return false;
+	}
+
+	animation_run(player->swordAnimation);
+	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
+	mixer_play_effect(SWING0);
+	if (monster) {
+		gui_log("You attack %s with a vampiric blow", monster->lclabel);
+		player->stats.advantage = true;
+		CombatResult result = stats_fight(&player->stats, &monster->stats);
+		player->stats.advantage = false;
+		if (result.dmg) {
+			mixer_play_effect(SWORD_HIT);
+			monster_hit(monster, result.dmg, result.critical);
+			monster_set_bleeding(monster);
+
+			unsigned int gain = player->stats.lvl * 3;
+			gain = min(gain, (unsigned int) player->stats.maxhp - player->stats.hp);
+			if (gain > 0) {
+				gui_log("You gain %u health", gain);
+				char msg[4];
+				m_sprintf(msg, 4, "+%u", gain);
+				actiontextbuilder_create_text(msg,
+							      C_GREEN,
+							      &player->sprite->pos);
+				player->stats.hp += gain;
+				player->stats.hp = min(player->stats.maxhp,
+						       player->stats.hp);
+			}
+		} else {
+			gui_log("You missed %s", monster->lclabel);
+		}
+
+	} else {
+		gui_log("You swing at thin air with a vampiric blow");
+	}
+	player_monster_kill_check(data->player, monster);
+
+	return true;
+}
+
+static Skill *
+create_vampiric_blow(void)
+{
+	Texture *t = texturecache_add("Extras/Skills.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->dim = GAME_DIMENSION;
+	s->clip = CLIP32(0, 0);
+	s->fixed = true;
+	Skill *skill = create_default("Vampiric blow", s);
+	skill->levelcap = 2;
+	skill->use = vampiric_blow_skill;
+	skill->resetTime = 5;
+	return skill;
+}
+
+static bool
 skill_use_flurry(Skill *skill, SkillData *data)
 {
 	UNUSED (skill);
@@ -333,9 +418,6 @@ skill_use_flurry(Skill *skill, SkillData *data)
 		} else if (hitCount == 3) {
 			mixer_play_effect(TRIPPLE_SWORD_HIT);
 		}
-
-		data->player->stat_data.hits += hitCount;
-
 	} else {
 		gui_log("You swing at thin air with a flurry of strikes");
 	}
@@ -445,7 +527,6 @@ skill_bash(Skill *skill, SkillData *data)
 						  (Uint8) (3 + player_has_artifact(data->player, INCREASED_STUN)));
 			}
 			mixer_play_effect(SLAM);
-			data->player->stat_data.hits += 1;
 		} else {
 			gui_log("You missed %s", monster->lclabel);
 		}
@@ -631,7 +712,9 @@ create_phase(void)
 static bool
 skill_sip_health_available(Player *player)
 {
-	return player->potion_sips > 0 && player->stats.hp != player->stats.maxhp;
+	bool hasSips = player->class == MAGE ?
+		player->potion_sips > 1 : player->potion_sips > 0;
+	return hasSips > 0 && player->stats.hp != player->stats.maxhp;
 }
 
 static bool
@@ -684,7 +767,6 @@ skill_charge_check_path(SkillData *data,
 			if (result.dmg > 0) {
 				gui_log("You charged %s for %u damage", monster->lclabel, result.dmg);
 				mixer_play_effect(SWORD_HIT);
-				data->player->stat_data.hits += 1;
 			}
 			monster_hit(monster, result.dmg, result.critical);
 			player_monster_kill_check(data->player, monster);
@@ -931,6 +1013,10 @@ skill_create(enum SkillType t, Camera *cam)
 		case FLURRY:
 			skill = create_flurry();
 			skill->tooltip = tooltip_create(flurry_tooltip, cam);
+			break;
+		case VAMPIRIC_BLOW:
+			skill = create_vampiric_blow();
+			skill->tooltip = tooltip_create(vampiric_blow_tooltip, cam);
 			break;
 		case SIP_HEALTH:
 			skill = create_sip_health();

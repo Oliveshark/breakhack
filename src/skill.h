@@ -37,7 +37,8 @@ enum SkillType {
 	TRIP,
 	PHASE,
 	BLINK,
-	ERUPT
+	ERUPT,
+	VAMPIRIC_BLOW
 };
 
 typedef struct SkillData_t {
