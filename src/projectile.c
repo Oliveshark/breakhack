@@ -49,6 +49,7 @@ projectile_dagger_create(void)
 	p->sprite->dim = (Dimension) { 32, 32 };
 	p->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 	p->collisionCount = 0;
+	p->bounceCount = 0;
 	memset(&p->processedSpaces,
 	       false,
 	       sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
@@ -130,6 +131,10 @@ projectile_update(Projectile *p, UpdateData *data)
 		player_monster_kill_check(data->player, space->monster);
 		alive = player_has_artifact(data->player, PIERCING_DAGGERS) > p->collisionCount;
 		projectilePos = space->monster->sprite->pos;
+	} else {
+		p->bounceCount += 1;
+		vector2d_reverse(&p->velocity);
+		alive = p->bounceCount < player_has_artifact(data->player, DAGGER_BOUNCE);
 	}
 
 	mixer_play_effect(SWORD_HIT);

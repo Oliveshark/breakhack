@@ -36,6 +36,7 @@ typedef struct Projectile {
 	Timer *lifetime;
 	bool alive;
 	Uint32 collisionCount;
+	Uint32 bounceCount;
 	bool processedSpaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	void (*onRender)(struct Projectile*);
 } Projectile;

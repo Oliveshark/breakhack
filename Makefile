@@ -21,7 +21,7 @@ run: $(all)
 
 playtest: $(all)
 	@LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ ./_build/release/breakhack
-.PHONY: run
+.PHONY: playtest
 
 lint:
 	@make lint -sC _build/debug

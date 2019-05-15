@@ -13,6 +13,13 @@ vector2d_is_opposite(Vector2d v1, Vector2d v2)
 		|| ((v1.x < 0 && v2.x > 0) ^ (v1.y < 0 && v2.y > 0));
 }
 
+void
+vector2d_reverse(Vector2d *vec)
+{
+	vec->x *= -1;
+	vec->y *= -1;
+}
+
 Vector2d
 vector2d_to_direction(const Vector2d *vec)
 {

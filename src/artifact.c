@@ -68,6 +68,11 @@ artifact_set_effect(Artifact *a, MagicalEffect effect)
 		case SKILL_RADIUS:
 			a->info.name = "Magic wand";
 			a->info.desc = "Your magic has greater reach";
+			break;
+		case DAGGER_BOUNCE:
+			a->info.name = "Magnet";
+			a->info.desc = "You are attractive to daggers";
+			break;
 		default:
 			break;
 	}
@@ -81,7 +86,8 @@ static int WarriorArtifacts[] = {
 	PUSH_BACK,              // 4
 	FEAR_INDUCING,          // 5
 	INCREASED_STUN,         // 6
-	CHARGE_THROUGH          // 7
+	DAGGER_BOUNCE,		// 7
+	CHARGE_THROUGH          // 8
 };
 
 static int RogueArtifacts[] = {
@@ -92,7 +98,8 @@ static int RogueArtifacts[] = {
 	PUSH_BACK,		// 4
 	FEAR_INDUCING,		// 5
 	INCREASED_STUN,		// 6
-	PHASE_IMPROVEMENT	// 7
+	DAGGER_BOUNCE,		// 7
+	PHASE_IMPROVEMENT	// 8
 };
 
 static int MageArtifacts[] = {
@@ -103,7 +110,8 @@ static int MageArtifacts[] = {
 	PUSH_BACK,		// 4
 	FEAR_INDUCING,		// 5
 	INCREASED_STUN,		// 6
-	SKILL_RADIUS		// 7
+	DAGGER_BOUNCE,		// 7
+	SKILL_RADIUS		// 8
 };
 
 /* Not in play yet */
@@ -115,7 +123,8 @@ static int PaladinArtifacts[] = {
 	PUSH_BACK,		// 4
 	FEAR_INDUCING,		// 5
 	INCREASED_STUN,		// 6
-	SKILL_RADIUS		// 7
+	DAGGER_BOUNCE,		// 7
+	SKILL_RADIUS		// 8
 };
 
 /* Not in play yet */
@@ -127,7 +136,8 @@ static int EngineerArtifacts[] = {
 	PUSH_BACK,		// 4
 	FEAR_INDUCING,		// 5
 	INCREASED_STUN,		// 6
-	PHASE_IMPROVEMENT	// 7
+	DAGGER_BOUNCE,		// 7
+	PHASE_IMPROVEMENT	// 8
 };
 
 static void
@@ -147,7 +157,7 @@ add_level_sprite(Artifact *a)
 Artifact *
 artifact_create_random(Player *p, Uint8 level)
 {
-	int option = get_random(7);
+	int option = get_random(8);
 
 	int * artifactPool = NULL;
 	if (p->class == ROGUE)
@@ -238,6 +248,11 @@ artifact_sprite_for(MagicalEffect effect)
 			t = texturecache_add("Items/Wand.png");
 			sprite_set_texture(sprite, t, 0);
 			sprite->clip = CLIP16(2*16, 0);
+			break;
+		case DAGGER_BOUNCE:
+			t = texturecache_add("Extras/Artifacts.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(0, 0);
 			break;
 		default:
 			break;

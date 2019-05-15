@@ -43,4 +43,7 @@ vector2d_is_opposite(Vector2d, Vector2d);
 Vector2d
 vector2d_to_direction(const Vector2d*);
 
+void
+vector2d_reverse(Vector2d*);
+
 #endif // VECTOR2D_H_
