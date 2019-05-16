@@ -238,6 +238,7 @@ add_executable(breakhack
 	src/gui_util
 	src/tooltip
 	src/gamecontroller
+	src/effect_util
 	${STEAM_SOURCES}
 	)
 

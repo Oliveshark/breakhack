@@ -32,6 +32,7 @@ typedef enum MagicalEffect {
 	PHASE_IMPROVEMENT,
 	SKILL_RADIUS,
 	DAGGER_BOUNCE,
+	EXPLOSIVE_KILLS,
 	LAST_ARTIFACT_EFFECT // Sentinel
 } MagicalEffect;
 

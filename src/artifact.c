@@ -73,6 +73,10 @@ artifact_set_effect(Artifact *a, MagicalEffect effect)
 			a->info.name = "Magnet";
 			a->info.desc = "You are attractive to daggers";
 			break;
+		case EXPLOSIVE_KILLS:
+			a->info.name = "Stick of dynamite";
+			a->info.desc = "You are an explosive slayer";
+			break;
 		default:
 			break;
 	}
@@ -87,7 +91,8 @@ static int WarriorArtifacts[] = {
 	FEAR_INDUCING,          // 5
 	INCREASED_STUN,         // 6
 	DAGGER_BOUNCE,		// 7
-	CHARGE_THROUGH          // 8
+	EXPLOSIVE_KILLS,	// 8
+	CHARGE_THROUGH          // 9
 };
 
 static int RogueArtifacts[] = {
@@ -99,7 +104,8 @@ static int RogueArtifacts[] = {
 	FEAR_INDUCING,		// 5
 	INCREASED_STUN,		// 6
 	DAGGER_BOUNCE,		// 7
-	PHASE_IMPROVEMENT	// 8
+	EXPLOSIVE_KILLS,	// 8
+	PHASE_IMPROVEMENT	// 9
 };
 
 static int MageArtifacts[] = {
@@ -111,7 +117,8 @@ static int MageArtifacts[] = {
 	FEAR_INDUCING,		// 5
 	INCREASED_STUN,		// 6
 	DAGGER_BOUNCE,		// 7
-	SKILL_RADIUS		// 8
+	EXPLOSIVE_KILLS,	// 8
+	SKILL_RADIUS		// 9
 };
 
 /* Not in play yet */
@@ -124,7 +131,8 @@ static int PaladinArtifacts[] = {
 	FEAR_INDUCING,		// 5
 	INCREASED_STUN,		// 6
 	DAGGER_BOUNCE,		// 7
-	SKILL_RADIUS		// 8
+	EXPLOSIVE_KILLS,	// 8
+	SKILL_RADIUS		// 9
 };
 
 /* Not in play yet */
@@ -137,7 +145,8 @@ static int EngineerArtifacts[] = {
 	FEAR_INDUCING,		// 5
 	INCREASED_STUN,		// 6
 	DAGGER_BOUNCE,		// 7
-	PHASE_IMPROVEMENT	// 8
+	EXPLOSIVE_KILLS,	// 8
+	PHASE_IMPROVEMENT	// 9
 };
 
 static void
@@ -157,7 +166,7 @@ add_level_sprite(Artifact *a)
 Artifact *
 artifact_create_random(Player *p, Uint8 level)
 {
-	int option = get_random(8);
+	int option = get_random(9);
 
 	int * artifactPool = NULL;
 	if (p->class == ROGUE)
@@ -253,6 +262,11 @@ artifact_sprite_for(MagicalEffect effect)
 			t = texturecache_add("Extras/Artifacts.png");
 			sprite_set_texture(sprite, t, 0);
 			sprite->clip = CLIP16(0, 0);
+			break;
+		case EXPLOSIVE_KILLS:
+			t = texturecache_add("Extras/Artifacts.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(32, 0);
 			break;
 		default:
 			break;
