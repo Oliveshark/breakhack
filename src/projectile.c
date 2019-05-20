@@ -87,6 +87,14 @@ get_projectile_pos_for(Projectile *p)
 	return projectilePos;
 }
 
+static void
+clear_processed_spaces(Projectile *p)
+{
+	memset(&p->processedSpaces,
+	       false,
+	       sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
+}
+
 void
 projectile_update(Projectile *p, UpdateData *data)
 {
@@ -134,7 +142,8 @@ projectile_update(Projectile *p, UpdateData *data)
 	} else {
 		p->bounceCount += 1;
 		vector2d_reverse(&p->velocity);
-		alive = p->bounceCount < player_has_artifact(data->player, DAGGER_BOUNCE);
+		clear_processed_spaces(p);
+		alive = p->bounceCount <= player_has_artifact(data->player, DAGGER_BOUNCE);
 	}
 
 	mixer_play_effect(SWORD_HIT);

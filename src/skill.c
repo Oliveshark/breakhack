@@ -954,13 +954,39 @@ skill_erupt(Skill *skill, SkillData *data)
 	particle_engine_eldritch_explosion(player->sprite->pos, DIM(32, 32));
 	mixer_play_effect(BLAST_EFFECT);
 
-	int range = 1 + player_has_artifact(player, SKILL_RADIUS);
-	effect_damage_surroundings(&player->sprite->pos,
-				   rm,
-				   &player->stats,
-				   range,
-				   1 + player_has_artifact(player, PUSH_BACK),
-				   false);
+	Position playerMPos = position_to_matrix_coords(&player->sprite->pos);
+	int range = player_has_artifact(player, SKILL_RADIUS);
+	for (Sint32 i = -1 - range; i <= 1 + range; ++i) {
+		for (Sint32 j = -1 - range; j <= 1 + range; ++j) {
+
+			if (i == 0 && j == 0)
+				continue;
+
+			Position matrixPos = POS(playerMPos.x + i, playerMPos.y + j);
+			if (!position_in_roommatrix(&matrixPos))
+				continue;
+
+			RoomSpace *r = &rm->spaces[matrixPos.x][matrixPos.y];
+			if (r->monster) {
+				player->stats.advantage = true;
+				CombatResult result = stats_fight(&player->stats, &r->monster->stats);
+				player->stats.advantage = false;
+				monster_hit(r->monster, result.dmg, result.critical);
+				gui_log("%s takes %d damage from the explosion", r->monster->label, result.dmg);
+				monster_set_state(r->monster, SCARED, 3);
+
+				int lvl = 1 + player_has_artifact(player, PUSH_BACK);
+				Vector2d dir = vector2d_to_direction(&VEC2D((float) i, (float) j));
+				for (int k = 0; k < lvl; ++k) {
+					if (r->monster->stats.hp > 0)
+						monster_push(r->monster,
+							     player,
+							     rm,
+							     dir);
+				}
+			}
+		}
+	}
 
 	return true;
 }

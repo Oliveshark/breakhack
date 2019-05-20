@@ -15,9 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef ROOMMATRIX_H_
-#define	ROOMMATRIX_H_
+#pragma once
 
 #include <stdbool.h>
 #include "defines.h"
@@ -87,6 +85,9 @@ roommatrix_render_lightmap(RoomMatrix*, Camera*);
 RoomSpace*
 roommatrix_get_space_for(RoomMatrix*, const Position *p);
 
+Player *
+roommatrix_get_player(RoomMatrix*);
+
 #ifdef DEBUG
 void
 roommatrix_render_debug(RoomMatrix*, Camera*);
@@ -94,8 +95,3 @@ roommatrix_render_debug(RoomMatrix*, Camera*);
 
 void
 roommatrix_destroy(RoomMatrix*);
-
-Player *
-roommatrix_get_player(RoomMatrix*);
-
-#endif // ROOMMATRIX_H_

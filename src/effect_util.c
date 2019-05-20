@@ -50,8 +50,7 @@ effect_damage_surroundings(Position *pos,
 					monster_push(r->monster,
 						     roommatrix_get_player(rm),
 						     rm,
-						     dir
-						    );
+						     dir);
 				}
 			} else if (r->player && damagePlayer) {
 				CombatResult result = stats_fight(attackerStats, &r->player->stats);
