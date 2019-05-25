@@ -37,6 +37,7 @@
 #include "trap.h"
 #include "gamecontroller.h"
 #include "event.h"
+#include "effect_util.h"
 
 #ifdef STEAM_BUILD
 #include "steam/steamworks_api_wrapper.h"
@@ -150,6 +151,17 @@ on_monster_collision(Player *player,
 		player->stat_data.misses += 1;
 	}
 	player_monster_kill_check(player, monster);
+	if (monster->stats.hp <= 0 && (player_has_artifact(player, EXPLOSIVE_KILLS))) {
+		mixer_play_effect(EXPLOSION_EFFECT);
+		particle_engine_fire_explosion(monster->sprite->pos, DIM(32, 32));
+		effect_damage_surroundings(&monster->sprite->pos,
+					   matrix,
+					   player,
+					   &player->stats,
+					   player_has_artifact(player, EXPLOSIVE_KILLS),
+					   0,
+					   false);
+	}
 
 	if (monster->stats.hp > 0) {
 		if (get_random(10) < player_has_artifact(player, PUSH_BACK)) {
@@ -169,7 +181,7 @@ on_monster_collision(Player *player,
 	action_spent(player);
 }
 
-static void
+	static void
 player_pickup_artifacts(Player *player, RoomSpace *space)
 {
 	LinkedList *artifacts = space->artifacts;
@@ -179,7 +191,7 @@ player_pickup_artifacts(Player *player, RoomSpace *space)
 	}
 }
 
-static void
+	static void
 player_interact_objects(Player *player, RoomSpace *space)
 {
 	LinkedList *objects = space->objects;
@@ -189,7 +201,7 @@ player_interact_objects(Player *player, RoomSpace *space)
 	}
 }
 
-static void
+	static void
 player_collect_items(Player *player, RoomSpace *space)
 {
 	LinkedList *items = space->items;
@@ -200,7 +212,7 @@ player_collect_items(Player *player, RoomSpace *space)
 	}
 }
 
-static void
+	static void
 player_interact_traps_and_pits(Player *player, RoomSpace *space)
 {
 	if (space->lethal) {
@@ -212,7 +224,7 @@ player_interact_traps_and_pits(Player *player, RoomSpace *space)
 	}
 }
 
-static bool
+	static bool
 player_has_collided(Player *p, RoomSpace *space)
 {
 	if (space->occupied)
@@ -221,7 +233,7 @@ player_has_collided(Player *p, RoomSpace *space)
 	return !p->phase_count && space->monster && space->monster->sprite->state != SPRITE_STATE_FALLING;
 }
 
-static bool 
+	static bool 
 has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
 	Position roomCoord = position_to_room_coords(&player->sprite->pos);
@@ -254,7 +266,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	else {
 		player_collect_items(player, space);
 		player_pickup_artifacts(player, space);
-		
+
 		// If not phased or phase will end this turn, react to traps and pits
 		if (!player->phase_count || (player->phase_count == 1 && player->stats.speed == (player->stat_data.steps + 1))) {
 			player_interact_objects(player, space);
@@ -264,7 +276,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	}
 }
 
-static void
+	static void
 set_clip_for_direction(Player *player, Vector2d *direction)
 {
 	if (vector2d_equals(*direction, VECTOR2D_LEFT))
@@ -277,7 +289,7 @@ set_clip_for_direction(Player *player, Vector2d *direction)
 		player->sprite->clip.y = 0;
 }
 
-void
+	void
 player_turn(Player *player, Vector2d *direction)
 {
 	set_clip_for_direction(player, direction);
@@ -304,7 +316,7 @@ player_turn(Player *player, Vector2d *direction)
 	}
 }
 
-static void
+	static void
 move(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
 	player_turn(player, &direction);
@@ -326,12 +338,12 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 		    lastSpace->trap == NULL &&
 		    lastSpace->objects == NULL &&
 		    lastSpace->items == NULL
-		    )
+		   )
 			map_trigger_tile_fall(lastSpace->tile);
 	}
 }
 
-void
+	void
 player_sip_health(Player *player)
 {
 	bool hasSips = player->class == MAGE ?
@@ -350,7 +362,7 @@ player_sip_health(Player *player)
 	}
 }
 
-static Vector2d
+	static Vector2d
 read_direction_from(Input *input)
 {
 	if (input_key_is_pressed(input, KEY_LEFT))
@@ -365,7 +377,7 @@ read_direction_from(Input *input)
 		return VECTOR2D_NODIR;
 }
 
-static void
+	static void
 handle_next_move(UpdateData *data)
 {
 	static unsigned int step = 1;
@@ -405,7 +417,7 @@ handle_next_move(UpdateData *data)
 	}
 }
 
-static void
+	static void
 use_skill(Skill *skill, SkillData *skillData)
 {
 	skill->active = false;
@@ -415,7 +427,7 @@ use_skill(Skill *skill, SkillData *skillData)
 	skill->resetCountdown = skill->resetTime;
 }
 
-static void
+	static void
 check_skill_activation(UpdateData *data)
 {
 	// TODO(Linus): This could be "smarter"
@@ -456,7 +468,7 @@ check_skill_activation(UpdateData *data)
 	}
 }
 
-static bool
+	static bool
 check_skill_trigger(UpdateData *data)
 {
 	Player *player = data->player;
@@ -484,7 +496,7 @@ check_skill_trigger(UpdateData *data)
 	return true;
 }
 
-static void
+	static void
 build_sword_animation(Player *p, SDL_Renderer *renderer)
 {
 	animation_load_texture(p->swordAnimation, "Extras/SwordSwing.png", renderer);
@@ -502,7 +514,7 @@ build_sword_animation(Player *p, SDL_Renderer *renderer)
 	p->swordAnimation->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 }
 
-Player* 
+	Player* 
 player_create(class_t class, Camera *cam)
 {
 	Player *player = malloc(sizeof(Player));
@@ -584,7 +596,7 @@ player_create(class_t class, Camera *cam)
 	return player;
 }
 
-void
+	void
 player_reset_on_levelchange(Player *player)
 {
 	player->sprite->pos = (Position) {
@@ -602,7 +614,7 @@ ExperienceData player_get_xp_data(Player *p)
 	return data;
 }
 
-void
+	void
 player_monster_kill_check(Player *player, Monster *monster)
 {
 	if (!monster)
@@ -642,7 +654,7 @@ player_monster_kill_check(Player *player, Monster *monster)
 	}
 }
 
-void
+	void
 player_hit(Player *p, unsigned int dmg)
 {
 	if (dmg > 0) {
@@ -666,7 +678,7 @@ player_hit(Player *p, unsigned int dmg)
 
 }
 
-void
+	void
 player_render(Player *player, Camera *cam)
 {
 	sprite_set_alpha(player->sprite, player->phase_count ? 150 : 255);
@@ -679,25 +691,25 @@ player_render(Player *player, Camera *cam)
 	}
 }
 
-void
+	void
 player_render_toplayer(Player *player, Camera *camera)
 {
 	animation_render(player->swordAnimation, camera);
 }
 
-void
+	void
 player_reset_steps(Player *p)
 {
 	p->stat_data.steps = 0;
 }
 
-static void
+	static void
 reset_dagger_skill(Player *p)
 {
 	p->skills[3]->resetCountdown = 0;
 }
 
-void
+	void
 player_update(UpdateData *data)
 {
 	Player *player = data->player;
@@ -737,7 +749,7 @@ player_update(UpdateData *data)
 	animation_update(player->swordAnimation);
 }
 
-static void
+	static void
 player_reset(Player *player)
 {
 	for (size_t i = 0; i < LAST_ARTIFACT_EFFECT; ++i)
@@ -748,7 +760,7 @@ player_reset(Player *player)
 		projectile_destroy(linkedlist_pop(&player->projectiles));
 }
 
-void
+	void
 player_destroy(Player *player)
 {
 	player_reset(player);
@@ -768,19 +780,19 @@ player_destroy(Player *player)
 	free(player);
 }
 
-bool
+	bool
 player_turn_over(Player *player)
 {
 	return player->stat_data.steps >= player->stats.speed;
 }
 
-Uint32
+	Uint32
 player_has_artifact(Player *p, MagicalEffect effect)
 {
 	return p->equipment.artifacts[effect].level;
 }
 
-void
+	void
 player_add_artifact(Player *p, Artifact *a)
 {
 	if (a->price > p->gold) {
@@ -810,7 +822,7 @@ player_add_artifact(Player *p, Artifact *a)
 	p->equipment.hasArtifacts = true;
 }
 
-void
+	void
 player_set_falling(Player *player)
 {
 	mixer_play_effect(FALL0 + get_random(1));

@@ -28,6 +28,8 @@
 #include "item_builder.h"
 #include "random.h"
 #include "update_data.h"
+#include "effect_util.h"
+#include "particle_engine.h"
 
 static void
 onDaggerRender(Sprite *s)
@@ -95,6 +97,22 @@ clear_processed_spaces(Projectile *p)
 	       sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
 }
 
+static void
+perform_dagger_explosion(Player *player, RoomMatrix *rm, Position *collisionPos)
+{
+	if (player_has_artifact(player, VOLATILE_DAGGERS)) {
+		mixer_play_effect(EXPLOSION_EFFECT);
+		particle_engine_fire_explosion(*collisionPos, DIM(32, 32));
+		effect_damage_surroundings(collisionPos,
+					   rm,
+					   player,
+					   &player->stats,
+					   player_has_artifact(player, VOLATILE_DAGGERS),
+					   0,
+					   false);
+	}
+}
+
 void
 projectile_update(Projectile *p, UpdateData *data)
 {
@@ -132,6 +150,7 @@ projectile_update(Projectile *p, UpdateData *data)
 		if (result.dmg > 0) {
 			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, result.dmg);
 			data->player->stat_data.hits += 1;
+			perform_dagger_explosion(data->player, data->matrix, &collisionPos);
 		} else {
 			gui_log("%s dodged your dagger", space->monster->label);
 		}

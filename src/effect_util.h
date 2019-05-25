@@ -24,6 +24,7 @@
 void
 effect_damage_surroundings(Position *pos,
 		RoomMatrix *rm,
+		Player *player,
 		Stats *attackerStats,
 		unsigned int radius,
 		unsigned int pushRadius,

@@ -92,6 +92,7 @@ load_effects(void)
 	effects[KEY_PICKUP] = load_effect("Sounds/FX/key_pickup.wav");
 	effects[BLINK_EFFECT] = load_effect("Sounds/FX/blink.wav");
 	effects[BLAST_EFFECT] = load_effect("Sounds/FX/blast.wav");
+	effects[EXPLOSION_EFFECT] = load_effect("Sounds/FX/explosion.wav");
 }
 
 void

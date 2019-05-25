@@ -24,6 +24,7 @@
 void
 effect_damage_surroundings(Position *pos,
 			   RoomMatrix *rm,
+			   Player *player,
 			   Stats *attackerStats,
 			   unsigned int radius,
 			   unsigned int pushRadius,
@@ -48,7 +49,7 @@ effect_damage_surroundings(Position *pos,
 				Vector2d dir = vector2d_to_direction(&VEC2D((float) i, (float) j));
 				for (unsigned int k = 0; k < pushRadius; ++k) {
 					monster_push(r->monster,
-						     roommatrix_get_player(rm),
+						     player,
 						     rm,
 						     dir);
 				}

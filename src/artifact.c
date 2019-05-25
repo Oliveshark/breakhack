@@ -77,6 +77,9 @@ artifact_set_effect(Artifact *a, MagicalEffect effect)
 			a->info.name = "Stick of dynamite";
 			a->info.desc = "You are an explosive slayer";
 			break;
+		case VOLATILE_DAGGERS:
+			a->info.name = "Glowing dagger";
+			a->info.desc = "Your daggers are volatile";
 		default:
 			break;
 	}
@@ -92,7 +95,8 @@ static int WarriorArtifacts[] = {
 	INCREASED_STUN,         // 6
 	DAGGER_BOUNCE,		// 7
 	EXPLOSIVE_KILLS,	// 8
-	CHARGE_THROUGH          // 9
+	VOLATILE_DAGGERS,	// 9
+	CHARGE_THROUGH          // 10
 };
 
 static int RogueArtifacts[] = {
@@ -105,7 +109,8 @@ static int RogueArtifacts[] = {
 	INCREASED_STUN,		// 6
 	DAGGER_BOUNCE,		// 7
 	EXPLOSIVE_KILLS,	// 8
-	PHASE_IMPROVEMENT	// 9
+	VOLATILE_DAGGERS,	// 9
+	PHASE_IMPROVEMENT	// 10
 };
 
 static int MageArtifacts[] = {
@@ -118,7 +123,8 @@ static int MageArtifacts[] = {
 	INCREASED_STUN,		// 6
 	DAGGER_BOUNCE,		// 7
 	EXPLOSIVE_KILLS,	// 8
-	SKILL_RADIUS		// 9
+	VOLATILE_DAGGERS,	// 9
+	SKILL_RADIUS		// 10
 };
 
 /* Not in play yet */
@@ -132,7 +138,8 @@ static int PaladinArtifacts[] = {
 	INCREASED_STUN,		// 6
 	DAGGER_BOUNCE,		// 7
 	EXPLOSIVE_KILLS,	// 8
-	SKILL_RADIUS		// 9
+	VOLATILE_DAGGERS,	// 9
+	SKILL_RADIUS		// 10
 };
 
 /* Not in play yet */
@@ -146,7 +153,8 @@ static int EngineerArtifacts[] = {
 	INCREASED_STUN,		// 6
 	DAGGER_BOUNCE,		// 7
 	EXPLOSIVE_KILLS,	// 8
-	PHASE_IMPROVEMENT	// 9
+	VOLATILE_DAGGERS,	// 9
+	PHASE_IMPROVEMENT	// 10
 };
 
 static void
@@ -267,6 +275,11 @@ artifact_sprite_for(MagicalEffect effect)
 			t = texturecache_add("Extras/Artifacts.png");
 			sprite_set_texture(sprite, t, 0);
 			sprite->clip = CLIP16(32, 0);
+			break;
+		case VOLATILE_DAGGERS:
+			t = texturecache_add("Extras/Artifacts.png");
+			sprite_set_texture(sprite, t, 0);
+			sprite->clip = CLIP16(16, 0);
 			break;
 		default:
 			break;
