@@ -1026,9 +1026,6 @@ render_game(void)
 
 	map_render_top_layer(gMap, gRoomMatrix, gCamera);
 
-	if (gPlayer->class == MAGE || gPlayer->class == PALADIN)
-		roommatrix_render_mouse_square(gRoomMatrix, gCamera);
-
 	roommatrix_render_lightmap(gRoomMatrix, gCamera);
 	actiontextbuilder_render(gCamera);
 	gui_render_event_message(gGui, gCamera);
