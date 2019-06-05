@@ -342,9 +342,11 @@ vampiric_blow_skill(Skill *skill, SkillData *data)
 		player->stats.advantage = true;
 		CombatResult result = stats_fight(&player->stats, &monster->stats);
 		player->stats.advantage = false;
+
+		monster_hit(monster, result.dmg, result.critical);
+
 		if (result.dmg) {
 			mixer_play_effect(SWORD_HIT);
-			monster_hit(monster, result.dmg, result.critical);
 			monster_set_bleeding(monster);
 
 			unsigned int gain = player->stats.lvl * 3;
