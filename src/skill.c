@@ -902,6 +902,7 @@ skill_blink(Skill *skill, SkillData *data)
 		destination.x += (int) data->direction.x;
 		destination.y += (int) data->direction.y;
 		space = &matrix->spaces[destination.x][destination.y];
+		perform_pickups_for_space(space, player);
 	}
 
 	destination = lastAvailableDest;
