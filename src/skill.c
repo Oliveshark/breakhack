@@ -923,7 +923,6 @@ skill_blink(Skill *skill, SkillData *data)
 	Position lastTilePos = position_to_matrix_coords(&playerDestinationPos);
 	RoomSpace *destSpace = &matrix->spaces[lastTilePos.x][lastTilePos.y];
 
-	perform_pickups_for_space(destSpace, player);
 	handle_space_effects(destSpace, player);
 
 	return true;
