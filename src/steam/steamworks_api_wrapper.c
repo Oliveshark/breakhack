@@ -26,7 +26,7 @@ static Achievement g_Achievements[] = {
 	_ACH_ID(ROGUE_LIKE, "Rogue-like"),
 	_ACH_ID(MAGICAL, "Magical")
 };
-static Uint8 numAchievements = 6;
+static Uint8 numAchievements = 7;
 
 static bool m_Initiated = false;
 static bool m_bStatsReceived = false;
