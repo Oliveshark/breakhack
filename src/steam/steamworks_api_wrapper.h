@@ -13,7 +13,8 @@ typedef enum EAchievement
 	BUGGFIXER = 7,
 	BUGGCREATOR = 8,
 	ROGUE_LIKE = 9,
-	ARCADE_HACK = 10
+	MAGICAL = 10,
+	ARCADE_HACK = 11
 } EAchievement;
 
 
@@ -44,6 +45,8 @@ void steam_register_qp_score(Sint32 nScore, const int32_t *details, int32_t nDet
 void steam_register_weekly_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
 void steam_register_arcade_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
+
+void steam_register_mage_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
 void steam_register_warrior_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 

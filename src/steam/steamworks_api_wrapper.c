@@ -12,6 +12,7 @@ static const char *LB_HIGHSCORE			= "Highscore";
 static const char *LB_QUICKPLAY_HIGHSCORE	= "Quickplay Highscore";
 static const char *LB_ARCADE_HIGHSCORE	= "Arcade Highscore";
 static const char *LB_ROGUE_HIGHSCORE		= "Rogue Highscore";
+static const char *LB_MAGE_HIGHSCORE		= "Mage Highscore";
 static const char *LB_WARRIOR_HIGHSCORE		= "Warrior Highscore";
 static const char *LB_KILLS			= "Most Kills";
 static char *lb_weekly = NULL;
@@ -22,7 +23,8 @@ static Achievement g_Achievements[] = {
 	_ACH_ID(LIGHTS_ON, "Omnidirectional light"),
 	_ACH_ID(BACK_TO_WORK, "Back to work"),
 	_ACH_ID(DRAGON_SLAYER, "Platinum dragon slayer"),
-	_ACH_ID(ROGUE_LIKE, "Rogue-like")
+	_ACH_ID(ROGUE_LIKE, "Rogue-like"),
+	_ACH_ID(MAGICAL, "Magical")
 };
 static Uint8 numAchievements = 6;
 
@@ -35,6 +37,7 @@ static Sint64 m_hArcadeHighscoreLeaderboard = 0;
 static Sint64 m_hKillsLeaderboard = 0;
 static Sint64 m_hRogueHighscore = 0;
 static Sint64 m_hWarriorHighscore = 0;
+static Sint64 m_hMageHighscore = 0;
 static Sint64 m_hWeeklyHighscore = 0;
 
 static Timer *requestDataTimer = NULL;
@@ -70,6 +73,8 @@ leaderboard_received(Sint64 hLeaderboard, const char *name)
 		m_hKillsLeaderboard = hLeaderboard;
 	else if (strcmp(LB_ROGUE_HIGHSCORE, name) == 0)
 		m_hRogueHighscore = hLeaderboard;
+	else if (strcmp(LB_MAGE_HIGHSCORE, name) == 0)
+		m_hMageHighscore = hLeaderboard;
 	else if (strcmp(LB_WARRIOR_HIGHSCORE, name) == 0)
 		m_hWarriorHighscore = hLeaderboard;
 	else if (strcmp(LB_QUICKPLAY_HIGHSCORE, name) == 0)
@@ -124,6 +129,8 @@ request_data_queue_run(void)
 			c_SteamUserStats_FindLeaderboard(LB_KILLS);
 		else if (!m_hRogueHighscore)
 			c_SteamUserStats_FindLeaderboard(LB_ROGUE_HIGHSCORE);
+		else if (!m_hMageHighscore)
+			c_SteamUserStats_FindLeaderboard(LB_MAGE_HIGHSCORE);
 		else if (!m_hWarriorHighscore)
 			c_SteamUserStats_FindLeaderboard(LB_WARRIOR_HIGHSCORE);
 		else if (!m_hWeeklyHighscore)
@@ -181,6 +188,13 @@ void steam_register_arcade_score(Sint32 nScore, const int32_t * details, int32_t
 	if (!m_hArcadeHighscoreLeaderboard)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hArcadeHighscoreLeaderboard, nScore, details, nDetails);
+}
+
+void steam_register_mage_score(Sint32 nScore, const int32_t * details, int32_t nDetails)
+{
+	if (!m_hMageHighscore)
+		return;
+	c_SteamUserStats_UploadLeaderboardScore(m_hMageHighscore, nScore, details, nDetails);
 }
 
 void steam_register_warrior_score(Sint32 nScore, const int32_t * details, int32_t nDetails)

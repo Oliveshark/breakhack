@@ -1086,10 +1086,13 @@ register_scores(void)
 			steam_set_achievement(ROGUE_LIKE);
 			steam_register_rogue_score((int) gPlayer->gold,
 						   (int32_t*) &details, 1);
-		}
-		else if (gPlayer->class == WARRIOR) {
+		} else if (gPlayer->class == WARRIOR) {
 			steam_register_warrior_score((int) gPlayer->gold,
 						     (int32_t*) &details, 1);
+		} else if (gPlayer->class == MAGE) {
+			steam_set_achievement(MAGICAL);
+			steam_register_mage_score((int) gPlayer->gold,
+						  (int32_t*) &details, 1);
 		}
 }
 #endif
