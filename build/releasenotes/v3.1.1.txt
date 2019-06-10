@@ -1,0 +1,40 @@
+392edd8 Updates blink tooltip to include item pickups.
+6584981 remove unnecessary pickup
+d2cf797 Mage blink skill pickup items in the path #60
+78e9413 Fix : Missing with vampiric blow doesn't seem to trigger a 'Dodge' action text #59
+af957eb Disables mouse square rendering for all classes
+1d988d7 Fixes working explosions and artifacts
+68f4e15 Fixes returning daggers and resets erupt attack
+7f232be A beginning to the new exploding artifacts
+12aff9a Fixes erupt so it has a base push of 1
+2dc25c9 Adds the DAGGER_MAGNET artifact
+5e67ca7 Removes stun from backstab skill
+cac3fea Altered the vampiric blow icon slightly
+9ed80ac Removes erupt test code
+05cbce0 Adds vampiric blow icon
+6c135c6 Adds gui display for held keys
+fb031e2 Bumps version
+b861e6e Fixes SENTINEL monsters from ignoring forced fear
+046551a Changes ERUPT to cause fear instead of bleeding
+8fb1bbc Fixes bug with erupt pushing direction
+35164a9 Introduces vampiric blow
+dd3e84d Makes critical hits cause bleeding
+8f21e8b Prevents skill radius from impacting push back range
+2b74316 Updates erupt tooltip to mention push back
+7ddaab8 Make erupt always push back 1 tile without any artifacts
+43ca8f4 Fixes #58 - Game crash with AOE attacks
+ef5cd4e Adds PUSH_BACK and SKILL_RADIUS effects to erupt skill
+b00e607 Start with debug gold
+67e29d6 Added the SKILL_RADIUS artifact (not used yet)
+81e7df1 Adds skill icons for the two mage skills
+18effa2 Rogue backstab skill now triggers bleeding as well
+c043ad0 Implements the erupt skill
+223a3b0 Implements the blink skill
+2ca78e2 Adds monster bleed damage every turn
+0476d4d Introduces particle emitters on monsters
+826cbe1 A quick start to the Mage
+fcc6527 Minor fix
+b409b76 Improved build instruction structure
+b075390 React to PR feedback
+86e6f66 Adds Windows compilation instructions
+c0a4a4e Make ninja builds smoother
