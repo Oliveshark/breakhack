@@ -26,8 +26,8 @@
 #include "sprite.h"
 
 typedef struct TEXT_MENU_ITEM {
-	char label[20];
-	char description[100];
+	char *label;
+	char *description;
 	void (*callback)(void*);
 } TEXT_MENU_ITEM;
 

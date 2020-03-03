@@ -192,6 +192,7 @@ add_executable(breakhack
 	src/util
 	src/event
 	src/player
+	src/save
 	src/map
 	src/map_lua
 	src/camera

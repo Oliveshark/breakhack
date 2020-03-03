@@ -58,6 +58,7 @@
 #include "sprite_util.h"
 #include "event.h"
 #include "config.h"
+#include "save.h"
 
 #ifdef STEAM_BUILD
 #include "checksum.h"
@@ -421,6 +422,56 @@ goToCharacterMenu(void *unused)
 }
 
 static void
+choose_music(void)
+{
+	if (cLevel > (unsigned int) (quickGame ? 11 : 19)) {
+		mixer_play_music(BOSS_MUSIC0);
+	} else if (cLevel % (quickGame ? 3 : 5) == 0) {
+		gui_log("You sense something powerful in the vicinity");
+		mixer_play_music(BOSS_MUSIC0);
+	} else {
+		mixer_play_music(GAME_MUSIC0 + get_random(2));
+	}
+}
+
+static void
+continueGame(void *unused)
+{
+	(void) unused;
+	const Save *save = save_get();
+	quickGame = save->quickGame;
+	arcadeGame = save->arcadeGame;
+
+	playerClass = save->player_class;
+	cLevel = save->map_level;
+	set_random_seed(save->seed);
+	debug("Loading seed: %d", save->seed);
+	debug("Loading map level: %d", save->map_level);
+
+	gGameState = PLAYING;
+	if (gPlayer)
+		player_destroy(gPlayer);
+	gPlayer = player_create(playerClass, gCamera);
+
+	// Load player from save
+	gPlayer->daggers = save->player_daggers;
+	gPlayer->xp = save->player_xp;
+	gPlayer->stateData = save->player_state;
+	gPlayer->stats = save->player_stats;
+	gPlayer->stat_data = save->player_player_stats;
+	gPlayer->potion_sips = save->player_potion_sips;
+	gPlayer->equipment = save->player_equipment;
+	gPlayer->gold = save->player_gold;
+
+	choose_music();
+	resetGame();
+	skillbar_reset(gSkillBar);
+	gui_clear_message_log();
+	gui_log("The Dungeon Crawl continues!");
+	gui_event_message("Welcome back!");
+}
+
+static void
 startRegularGame(void *unused)
 {
 	quickGame = false;
@@ -459,6 +510,7 @@ static void
 goToMainMenu(void *unused)
 {
 	UNUSED(unused);
+	save_load();
 	gui_clear_message_log();
 	gGameState = MENU;
 	menu_destroy(inGameMenu);
@@ -474,37 +526,47 @@ static void
 goToGameSelectMenu(void *unused)
 {
 	UNUSED(unused);
-	static TEXT_MENU_ITEM menuItems[] = {
-		{
-			"STANDARD GAME",
-			"Standard 20 level game, recommended for new players",
-			startRegularGame
-		},
+	int item_count = 3;
 #ifdef STEAM_BUILD
-		{
-			"WEEKLY CHALLENGE",
-			"Quick game with weekly leaderboards at breakhack.net",
-			startWeeklyGame
-		},
+	item_count += 1;
 #endif
-		{
-			"QUICK GAME",
-			"Shorter 12 level game, with more action earlier in the game",
-			startQuickGame
-		},
-		{
-			"ARCADE GAME",
-			"One big level with lots of action",
-			startArcadeGame
-		}
+	if (save_exists()) {
+		item_count += 1;
+	}
+	TEXT_MENU_ITEM *menuItems = ec_malloc(item_count * sizeof(TEXT_MENU_ITEM));
+	int i = 0;
+	if (save_exists()) {
+		menuItems[i++] = (TEXT_MENU_ITEM) {
+			"CONTINUE",
+			"Continue your last session",
+			continueGame,
+		};
+	}
+	menuItems[i++] = (TEXT_MENU_ITEM) {
+		"STANDARD GAME",
+		"Standard 20 level game, recommended for new players",
+		startRegularGame
+	};
+#ifdef STEAM_BUILD
+	menuItems[i++] = (TEXT_MENU_ITEM) {
+		"WEEKLY CHALLENGE",
+		"Quick game with weekly leaderboards at breakhack.net",
+		startWeeklyGame
+	};
+#endif
+	menuItems[i++] = (TEXT_MENU_ITEM) {
+		"QUICK GAME",
+		"Shorter 12 level game, with more action earlier in the game",
+		startQuickGame
+	};
+	menuItems[i++] = (TEXT_MENU_ITEM) {
+		"ARCADE GAME",
+		"One big level with lots of action",
+		startArcadeGame
 	};
 
-#ifdef STEAM_BUILD
-	int count = 4;
-#else
-	int count = 3;
-#endif
-	menu_create_text_menu(&gameSelectMenu, &menuItems[0], count, gRenderer);
+	menu_create_text_menu(&gameSelectMenu, menuItems, item_count, gRenderer);
+	free(menuItems);
 	gGameState = GAME_SELECT;
 }
 
@@ -691,6 +753,7 @@ init(void)
 	event_register_listener(on_event_callback);
 
 	settings_init();
+	save_init();
 	hiscore_init();
 	initMainMenu();
 
@@ -874,17 +937,17 @@ check_next_level(void)
 		return;
 	}
 	if (tile->levelExit) {
-		mixer_play_effect(NEXT_LEVEL);
 		++cLevel;
-		if (cLevel > (unsigned int) (quickGame ? 11 : 19)) {
-			mixer_play_music(BOSS_MUSIC0);
-		} else if (cLevel % (quickGame ? 3 : 5) == 0) {
-			gui_log("You sense something powerful in the vicinity");
-			mixer_play_music(BOSS_MUSIC0);
-		} else {
-			mixer_play_music(GAME_MUSIC0 + get_random(2));
+		if (!weeklyGame) {
+			save_save(get_random_seed(),
+				  cLevel,
+				  quickGame,
+				  arcadeGame,
+				  gPlayer);
 		}
 
+		mixer_play_effect(NEXT_LEVEL);
+		choose_music();
 		if (!gameCompleted()) {
 			resetGame();
 		}
@@ -1116,6 +1179,7 @@ run_game(void)
 		camera_shake(VECTOR2D_RIGHT, 800);
 		gui_log("The dungeon consumed you");
 		gui_event_message("You died!");
+		save_clear();
 		end_game_details();
 		mixer_play_effect(SPLAT);
 		gGameState = GAME_OVER;
@@ -1349,6 +1413,7 @@ void close(void)
 	texturecache_close();
 	settings_close();
 	hiscore_close();
+	save_close();
 
 #ifdef STEAM_BUILD
 	steam_shutdown();
