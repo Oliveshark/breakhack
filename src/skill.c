@@ -888,10 +888,11 @@ skill_blink(Skill *skill, SkillData *data)
 	// Find collider
 	destination.x += (int) data->direction.x;
 	destination.y += (int) data->direction.y;
-	RoomSpace *space = &matrix->spaces[destination.x][destination.y];
 	Position lastAvailableDest = playerStartPos;
 	while (position_in_roommatrix(&destination))
 	{
+		RoomSpace *space = &matrix->spaces[destination.x][destination.y];
+
 		if (space->occupied) {
 			break;
 		}
@@ -900,10 +901,9 @@ skill_blink(Skill *skill, SkillData *data)
 			lastAvailableDest = destination;
 		}
 
+		perform_pickups_for_space(space, player);
 		destination.x += (int) data->direction.x;
 		destination.y += (int) data->direction.y;
-		space = &matrix->spaces[destination.x][destination.y];
-		perform_pickups_for_space(space, player);
 	}
 
 	destination = lastAvailableDest;

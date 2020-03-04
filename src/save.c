@@ -40,7 +40,15 @@ DbQuery MIGRATE_COMMAND = {
 };
 
 static
-DbQuery CLEAR_SAVE = { "DELETE FROM saves", NULL, NULL };
+DbQuery CLEAR_SAVE = { 
+	"DELETE FROM saves "
+#ifdef _WIN32
+	"WHERE arch = 1",
+#else // _WIN32
+	"WHERE arch = 2",
+#endif // _WIN32
+	NULL,
+	NULL };
 
 static void
 create_table(void)
