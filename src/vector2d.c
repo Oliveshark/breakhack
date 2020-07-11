@@ -27,16 +27,12 @@ vector2d_to_direction(const Vector2d *vec)
 
 	if (new.x > 0)
 		new.x = 1;
-	else if (new.x == 0)
-		new.x = 0;
-	else
+	else if (new.x < 0)
 		new.x = -1;
 
 	if (new.y > 0)
 		new.y = 1;
-	else if (new.y == 0)
-		new.y = 0;
-	else
+	else if (new.y < 0)
 		new.y = -1;
 
 	return new;

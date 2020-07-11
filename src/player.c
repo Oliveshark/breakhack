@@ -524,6 +524,7 @@ player_create(class_t class, Camera *cam)
 	player->gold			= 500;
 #else
 	player->daggers			= 0;
+	player->gold			= 0;
 #endif
 	player->stat_data.total_steps	= 0;
 	player->stat_data.steps		= 0;
@@ -531,7 +532,6 @@ player_create(class_t class, Camera *cam)
 	player->stat_data.kills		= 0;
 	player->stat_data.misses	= 0;
 	player->xp			= 0;
-	player->gold			= 0;
 	player->potion_sips		= 0;
 	player->phase_count		= 0;
 	player->class			= class;

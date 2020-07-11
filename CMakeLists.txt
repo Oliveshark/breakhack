@@ -309,7 +309,7 @@ ENDIF ()
 # LINT:
 if (CPPCHECK_FOUND)
 	add_custom_target(lint
-		COMMAND ${CPPCHECK_EXECUTABLE} --force --language=c --template=gcc --error-exitcode=1 --quiet --suppress=unreadVariable --suppress=missingInclude --enable=warning,style,performance,portability,information,missingInclude src/
+		COMMAND ${CPPCHECK_EXECUTABLE} --force --language=c --template=gcc --error-exitcode=1 --quiet --suppress=missingInclude --enable=warning,style,performance,portability,information,missingInclude src/
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 		COMMENT "Run cppcheck"
 		)
