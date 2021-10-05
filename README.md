@@ -1,3 +1,4 @@
+[![maintenance](https://img.shields.io/badge/maintenance-passively--maintained-orange)](https://img.shields.io/badge/maintenance-passively--maintained-orange)
 [![Build Status](https://travis-ci.org/Oliveshark/breakhack.svg?branch=master)](https://travis-ci.org/Oliveshark/breakhack)
 [![Build status](https://ci.appveyor.com/api/projects/status/2a18npdntkmlx3dc?svg=true)](https://ci.appveyor.com/project/LiquidityC/breakhack)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fc02d56fa7194e61b2c7d260fd2e4186)](https://www.codacy.com/app/LiquidityC/breakhack?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Oliveshark/breakhack&amp;utm_campaign=Badge_Grade)
