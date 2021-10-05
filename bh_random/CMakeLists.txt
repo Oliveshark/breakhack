@@ -8,7 +8,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif ()
 
 add_library(bh_random STATIC
-	src/bh_random
+	src/bh_random.cpp
 	)
 
 IF ( MSVC )

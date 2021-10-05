@@ -7,12 +7,12 @@ endif ()
 
 
 add_executable(checksumtool
-	src/checksum
+	src/checksum.c
 	)
 target_compile_definitions(checksumtool PUBLIC EXECUTABLE=1)
 
 add_library(checksum
-	src/checksum
+	src/checksum.c
 	)
 
 IF ( MSVC )

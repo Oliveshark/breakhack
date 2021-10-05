@@ -184,62 +184,62 @@ endif ()
 
 # PROGRAMS:
 add_executable(breakhack
-	src/main
-	src/texture
-	src/screenresolution
-	src/sprite
-	src/sprite_util
-	src/util
-	src/event
-	src/player
-	src/save
-	src/map
-	src/map_lua
-	src/camera
-	src/timer
-	src/roommatrix
-	src/position
-	src/monster
-	src/stats
-	src/actiontext
-	src/random
-	src/time
-	src/linkedlist
-	src/hashtable
-	src/gui
-	src/item
-	src/item_builder
-	src/pointer
-	src/gui_button
-	src/particle_engine
-	src/particle_emitter
-	src/menu
-	src/collisions
-	src/keyboard
-	src/input
-	src/mixer
-	src/io_util
-	src/physfsrwops
-	src/skillbar
-	src/texturecache
-	src/skill
-	src/projectile
-	src/vector2d
-	src/map_room_modifiers
-	sqlite3/sqlite3
-	src/db
-	src/settings
-	src/actiontextbuilder
-	src/animation
-	src/trap
-	src/artifact
-	src/screen
-	src/hiscore
-	src/object
-	src/gui_util
-	src/tooltip
-	src/gamecontroller
-	src/effect_util
+	src/main.c
+	src/texture.c
+	src/screenresolution.c
+	src/sprite.c
+	src/sprite_util.c
+	src/util.c
+	src/event.c
+	src/player.c
+	src/save.c
+	src/map.c
+	src/map_lua.c
+	src/camera.c
+	src/timer.c
+	src/roommatrix.c
+	src/position.c
+	src/monster.c
+	src/stats.c
+	src/actiontext.c
+	src/random.c
+	src/time.c
+	src/linkedlist.c
+	src/hashtable.c
+	src/gui.c
+	src/item.c
+	src/item_builder.c
+	src/pointer.c
+	src/gui_button.c
+	src/particle_engine.c
+	src/particle_emitter.c
+	src/menu.c
+	src/collisions.c
+	src/keyboard.c
+	src/input.c
+	src/mixer.c
+	src/io_util.c
+	src/physfsrwops.c
+	src/skillbar.c
+	src/texturecache.c
+	src/skill.c
+	src/projectile.c
+	src/vector2d.c
+	src/map_room_modifiers.c
+	sqlite3/sqlite3.c
+	src/db.c
+	src/settings.c
+	src/actiontextbuilder.c
+	src/animation.c
+	src/trap.c
+	src/artifact.c
+	src/screen.c
+	src/hiscore.c
+	src/object.c
+	src/gui_util.c
+	src/tooltip.c
+	src/gamecontroller.c
+	src/effect_util.c
 	${STEAM_SOURCES}
 	)
 
@@ -283,19 +283,19 @@ endif (MSVC)
 IF (CMOCKA_FOUND AND NOT OSX AND NOT CLANG)
 	find_package(Threads REQUIRED)
 	enable_testing()
-	add_executable(test_util test/test_util src/util)
+	add_executable(test_util test/test_util.c src/util.c)
 	target_link_libraries(test_util ${CMOCKA_LIBRARY})
 	add_test(test_util test_util)
 
-	add_executable(test_linkedlist test/test_linkedlist src/linkedlist src/util)
+	add_executable(test_linkedlist test/test_linkedlist.c src/linkedlist.c src/util.c)
 	target_link_libraries(test_linkedlist ${CMOCKA_LIBRARY})
 	add_test(test_linkedlist test_linkedlist)
 
-	add_executable(test_hashtable test/test_hashtable src/hashtable src/util)
+	add_executable(test_hashtable test/test_hashtable.c src/hashtable.c src/util.c)
 	target_link_libraries(test_hashtable ${CMOCKA_LIBRARY})
 	add_test(test_hashtable test_hashtable)
 
-	add_executable(test_input test/test_input src/input src/keyboard)
+	add_executable(test_input test/test_input.c src/input.c src/keyboard.c)
 	target_link_libraries(test_input
 		${CMOCKA_LIBRARY}
 		${SDL2_LIBRARY}

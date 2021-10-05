@@ -71,7 +71,7 @@ static char *artifacts_tooltip[] = {
 	"   You just picked up your first artifact!", "",
 	"",
 	"   Your current artifacts and corresponding level are", "",
-	"   listed next to your skills." "",
+	"   listed next to your skills.", "",
 	"",
 	"",
 	"   Artifacts have mystical effects that improve your offensive", "",
