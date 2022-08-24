@@ -30,3 +30,20 @@ lint:
 package:
 	@make package -sC _build/release
 .PHONY: package
+
+setup:
+	@mkdir -p _build/release
+	@mkdir -p _build/debug
+	@cd _build/debug/ && \
+		cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=YES ../.. && \
+		cd -
+	@cd _build/debug/ && \
+		cmake -DCMAKE_BUILD_TYPE=Release ../.. && \
+		cd -
+	@ln -s _build/debug/compile_commands.json
+	@echo "Setup complete"
+.PHONY: setup
+
+teardown:
+	@rm -rf _build
+.PHONY: teardown
