@@ -79,7 +79,7 @@ bool
 mixer_toggle_sound(void);
 
 bool
-mixer_toggle_music(GameState*);
+mixer_toggle_music(const GameState*);
 
 void
 mixer_play_effect(Fx fx);

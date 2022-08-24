@@ -66,7 +66,7 @@ Artifact *
 artifact_create(MagicalEffect);
 
 Artifact *
-artifact_copy(Artifact*);
+artifact_copy(const Artifact*);
 
 void
 artifact_render(Artifact*, Camera*);

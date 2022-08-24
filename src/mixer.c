@@ -114,7 +114,7 @@ mixer_toggle_sound(void)
 }
 
 bool
-mixer_toggle_music(GameState *state)
+mixer_toggle_music(const GameState *state)
 {
 	Settings *settings = settings_get();
 	settings->music_enabled = !settings->music_enabled;

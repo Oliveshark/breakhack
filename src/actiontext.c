@@ -47,7 +47,7 @@ actiontext_render(ActionText *t, Camera *cam)
 	if (t->dead)
 		return;
 
-	if (!t->dead && !timer_started(t->timer))
+	if (!timer_started(t->timer))
 		timer_start(t->timer);
 
 	if (timer_get_ticks(t->timer) < 500) {

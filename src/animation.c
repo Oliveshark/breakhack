@@ -86,7 +86,7 @@ animation_render(Animation *animation, Camera *camera)
 }
 
 void
-animation_set_frames(Animation *animation, AnimationClip clips[])
+animation_set_frames(Animation *animation, const AnimationClip clips[])
 {
 	for (size_t i = 0; i < animation->clipCount; i++) {
 		animation->clips[i] = clips[i];

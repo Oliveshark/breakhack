@@ -303,7 +303,7 @@ artifact_create(MagicalEffect effect)
 }
 
 Artifact *
-artifact_copy(Artifact *a)
+artifact_copy(const Artifact *a)
 {
 	Artifact *new = ec_malloc(sizeof(Artifact));
 	*new = *a;

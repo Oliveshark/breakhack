@@ -474,7 +474,7 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 }
 
 static void
-on_monster_move(Monster *m, Position *origPos, Map *map, RoomMatrix *rm)
+on_monster_move(Monster *m, const Position *origPos, Map *map, RoomMatrix *rm)
 {
 	Position currentTilePos = position_to_matrix_coords(&m->sprite->pos); 
 	Player *player = rm->spaces[rm->playerRoomPos.x][rm->playerRoomPos.y].player;

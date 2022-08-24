@@ -32,7 +32,7 @@ actiontextbuilder_init(SDL_Renderer *renderer)
 }
 
 void
-actiontextbuilder_create_text(const char *msg, SDL_Color color, Position *p)
+actiontextbuilder_create_text(const char *msg, SDL_Color color, const Position *p)
 {
 	assert (gRenderer != NULL);
 	Sprite *sprite = sprite_create();

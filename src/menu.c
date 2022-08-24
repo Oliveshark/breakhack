@@ -110,7 +110,7 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *
 		"Commissions/Mage.png"
 	};
 
-	static char *callbackData[] = {
+	static const char *callbackData[] = {
 		"warrior",
 		"rogue",
 		"mage"

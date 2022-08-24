@@ -204,7 +204,6 @@ create_treasure(int current_level)
 	unsigned int value;
 
 	amt = (unsigned int) 1 + get_random(5*current_level) % 40;
-	amt = amt == 0 ? 1 : amt;
 
 	if (current_level > 9) {
 		highest_treasure = PLATINUM;

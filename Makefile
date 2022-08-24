@@ -7,12 +7,12 @@ release:
 .PHONY: release
 
 clean:
-	@make clean -sC _build/debug
-	@make clean -sC _build/release
+	@make -sC _build/debug clean
+	@make -sC _build/release clean
 .PHONY: clean
 
 test:
-	@make test -sC _build/debug
+	@make -sC _build/debug test
 .PHONY: test
 
 run: $(all)
@@ -24,11 +24,11 @@ playtest: $(all)
 .PHONY: playtest
 
 lint:
-	@make lint -sC _build/debug
+	@make -sC _build/debug lint
 .PHONY: lint
 
 package:
-	@make package -sC _build/release
+	@make -sC _build/release package
 .PHONY: package
 
 setup:
@@ -46,4 +46,5 @@ setup:
 
 teardown:
 	@rm -rf _build
+	@rm compile_commands.json
 .PHONY: teardown

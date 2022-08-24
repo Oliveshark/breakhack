@@ -53,7 +53,7 @@ void
 animation_load_texture(Animation *, const char *path, SDL_Renderer*);
 
 void
-animation_set_frames(Animation*, AnimationClip clips[]);
+animation_set_frames(Animation*, const AnimationClip clips[]);
 
 void
 animation_run(Animation*);
