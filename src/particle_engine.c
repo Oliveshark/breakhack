@@ -41,7 +41,6 @@ typedef struct LineParticle {
 } LineParticle;
 
 typedef union ParticleUnion {
-	ParticleType type;
 	RectParticle rect;
 	LineParticle line;
 } ParticleUnion;

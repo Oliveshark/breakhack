@@ -186,7 +186,7 @@ load_top_gold_cb(void *result, int count, char **values, char **colNames)
 double
 hiscore_get_top_gold(void)
 {
-	double result;
+	double result = 0;
 	DbQuery *query = &GET_TOP_GOLD_COMMAND;
 	query->cb_arg = &result;
 	db_execute(db, query);

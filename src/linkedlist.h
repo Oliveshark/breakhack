@@ -37,7 +37,7 @@ void* linkedlist_poplast(LinkedList **head);
 
 void* linkedlist_get(LinkedList **head, unsigned int index);
 
-void linkedlist_each(const LinkedList **head, void (*fun)(void*));
+void linkedlist_each(LinkedList **head, void (*fun)(void*));
 
 void linkedlist_destroy(LinkedList **head);
 
