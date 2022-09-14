@@ -39,6 +39,10 @@
 #include "bh_random.h"
 #include "artifact.h"
 
+/* Lua registry key variables */
+static char RendererKey = 'r';
+static char PlayerKey = 'p';
+
 static
 lua_State* load_lua_state(void)
 {
@@ -84,7 +88,8 @@ SDL_Renderer* luaL_checksdlrenderer(lua_State *L)
 {
 	SDL_Renderer *renderer;
 
-	lua_getglobal(L, "_sdl_renderer");
+	lua_pushlightuserdata(L, &RendererKey);
+	lua_gettable(L, LUA_REGISTRYINDEX);
 	if (!lua_islightuserdata(L, -1))
 		fatal("in luaL_checksdlrenderer(), pointer lost in lua script");
 
@@ -99,7 +104,8 @@ static Player*
 luaL_checkplayer(lua_State *L)
 {
 	Player *player;
-	lua_getglobal(L, "_game_player");
+	lua_pushlightuserdata(L, &PlayerKey);
+	lua_gettable(L, LUA_REGISTRYINDEX);
 	if (!lua_islightuserdata(L, -1))
 		fatal("in luaL_checkplayer(), pointer lost in lua script");
 
@@ -152,7 +158,7 @@ l_map_set_current_room(lua_State *L)
 	map = luaL_checkmap(L, 1);
 	room_x = (int) luaL_checkinteger(L, 2);
 	room_y = (int) luaL_checkinteger(L, 3);
-	
+
 	map->currentRoom = (Position) { room_x, room_y };
 
 	return 0;
@@ -498,7 +504,7 @@ l_add_monster(lua_State *L)
 
 	map_add_monster(map, monster);
 
-    // cppcheck-suppress memleak
+	// cppcheck-suppress memleak
 	return 0;
 }
 
@@ -625,11 +631,15 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, Player *pl
 	// Present stuff to lua
 	build_player_state_table(L, player);
 
+    /* Register state variables in the registry. We use static variable
+     * addresses as keys to avoid key conflicts. */
+	lua_pushlightuserdata(L, &RendererKey);
 	lua_pushlightuserdata(L, renderer);
-	lua_setglobal(L, "_sdl_renderer");
+	lua_settable(L, LUA_REGISTRYINDEX);
 
+	lua_pushlightuserdata(L, &PlayerKey);
 	lua_pushlightuserdata(L, player);
-	lua_setglobal(L, "_game_player");
+	lua_settable(L, LUA_REGISTRYINDEX);
 
 	lua_pushcfunction(L, l_create_shop_artifact);
 	lua_setglobal(L, "create_shop_artifact");
