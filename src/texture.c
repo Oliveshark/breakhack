@@ -165,7 +165,7 @@ texture_load_from_text(Texture *t,
 		fg_surface = TTF_RenderText_Blended(t->font, text, c);
 	}
 	else {
-		fg_surface = TTF_RenderText_Solid(t->font, text, c);
+		fg_surface = TTF_RenderText_Blended(t->font, text, c);
 	}
 	SDL_Surface *surface = fg_surface;
 	if (bg_surface) {
