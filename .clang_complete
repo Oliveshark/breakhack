@@ -1,4 +1,0 @@
--DDEBUG
--DSTEAM_BUILD
--I/usr/include/SDL2/
--include./_build/debug/config.h
