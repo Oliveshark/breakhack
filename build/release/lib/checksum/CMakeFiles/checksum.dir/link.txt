@@ -1,2 +1,0 @@
-/usr/bin/ccache /usr/bin/ar qc libchecksum.a CMakeFiles/checksum.dir/src/checksum.c.o
-/usr/bin/ccache /usr/bin/ranlib libchecksum.a

@@ -191,6 +191,8 @@ static void resetGame(void);
 static void initMainMenu(void);
 static bool is_player_dead(void);
 
+static SDL_Surface *window_icon = NULL;
+
 static
 bool initSDL(void)
 {
@@ -249,7 +251,8 @@ bool initSDL(void)
 	}
 
 	// Set the window icon
-	SDL_SetWindowIcon(gWindow, IMG_Load_RW(io_load_rwops("Extras/icon.png"), true));
+    window_icon = IMG_Load_RW(io_load_rwops("Extras/icon.png"), true);
+	SDL_SetWindowIcon(gWindow, window_icon);
 
 	gRenderer = SDL_CreateRenderer(gWindow, -1,
 				       SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
@@ -273,7 +276,7 @@ bool initSDL(void)
 		debug("Disabling text input");
 		SDL_StopTextInput();
 	}
-		
+
 	return true;
 }
 
@@ -1394,6 +1397,9 @@ void close(void)
 		screen_destroy(scoreScreen);
 	if (characterSelectScreen)
 		screen_destroy(characterSelectScreen);
+    if (window_icon) {
+        SDL_FreeSurface(window_icon);
+    }
 
 	sprite_destroy(howto_tooltip);
 	sprite_destroy(new_skill_tooltip);

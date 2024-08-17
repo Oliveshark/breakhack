@@ -1,2 +1,0 @@
-/usr/bin/ccache /usr/bin/ar qc libbh_random.a CMakeFiles/bh_random.dir/src/bh_random.cpp.o
-/usr/bin/ccache /usr/bin/ranlib libbh_random.a

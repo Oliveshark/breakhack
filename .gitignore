@@ -1,7 +1,7 @@
 /.vscode/
 /vscode_build/
 /CMakeSettings.json
-/_build/
+/build/
 /*.dll
 /tags
 /assets.pack

@@ -14,12 +14,6 @@ set(breakhack_RELEASE_TYPE "")
 set(breakhack_STEAMAPI_DLL_CHECKSUM 0x18dba28)
 set(breakhack_STEAMAPI_SO_CHECKSUM 0x1f5786b)
 
-include(FindLua)
-include(FindPhysFS)
-include(build_deps/cmake/FindSDL2.cmake)
-include(build_deps/cmake/FindSDL2_image.cmake)
-include(build_deps/cmake/FindSDL2_ttf.cmake)
-include(build_deps/cmake/FindSDL2_mixer.cmake)
 include(build_deps/cmake/FindCCache.cmake)
 include(build_deps/cmake/FindCMocka.cmake)
 include(build_deps/cmake/Findcppcheck.cmake)
@@ -28,10 +22,6 @@ configure_file(
 	"${PROJECT_SOURCE_DIR}/src/config.h.in"
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
-
-macro(set_option option value)
-	set(${option} ${value} CACHE INTERNAL "" FORCE)
-endmacro()
 
 if (EXISTS "${PROJECT_SOURCE_DIR}/steamworks_c_wrapper/sdk")
 	MESSAGE ( STATUS "Steam SDK located, Steam build enabled")
@@ -113,21 +103,40 @@ if (STEAM)
 	)
 endif ()
 
-if (NOT LUA_FOUND OR STEAM)
-	add_subdirectory(lib/lua-5.3.5)
-	include_directories(lua-5.3.5/src)
-	set(LUA_LIBRARIES lua)
-	set(LUA_INCLUDE_DIR lua-5.3.5/src)
-endif ()
+# Include SDL2
+set(SDL_STATIC ON)
+set(SDL_SHARED OFF)
+add_subdirectory(lib/SDL)
+set(SDL2_INCLUDE_DIR lib/SDL/include)
+set(SDL2_LIBRARY SDL2-static)
 
-if (NOT PHYSFS_FOUND OR STEAM)
-	set_option(PHYSFS_BUILD_SHARED off)
-	set_option(PHYSFS_BUILD_TEST off)
-	add_subdirectory(lib/physfs-3.0)
-	include_directories(lib/physfs-3.0/src)
-	set(PHYSFS_LIBRARY physfs-static)
-	set(PHYSFS_INCLUDE_DIR physfs-3.0/src)
-endif ()
+# Include SDL2_image/mixer/ttf
+set(BUILD_SHARED_LIBS OFF)
+add_subdirectory(lib/SDL_image)
+set(SDL2_IMAGE_INCLUDE_DIR lib/SDL_image/include)
+set(SDL2_IMAGE_LIBRARY SDL2_image)
+
+add_subdirectory(lib/SDL_mixer)
+set(SDL2_MIXER_INCLUDE_DIR lib/SDL_mixer/include)
+set(SDL2_MIXER_LIBRARY SDL2_mixer)
+
+add_subdirectory(lib/SDL_ttf)
+set(SDL2_TTF_INCLUDE_DIR lib/SDL_ttf/include)
+set(SDL2_TTF_LIBRARY SDL2_ttf)
+
+# Include lua lib
+add_subdirectory(lib/lua-5.3.5)
+include_directories(lua-5.3.5/src)
+set(LUA_LIBRARIES lua)
+set(LUA_INCLUDE_DIR lua-5.3.5/src)
+
+# Include PHYSFS lib
+set(PHYSFS_BUILD_SHARED off CACHE INTERNAL "" FORCE)
+set(PHYSFS_BUILD_TEST off CACHE INTERNAL "" FORCE)
+add_subdirectory(lib/physfs-3.0)
+include_directories(lib/physfs-3.0/src)
+set(PHYSFS_LIBRARY physfs-static)
+set(PHYSFS_INCLUDE_DIR physfs-3.0/src)
 
 include_directories(
 	${PROJECT_BINARY_DIR}
@@ -254,7 +263,6 @@ set_source_files_properties(lib/sqlite3/sqlite3.c COMPILE_FLAGS -w)
 target_link_libraries(breakhack
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
 	${SDL2_LIBRARY}
-	${SDL2MAIN_LIBRARY}
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}

@@ -1,1 +1,0 @@
-/usr/bin/ccache /usr/bin/cc -g -fsanitize=address -fno-omit-frame-pointer -DDEBUG -D__FNAME__='"$(subst /home/linus/ws/breakhack/,,$(abspath $<))"' CMakeFiles/test_util.dir/test/test_util.c.o CMakeFiles/test_util.dir/src/util.c.o -o test_util  /usr/lib/libcmocka.so
