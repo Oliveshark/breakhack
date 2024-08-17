@@ -89,12 +89,12 @@ ELSEIF ( WIN32 )
       "${CMAKE_C_FLAGS_RELEASE} -mwindows"
     )
 ENDIF ()
-IF ( GCC OR CLANG )
+IF ( GCC )
     SET (
       CMAKE_C_FLAGS_DEBUG
         "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer"
 		)
-ENDIF ( GCC OR CLANG )
+ENDIF ( GCC )
 
 if (STEAM)
 	include_directories(
@@ -110,13 +110,34 @@ set(SDL_TEST OFF)
 add_subdirectory(lib/SDL)
 set(SDL2_INCLUDE_DIR lib/SDL/include)
 set(SDL2_LIBRARY SDL2-static)
+set(SDL2_MAIN SDL2main)
 
 # Include SDL2_image/mixer/ttf
 set(BUILD_SHARED_LIBS OFF)
+
+set(SDL2IMAGE_PNG ON)
+set(SDL2IMAGE_JPG ON)
+set(SDL2IMAGE_AVIF OFF)
+set(SDL2IMAGE_BMP OFF)
+set(SDL2IMAGE_GIF OFF)
+set(SDL2IMAGE_JXL OFF)
+set(SDL2IMAGE_LBM OFF)
+set(SDL2IMAGE_PCX OFF)
+set(SDL2IMAGE_PNM OFF)
+set(SDL2IMAGE_QOI OFF)
+set(SDL2IMAGE_SVG OFF)
+set(SDL2IMAGE_TGA OFF)
+set(SDL2IMAGE_TIF OFF)
+set(SDL2IMAGE_WEBP OFF)
+set(SDL2IMAGE_XCF OFF)
+set(SDL2IMAGE_XPM OFF)
+set(SDL2IMAGE_XV OFF)
 add_subdirectory(lib/SDL_image)
 set(SDL2_IMAGE_INCLUDE_DIR lib/SDL_image/include)
 set(SDL2_IMAGE_LIBRARY SDL2_image)
 
+# opusfile caused issues in macos build and we don't need it anyways
+set(SDL2MIXER_OPUS OFF)
 add_subdirectory(lib/SDL_mixer)
 set(SDL2_MIXER_INCLUDE_DIR lib/SDL_mixer/include)
 set(SDL2_MIXER_LIBRARY SDL2_mixer)
@@ -127,9 +148,8 @@ set(SDL2_TTF_LIBRARY SDL2_ttf)
 
 # Include lua lib
 add_subdirectory(lib/lua-5.3.5)
-include_directories(lua-5.3.5/src)
 set(LUA_LIBRARIES lua)
-set(LUA_INCLUDE_DIR lua-5.3.5/src)
+set(LUA_INCLUDE_DIR lib/lua-5.3.5/src)
 
 # Include PHYSFS lib
 set(PHYSFS_BUILD_SHARED off CACHE INTERNAL "" FORCE)
@@ -264,6 +284,7 @@ set_source_files_properties(lib/sqlite3/sqlite3.c COMPILE_FLAGS -w)
 target_link_libraries(breakhack
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
 	${SDL2_LIBRARY}
+	${SDL2_MAIN}
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}

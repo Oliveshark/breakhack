@@ -1,4 +1,5 @@
 [![maintenance](https://img.shields.io/badge/maintenance-passively--maintained-orange)](https://img.shields.io/badge/maintenance-passively--maintained-orange)
+[![CMake on multiple platforms](https://github.com/Oliveshark/breakhack/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/Oliveshark/breakhack/actions/workflows/cmake-multi-platform.yml)
 
 Something in the ways of a roguelike
 ================================
