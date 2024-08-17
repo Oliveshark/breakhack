@@ -1,50 +1,50 @@
 all:
-	@make -sC _build/debug
+	@make -sC build/debug
 .PHONY: all
 
 release:
-	@make -sC _build/release
+	@make -sC build/release
 .PHONY: release
 
 clean:
-	@make -sC _build/debug clean
-	@make -sC _build/release clean
+	@make -sC build/debug clean
+	@make -sC build/release clean
 .PHONY: clean
 
 test:
-	@make -sC _build/debug test
+	@make -sC build/debug test
 .PHONY: test
 
 run: $(all)
-	@LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ ./_build/debug/breakhack
+	@LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ ./build/debug/breakhack
 .PHONY: run
 
 playtest: $(all)
-	@LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ ./_build/release/breakhack
+	@LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ ./build/release/breakhack
 .PHONY: playtest
 
 lint:
-	@make -sC _build/debug lint
+	@make -sC build/debug lint
 .PHONY: lint
 
 package:
-	@make -sC _build/release package
+	@make -sC build/release package
 .PHONY: package
 
 setup:
-	@mkdir -p _build/debug
-	@mkdir -p _build/release
-	@cd _build/debug/ && \
+	@mkdir -p build/debug
+	@mkdir -p build/release
+	@cd build/debug/ && \
 		cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=YES ../.. && \
 		cd -
-	@cd _build/release/ && \
+	@cd build/release/ && \
 		cmake -DCMAKE_BUILD_TYPE=Release ../.. && \
 		cd -
-	@ln -s _build/debug/compile_commands.json
+	@ln -s build/debug/compile_commands.json
 	@echo "Setup complete"
 .PHONY: setup
 
 teardown:
-	@rm -rf _build
+	@rm -rf build
 	@rm compile_commands.json
 .PHONY: teardown

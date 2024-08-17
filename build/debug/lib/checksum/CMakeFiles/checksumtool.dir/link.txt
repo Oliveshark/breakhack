@@ -1,0 +1,1 @@
+/usr/bin/ccache /usr/bin/cc -g CMakeFiles/checksumtool.dir/src/checksum.c.o -o checksumtool

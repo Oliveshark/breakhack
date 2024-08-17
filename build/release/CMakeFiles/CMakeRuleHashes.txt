@@ -1,0 +1,7 @@
+# Hashes of file build rules.
+fa72cbe04f33389be3c64df6c3ae8004 CMakeFiles/assets_pack
+2ba3e96f2b7c412535c743ac2b6b7a93 CMakeFiles/data_pack
+6e2e852b2ce3f8da12b73312a3f1cbcf CMakeFiles/lint
+33007a85969d9aa5141ce3243f23c3ae lib/physfs-3.0/CMakeFiles/dist
+7f82621a938956cb5a1c3b6b876a23e5 lib/physfs-3.0/CMakeFiles/docs
+01c2e0f4ff0f0e64836ce8480387279f lib/physfs-3.0/CMakeFiles/uninstall

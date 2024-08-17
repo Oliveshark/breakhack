@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.2.0)
+cmake_minimum_required (VERSION 3.6.0)
 
 SET(CMAKE_COLOR_MAKEFILE ON)
 
@@ -16,13 +16,13 @@ set(breakhack_STEAMAPI_SO_CHECKSUM 0x1f5786b)
 
 include(FindLua)
 include(FindPhysFS)
-include(build/cmake/FindSDL2.cmake)
-include(build/cmake/FindSDL2_image.cmake)
-include(build/cmake/FindSDL2_ttf.cmake)
-include(build/cmake/FindSDL2_mixer.cmake)
-include(build/cmake/FindCCache.cmake)
-include(build/cmake/FindCMocka.cmake)
-include(build/cmake/Findcppcheck.cmake)
+include(build_deps/cmake/FindSDL2.cmake)
+include(build_deps/cmake/FindSDL2_image.cmake)
+include(build_deps/cmake/FindSDL2_ttf.cmake)
+include(build_deps/cmake/FindSDL2_mixer.cmake)
+include(build_deps/cmake/FindCCache.cmake)
+include(build_deps/cmake/FindCMocka.cmake)
+include(build_deps/cmake/Findcppcheck.cmake)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/src/config.h.in"
@@ -41,10 +41,10 @@ else ()
 endif()
 
 if (STEAM)
-	add_subdirectory(steamworks_c_wrapper)
+	add_subdirectory(lib/steamworks_c_wrapper)
 endif()
-add_subdirectory(bh_random)
-add_subdirectory(checksum)
+add_subdirectory(lib/bh_random)
+add_subdirectory(lib/checksum)
 
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
 	set(CLANG 1)
@@ -114,7 +114,7 @@ if (STEAM)
 endif ()
 
 if (NOT LUA_FOUND OR STEAM)
-	add_subdirectory(lua-5.3.5)
+	add_subdirectory(lib/lua-5.3.5)
 	include_directories(lua-5.3.5/src)
 	set(LUA_LIBRARIES lua)
 	set(LUA_INCLUDE_DIR lua-5.3.5/src)
@@ -123,8 +123,8 @@ endif ()
 if (NOT PHYSFS_FOUND OR STEAM)
 	set_option(PHYSFS_BUILD_SHARED off)
 	set_option(PHYSFS_BUILD_TEST off)
-	add_subdirectory(physfs-3.0)
-	include_directories(physfs-3.0/src)
+	add_subdirectory(lib/physfs-3.0)
+	include_directories(lib/physfs-3.0/src)
 	set(PHYSFS_LIBRARY physfs-static)
 	set(PHYSFS_INCLUDE_DIR physfs-3.0/src)
 endif ()
@@ -137,9 +137,9 @@ include_directories(
 	${SDL2_MIXER_INCLUDE_DIR}
 	${PHYSFS_INCLUDE_DIR}
 	${LUA_INCLUDE_DIR}
-	sqlite3
-	bh_random/src
-	checksum/src
+	lib/sqlite3
+	lib/bh_random/src
+	lib/checksum/src
 	)
 
 if (CMOCKA_FOUND)
@@ -176,7 +176,7 @@ if (MINGW)
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DMINGW")
 endif (MINGW)
 
-if (NOT MSVC)
+if (NOT MSVC AND NOT NINJA)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 else ()
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__=__FILE__")
@@ -226,7 +226,7 @@ add_executable(breakhack
 	src/projectile.c
 	src/vector2d.c
 	src/map_room_modifiers.c
-	sqlite3/sqlite3.c
+	lib/sqlite3/sqlite3.c
 	src/db.c
 	src/settings.c
 	src/actiontextbuilder.c
@@ -249,7 +249,7 @@ if (MSVC)
 endif ()
 
 # Sqlite has some warnings that I we don't need to see
-set_source_files_properties(sqlite3/sqlite3.c COMPILE_FLAGS -w)
+set_source_files_properties(lib/sqlite3/sqlite3.c COMPILE_FLAGS -w)
 
 target_link_libraries(breakhack
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
@@ -375,7 +375,7 @@ else (WIN32)
 		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
 			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
 			steamworks_c_wrapper/sdk/redistributable_bin/linux64/libsteam_api.so
-			build/linux/breakhack.run
+			build_deps/linux/breakhack.run
 			)
 	endif ()
 endif (WIN32)

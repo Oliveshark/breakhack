@@ -1,0 +1,11 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: PhysicsFS
+Description: PhysicsFS is a library to provide abstract access to various archives.
+URL: https://icculus.org/physfs/
+Version: 3.0.1
+Libs: -L${libdir} -lphysfs
+Cflags: -I${includedir}

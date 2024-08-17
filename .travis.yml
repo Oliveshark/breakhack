@@ -35,8 +35,8 @@ install:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y lua5.2 liblua5.2-dev ; fi
 
 script:
-    - mkdir _build
-    - cd _build
+    - mkdir build
+    - cd build
     - cmake --version
     - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
     - make
@@ -48,7 +48,7 @@ addons:
             name: "LiquidityC/breakhack"
             description: "Build submitted via Travis CI"
         notification_email: linus.probert@gmail.com
-        build_command_prepend: "mkdir -p _build && cd _build && cmake .."
+        build_command_prepend: "mkdir -p build && cd build && cmake .."
         build_command: "make"
         branch_pattern: coverity_scan
 
