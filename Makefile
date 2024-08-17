@@ -40,7 +40,7 @@ setup:
 	@cd build/release/ && \
 		cmake -DCMAKE_BUILD_TYPE=Release ../.. && \
 		cd -
-	@ln -s build/debug/compile_commands.json
+	@ln -fs build/debug/compile_commands.json
 	@echo "Setup complete"
 .PHONY: setup
 

@@ -106,6 +106,7 @@ endif ()
 # Include SDL2
 set(SDL_STATIC ON)
 set(SDL_SHARED OFF)
+set(SDL_TEST OFF)
 add_subdirectory(lib/SDL)
 set(SDL2_INCLUDE_DIR lib/SDL/include)
 set(SDL2_LIBRARY SDL2-static)
