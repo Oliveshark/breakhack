@@ -8,8 +8,8 @@
 /data.pack
 /.vs/
 /.data.db
-/steamworks_c_wrapper/_build
-/steamworks_c_wrapper/sdk
+/lib/steamworks_c_wrapper/build
+/lib/steamworks_c_wrapper/sdk
 *.swp
 *~
 /steam_appid.txt

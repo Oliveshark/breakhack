@@ -104,19 +104,19 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 Menu *
 menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *cam)
 {
-	static const char *spriteSheets[] = {
+	static char * const spriteSheets[] = {
 		"Commissions/Warrior.png",
 		"Commissions/Rogue.png",
 		"Commissions/Mage.png"
 	};
 
-	static const char *callbackData[] = {
+	static char * const callbackData[] = {
 		"warrior",
 		"rogue",
 		"mage"
 	};
 
-	static const char *descriptions[] = {
+	static char * const descriptions[] = {
 		"Play as the warrior",
 		"Play as the rogue",
 		"Play as the mage"

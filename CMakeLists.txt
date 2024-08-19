@@ -11,8 +11,8 @@ set(breakhack_PATCH_VERSION 3)
 set(breakhack_RELEASE_TYPE "")
 
 # Checksums
-set(breakhack_STEAMAPI_DLL_CHECKSUM 0x18dba28)
-set(breakhack_STEAMAPI_SO_CHECKSUM 0x1f5786b)
+set(breakhack_STEAMAPI_DLL_CHECKSUM 0x1a20dd5)
+set(breakhack_STEAMAPI_SO_CHECKSUM 0x19f8c71)
 
 include(build_deps/cmake/FindCCache.cmake)
 include(build_deps/cmake/FindCMocka.cmake)
@@ -23,12 +23,18 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
 
-if (EXISTS "${PROJECT_SOURCE_DIR}/steamworks_c_wrapper/sdk")
-	MESSAGE ( STATUS "Steam SDK located, Steam build enabled")
-	set(STEAM 1)
+set(DISABLE_STEAM_BUILD OFF CACHE BOOL "Disable Steam build")
+
+if (NOT DISABLE_STEAM_BUILD)
+	if (EXISTS "${PROJECT_SOURCE_DIR}/lib/steamworks_c_wrapper/sdk")
+		MESSAGE ( STATUS "Steam SDK located, Steam build enabled")
+		set(STEAM ON)
+	else ()
+		MESSAGE ( STATUS "Steam SDK not found, Steam build disabled")
+	endif()
 else ()
-	MESSAGE ( STATUS "Steam SDK not found, Steam build disabled")
-endif()
+	MESSAGE ( STATUS "Steam build disabled by DISABLE_STEAM_BUILD flag")
+endif ()
 
 if (STEAM)
 	add_subdirectory(lib/steamworks_c_wrapper)
@@ -98,8 +104,7 @@ ENDIF ()
 
 if (STEAM)
 	include_directories(
-	${STEAMWORKS_INCLUDE_DIR}
-	steamworks_c_wrapper/src
+	lib/steamworks_c_wrapper/src
 	)
 endif ()
 
@@ -196,7 +201,7 @@ if (STEAM)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSTEAM_BUILD")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DSTEAM_BUILD")
 	set(STEAM_SOURCES
-		src/steam/steamworks_api_wrapper
+		src/steam/steamworks_api_wrapper.c
 		)
 else ()
 	set(STEAM_SOURCES "")
@@ -301,6 +306,7 @@ endif ()
 
 if (STEAM)
 	target_link_libraries(breakhack
+		${STEAMWORKS_LIBRARY}
 		steamworks_c_wrapper
 		)
 endif ()
@@ -382,37 +388,21 @@ endif ()
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT "Release")
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ".")
 if (WIN32)
-	SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
-		${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-		${CMAKE_SOURCE_DIR}/bin/libFLAC-8.dll
-		${CMAKE_SOURCE_DIR}/bin/libfreetype-6.dll
-		${CMAKE_SOURCE_DIR}/bin/libmodplug-1.dll
-		${CMAKE_SOURCE_DIR}/bin/libmpg123-0.dll
-		${CMAKE_SOURCE_DIR}/bin/libogg-0.dll
-		${CMAKE_SOURCE_DIR}/bin/libpng16-16.dll
-		${CMAKE_SOURCE_DIR}/bin/libvorbis-0.dll
-		${CMAKE_SOURCE_DIR}/bin/libvorbisfile-3.dll
-		${CMAKE_SOURCE_DIR}/bin/SDL2.dll
-		${CMAKE_SOURCE_DIR}/bin/SDL2_image.dll
-		${CMAKE_SOURCE_DIR}/bin/SDL2_mixer.dll
-		${CMAKE_SOURCE_DIR}/bin/SDL2_ttf.dll
-		${CMAKE_SOURCE_DIR}/bin/zlib1.dll
-		)
 	if (STEAM)
 		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
 			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-			steamworks_c_wrapper/sdk/redistributable_bin/steam_api.dll
+			lib/steamworks_c_wrapper/sdk/redistributable_bin/steam_api.dll
 			)
 	endif ()
-else (WIN32)
+else ()
 	if (STEAM)
 		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
 			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-			steamworks_c_wrapper/sdk/redistributable_bin/linux64/libsteam_api.so
+			lib/steamworks_c_wrapper/sdk/redistributable_bin/linux64/libsteam_api.so
 			build_deps/linux/breakhack.run
 			)
 	endif ()
-endif (WIN32)
+endif ()
 include(InstallRequiredSystemLibraries)
 
 INSTALL(TARGETS breakhack

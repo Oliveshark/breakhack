@@ -34,6 +34,7 @@ lint:
 
 package:
 	@cmake --build build/release --target package
+	@cmake --build build/win-release --target package
 .PHONY: package
 
 setup:
@@ -44,7 +45,7 @@ setup:
 	@cmake -B build/release -DCMAKE_BUILD_TYPE=Release -GNinja
 	@cmake -B build/win-release \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake \
+		-DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-i686.cmake \
 		-DSDL2MIXER_VENDORED=ON \
 		-DSDL2TTF_VENDORED=ON \
 		-GNinja
@@ -54,5 +55,5 @@ setup:
 
 teardown:
 	@rm -rf build
-	@rm compile_commands.json
+	@rm -f compile_commands.json
 .PHONY: teardown

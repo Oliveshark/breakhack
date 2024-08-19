@@ -12,21 +12,13 @@ find_path(STEAMWORKS_INCLUDE_DIR
 		${PROJECT_SOURCE_DIR}/sdk/public/steam/
 )
 
-if (WIN32)
-	find_library(STEAMWORKS_LIBRARY
-		NAMES
+find_library(STEAMWORKS_LIBRARY
+	NAMES
 		steam_api
-		PATHS
+	PATHS
 		${PROJECT_SOURCE_DIR}/sdk/redistributable_bin/
-		)
-else()
-	find_library(STEAMWORKS_LIBRARY
-		NAMES
-		steam_api
-		PATHS
 		${PROJECT_SOURCE_DIR}/sdk/redistributable_bin/linux64/
-		)
-endif()
+)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(STEAMWORKS DEFAULT_MSG STEAMWORKS_INCLUDE_DIR STEAMWORKS_LIBRARY)

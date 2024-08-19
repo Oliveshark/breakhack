@@ -109,7 +109,8 @@ void* linkedlist_get(LinkedList **head, unsigned int index)
 	return linkedlist_get(&(*head)->next, --index);
 }
 
-void linkedlist_each(const LinkedList **head, void (*fun)(void*))
+/* cppcheck-suppress constParameter */
+void linkedlist_each(LinkedList **head, void (*fun)(void*))
 {
 	const LinkedList *next = *head;
 

@@ -45,7 +45,7 @@ jobs:
             cmake_args: >
               -DSDL2MIXER_VENDORED=ON
               -DSDL2TTF_VENDORED=ON
-              -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake
+              -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-i686.cmake
               -GNinja
           - os: macos-latest
             c_compiler: gcc
