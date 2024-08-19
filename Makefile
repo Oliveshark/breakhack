@@ -1,18 +1,23 @@
 all:
-	@make -sC build/debug
+	@cmake --build build/debug
 .PHONY: all
 
 release:
-	@make -sC build/release
+	@cmake --build build/release
 .PHONY: release
 
+windows:
+	@cmake --build build/win-release
+.PHONY: windows
+
 clean:
-	@make -sC build/debug clean
-	@make -sC build/release clean
+	@cmake --build build/debug --target clean
+	@cmake --build build/release --target clean
+	@cmake --build build/win-release --target clean
 .PHONY: clean
 
 test:
-	@make -sC build/debug test
+	@cmake --build build/debug --target test
 .PHONY: test
 
 run: $(all)
@@ -24,22 +29,25 @@ playtest: $(all)
 .PHONY: playtest
 
 lint:
-	@make -sC build/debug lint
+	@cmake --build build/debug --target lint
 .PHONY: lint
 
 package:
-	@make -sC build/release package
+	@cmake --build build/release --target package
 .PHONY: package
 
 setup:
 	@mkdir -p build/debug
 	@mkdir -p build/release
-	@cd build/debug/ && \
-		cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=YES ../.. && \
-		cd -
-	@cd build/release/ && \
-		cmake -DCMAKE_BUILD_TYPE=Release ../.. && \
-		cd -
+	@mkdir -p build/win-release
+	@cmake -B build/debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -GNinja
+	@cmake -B build/release -DCMAKE_BUILD_TYPE=Release -GNinja
+	@cmake -B build/win-release \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake \
+		-DSDL2MIXER_VENDORED=ON \
+		-DSDL2TTF_VENDORED=ON \
+		-GNinja
 	@ln -fs build/debug/compile_commands.json
 	@echo "Setup complete"
 .PHONY: setup

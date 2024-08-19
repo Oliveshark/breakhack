@@ -89,12 +89,12 @@ ELSEIF ( WIN32 )
       "${CMAKE_C_FLAGS_RELEASE} -mwindows"
     )
 ENDIF ()
-IF ( GCC )
-    SET (
-      CMAKE_C_FLAGS_DEBUG
-        "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer"
-		)
-ENDIF ( GCC )
+#IF ( GCC )
+#SET (
+#CMAKE_C_FLAGS_DEBUG
+#"${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer"
+#)
+#ENDIF ( GCC )
 
 if (STEAM)
 	include_directories(
@@ -110,7 +110,7 @@ set(SDL_TEST OFF)
 add_subdirectory(lib/SDL)
 set(SDL2_INCLUDE_DIR lib/SDL/include)
 set(SDL2_LIBRARY SDL2-static)
-set(SDL2_MAIN SDL2main)
+set(SDL2_MAIN_LIBRARY SDL2main)
 
 # Include SDL2_image/mixer/ttf
 set(BUILD_SHARED_LIBS OFF)
@@ -284,7 +284,6 @@ set_source_files_properties(lib/sqlite3/sqlite3.c COMPILE_FLAGS -w)
 target_link_libraries(breakhack
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
 	${SDL2_LIBRARY}
-	${SDL2_MAIN}
 	${SDL2_IMAGE_LIBRARY}
 	${SDL2_TTF_LIBRARY}
 	${SDL2_MIXER_LIBRARY}
@@ -293,6 +292,12 @@ target_link_libraries(breakhack
 	bh_random
 	checksum
 	)
+
+if (MSVC OR MINGW)
+	target_link_libraries(breakhack
+		${SDL2_MAIN_LIBRARY}
+		)
+endif ()
 
 if (STEAM)
 	target_link_libraries(breakhack
@@ -329,7 +334,6 @@ IF (CMOCKA_FOUND AND NOT OSX AND NOT CLANG)
 	target_link_libraries(test_input
 		${CMOCKA_LIBRARY}
 		${SDL2_LIBRARY}
-		${SDL2MAIN_LIBRARY}
 		)
 	#set_target_properties(test_input PROPERTIES
 	#LINK_FLAGS "-Wl,--wrap,keyboard_direction_press -Wl,--wrap,keyboard_press")

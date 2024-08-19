@@ -25,37 +25,49 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Release, Debug]
-        c_compiler: [gcc, clang, cl]
+        c_compiler: [gcc, clang, cl, mingw-w64-gcc]
         include:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
-            cmake: '-DSDLMIXER_VENDORED=ON -GNinja'
+            cmake_args: '-DSDLMIXER_VENDORED=ON'
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
-            cmake: '-GNinja'
+            cmake_args: '-GNinja'
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
-            cmake: '-GNinja'
+            cmake_args: '-GNinja'
+          - os: ubuntu-latest
+            c_compiler: mingw-w64-gcc
+            cpp_compiler: mingw-w64-g++
+            cmake_args: >
+              -DSDL2MIXER_VENDORED=ON
+              -DSDL2TTF_VENDORED=ON
+              -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake
+              -GNinja
           - os: macos-latest
             c_compiler: gcc
             cpp_compiler: g++
-            cmake: '-DSDLMIXER_VENDORED=ON -GNinja'
+            cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja'
           - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
-            cmake: '-DSDLMIXER_VENDORED=ON -GNinja'
+            cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja'
         exclude:
           - os: windows-latest
             c_compiler: gcc
           - os: windows-latest
             c_compiler: clang
+          - os: windows-latest
+            c_compiler: mingw-w64-gcc
           - os: ubuntu-latest
             c_compiler: cl
           - os: macos-latest
             c_compiler: cl
+          - os: macos-latest
+            c_compiler: mingw-w64-gcc
 
     steps:
     - uses: actions/checkout@v4
@@ -73,6 +85,7 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install \
           cmake \
+          mingw-w64 \
           libflac-dev \
           libfluidsynth-dev \
           libgme-dev \
@@ -119,6 +132,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
+        ${{ matrix.cmake_args }}
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).

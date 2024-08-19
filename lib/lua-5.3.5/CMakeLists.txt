@@ -8,7 +8,7 @@ set(lua_MAJOR_VERSION 5)
 set(lua_MINOR_VERSION 3)
 set(lua_PATCH_VERSION 5)
 
-if (NOT MSVC)
+if (NOT MSVC AND NOT MINGW)
 	add_definitions(-DLUA_USE_POSIX)
 endif ()
 
@@ -42,8 +42,6 @@ add_library(lua STATIC
 	src/ltable.c
 	src/ltablib.c
 	src/ltm.c
-	src/lua.c
-	src/luac.c
 	src/lundump.c
 	src/lutf8lib.c
 	src/lvm.c
