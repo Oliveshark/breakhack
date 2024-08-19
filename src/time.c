@@ -24,7 +24,7 @@
 #define SECONDS_PER_HOUR 3600
 #define SECONDS_PER_MINUTE 60
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #define m_gmtime(time, obj) gmtime_s(obj, time)
 #else
 #define m_gmtime gmtime_r
