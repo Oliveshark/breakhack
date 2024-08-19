@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(steamworks_c_wrapper)
+project(steamworks_c_wrapper CXX)
 
 if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Release)
@@ -23,16 +23,21 @@ else()
 	#Linux
 endif ()
 
-include_directories(${STEAMWORKS_INCLUDE_DIR})
 
 add_library(steamworks_c_wrapper STATIC
-	src/steamworks_c_wrapper
-	src/CallbackHandler
+	src/steamworks_c_wrapper.cpp
+	src/CallbackHandler.cpp
 	)
+target_include_directories(steamworks_c_wrapper PRIVATE
+	${STEAMWORKS_INCLUDE_DIR})
 
 target_link_libraries(steamworks_c_wrapper ${STEAMWORKS_LIBRARY})
-if (NOT WIN32)
-	target_link_libraries(steamworks_c_wrapper -lstdc++)
+if (NOT MSVC)
+	if (MINGW)
+		target_link_libraries(steamworks_c_wrapper -static -lstdc++)
+	else ()
+		target_link_libraries(steamworks_c_wrapper -lstdc++)
+	endif ()
 endif()
 
 IF ( MSVC )
