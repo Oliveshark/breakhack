@@ -504,7 +504,6 @@ l_add_monster(lua_State *L)
 
 	map_add_monster(map, monster);
 
-	// cppcheck-suppress memleak
 	return 0;
 }
 

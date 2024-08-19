@@ -109,9 +109,9 @@ void* linkedlist_get(LinkedList **head, unsigned int index)
 	return linkedlist_get(&(*head)->next, --index);
 }
 
-void linkedlist_each(LinkedList **head, void (*fun)(void*))
+void linkedlist_each(const LinkedList **head, void (*fun)(void*))
 {
-	LinkedList *next = *head;
+	const LinkedList *next = *head;
 
 	while (next != NULL) {
 		fun(next->data);
