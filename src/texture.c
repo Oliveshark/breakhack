@@ -231,6 +231,13 @@ texture_set_blend_mode(Texture *t, SDL_BlendMode mode)
 }
 
 void
+texture_set_scale_mode(Texture *t, SDL_ScaleMode mode)
+{
+    assert(t->texture);
+    SDL_SetTextureScaleMode(t->texture, mode);
+}
+
+void
 texture_set_alpha(Texture *t, Uint8 alpha)
 {
 	assert(t->texture);

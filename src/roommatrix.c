@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <assert.h>
 #include <stdlib.h>
 #include <math.h>
 #include "defines.h"
@@ -62,7 +63,7 @@ roommatrix_reset(RoomMatrix *m)
 	m->playerRoomPos = (Position) { 1, 1 };
 }
 
-RoomMatrix* roommatrix_create(void)
+RoomMatrix* roommatrix_create(SDL_Renderer *renderer)
 {
 	int i, j;
 	RoomMatrix *m = ec_malloc(sizeof(RoomMatrix));
@@ -74,6 +75,15 @@ RoomMatrix* roommatrix_create(void)
 		}
 	}
 	roommatrix_reset(m);
+
+	/* Create a lightmap texture */
+	Texture *lm = texture_create();
+	lm->dim = (Dimension) { MAP_ROOM_WIDTH, MAP_ROOM_HEIGHT };
+	texture_create_blank(lm, SDL_TEXTUREACCESS_TARGET, renderer);
+	texture_set_scale_mode(lm, SDL_ScaleModeBest);
+	texture_set_blend_mode(lm, SDL_BLENDMODE_BLEND);
+	m->lightmap = lm;
+
 	return m;
 }
 
@@ -226,7 +236,7 @@ set_light_for_tile(RoomMatrix *matrix, int x, int y)
 
 	space->light = 255;
 
-	Uint8 radius = 4;
+	int radius = 4;
 	int x_max = min(x + radius, MAP_ROOM_WIDTH - 1);
 	int x_min = max(x - radius, 0);
 	int y_max = min(y + radius, MAP_ROOM_HEIGHT - 1);
@@ -235,26 +245,45 @@ set_light_for_tile(RoomMatrix *matrix, int x, int y)
 	for (int i = x_min; i <= x_max; ++i) {
 		for (int j = y_min; j <= y_max; ++j) {
 			int lightval = matrix->spaces[i][j].light;
-			int distance_modifier = abs(x-i) == abs(y-j) ?
-				min(abs(x-i) + 1, 5) : max(abs(x-i), abs(y-j));
-			lightval += (255 - (distance_modifier * 50));
-			lightval = min(255, lightval);
-			lightval = max(0, lightval);
+
+			double dx = x-i;
+			double dy = y-j;
+			double distance = sqrt(dx*dx + dy*dy);
+			int distance_modifier = (int) (distance);
+			lightval += 255 - distance_modifier * 50;
+			lightval = clamp(0, 255, lightval);
 			matrix->spaces[i][j].light = lightval;
 		}
 	}
 }
 
 void
-roommatrix_build_lightmap(RoomMatrix *matrix)
+roommatrix_build_lightmap(RoomMatrix *matrix, Camera *camera)
 {
 	int i, j;
+	Uint8 light;
 
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			set_light_for_tile(matrix, i, j);
 		}
 	}
+
+	/* Render spaces light value to lightmap texture */
+	SDL_SetRenderTarget(camera->renderer, matrix->lightmap->texture);
+	SDL_SetRenderDrawColor(camera->renderer, 0, 0, 0, 0);
+	SDL_RenderClear(camera->renderer);
+	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
+			light = (Uint8) matrix->spaces[i][j].light;
+			assert(0 <= matrix->spaces[i][j].light);
+			assert(matrix->spaces[i][j].light <= 255);
+			SDL_SetRenderDrawColor(camera->renderer, 0, 0, 0, 255-light);
+			SDL_RenderDrawPoint(camera->renderer, i, j);
+		}
+	}
+	SDL_RenderPresent(camera->renderer);
+	SDL_SetRenderTarget(camera->renderer, NULL);
 }
 
 void
@@ -275,31 +304,11 @@ roommatrix_render_mouse_square(RoomMatrix *matrix, Camera *cam)
 void
 roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 {
-	int i, j, light;
+	SDL_Rect src_rect = { 0, 0, MAP_ROOM_WIDTH, MAP_ROOM_HEIGHT };
+	SDL_Rect dst_rect = { 0, 0, GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
 
-	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
-		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			light = max(245 - matrix->spaces[i][j].light, 0);
-
-			SDL_Rect box = (SDL_Rect) {
-				i*TILE_DIMENSION,
-				j*TILE_DIMENSION,
-				TILE_DIMENSION,
-				TILE_DIMENSION
-			};
-
-			SDL_SetRenderDrawColor(cam->renderer,
-					       0, 0, 0, (Uint8) light);
-			SDL_RenderFillRect(cam->renderer, &box);
-
-#ifdef LIGHTMAPDEBUG
-			Texture *t = create_light_texture(light, cam);
-			Position p = { box.x+3, box.y+3 };
-			texture_render(t, &p, cam);
-			texture_destroy(t);
-#endif // LIGHTMAPDEBUG
-		}
-	}
+	texture_render_clip(matrix->lightmap, &dst_rect, &src_rect, cam);
+	texture_render(matrix->lightmap, &src_rect, cam);
 }
 
 RoomSpace*
@@ -324,6 +333,7 @@ void roommatrix_destroy(RoomMatrix *m)
 				linkedlist_pop(&space->objects);
 		}
 	}
+    texture_destroy(m->lightmap);
 
 	free(m);
 }

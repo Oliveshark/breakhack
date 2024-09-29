@@ -23,6 +23,7 @@
 #include "camera.h"
 #include "map_room_modifiers.h"
 #include "input.h"
+#include "texture.h"
 
 typedef struct Sprite Sprite;
 typedef struct Map_t Map;
@@ -60,9 +61,10 @@ typedef struct RoomMatrix_t {
 	Position playerRoomPos;
 	Position mousePos;
 	RoomModifierData *modifier;
+    Texture *lightmap;
 } RoomMatrix;
 
-RoomMatrix* roommatrix_create(void);
+RoomMatrix* roommatrix_create(SDL_Renderer *renderer);
 
 void
 roommatrix_update(struct UpdateData*);
@@ -74,7 +76,7 @@ void
 roommatrix_add_lightsource(RoomMatrix*, Position*);
 
 void
-roommatrix_build_lightmap(RoomMatrix*);
+roommatrix_build_lightmap(RoomMatrix*, Camera*);
 
 void
 roommatrix_render_mouse_square(RoomMatrix*, Camera*);

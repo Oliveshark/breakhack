@@ -79,6 +79,7 @@
 #define max(a, b) (a > b ? a : b)
 #define min(a, b) (a < b ? a : b)
 #endif // _MSC_VER
+#define clamp(a, b, x) max(a, min(b, x))
 
 typedef int8_t		Sint8;
 typedef uint8_t		Uint8;

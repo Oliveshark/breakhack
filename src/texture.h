@@ -80,6 +80,9 @@ void
 texture_set_blend_mode(Texture*, SDL_BlendMode);
 
 void
+texture_set_scale_mode(Texture*, SDL_ScaleMode);
+
+void
 texture_set_alpha(Texture*, Uint8);
 
 void

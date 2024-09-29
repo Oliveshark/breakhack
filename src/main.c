@@ -318,7 +318,7 @@ initGame(void)
 	texturecache_init(gRenderer);
 	sprite_util_init(gRenderer);
 	gCamera = camera_create(gRenderer);
-	gRoomMatrix = roommatrix_create();
+	gRoomMatrix = roommatrix_create(gRenderer);
 	gGui = gui_create(gCamera);
 	skillbar_set_controller_mode(gamecontroller_mode());
 	gSkillBar = skillbar_create(gCamera);
@@ -655,7 +655,7 @@ repopulate_roommatrix(void)
 	roommatrix_populate_from_map(gRoomMatrix, gMap);
 	roommatrix_add_lightsource(gRoomMatrix,
 		&gPlayer->sprite->pos);
-	roommatrix_build_lightmap(gRoomMatrix);
+	roommatrix_build_lightmap(gRoomMatrix, gCamera);
 }
 
 static void
@@ -1251,7 +1251,7 @@ run_menu(void)
 		timer_start(menuTimer);
 
 	roommatrix_populate_from_map(gRoomMatrix, gMap);
-	roommatrix_build_lightmap(gRoomMatrix);
+	roommatrix_build_lightmap(gRoomMatrix, gCamera);
 	if (timer_get_ticks(menuTimer) > 1000) {
 		timer_stop(menuTimer);
 		timer_start(menuTimer);
