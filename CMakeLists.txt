@@ -407,11 +407,11 @@ include(InstallRequiredSystemLibraries)
 
 INSTALL(TARGETS breakhack
 	COMPONENT Release
-	RUNTIME DESTINATION .
+	RUNTIME DESTINATION bin/
 )
 INSTALL(FILES assets.pack data.pack
 	COMPONENT Release
-	DESTINATION .
+	DESTINATION share/breakhack/
 )
 
 set(CPACK_INSTALL_CMAKE_PROJECTS "${PROJECT_BINARY_DIR};breakhack;Release;.")

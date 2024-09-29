@@ -37,6 +37,10 @@ package:
 	@cmake --build build/win-release --target package
 .PHONY: package
 
+install:
+	@cmake --build build/release --target install
+.PHONY: install
+
 setup:
 	@mkdir -p build/debug
 	@mkdir -p build/release
