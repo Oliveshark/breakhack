@@ -251,7 +251,7 @@ bool initSDL(void)
 	}
 
 	// Set the window icon
-    window_icon = IMG_Load_RW(io_load_rwops("Extras/icon.png"), true);
+	window_icon = IMG_Load_RW(io_load_rwops("Extras/icon.png"), true);
 	SDL_SetWindowIcon(gWindow, window_icon);
 
 	gRenderer = SDL_CreateRenderer(gWindow, -1,
