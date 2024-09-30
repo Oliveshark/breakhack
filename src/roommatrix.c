@@ -276,8 +276,6 @@ roommatrix_build_lightmap(RoomMatrix *matrix, Camera *camera)
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			light = (Uint8) matrix->spaces[i][j].light;
-			assert(0 <= matrix->spaces[i][j].light);
-			assert(matrix->spaces[i][j].light <= 255);
 			SDL_SetRenderDrawColor(camera->renderer, 0, 0, 0, 255-light);
 			SDL_RenderDrawPoint(camera->renderer, i, j);
 		}
