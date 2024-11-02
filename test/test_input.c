@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -32,19 +32,25 @@ test_event_parse(void **state)
 	input_init(&input);
 
 	SDL_KeyboardEvent event;
-	event.type = SDL_KEYDOWN;
-	event.keysym = (SDL_Keysym) { SDL_SCANCODE_W, SDLK_w, KMOD_NONE, 0 };
+	event.type = SDL_EVENT_KEY_DOWN;
+	event.scancode = SDL_SCANCODE_W;
+	event.key = SDLK_W;
+	event.mod = SDL_KMOD_NONE;
 
-	input_handle_event(&input, (SDL_Event*) &event);
-	event.keysym = (SDL_Keysym) { SDL_SCANCODE_0, SDLK_0, KMOD_NONE, 0 };
-	input_handle_event(&input, (SDL_Event*) &event);
+	input_handle_event(&input, (SDL_Event*) &event, NULL);
+	event.scancode = SDL_SCANCODE_0;
+	event.key = SDLK_0;
+	event.mod = SDL_KMOD_NONE;
+	input_handle_event(&input, (SDL_Event*) &event, NULL);
 
 	assert_true(input_key_is_pressed(&input, KEY_UP));
 	assert_true(input_key_is_pressed(&input, KEY_NUM0));
 
-	event.type = SDL_KEYUP;
-	event.keysym = (SDL_Keysym) { SDL_SCANCODE_0, SDLK_0, KMOD_NONE, 0 };
-	input_handle_event(&input, (SDL_Event*) &event);
+	event.type = SDL_EVENT_KEY_UP;
+	event.scancode = SDL_SCANCODE_0;
+	event.key = SDLK_0;
+	event.mod = SDL_KMOD_NONE;
+	input_handle_event(&input, (SDL_Event*) &event, NULL);
 
 	assert_true(input_key_is_pressed(&input, KEY_UP));
 	assert_true(!input_key_is_pressed(&input, KEY_NUM0));
@@ -91,19 +97,20 @@ static void
 test_mousebuttons(void **state)
 {
 	(void) state;
+
 	Input input;
 	input_init(&input);
 
 	SDL_MouseButtonEvent event;
-	event.type = SDL_MOUSEBUTTONDOWN;
+	event.type = SDL_EVENT_MOUSE_BUTTON_DOWN;
 	event.button = SDL_BUTTON_LEFT;
-	input_handle_event(&input, (SDL_Event*) &event);
+	input_handle_event(&input, (SDL_Event*) &event, NULL);
 
 	assert_true(input_mousebutton_is_pressed(&input, MBUTTON_LEFT));
 
 	input_reset(&input);
 	event.button = SDL_BUTTON_RIGHT;
-	input_handle_event(&input, (SDL_Event*) &event);
+	input_handle_event(&input, (SDL_Event*) &event, NULL);
 
 	assert_true(!input_mousebutton_is_pressed(&input, MBUTTON_LEFT));
 	assert_true(input_mousebutton_is_pressed(&input, MBUTTON_RIGHT));

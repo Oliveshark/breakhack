@@ -80,7 +80,7 @@ RoomMatrix* roommatrix_create(SDL_Renderer *renderer)
 	Texture *lm = texture_create();
 	lm->dim = (Dimension) { MAP_ROOM_WIDTH, MAP_ROOM_HEIGHT };
 	texture_create_blank(lm, SDL_TEXTUREACCESS_TARGET, renderer);
-	texture_set_scale_mode(lm, SDL_ScaleModeBest);
+	texture_set_scale_mode(lm, SDL_SCALEMODE_LINEAR);
 	texture_set_blend_mode(lm, SDL_BLENDMODE_BLEND);
 	m->lightmap = lm;
 
@@ -277,7 +277,7 @@ roommatrix_build_lightmap(RoomMatrix *matrix, Camera *camera)
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			light = (Uint8) matrix->spaces[i][j].light;
 			SDL_SetRenderDrawColor(camera->renderer, 0, 0, 0, 255-light);
-			SDL_RenderDrawPoint(camera->renderer, i, j);
+			SDL_RenderPoint(camera->renderer, (float) i, (float) j);
 		}
 	}
 	SDL_RenderPresent(camera->renderer);
@@ -288,9 +288,9 @@ void
 roommatrix_render_mouse_square(RoomMatrix *matrix, Camera *cam)
 {
 	Position mmc = position_to_matrix_coords(&matrix->mousePos);
-	SDL_Rect box = (SDL_Rect) {
-			mmc.x*TILE_DIMENSION,
-			mmc.y*TILE_DIMENSION,
+	SDL_FRect box = (SDL_FRect) {
+			(float) mmc.x*TILE_DIMENSION,
+			(float) mmc.y*TILE_DIMENSION,
 			TILE_DIMENSION,
 			TILE_DIMENSION
 	};

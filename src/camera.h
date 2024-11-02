@@ -19,7 +19,7 @@
 #ifndef CAMERA_H_
 #define	CAMERA_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include "position.h"
 #include "timer.h"

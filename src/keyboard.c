@@ -22,24 +22,24 @@
 static bool
 extract_key(Direction dir, SDL_Event *event)
 {
-	Uint32 key = event->key.keysym.sym;
+	Uint32 key = event->key.key;
 	switch (dir) {
 		case UP:
 			return key == SDLK_UP
-				|| key == SDLK_w
-				|| key == SDLK_k;
+				|| key == SDLK_W
+				|| key == SDLK_K;
 		case DOWN:
 			return key == SDLK_DOWN
-				|| key == SDLK_s
-				|| key == SDLK_j;
+				|| key == SDLK_S
+				|| key == SDLK_J;
 		case LEFT:
 			return key == SDLK_LEFT
-				|| key == SDLK_a
-				|| key == SDLK_h;
+				|| key == SDLK_A
+				|| key == SDLK_H;
 		case RIGHT:
 			return key == SDLK_RIGHT
-				|| key == SDLK_l
-				|| key == SDLK_d;
+				|| key == SDLK_L
+				|| key == SDLK_D;
 		default:
 			return false;
 	}
@@ -48,7 +48,7 @@ extract_key(Direction dir, SDL_Event *event)
 bool
 keyboard_direction_press(Direction dir, SDL_Event *event)
 {
-	if (event->type != SDL_KEYDOWN)
+	if (event->type != SDL_EVENT_KEY_DOWN)
 		return false;
 
 	return extract_key(dir, event);
@@ -57,7 +57,7 @@ keyboard_direction_press(Direction dir, SDL_Event *event)
 bool
 keyboard_direction_release(Direction dir, SDL_Event *event)
 {
-	if (event->type != SDL_KEYUP)
+	if (event->type != SDL_EVENT_KEY_UP)
 		return false;
 
 	return extract_key(dir, event);
@@ -66,30 +66,30 @@ keyboard_direction_release(Direction dir, SDL_Event *event)
 bool
 keyboard_press(Uint32 key, SDL_Event *event)
 {
-	if (event->type != SDL_KEYDOWN)
+	if (event->type != SDL_EVENT_KEY_DOWN)
 		return false;
 
-	return key == (Uint32) event->key.keysym.sym;
+	return key == (Uint32) event->key.key;
 }
 
 bool
 keyboard_release(Uint32 key, SDL_Event *event)
 {
-	if (event->type != SDL_KEYUP)
+	if (event->type != SDL_EVENT_KEY_UP)
 		return false;
 
-	return key == (Uint32) event->key.keysym.sym;
+	return key == (Uint32) event->key.key;
 }
 
 bool
 keyboard_mod_press(Uint32 key, Uint32 mod, SDL_Event *event)
 {
-	if (event->type != SDL_KEYDOWN)
+	if (event->type != SDL_EVENT_KEY_DOWN)
 		return false;
 
-	if (!(event->key.keysym.mod & mod))
+	if (!(event->key.mod & mod))
 		return false;
 
-	return key == (Uint32) event->key.keysym.sym;
+	return key == (Uint32) event->key.key;
 }
 

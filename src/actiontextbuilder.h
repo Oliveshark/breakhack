@@ -19,7 +19,7 @@
 #ifndef ACTIONTEXTBUILDER_H_
 #define	ACTIONTEXTBUILDER_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include "actiontext.h"
 #include "camera.h"
 #include "update_data.h"

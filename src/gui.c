@@ -457,12 +457,12 @@ gui_render_minimap(Gui *gui, Map *map, Camera *cam)
 {
 	sprite_render(gui->miniMapFrame, cam);
 
-	SDL_Rect box = { 0, 0, 12, 8 };
+	SDL_FRect box = { 0.0f, 0.0f, 12.0f, 8.0f };
 	for (Uint8 i = 0; i < MAP_H_ROOM_COUNT; ++i) {
 		for (Uint8 j = 0; j < MAP_V_ROOM_COUNT; ++j) {
 			Room *room = map->rooms[i][j];
-			box.x = i*14 + 10;
-			box.y = j*10 + 14;
+			box.x = (float) i*14 + 10;
+			box.y = (float) j*10 + 14;
 			if (room && room->visited) {
 				if (map->currentRoom.x == i && map->currentRoom.y == j)
 					SDL_SetRenderDrawColor(cam->renderer, 0, 255, 255, 255);
@@ -470,7 +470,7 @@ gui_render_minimap(Gui *gui, Map *map, Camera *cam)
 					SDL_SetRenderDrawColor(cam->renderer, 255, 255, 255, 255);
 				SDL_RenderFillRect(cam->renderer, &box);
 				SDL_SetRenderDrawColor(cam->renderer, 60, 134, 252, 255);
-				SDL_RenderDrawRect(cam->renderer, &box);
+				SDL_RenderRect(cam->renderer, &box);
 			}
 		}
 	}

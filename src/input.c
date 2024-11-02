@@ -50,22 +50,22 @@ static Uint64
 get_event_key(SDL_Event *event)
 {
 	Uint64 key;
-	switch (event->key.keysym.sym) {
+	switch (event->key.key) {
 		case SDLK_UP:
-		case SDLK_k:
-		case SDLK_w:
+		case SDLK_K :
+		case SDLK_W :
 			key = KEY_UP; break;
 		case SDLK_DOWN:
-		case SDLK_j:
-		case SDLK_s:
+		case SDLK_J :
+		case SDLK_S :
 			key = KEY_DOWN; break;
 		case SDLK_LEFT:
-		case SDLK_h:
-		case SDLK_a:
+		case SDLK_H :
+		case SDLK_A :
 			key = KEY_LEFT; break;
 		case SDLK_RIGHT:
-		case SDLK_l:
-		case SDLK_d:
+		case SDLK_L :
+		case SDLK_D :
 			key = KEY_RIGHT; break;
 		case SDLK_0:
 			key = KEY_NUM0; break;
@@ -96,30 +96,30 @@ get_event_button(SDL_Event *event)
 {
 	Uint64 key;
 	switch (event->jbutton.button) {
-		case SDL_CONTROLLER_BUTTON_DPAD_UP:
+		case SDL_GAMEPAD_BUTTON_DPAD_UP :
 			key = KEY_UP; break;
-		case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+		case SDL_GAMEPAD_BUTTON_DPAD_DOWN :
 			key = KEY_DOWN; break;
-		case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+		case SDL_GAMEPAD_BUTTON_DPAD_LEFT :
 			key = KEY_LEFT; break;
-		case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+		case SDL_GAMEPAD_BUTTON_DPAD_RIGHT :
 			key = KEY_RIGHT; break;
-		case SDL_CONTROLLER_BUTTON_A:
+		case SDL_GAMEPAD_BUTTON_SOUTH :
 			key = KEY_NUM1 | KEY_ENTER; break;
-		case SDL_CONTROLLER_BUTTON_X:
+		case SDL_GAMEPAD_BUTTON_WEST :
 			key = KEY_NUM2; break;
-		case SDL_CONTROLLER_BUTTON_Y:
+		case SDL_GAMEPAD_BUTTON_NORTH :
 			key = KEY_NUM3; break;
-		case SDL_CONTROLLER_BUTTON_B:
+		case SDL_GAMEPAD_BUTTON_EAST :
 			key = KEY_NUM4; break;
-		case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+		case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER :
 			key = KEY_NUM5; break;
-		case SDL_CONTROLLER_BUTTON_START:
+		case SDL_GAMEPAD_BUTTON_START :
 			key = KEY_ENTER; break;
-		case SDL_CONTROLLER_BUTTON_BACK:
+		case SDL_GAMEPAD_BUTTON_BACK :
 			key = KEY_ESC; break;
-		case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-		case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+		case SDL_GAMEPAD_BUTTON_LEFT_STICK :
+		case SDL_GAMEPAD_BUTTON_RIGHT_STICK :
 			key = KEY_SPACE; break;
 		default:
 			key = 0; break;
@@ -131,11 +131,11 @@ static Uint64
 get_axis_motion(SDL_Event *event)
 {
 	Uint64 key;
-	int angle = event->caxis.value;
-	switch (event->caxis.axis) {
-		case SDL_CONTROLLER_AXIS_LEFTX:
+	int angle = event->gaxis.value;
+	switch (event->gaxis.axis) {
+		case SDL_GAMEPAD_AXIS_LEFTX :
 			key = angle < 0 ? KEY_LEFT : KEY_RIGHT; break;
-		case SDL_CONTROLLER_AXIS_LEFTY:
+		case SDL_GAMEPAD_AXIS_LEFTY :
 			key = angle < 0 ? KEY_UP : KEY_DOWN; break;
 		default:
 			key = 0;
@@ -147,19 +147,19 @@ static Uint32
 get_event_modkey(SDL_Event *event)
 {
 	Uint32 key = 0;
-	if (event->key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL)) {
-		switch (event->key.keysym.sym) {
-			case SDLK_s:
+	if (event->key.mod & (SDL_KMOD_LCTRL | SDL_KMOD_RCTRL)) {
+		switch (event->key.key) {
+			case SDLK_S :
 				key = KEY_CTRL_S; break;
-			case SDLK_m:
+			case SDLK_M :
 				key = KEY_CTRL_M; break;
-			case SDLK_d:
+			case SDLK_D :
 				key = KEY_CTRL_D; break;
-			case SDLK_f:
+			case SDLK_F :
 				key = KEY_CTRL_F; break;
 		}
-	} else if (event->key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT)) {
-		switch (event->key.keysym.sym) {
+	} else if (event->key.mod & (SDL_KMOD_LSHIFT | SDL_KMOD_RSHIFT)) {
+		switch (event->key.key) {
 			case SDLK_1:
 				key = KEY_SHIFT_NUM1; break;
 			case SDLK_2:
@@ -193,41 +193,49 @@ get_event_mousebutton(SDL_Event *event)
 }
 
 void
-input_handle_event(Input *input, SDL_Event *event)
+input_handle_event(Input *input, SDL_Event *event, InputDeviceType *device_type)
 {
-	if (event->type == SDL_KEYDOWN) {
+	InputDeviceType current_device_type = DeviceType_Unknown;
+
+	if (event->type == SDL_EVENT_KEY_DOWN) {
 		Uint32 key;
-		if ((key = get_event_modkey(event)))
+		if ((key = get_event_modkey(event))) {
 			input->modKeyState |= key;
-		else
+		} else {
 			input->keyState |= get_event_key(event);
-	}
-	else if (event->type == SDL_KEYUP) {
+		}
+		current_device_type = DeviceType_Keyboard;
+	} else if (event->type == SDL_EVENT_KEY_UP) {
 		Uint32 key;
-		if ((key = get_event_modkey(event)))
+		if ((key = get_event_modkey(event))) {
 			input->modKeyState &= ~key;
-		else
+		} else {
 			input->keyState &= ~get_event_key(event);
-	}
-	else if (event->type == SDL_MOUSEBUTTONDOWN)
+		}
+		current_device_type = DeviceType_Keyboard;
+	} else if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
 		input->mouseButtonState |= get_event_mousebutton(event);
-	else if (event->type == SDL_MOUSEBUTTONUP)
+	} else if (event->type == SDL_EVENT_MOUSE_BUTTON_UP) {
 		input->mouseButtonState &= ~get_event_mousebutton(event);
-	else if (event->type == SDL_MOUSEMOTION) {
-		input->mouseX = event->motion.x;
-		input->mouseY = event->motion.y;
-	}
-	else if (event->type == SDL_CONTROLLERBUTTONDOWN) {
+	} else if (event->type == SDL_EVENT_MOUSE_MOTION) {
+		input->mouseX = (Uint32) event->motion.x;
+		input->mouseY = (Uint32) event->motion.y;
+	} else if (event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) {
 		input->keyState |= get_event_button(event);
-	}
-	else if (event->type == SDL_CONTROLLERBUTTONUP) {
+		current_device_type = DeviceType_Gamepad;
+	} else if (event->type == SDL_EVENT_GAMEPAD_BUTTON_UP) {
 		input->keyState &= ~get_event_button(event);
-	}
-	else if (event->type == SDL_CONTROLLERAXISMOTION) {
-		if (event->caxis.value > 31500 || event->caxis.value < -31500)
+		current_device_type = DeviceType_Gamepad;
+	} else if (event->type == SDL_EVENT_GAMEPAD_AXIS_MOTION) {
+		if (event->gaxis.value > 31500 || event->gaxis.value < -31500) {
 			input->keyState |= get_axis_motion(event);
-		else
+		} else {
 			input->keyState &= ~get_axis_motion(event);
+		}
+	}
+
+	if (device_type != NULL) {
+		*device_type = current_device_type;
 	}
 }
 

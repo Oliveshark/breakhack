@@ -19,7 +19,7 @@
 #ifndef COLLISIONS_H_
 #define	COLLISIONS_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdbool.h>
 
 #include "position.h"

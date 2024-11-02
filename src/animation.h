@@ -19,7 +19,7 @@
 #ifndef _ANIMATION_H
 #define	_ANIMATION_H
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdbool.h>
 
 typedef struct Timer Timer;

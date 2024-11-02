@@ -23,6 +23,7 @@
 #include "roommatrix.h"
 #include "sprite.h"
 #include "vector2d.h"
+#include "tooltip.h"
 
 // Forward declaration
 typedef struct Player Player;
@@ -58,7 +59,7 @@ typedef struct Skill_t {
 	bool active;
 	bool (*available)(Player*);
 	bool (*use)(struct Skill_t*, SkillData*);
-	Sprite *tooltip;
+	Tooltip *tooltip;
 } Skill;
 
 Skill*

@@ -19,18 +19,19 @@
 #include "defines.h"
 #include "util.h"
 
-#include <SDL_video.h>
+#include <SDL3/SDL.h>
 
 #include "screenresolution.h"
 
 Dimension getScreenDimensions(void)
 {
-	SDL_DisplayMode dm;
-	if (SDL_GetCurrentDisplayMode(0, &dm) != 0)
+	SDL_DisplayID display = SDL_GetPrimaryDisplay();
+	const SDL_DisplayMode *dm = SDL_GetCurrentDisplayMode(display);
+	if (dm == NULL)
 	{
-		error("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+		error("SDL_GetDesktopDisplayMode(%d) failed: %s", display, SDL_GetError());
 	}
-	Dimension dim = (Dimension) { dm.w, dm.h };
+	Dimension dim = (Dimension) { dm->w, dm->h };
 
 	return dim;
 }

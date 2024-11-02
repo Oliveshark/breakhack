@@ -1076,6 +1076,6 @@ skill_destroy(Skill *skill)
 {
 	sprite_destroy(skill->icon);
 	if (skill->tooltip)
-		sprite_destroy(skill->tooltip);
+		tooltip_destroy(skill->tooltip);
 	free(skill);
 }

@@ -20,16 +20,17 @@
 #define	TIMER_H_
 
 #include <stdbool.h>
+#include <SDL3/SDL.h>
 
 typedef struct Timer {
-	unsigned int startTime;
+	Uint64 startTime;
 } Timer;
 
 Timer* _timer_create(void);
 void timer_start(Timer*);
 void timer_stop(Timer*);
 bool timer_started(Timer*);
-unsigned int timer_get_ticks(Timer*);
+Uint64 timer_get_ticks(Timer*);
 void timer_destroy(Timer*);
 
 #endif // TIMER_H_

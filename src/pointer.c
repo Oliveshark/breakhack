@@ -25,7 +25,7 @@
 Pointer *
 pointer_create(SDL_Renderer *renderer)
 {
-	SDL_ShowCursor(SDL_DISABLE);
+	SDL_HideCursor();
 
 	Pointer *p = ec_malloc(sizeof(Pointer));
 	p->sprite = sprite_create();
@@ -63,7 +63,7 @@ pointer_render(Pointer *p, Camera *cam)
 void
 pointer_destroy(Pointer *p)
 {
-	SDL_ShowCursor(SDL_ENABLE);
+	SDL_ShowCursor();
 
 	sprite_destroy(p->sprite);
 	free(p);

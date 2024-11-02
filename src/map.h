@@ -19,7 +19,7 @@
 #ifndef MAP_H_
 #define	MAP_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdbool.h>
 
 #include "linkedlist.h"

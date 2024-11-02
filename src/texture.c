@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include <stdio.h>
 #include <physfs.h>
 #include <stdlib.h>
@@ -76,12 +76,12 @@ texture_load_from_file(Texture *texture,
 		       const char *path,
 		       SDL_Renderer *renderer)
 {
-	SDL_Surface *surface = IMG_Load_RW(io_load_rwops(path), true);
+	SDL_Surface *surface = IMG_Load_IO(io_load_rwops(path), true);
 
 	if (surface == NULL)
 	{
 		error("Failed to load texture (%s): %s",
-		       path, IMG_GetError());
+		       path, SDL_GetError());
 		return;
 	}
 
@@ -103,8 +103,9 @@ texture_load_from_file(Texture *texture,
 
 	texture->lastAccess = SDL_GetTicks();
 	texture->path = path;
+	SDL_SetTextureScaleMode(texture->texture, SDL_SCALEMODE_NEAREST);
 
-	SDL_FreeSurface(surface);
+	SDL_DestroySurface(surface);
 }
 
 void
@@ -115,16 +116,16 @@ texture_load_font(Texture *t, const char *path, unsigned int size, int outline)
 	if (t->outlineFont)
 		TTF_CloseFont(t->outlineFont);
 
-	t->font = TTF_OpenFontRW(io_load_rwops(path), true, size);
+	t->font = TTF_OpenFontIO(io_load_rwops(path), true, (float) size);
 	if (outline) {
-		t->outlineFont = TTF_OpenFontRW(io_load_rwops(path), true, size);
+		t->outlineFont = TTF_OpenFontIO(io_load_rwops(path), true, (float) size);
 		TTF_SetFontOutline(t->outlineFont, outline);
 	}
 
 	if (t->font == NULL) {
 		error("Failed to load font %s: %s",
 			path,
-			TTF_GetError());
+			SDL_GetError());
 		return;
 	}
 	t->path = path;
@@ -148,7 +149,7 @@ load_from_surface(Texture *t, SDL_Surface *surface, SDL_Renderer *renderer)
 	t->dim.width = surface->w;
 	t->dim.height = surface->h;
 
-	SDL_FreeSurface(surface);
+	SDL_DestroySurface(surface);
 }
 
 void
@@ -161,11 +162,11 @@ texture_load_from_text(Texture *t,
 	SDL_Surface *bg_surface = NULL;
 	SDL_Surface *fg_surface = NULL;
 	if (t->outlineFont) {
-		bg_surface = TTF_RenderText_Blended(t->outlineFont, text, oc);
-		fg_surface = TTF_RenderText_Blended(t->font, text, c);
+		bg_surface = TTF_RenderText_Blended(t->outlineFont, text, 0, oc);
+		fg_surface = TTF_RenderText_Blended(t->font, text, 0, c);
 	}
 	else {
-		fg_surface = TTF_RenderText_Blended(t->font, text, c);
+		fg_surface = TTF_RenderText_Blended(t->font, text, 0, c);
 	}
 	SDL_Surface *surface = fg_surface;
 	if (bg_surface) {
@@ -174,13 +175,13 @@ texture_load_from_text(Texture *t,
 		SDL_SetSurfaceBlendMode(fg_surface, SDL_BLENDMODE_BLEND);
 		SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect);
 		surface = bg_surface;
-		SDL_FreeSurface(fg_surface);
+		SDL_DestroySurface(fg_surface);
 	}
 
 	if (surface == NULL)
 	{
 		error("Unable to create texture from rendered text: %s",
-		       IMG_GetError());
+		       SDL_GetError());
 		return;
 	}
 
@@ -197,12 +198,13 @@ texture_load_from_text_shaded(Texture *t,
 {
 	SDL_Surface *surface = TTF_RenderText_Shaded( t->font,
 						      text,
+						      0,
 						      fg,
 						      bg );
 	if (surface == NULL)
 	{
 		error("Unable to create texture from rendered text: %s",
-		       IMG_GetError());
+		       SDL_GetError());
 		return;
 	}
 
@@ -212,11 +214,11 @@ texture_load_from_text_shaded(Texture *t,
 void
 texture_load_from_text_blended(Texture *t, const char * text, SDL_Color fg, SDL_Renderer *renderer)
 {
-	SDL_Surface *surface = TTF_RenderText_Blended( t->font, text, fg );
+	SDL_Surface *surface = TTF_RenderText_Blended( t->font, text, 0, fg );
 	if (surface == NULL)
 	{
 		error("Unable to create texture from rendered text: %s",
-		       IMG_GetError());
+		       SDL_GetError());
 		return;
 	}
 
@@ -259,26 +261,48 @@ texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip, Camera *cam
 	if (!texture->texture)
 		return;
 
-	SDL_RenderCopy(cam->renderer,
+	SDL_FRect fclip;
+	SDL_FRect fbox;
+	if (clip)
+		SDL_RectToFRect(clip, &fclip);
+	if (box)
+		SDL_RectToFRect(box, &fbox);
+
+	SDL_RenderTexture(cam->renderer,
 		       texture->texture,
-		       clip,
-		       box);
+		       clip ? &fclip : NULL,
+		       box ? &fbox : NULL);
 
 	texture->lastAccess = SDL_GetTicks();
 }
 
 void 
-texture_render_clip_ex(Texture *texture, SDL_Rect *box, SDL_Rect *clip, double angle, SDL_Point *point, SDL_RendererFlip flipType, Camera *cam)
+texture_render_clip_ex(Texture *texture, SDL_Rect *box, SDL_Rect *clip, double angle, SDL_Point *point,
+		       SDL_FlipMode flipType, Camera *cam)
 {
 	if (!texture->texture)
 		return;
 
-	SDL_RenderCopyEx(cam->renderer,
+
+	SDL_FRect fbox;
+	SDL_FRect fclip;
+	SDL_FPoint fpoint;
+
+	if (box)
+		SDL_RectToFRect(box, &fbox);
+	if (clip)
+		SDL_RectToFRect(clip, &fclip);
+	if (point) {
+		fpoint.x = (float) point->x;
+		fpoint.y = (float) point->y;
+	}
+
+	SDL_RenderTextureRotated(cam->renderer,
 			 texture->texture,
-			 clip,
-			 box,
+			 clip ? &fclip : NULL,
+			 box ? &fbox : NULL,
 			 angle,
-			 point,
+			 point ? &fpoint : NULL,
 			 flipType);
 
 	texture->lastAccess = SDL_GetTicks();
