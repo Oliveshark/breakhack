@@ -56,5 +56,5 @@ on Steam.
 Links
 -----
 
-- [Itch.io](https://store.steampowered.com/app/931040/BreakHack/)
-- [Steam](https://liquidityc.itch.io/breakhack)
+- [Steam](https://store.steampowered.com/app/931040/BreakHack/)
+- [Itch.io](https://liquidityc.itch.io/breakhack)
