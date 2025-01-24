@@ -56,6 +56,10 @@ if ("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 	set(OSX 1)
 endif()
 
+if (APPLE)
+	enable_language(OBJC)
+endif()
+
 set (default_build_type "Release")
 if (NOT CMAKE_BUILD_TYPE AND default_build_type)
 	message( STATUS "Setting default buildtype to '${default_build_type}' as none was specified")
@@ -95,12 +99,12 @@ ELSEIF ( WIN32 )
       "${CMAKE_C_FLAGS_RELEASE} -mwindows"
     )
 ENDIF ()
-#IF ( GCC )
-#SET (
-#CMAKE_C_FLAGS_DEBUG
-#"${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer"
-#)
-#ENDIF ( GCC )
+IF ( GCC AND NOT MINGW )
+	SET (
+		CMAKE_C_FLAGS_DEBUG
+		"${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer"
+	)
+ENDIF ()
 
 if (STEAM)
 	include_directories(
@@ -108,48 +112,48 @@ if (STEAM)
 	)
 endif ()
 
-# Include SDL2
+# Include SDL
 set(SDL_STATIC ON)
 set(SDL_SHARED OFF)
 set(SDL_TEST OFF)
 add_subdirectory(lib/SDL)
-set(SDL2_INCLUDE_DIR lib/SDL/include)
-set(SDL2_LIBRARY SDL2-static)
-set(SDL2_MAIN_LIBRARY SDL2main)
+set(SDL_INCLUDE_DIR lib/SDL/include)
+set(SDL_LIBRARY SDL3-static)
 
-# Include SDL2_image/mixer/ttf
+# Include SDL_image/mixer/ttf
 set(BUILD_SHARED_LIBS OFF)
 
-set(SDL2IMAGE_PNG ON)
-set(SDL2IMAGE_JPG ON)
-set(SDL2IMAGE_AVIF OFF)
-set(SDL2IMAGE_BMP OFF)
-set(SDL2IMAGE_GIF OFF)
-set(SDL2IMAGE_JXL OFF)
-set(SDL2IMAGE_LBM OFF)
-set(SDL2IMAGE_PCX OFF)
-set(SDL2IMAGE_PNM OFF)
-set(SDL2IMAGE_QOI OFF)
-set(SDL2IMAGE_SVG OFF)
-set(SDL2IMAGE_TGA OFF)
-set(SDL2IMAGE_TIF OFF)
-set(SDL2IMAGE_WEBP OFF)
-set(SDL2IMAGE_XCF OFF)
-set(SDL2IMAGE_XPM OFF)
-set(SDL2IMAGE_XV OFF)
+set(SDLIMAGE_PNG ON)
+set(SDLIMAGE_JPG ON)
+set(SDLIMAGE_AVIF OFF)
+set(SDLIMAGE_BMP OFF)
+set(SDLIMAGE_GIF OFF)
+set(SDLIMAGE_JXL OFF)
+set(SDLIMAGE_LBM OFF)
+set(SDLIMAGE_PCX OFF)
+set(SDLIMAGE_PNM OFF)
+set(SDLIMAGE_QOI OFF)
+set(SDLIMAGE_SVG OFF)
+set(SDLIMAGE_TGA OFF)
+set(SDLIMAGE_TIF OFF)
+set(SDLIMAGE_WEBP OFF)
+set(SDLIMAGE_XCF OFF)
+set(SDLIMAGE_XPM OFF)
+set(SDLIMAGE_XV OFF)
 add_subdirectory(lib/SDL_image)
-set(SDL2_IMAGE_INCLUDE_DIR lib/SDL_image/include)
-set(SDL2_IMAGE_LIBRARY SDL2_image)
+set(SDL_IMAGE_INCLUDE_DIR lib/SDL_image/include)
+set(SDL_IMAGE_LIBRARY SDL3_image-static)
 
 # opusfile caused issues in macos build and we don't need it anyways
-set(SDL2MIXER_OPUS OFF)
+set(SDLMIXER_OPUS OFF)
 add_subdirectory(lib/SDL_mixer)
-set(SDL2_MIXER_INCLUDE_DIR lib/SDL_mixer/include)
-set(SDL2_MIXER_LIBRARY SDL2_mixer)
+set(SDL_MIXER_INCLUDE_DIR lib/SDL_mixer/include)
+set(SDL_MIXER_LIBRARY SDL3_mixer-static)
 
+set(SDLTTF_VENDORED ON)
 add_subdirectory(lib/SDL_ttf)
-set(SDL2_TTF_INCLUDE_DIR lib/SDL_ttf/include)
-set(SDL2_TTF_LIBRARY SDL2_ttf)
+set(SDL_TTF_INCLUDE_DIR lib/SDL_ttf/include)
+set(SDL_TTF_LIBRARY SDL3_ttf-static)
 
 # Include lua lib
 add_subdirectory(lib/lua-5.3.5)
@@ -164,37 +168,11 @@ include_directories(lib/physfs-3.0/src)
 set(PHYSFS_LIBRARY physfs-static)
 set(PHYSFS_INCLUDE_DIR physfs-3.0/src)
 
-include_directories(
-	${PROJECT_BINARY_DIR}
-	${SDL2_INCLUDE_DIR}
-	${SDL2_IMAGE_INCLUDE_DIR}
-	${SDL2_TTF_INCLUDE_DIR}
-	${SDL2_MIXER_INCLUDE_DIR}
-	${PHYSFS_INCLUDE_DIR}
-	${LUA_INCLUDE_DIR}
-	lib/sqlite3
-	lib/bh_random/src
-	lib/checksum/src
-	)
-
 if (CMOCKA_FOUND)
 	include_directories(
 		${CMOCKA_INCLUDE_DIR}
 		)
 endif(CMOCKA_FOUND)
-
-if (NOT MSVC)
-	add_definitions(-std=gnu11
-		-pedantic -Wall -Wextra -Wshadow
-		-Wpointer-arith -Wcast-qual
-		-Wstrict-prototypes
-		-Wmissing-prototypes
-		-Wconversion -Wno-sign-conversion
-		)
-	if (NOT APPLE)
-		add_definitions(-static -static-libgcc -static-libstdc++)
-	endif ()
-endif (NOT MSVC)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 if (STEAM)
@@ -273,10 +251,39 @@ add_executable(breakhack
 	src/object.c
 	src/gui_util.c
 	src/tooltip.c
+	src/tooltip_manager.c
 	src/gamecontroller.c
 	src/effect_util.c
 	${STEAM_SOURCES}
 	)
+set_property(TARGET breakhack PROPERTY C_STANDARD 99)
+
+set(INCLUDE_DIRS
+	${PROJECT_BINARY_DIR}
+	${SDL_INCLUDE_DIR}
+	${SDL_IMAGE_INCLUDE_DIR}
+	${SDL_TTF_INCLUDE_DIR}
+	${SDL_MIXER_INCLUDE_DIR}
+	${PHYSFS_INCLUDE_DIR}
+	${LUA_INCLUDE_DIR}
+	lib/sqlite3
+	lib/bh_random/src
+	lib/checksum/src
+)
+
+target_include_directories(breakhack PRIVATE ${INCLUDE_DIRS})
+
+if (NOT MSVC)
+	set_target_properties(breakhack PROPERTIES COMPILE_FLAGS
+		-std=gnu11 -pedantic -Wall -Wextra -Wshadow
+		-Wpointer-arith -Wcast-qual -Wstrict-prototypes
+		-Wmissing-prototypes -Wconversion -Wno-sign-conversion
+	)
+	if (NOT APPLE)
+		add_definitions(-static -static-libgcc -static-libstdc++)
+	endif ()
+endif (NOT MSVC)
+
 
 if (MSVC)
 	source_group("Header files" REGULAR_EXPRESSION ".*\\.h")
@@ -288,21 +295,15 @@ set_source_files_properties(lib/sqlite3/sqlite3.c COMPILE_FLAGS -w)
 
 target_link_libraries(breakhack
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
-	${SDL2_LIBRARY}
-	${SDL2_IMAGE_LIBRARY}
-	${SDL2_TTF_LIBRARY}
-	${SDL2_MIXER_LIBRARY}
+	${SDL_LIBRARY}
+	${SDL_IMAGE_LIBRARY}
+	${SDL_TTF_LIBRARY}
+	${SDL_MIXER_LIBRARY}
 	${LUA_LIBRARIES}
 	${PHYSFS_LIBRARY}
 	bh_random
 	checksum
 	)
-
-if (MSVC OR MINGW)
-	target_link_libraries(breakhack
-		${SDL2_MAIN_LIBRARY}
-		)
-endif ()
 
 if (STEAM)
 	target_link_libraries(breakhack
@@ -325,24 +326,26 @@ IF (CMOCKA_FOUND AND NOT OSX AND NOT CLANG)
 	find_package(Threads REQUIRED)
 	enable_testing()
 	add_executable(test_util test/test_util.c src/util.c)
+	target_include_directories(test_util PRIVATE ${INCLUDE_DIRS})
 	target_link_libraries(test_util ${CMOCKA_LIBRARY})
 	add_test(test_util test_util)
 
 	add_executable(test_linkedlist test/test_linkedlist.c src/linkedlist.c src/util.c)
+	target_include_directories(test_linkedlist PRIVATE ${INCLUDE_DIRS})
 	target_link_libraries(test_linkedlist ${CMOCKA_LIBRARY})
 	add_test(test_linkedlist test_linkedlist)
 
 	add_executable(test_hashtable test/test_hashtable.c src/hashtable.c src/util.c)
+	target_include_directories(test_hashtable PRIVATE ${INCLUDE_DIRS})
 	target_link_libraries(test_hashtable ${CMOCKA_LIBRARY})
 	add_test(test_hashtable test_hashtable)
 
 	add_executable(test_input test/test_input.c src/input.c src/keyboard.c)
+	target_include_directories(test_input PRIVATE ${INCLUDE_DIRS})
 	target_link_libraries(test_input
 		${CMOCKA_LIBRARY}
-		${SDL2_LIBRARY}
+		${SDL_LIBRARY}
 		)
-	#set_target_properties(test_input PROPERTIES
-	#LINK_FLAGS "-Wl,--wrap,keyboard_direction_press -Wl,--wrap,keyboard_press")
 	add_test(test_input test_input)
 ENDIF ()
 

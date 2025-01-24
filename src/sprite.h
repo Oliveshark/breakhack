@@ -45,7 +45,7 @@ typedef struct Sprite {
 	Dimension dim;
 	double angle;
 	SDL_Point rotationPoint;
-	SDL_RendererFlip flip;
+	SDL_FlipMode flip;
 	Timer *renderTimer;
 	Timer *animationTimer;
 	unsigned int texture_index;

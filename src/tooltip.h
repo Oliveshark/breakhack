@@ -20,9 +20,14 @@
 
 #include "camera.h"
 #include "sprite.h"
+#include "gamecontroller.h"
 
-Sprite *
+typedef struct tooltip {
+	Sprite *sprite[GAMEPAD_TYPE_MAX];
+} Tooltip;
+
+Tooltip *
 tooltip_create(char **content, Camera*);
 
 void
-tooltip_set_controller_mode(Uint8 ctrl_mode);
+tooltip_destroy(Tooltip *tooltip);

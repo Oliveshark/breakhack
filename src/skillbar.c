@@ -22,18 +22,18 @@
 #include "texture.h"
 #include "util.h"
 #include "sprite.h"
-#include "keyboard.h"
 #include "texturecache.h"
 #include "particle_engine.h"
 #include "update_data.h"
 #include "gui.h"
 
-static Uint8 controller_mode = 0;
+static GamepadType controller_type = GAMEPAD_TYPE_NONE;
 
 void
 skillbar_set_controller_mode(Uint8 ctrl_mode)
 {
-	controller_mode = ctrl_mode;
+	debug("Setting controller mode to %u", ctrl_mode);
+	controller_type = ctrl_mode;
 }
 
 static Sprite *
@@ -56,26 +56,54 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	t->dim.width = 16;
 	t->dim.height = 16;
 
-	if (!controller_mode) {
-		for (unsigned int i = 0; i < 5; ++i) {
-			char buffer[4];
-			Sprite *s = sprite_create();
-			s->pos = (Position) { i * 32 + 20, 20 };
-			s->dim = (Dimension) { 8, 8 };
-			s->fixed = true;
-			sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8, 0);
-			m_sprintf(buffer, 4, "%u", i + 1);
-			texture_load_from_text(s->textures[0], buffer, C_YELLOW, C_BLACK, renderer);
-			linkedlist_append(&bar->sprites, s);
-		}
-	} else {
-		Uint8 i = 0;
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(0, controller_mode)));
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(16, controller_mode)));
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(32, controller_mode)));
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(48, controller_mode)));
-		linkedlist_append(&bar->sprites, create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, controller_mode)));
+	/* Load keyboard hint sprites */
+	for (unsigned int i = 0; i < 5; ++i) {
+		char buffer[4];
+		Sprite *s = sprite_create();
+		s->pos = (Position) { i * 32 + 20, 20 };
+		s->dim = (Dimension) { 8, 8 };
+		s->fixed = true;
+		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8, 0);
+		m_sprintf(buffer, 4, "%u", i + 1);
+		texture_load_from_text(s->textures[0], buffer, C_YELLOW, C_BLACK, renderer);
+		linkedlist_append(&bar->sprites_keyboard, s);
 	}
+
+	/* Load ps controller sprites */
+	Uint8 i = 0;
+	linkedlist_append(&bar->sprites_gamepad_ps,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
+							  CONTROLLER_BTN(0, GAMEPAD_TYPE_PS)));
+	linkedlist_append(&bar->sprites_gamepad_ps,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
+							  CONTROLLER_BTN(16, GAMEPAD_TYPE_PS)));
+	linkedlist_append(&bar->sprites_gamepad_ps,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
+							  CONTROLLER_BTN(32, GAMEPAD_TYPE_PS)));
+	linkedlist_append(&bar->sprites_gamepad_ps,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
+							  CONTROLLER_BTN(48, GAMEPAD_TYPE_PS)));
+	linkedlist_append(&bar->sprites_gamepad_ps,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 20),
+							  CONTROLLER_BUMPER(32, GAMEPAD_TYPE_PS)));
+
+	/* Load xbox controller sprites */
+	i = 0;
+	linkedlist_append(&bar->sprites_gamepad_xb,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
+							  CONTROLLER_BTN(0, GAMEPAD_TYPE_XB)));
+	linkedlist_append(&bar->sprites_gamepad_xb,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
+							  CONTROLLER_BTN(16, GAMEPAD_TYPE_XB)));
+	linkedlist_append(&bar->sprites_gamepad_xb,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
+							  CONTROLLER_BTN(32, GAMEPAD_TYPE_XB)));
+	linkedlist_append(&bar->sprites_gamepad_xb,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
+							  CONTROLLER_BTN(48, GAMEPAD_TYPE_XB)));
+	linkedlist_append(&bar->sprites_gamepad_xb,
+			  create_controller_button_sprite(POS(i++ * 32 + 16, 20),
+							  CONTROLLER_BUMPER(32, GAMEPAD_TYPE_XB)));
 }
 
 static void
@@ -180,7 +208,9 @@ SkillBar *
 skillbar_create(Camera *cam)
 {
 	SkillBar *bar = ec_malloc(sizeof(SkillBar));
-	bar->sprites = linkedlist_create();
+	bar->sprites_keyboard = linkedlist_create();
+	bar->sprites_gamepad_ps = linkedlist_create();
+	bar->sprites_gamepad_xb = linkedlist_create();
 	bar->activationTimer = _timer_create();
 	bar->skillSparkleTimer = _timer_create();
 	bar->lastActivation = 0;
@@ -225,7 +255,20 @@ skillbar_check_skill_activation(SkillBar *bar, Player *player)
 static void
 render_sprites(SkillBar *bar, Camera *cam)
 {
-	LinkedList *sprites = bar->sprites;
+	LinkedList *sprites;
+
+	switch (controller_type) {
+		case GAMEPAD_TYPE_PS:
+			sprites = bar->sprites_gamepad_ps;
+			break;
+		case GAMEPAD_TYPE_XB:
+			sprites = bar->sprites_gamepad_xb;
+			break;
+		case GAMEPAD_TYPE_NONE:
+		default:
+			sprites = bar->sprites_keyboard;
+			break;
+	}
 
 	while (sprites) {
 		sprite_render(sprites->data, cam);
@@ -239,16 +282,16 @@ render_activation_indicator(SkillBar *bar, Camera *cam)
 	if (!timer_started(bar->activationTimer))
 		return;
 
-	unsigned int ticks = timer_get_ticks(bar->activationTimer);
+	Uint64 ticks = timer_get_ticks(bar->activationTimer);
 	if (ticks > 500) {
 		timer_stop(bar->activationTimer);
 		return;
 	}
 
-	SDL_Rect square = { (bar->lastActivation - 1) * 32, 0, 32, 32 };
+	SDL_FRect square = { (float) (bar->lastActivation - 1) * 32, 0, 32, 32 };
 	unsigned int opacity = (unsigned int) ticks/2;
 	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 0, (Uint8)(255 - opacity));
-	SDL_RenderDrawRect(cam->renderer, &square);
+	SDL_RenderRect(cam->renderer, &square);
 }
 
 static void
@@ -265,7 +308,7 @@ render_skill_countdown(SkillBar *bar, int index, unsigned int count, Camera *cam
 static void
 render_skills(Player *player, Camera *cam)
 {
-	static SDL_Rect activeSkillBox = { 0, 0, 32, 32 };
+	static SDL_FRect activeSkillBox = { 0, 0, 32, 32 };
 
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (!player->skills[i])
@@ -279,7 +322,7 @@ render_skills(Player *player, Camera *cam)
 		sprite_render(skill->icon, cam);
 
 		if (player->skills[i]->active) {
-			activeSkillBox.x = i * 32;
+			activeSkillBox.x = (float) i * 32.0f;
 			SDL_SetRenderDrawColor(cam->renderer, 0, 0, 255, 100);
 			SDL_RenderFillRect(cam->renderer, &activeSkillBox);
 		}
@@ -301,7 +344,7 @@ render_artifacts(SkillBar *bar, Camera *cam)
 static void
 render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
 {
-	static SDL_Rect unavailableSkillBox = { 0, 0, 32, 32 };
+	static SDL_FRect unavailableSkillBox = { 0, 0, 32, 32 };
 
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		bool unavailable = false;
@@ -322,7 +365,7 @@ render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
 		}
 
 		if (unavailable) {
-			unavailableSkillBox.x = i * 32;
+			unavailableSkillBox.x = (float) i * 32;
 			SDL_SetRenderDrawColor(cam->renderer, UNPACK_COLOR(color));
 			SDL_RenderFillRect(cam->renderer, &unavailableSkillBox);
 			if (skill->resetCountdown) {
@@ -382,7 +425,7 @@ skillbar_update(SkillBar *bar, UpdateData *data)
 		if (!data->player->skills[i])
 			continue;
 		if (input_modkey_is_pressed(input, KEY_SHIFT_NUM1 << i)) {
-			data->gui->activeTooltip = data->player->skills[i]->tooltip;
+			data->gui->activeTooltip = data->player->skills[i]->tooltip->sprite[controller_type];
 			return;
 		}
 	}
@@ -433,8 +476,12 @@ skillbar_reset(SkillBar *bar)
 void
 skillbar_destroy(SkillBar *bar)
 {
-	while (bar->sprites)
-		sprite_destroy(linkedlist_pop(&bar->sprites));
+	while (bar->sprites_keyboard)
+		sprite_destroy(linkedlist_pop(&bar->sprites_keyboard));
+	while (bar->sprites_gamepad_ps)
+		sprite_destroy(linkedlist_pop(&bar->sprites_gamepad_ps));
+	while (bar->sprites_gamepad_xb)
+		sprite_destroy(linkedlist_pop(&bar->sprites_gamepad_xb));
 	for (Uint32 i = 0; i < PLAYER_SKILL_COUNT; ++i)
 		if (bar->countdowns[i])
 			sprite_destroy(bar->countdowns[i]);

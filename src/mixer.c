@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <SDL_mixer.h>
+#include <SDL3_mixer/SDL_mixer.h>
 #include "mixer.h"
 #include "util.h"
 #include "io_util.h"
@@ -38,18 +38,21 @@ static char *music[LAST_MUSIC] = {
 static Mix_Music*
 load_song(char *path)
 {
-	Mix_Music *m = Mix_LoadMUS_RW(io_load_rwops(path), true);
+	Mix_Music *m = Mix_LoadMUS_IO(io_load_rwops(path), true);
 	if (m == NULL)
-		fatal("Failed to load music: %s", Mix_GetError());
+		fatal("Failed to load music: %s", SDL_GetError());
 	return m;
 }
 
 static Mix_Chunk*
 load_effect(char *path)
 {
-	Mix_Chunk *effect = Mix_LoadWAV_RW(io_load_rwops(path), true);
+	debug("Loading effect: %s", path);
+	SDL_IOStream *io = io_load_rwops(path);
+	debug("Loaded effect: %s", path);
+	Mix_Chunk *effect = Mix_LoadWAV_IO(io, true);
 	if (effect == NULL)
-		fatal("Failed to load effect: %s", Mix_GetError());
+		fatal("Failed to load effect (%s): %s", path, SDL_GetError());
 	return effect;
 }
 
@@ -98,8 +101,13 @@ load_effects(void)
 void
 mixer_init(void)
 {
-	if (Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) == -1) {
-		fatal("Failed to load sound: %s", Mix_GetError());
+	SDL_AudioSpec desired;
+	desired.freq = 44100;
+	desired.format = MIX_DEFAULT_FORMAT;
+	desired.channels = 2;
+
+	if (!Mix_OpenAudio(0, &desired)) {
+		fatal("Failed to load sound: %s", SDL_GetError());
 	}
 
 	load_effects();
@@ -159,7 +167,7 @@ mixer_play_music(Music mus)
 	if (Mix_PlayingMusic())
 		mixer_stop_music();
 
-	if (Mix_PlayMusic(current_song, -1) == -1)
+	if (!Mix_PlayMusic(current_song, -1))
 		fatal("Failed to play music");
 }
 

@@ -19,7 +19,7 @@
 #ifndef TEXTURECACHE_H_
 #define TEXTURECACHE_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include "texture.h"
 
 void

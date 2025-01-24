@@ -22,32 +22,31 @@
 #include "defines.h"
 #include "gui.h"
 #include "texturecache.h"
-
-static Uint8 controller_mode = 0;
+#include "util.h"
 
 static bool
-render_button_texture_for(const char *text, Position pos, Camera *cam)
+render_button_texture_for(const char *text, Position pos, Camera *cam, GamepadType controller_type)
 {
-	if (!controller_mode) {
+	if (controller_type == GAMEPAD_TYPE_NONE) {
 		return false;
 	}
 
 	Texture *t = texturecache_add("Extras/Controller.png");
 	SDL_Rect clip;
 	if (strcmp(text, "1") == 0) {
-		clip = CONTROLLER_BTN(0, controller_mode);
+		clip = CONTROLLER_BTN(0, controller_type);
 	} else if (strcmp(text, "2") == 0) {
-		clip = CONTROLLER_BTN(16, controller_mode);
+		clip = CONTROLLER_BTN(16, controller_type);
 	} else if (strcmp(text, "3") == 0) {
-		clip = CONTROLLER_BTN(32, controller_mode);
+		clip = CONTROLLER_BTN(32, controller_type);
 	} else if (strcmp(text, "4") == 0) {
-		clip = CONTROLLER_BTN(48, controller_mode);
+		clip = CONTROLLER_BTN(48, controller_type);
 	} else if (strcmp(text, "5") == 0) {
-		clip = CONTROLLER_BUMPER(32, controller_mode);
+		clip = CONTROLLER_BUMPER(32, controller_type);
 	} else if (strcmp(text, "ESC") == 0) {
-		clip = CONTROLLER_OPT(32, controller_mode);
+		clip = CONTROLLER_OPT(32, controller_type);
 	} else if (strcmp(text, "ENTER") == 0) {
-		clip = CONTROLLER_OPT(0, controller_mode);
+		clip = CONTROLLER_OPT(0, controller_type);
 	} else if (strcmp(text, "SPACE") == 0) {
 		clip = CLIP16(0, 80);
 	} else {
@@ -75,8 +74,8 @@ load_texture_for(Texture *text,
 	renderBox->h = text->dim.height;
 }
 
-Sprite *
-tooltip_create(char **content, Camera *cam)
+static Sprite *
+tooltip_create_sprite(char **content, Camera *cam, GamepadType controller_type)
 {
 	int rowCount = 0;
 	char **contentIndex = content;
@@ -98,13 +97,14 @@ tooltip_create(char **content, Camera *cam)
 
 	while (*content) {
 		if (strlen(*content) > 0) {
-			if (render_button_texture_for(*content, POS(renderBox.x, renderBox.y - 4), cam)) {
+			if (render_button_texture_for(*content, POS(renderBox.x, renderBox.y - 4),
+						      cam, controller_type)) {
 				renderBox.x += 16;
 			} else {
 				load_texture_for(text, *content, &renderBox, cam->renderer);
 				texture_render(text, &renderBox, cam);
 				renderBox.x += text->dim.width;
-			} 
+			}
 		} else {
 			renderBox.x = 16;
 			renderBox.y += 14;
@@ -117,8 +117,19 @@ tooltip_create(char **content, Camera *cam)
 	return sprite;
 }
 
-void
-tooltip_set_controller_mode(Uint8 ctrl_mode)
+Tooltip *tooltip_create(char **content, Camera *cam)
 {
-	controller_mode = ctrl_mode;
+	Tooltip *tt = ec_malloc(sizeof(Tooltip));
+	for (size_t i = 0; i < GAMEPAD_TYPE_MAX; ++i) {
+		tt->sprite[i] = tooltip_create_sprite(content, cam, (GamepadType) i);
+	}
+	return tt;
+}
+
+void tooltip_destroy(Tooltip *tooltip)
+{
+	for (size_t i = 0; i < GAMEPAD_TYPE_MAX; ++i) {
+		sprite_destroy(tooltip->sprite[i]);
+	}
+	free(tooltip);
 }

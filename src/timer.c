@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdlib.h>
 #include "util.h"
 #include "timer.h"
@@ -43,7 +43,7 @@ bool timer_started(Timer *t)
 	return t->startTime != 0;
 }
 
-unsigned int timer_get_ticks(Timer *t)
+Uint64 timer_get_ticks(Timer *t)
 {
 	if (!t->startTime)
 		return 0;

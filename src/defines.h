@@ -20,6 +20,7 @@
 #define	DEFINES_H_
 
 #include <stdint.h>
+#include "gamecontroller.h"
 #include "config.h"
 
 /* Room/Map dimensions */
@@ -100,9 +101,9 @@ typedef enum GameMode {
 	ARCADE
 } GameMode;
 
-#define CONTROLLER_BTN(xindex, mode) CLIP16(xindex, mode == 1 ? 0 : 16)
-#define CONTROLLER_TRIGGER(xindex, mode) CLIP16(xindex + (mode == 1 ? 16 : 0), 32)
-#define CONTROLLER_BUMPER(xindex, mode) CLIP16(xindex + (mode == 1 ? 16 : 0), 48)
-#define CONTROLLER_OPT(xindex, mode) CLIP16(xindex + (mode == 2 ? 16 : 0), 64)
+#define CONTROLLER_BTN(xindex, mode) CLIP16(xindex, mode == GAMEPAD_TYPE_XB ? 0 : 16)
+#define CONTROLLER_TRIGGER(xindex, mode) CLIP16(xindex + (mode == GAMEPAD_TYPE_XB ? 16 : 0), 32)
+#define CONTROLLER_BUMPER(xindex, mode) CLIP16(xindex + (mode == GAMEPAD_TYPE_XB ? 16 : 0), 48)
+#define CONTROLLER_OPT(xindex, mode) CLIP16(xindex + (mode == GAMEPAD_TYPE_PS ? 16 : 0), 64)
 
 #endif // DEFINES_H_

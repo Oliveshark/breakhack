@@ -19,8 +19,8 @@
 #ifndef TEXTURE_H_
 #define	TEXTURE_H_
 
-#include <SDL.h>
-#include <SDL_ttf.h>
+#include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include "dimension.h"
 #include "position.h"
 #include "camera.h"
@@ -92,7 +92,8 @@ void
 texture_render_clip(Texture*, SDL_Rect*, SDL_Rect*, Camera*);
 
 void
-texture_render_clip_ex(Texture*, SDL_Rect*, SDL_Rect*, double angle, SDL_Point*, SDL_RendererFlip, Camera*);
+texture_render_clip_ex(Texture*, SDL_Rect*, SDL_Rect*, double angle, SDL_Point*,
+		       SDL_FlipMode, Camera*);
 
 void
 texture_destroy(Texture *texture);

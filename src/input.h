@@ -19,7 +19,7 @@
 #ifndef INPUT_H_
 #define	INPUT_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdbool.h>
 
 #define KEY_LEFT	0x1
@@ -54,6 +54,12 @@
 #define MBUTTON_MIDDLE	0x2
 #define MBUTTON_RIGHT	0x4
 
+typedef enum InputDeviceType {
+	DeviceType_Unknown,
+	DeviceType_Keyboard,
+	DeviceType_Gamepad
+} InputDeviceType;
+
 typedef struct Input {
 	Uint64 keyState;
 	Uint64 lastKeyState;
@@ -74,7 +80,7 @@ void
 input_reset(Input *);
 
 void
-input_handle_event(Input *, SDL_Event*);
+input_handle_event(Input *, SDL_Event*, InputDeviceType *device_type);
 
 bool
 input_key_is_pressed(Input *, Uint64 key);

@@ -19,9 +19,9 @@
 #ifndef IO_UTIL_H_
 #define IO_UTIL_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
-SDL_RWops *
+SDL_IOStream *
 io_load_rwops(const char *path);
 
 void

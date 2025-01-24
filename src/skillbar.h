@@ -19,7 +19,7 @@
 #ifndef SKILLBAR_H_
 #define	SKILLBAR_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include "linkedlist.h"
 #include "camera.h"
 #include "timer.h"
@@ -35,7 +35,9 @@ typedef struct ArtifactDisplay {
 } ArtifactDisplay;
 
 typedef struct SkillBar {
-	LinkedList *sprites;
+	LinkedList *sprites_keyboard;
+	LinkedList *sprites_gamepad_ps;
+	LinkedList *sprites_gamepad_xb;
 	ArtifactDisplay artifacts[LAST_ARTIFACT_EFFECT];
 	Uint32 artifactDisplayOffset;
 	Sprite *countdowns[PLAYER_SKILL_COUNT];

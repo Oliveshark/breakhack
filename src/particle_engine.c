@@ -451,7 +451,7 @@ render_rect_particle(Particle *p, Camera *cam)
 
 	SDL_SetRenderDrawBlendMode(cam->renderer, p->blend_mode);
 
-	SDL_Rect box = {
+	SDL_FRect box = {
 		pos.x,
 		pos.y,
 		p->particle.rect.dim.width,
@@ -488,7 +488,7 @@ render_line_particle(Particle *p, Camera *cam)
 			       p->color.g,
 			       p->color.b,
 			       p->color.a);
-	SDL_RenderDrawLine(cam->renderer, spos.x, spos.y, epos.x, epos.y);
+	SDL_RenderLine(cam->renderer, (float) spos.x, (float) spos.y, (float) epos.x, (float) epos.y);
 
 	// Reset the blend mode
 	SDL_SetRenderDrawBlendMode(cam->renderer, SDL_BLENDMODE_BLEND);

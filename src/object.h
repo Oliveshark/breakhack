@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <stdbool.h>
 #include "camera.h"
 #include "player.h"

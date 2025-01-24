@@ -19,7 +19,7 @@
 #ifndef MENU_H_
 #define	MENU_H_
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include "camera.h"
 #include "linkedlist.h"
 #include "texture.h"

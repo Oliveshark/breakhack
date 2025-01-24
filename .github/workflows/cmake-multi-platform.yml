@@ -98,7 +98,7 @@ jobs:
           pkg-config \
           libopusfile-dev \
           libxmp-dev \
-          libfluidsynth-dev
+          fluidsynth
 
     - name: Set up Macos dependencies
       if: ${{ runner.os == 'macOS' }}

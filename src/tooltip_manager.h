@@ -1,6 +1,6 @@
 /*
  * BreakHack - A dungeone crawler RPG
- * Copyright (C) 2018  Linus Probert <linus.probert@gmail.com>
+ * Copyright (C) 2024  Linus Probert <linus.probert@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GLOBALS_H_
-#define	GLOBALS_H_
+#include "camera.h"
+#include "gamecontroller.h"
 
-#include <SDL3/SDL3/SDL_ttf.h>
+typedef struct Sprite Sprite;
 
-TTF_Font *gFontLarge = NULL;
-TTF_Font *gFontSmall = NULL;
+typedef enum TooltipType {
+	TOOLTIP_TYPE_HOWTO,
+	TOOLTIP_TYPE_SKILL,
+	TOOLTIP_TYPE_ARTIFACT,
+} TooltipType;
 
-#endif // GLOBALS_H_
+void tooltip_manager_init(Camera *gCamera);
+
+void tooltip_manager_set_controller_mode(GamepadType mode);
+
+Sprite* tooltip_manager_get_tooltip(TooltipType type);
+
+void tooltip_manager_close(void);

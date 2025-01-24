@@ -19,8 +19,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3/SDL_main.h>
 #include <physfs.h>
 #include <string.h>
 #include "linkedlist.h"
@@ -37,10 +38,8 @@
 #include "util.h"
 #include "item_builder.h"
 #include "pointer.h"
-#include "gui_button.h"
 #include "particle_engine.h"
 #include "menu.h"
-#include "keyboard.h"
 #include "mixer.h"
 #include "random.h"
 #include "skillbar.h"
@@ -52,7 +51,7 @@
 #include "screen.h"
 #include "hiscore.h"
 #include "io_util.h"
-#include "tooltip.h"
+#include "tooltip_manager.h"
 #include "gamecontroller.h"
 #include "time.h"
 #include "sprite_util.h"
@@ -64,81 +63,6 @@
 #include "checksum.h"
 #include "steam/steamworks_api_wrapper.h"
 #endif // STEAM_BUILD
-
-static char *artifacts_tooltip[] = {
-	"CONGRATULATIONS!", "",
-	"",
-	"   You just picked up your first artifact!", "",
-	"",
-	"   Your current artifacts and corresponding level are", "",
-	"   listed next to your skills.", "",
-	"",
-	"",
-	"   Artifacts have mystical effects that improve your offensive", "",
-	"   or defensive advantage in the dungeon. However it is sometimes", "",
-	"   hard to know what effect an artifact has.", "",
-	"",
-	"",
-	"   Perhaps an experienced dungeoner will know more?", "",
-	"",
-	"",
-	"Press ", "ESC", " to close", "",
-	NULL
-};
-
-static char *skills_tooltip[] = {
-	"CONGRATULATIONS!", "",
-	"",
-	"   You have aquired a new level and a new skill!", "",
-	"",
-	"   Skills are listed in the bar below the game screen.", "",
-	"",
-	"",
-	"   SKILL INFO:            SHIFT + <N>", "",
-	"                          Where <N> is the number corresponding to the skill", "",
-	"                          Eg. 1, 2, 3, 4, 5", "",
-	"",
-	"   DISABLE TOOLTIPS:      CTRL + D", "",
-	"",
-	"",
-	"Press ", "ESC", " to close", "",
-	NULL
-};
-
-static char *how_to_play_tooltip[] = {
-	"HOW TO PLAY", "",
-	"",
-	"   NAVIGATION:        Use ARROWS or WASD or HJKL to move", "",
-	"                      Controller: LEFT STICK or D-PAD", "",
-	"",
-	"   ATTACK:            Walk into a monster to attack it", "",
-	"",
-	"   HOLD TURN:         Press ", "SPACE", "",
-	"",
-	"   THROW DAGGER:      Press ", "4", " then chose a direction (nav keys)", "",
-	"",
-	"   DRINK HEALTH:      Press ", "5", " (if you need health and have potions)", "",
-	"",
-	"   TOGGLE MUSIC:      CTRL + M", "",
-	"",
-	"   TOGGLE SOUND:      CTRL + S", "",
-	"",
-	"   TOGGLE FULLSCREEN: CTRL + F", "",
-	"",
-	"   TOGGLE MENU:       ", "ESC", "",
-	"",
-	"   Your stats and inventory are listed in the right panel", "",
-	"",
-	"",
-	"   GOOD LUCK!", "",
-	"   May your death be quick and painless...", "",
-	"",
-	"",
-	"",
-	"Press ", "ESC", " to close", "",
-	NULL
-};
-
 
 typedef enum Turn_t {
 	PLAYER,
@@ -161,12 +85,8 @@ static Camera		*gCamera		= NULL;
 static Screen		*creditsScreen		= NULL;
 static Screen		*scoreScreen		= NULL;
 static Screen		*characterSelectScreen	= NULL;
-static Sprite		*new_skill_tooltip	= NULL;
-static Sprite		*howto_tooltip		= NULL;
-static Sprite		*new_artifact_tooltip	= NULL;
 static unsigned int	cLevel			= 1;
 static float		deltaTime		= 1.0;
-static double		renderScale		= 1.0;
 static Turn		currentTurn		= PLAYER;
 static class_t		playerClass		= WARRIOR;
 static bool		quickGame		= false;
@@ -190,60 +110,40 @@ static Pointer	*gPointer	= NULL;
 static void resetGame(void);
 static void initMainMenu(void);
 static bool is_player_dead(void);
+static void initGamepads(void);
 
 static SDL_Surface *window_icon = NULL;
 
 static
 bool initSDL(void)
 {
-	int imgFlags = IMG_INIT_PNG;
-
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) < 0)
+	debug("Initializing SDL");
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC))
 	{
-		error("Could not initiate SDL2: %s", SDL_GetError());
+		error("Could not initiate SDL3: %s", SDL_GetError());
 		return false;
 	}
 
 	Dimension dim = getScreenDimensions();
 
-	if (dim.height > 1080) {
-		info("Hi resolution screen detected (%u x %u)", dim.width, dim.height);
-		renderScale = ((double) dim.height)/1080;
-		info("Scaling by %f", renderScale);
-	}
-
-	if ( (IMG_Init(imgFlags) & imgFlags) == 0 ) {
-		error("Unable to initiate img loading: %s",
-		       IMG_GetError());
-		return false;
-	}
-
-	if ( TTF_Init() == -1 ) {
+	debug("Initializing SDL_ttf");
+	if (!TTF_Init()) {
 		error("Unable to initiate ttf library: %s",
-		       TTF_GetError());
+		       SDL_GetError());
 		return false;
 	}
 
-	for (Uint8 i = 0; i < SDL_NumJoysticks(); ++i) {
-		if (!SDL_IsGameController(i))
-			continue;
+	debug("Initializing gamepads");
+	initGamepads();
 
-		SDL_GameController *ctrler = SDL_GameControllerOpen(i);
-		if (ctrler) {
-			gamecontroller_set(ctrler);
-		}
-	}
-
+	debug("Initializing SDL_mixer");
 	mixer_init();
 
 	char title_buffer[100];
 	m_sprintf(title_buffer, 100, "%s %d.%d.%d %s", GAME_TITLE, MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION, RELEASE_TYPE);
 	gWindow = SDL_CreateWindow(title_buffer,
-				   SDL_WINDOWPOS_UNDEFINED,
-				   SDL_WINDOWPOS_UNDEFINED, 
-				   (int)(SCREEN_WIDTH * renderScale),
-				   (int)(SCREEN_HEIGHT * renderScale),
-				   SDL_WINDOW_SHOWN);
+				   SCREEN_WIDTH,
+				   SCREEN_HEIGHT, 0);
 	if (gWindow == NULL)
 	{
 		error("Unable to create window: %s", SDL_GetError());
@@ -251,30 +151,29 @@ bool initSDL(void)
 	}
 
 	// Set the window icon
-	window_icon = IMG_Load_RW(io_load_rwops("Extras/icon.png"), true);
+	window_icon = IMG_Load_IO(io_load_rwops("Extras/icon.png"), true);
 	SDL_SetWindowIcon(gWindow, window_icon);
 
-	gRenderer = SDL_CreateRenderer(gWindow, -1,
-				       SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+	gRenderer = SDL_CreateRenderer(gWindow, NULL);
 	if (gRenderer == NULL)
 	{
 		error("Unable to create renderer: %s", SDL_GetError());
 		return false;
 	}
-	if (SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND) < 0) {
+	if (!SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND)) {
 		error("Unable to set blend mode: %s", SDL_GetError());
 		return false;
 	}
-	if (SDL_RenderSetLogicalSize(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT) < 0)
+	if (!SDL_SetRenderLogicalPresentation(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX))
 	{
 		error("Unable to initiate scaling: %s",
 		       SDL_GetError());
 		return false;
 	}
 
-	if (SDL_IsTextInputActive()) {
+	if (SDL_TextInputActive(gWindow)) {
 		debug("Disabling text input");
-		SDL_StopTextInput();
+		SDL_StopTextInput(gWindow);
 	}
 
 	return true;
@@ -283,6 +182,8 @@ bool initSDL(void)
 static void
 initViewports(Uint32 offset)
 {
+	/* FIXME: This does not work with
+	 * SDL_SetRenderLogicalPresentation any longer. Needs looking at. */
 	mainViewport = (SDL_Rect) { offset, 0,
 		SCREEN_WIDTH, SCREEN_HEIGHT
 	};
@@ -365,8 +266,9 @@ startGame(void)
 	gui_event_message("Welcome to the dungeon!");
 
 	Settings *settings = settings_get();
-	if (!settings->howto_tooltip_shown)
-		gGui->activeTooltip = howto_tooltip;
+	if (!settings->howto_tooltip_shown) {
+		gGui->activeTooltip = tooltip_manager_get_tooltip(TOOLTIP_TYPE_HOWTO);
+	}
 	settings->howto_tooltip_shown = true;
 
 	if (arcadeGame)
@@ -578,7 +480,7 @@ showHowToTooltip(void *unused)
 {
 	UNUSED(unused);
 	toggleInGameMenu(NULL);
-	gGui->activeTooltip = howto_tooltip;
+	gGui->activeTooltip = tooltip_manager_get_tooltip(TOOLTIP_TYPE_HOWTO);
 }
 
 static void
@@ -626,6 +528,26 @@ viewScoreScreen(void *unused)
 }
 
 static void
+initGamepads(void)
+{
+	int num_joysticks;
+	SDL_JoystickID *sticks = SDL_GetJoysticks(&num_joysticks);
+	debug("Found %d joysticks", num_joysticks);
+	for (int i = 0; i < num_joysticks; i++) {
+		int stick = sticks[i];
+		if (!SDL_IsGamepad(stick)) {
+			continue;
+		}
+
+		SDL_Gamepad *ctrler = SDL_OpenGamepad(stick);
+		if (ctrler) {
+			gamecontroller_set(ctrler);
+		}
+	}
+	SDL_free(sticks);
+}
+
+static void
 initMainMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
@@ -661,7 +583,7 @@ repopulate_roommatrix(void)
 static void
 resetGame(void)
 {
-	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+	SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 
 	if (mainMenu) {
 		menu_destroy(mainMenu);
@@ -759,11 +681,7 @@ init(void)
 	save_init();
 	hiscore_init();
 	initMainMenu();
-
-	tooltip_set_controller_mode(gamecontroller_mode());
-	howto_tooltip = tooltip_create(how_to_play_tooltip, gCamera);
-	new_skill_tooltip = tooltip_create(skills_tooltip, gCamera);
-	new_artifact_tooltip = tooltip_create(artifacts_tooltip, gCamera);
+	tooltip_manager_init(gCamera);
 
 	gCamera->pos = (Position) { 0, 0 };
 
@@ -775,29 +693,11 @@ init(void)
 static void
 toggle_fullscreen(void)
 {
-	bool isFullscreen = SDL_GetWindowFlags(gWindow) & SDL_WINDOW_FULLSCREEN_DESKTOP;
+	SDL_WindowFlags flags = SDL_GetWindowFlags(gWindow) & SDL_WINDOW_FULLSCREEN;
 	Settings *settings = settings_get();
-	if (isFullscreen) {
-		initViewports(0);
-		SDL_SetWindowFullscreen(gWindow, 0);
-		settings->fullscreen_enabled = false;
-	}
-	else {
-		int w, h, lw, lh;
-		SDL_RenderGetLogicalSize(gRenderer, &lw, &lh);
-		SDL_GetWindowSize(gWindow, &w, &h);
-
-		double lratio = (double) w / (double) lw;
-
-		SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
-
-		SDL_DisplayMode dMode;
-		SDL_GetWindowDisplayMode(gWindow, &dMode);
-		double ratio = (double) (dMode.w) / w;
-		double offset = ((dMode.w - w) / 2);
-		initViewports((Uint32)(offset/(ratio*lratio)));
-		settings->fullscreen_enabled = true;
-	}
+	bool fullscreen = flags == SDL_WINDOW_FULLSCREEN;
+	SDL_SetWindowFullscreen(gWindow, !fullscreen);
+	settings->fullscreen_enabled = !fullscreen;
 }
 
 static void
@@ -878,25 +778,39 @@ handle_main_input(void)
 static bool
 handle_events(void)
 {
+	static InputDeviceType last_device_type = DeviceType_Unknown;
 	static SDL_Event event;
+
+	InputDeviceType device_type = DeviceType_Unknown;
 	bool quit = false;
-	int handleCount = 0;
+
 
 	input_reset(&input);
 	while (SDL_PollEvent(&event) != 0) {
-		if (event.type == SDL_QUIT) {
+		if (event.type == SDL_EVENT_QUIT) {
 			quit = true;
 			continue;
 		}
 
-		input_handle_event(&input, &event);
+		if (event.type == SDL_EVENT_GAMEPAD_ADDED) {
+			initGamepads();
+		} else if (event.type == SDL_EVENT_GAMEPAD_REMOVED) {
+			debug("Gamepad removed");
+			gamecontroller_set(NULL);
+		}
 
-		handleCount++;
-		if (handleCount >= 20) {
-			debug("Flushing event queue");
-			SDL_PumpEvents();
-			SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
-			break;
+		input_handle_event(&input, &event, &device_type);
+
+		if (device_type != DeviceType_Unknown && device_type != last_device_type) {
+			debug("Device type changed: %d", last_device_type);
+			last_device_type = device_type;
+			if (device_type == DeviceType_Gamepad) {
+				skillbar_set_controller_mode(gamecontroller_mode());
+				tooltip_manager_set_controller_mode(gamecontroller_mode());
+			} else {
+				skillbar_set_controller_mode(GAMEPAD_TYPE_NONE);
+				tooltip_manager_set_controller_mode(GAMEPAD_TYPE_NONE);
+			}
 		}
 	}
 
@@ -917,7 +831,7 @@ end_game_details(void)
 {
 	gui_log("You earned %.2f gold", gPlayer->gold);
 	gui_event_message("You earned %.2f gold", gPlayer->gold);
-	
+
 	if (hiscore_get_top_gold() < gPlayer->gold) {
 		gui_event_message("NEW HIGHSCORE");
 		gui_log("NEW HIGHSCORE");
@@ -987,13 +901,14 @@ check_tooltip_activation(bool skillActivated)
 	static bool artifactTooltipShown = false;
 
 	Settings *settings = settings_get();
-	if (skillActivated && settings->tooltips_enabled) {
-		gGui->activeTooltip = new_skill_tooltip;
-	}
-	if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts) {
-		artifactTooltipShown = true;
-		if (settings->tooltips_enabled)
-			gGui->activeTooltip = new_artifact_tooltip;
+	if (settings->tooltips_enabled) {
+		if (skillActivated) {
+			gGui->activeTooltip = tooltip_manager_get_tooltip(TOOLTIP_TYPE_SKILL);
+		}
+		if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts) {
+			artifactTooltipShown = true;
+			gGui->activeTooltip = tooltip_manager_get_tooltip(TOOLTIP_TYPE_ARTIFACT);
+		}
 	}
 }
 
@@ -1042,21 +957,21 @@ run_game_update(void)
 static void
 render_gui(void)
 {
-	SDL_RenderSetViewport(gRenderer, &statsGuiViewport);
+	SDL_SetRenderViewport(gRenderer, &statsGuiViewport);
 	gui_render_panel(gGui, gCamera);
-	SDL_RenderSetViewport(gRenderer, &minimapViewport);
+	SDL_SetRenderViewport(gRenderer, &minimapViewport);
 	gui_render_minimap(gGui, gMap, gCamera);
-	SDL_RenderSetViewport(gRenderer, &skillBarViewport);
+	SDL_SetRenderViewport(gRenderer, &skillBarViewport);
 	skillbar_render(gSkillBar, gPlayer, gCamera);
-	SDL_RenderSetViewport(gRenderer, &bottomGuiViewport);
+	SDL_SetRenderViewport(gRenderer, &bottomGuiViewport);
 	gui_render_log(gGui, gCamera);
-	SDL_RenderSetViewport(gRenderer, &mainViewport);
+	SDL_SetRenderViewport(gRenderer, &mainViewport);
 }
 
 static void
 render_game_completed(void)
 {
-	SDL_RenderSetViewport(gRenderer, &gameViewport);
+	SDL_SetRenderViewport(gRenderer, &gameViewport);
 	if (!is_player_dead()) {
 		player_render(gPlayer, gCamera);
 		player_render_toplayer(gPlayer, gCamera);
@@ -1065,7 +980,7 @@ render_game_completed(void)
 	gui_render_event_message(gGui, gCamera);
 
 	if (gGameState == IN_GAME_MENU) {
-		SDL_Rect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+		SDL_FRect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);
 		SDL_RenderFillRect(gRenderer, &dimmer);
 		menu_render(inGameMenu, gCamera);
@@ -1079,7 +994,7 @@ render_game_completed(void)
 static void
 render_game(void)
 {
-	SDL_RenderSetViewport(gRenderer, &gameViewport);
+	SDL_SetRenderViewport(gRenderer, &gameViewport);
 	map_render(gMap, gCamera);
 	particle_engine_render_game(gCamera);
 
@@ -1106,12 +1021,12 @@ run_game_render(void)
 	render_game();
 	render_gui();
 
-	SDL_RenderSetViewport(gRenderer, &mainViewport);
+	SDL_SetRenderViewport(gRenderer, &mainViewport);
 	particle_engine_render_global(gCamera);
 	gui_render_tooltip(gGui, gCamera);
 
 	if (gGameState == IN_GAME_MENU) {
-		SDL_Rect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+		SDL_FRect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);
 		SDL_RenderFillRect(gRenderer, &dimmer);
 		menu_render(inGameMenu, gCamera);
@@ -1271,14 +1186,14 @@ run_menu(void)
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
 	SDL_RenderClear(gRenderer);
 	if (gGameState != CHARACTER_MENU)  {
-		SDL_RenderSetViewport(gRenderer, &menuViewport);
+		SDL_SetRenderViewport(gRenderer, &menuViewport);
 		map_render(gMap, gCamera);
 		map_render_mid_layer(gMap, gCamera);
 		map_render_top_layer(gMap, gRoomMatrix, gCamera);
 		roommatrix_render_lightmap(gRoomMatrix, gCamera);
 	}
 
-	SDL_RenderSetViewport(gRenderer, &mainViewport);
+	SDL_SetRenderViewport(gRenderer, &mainViewport);
 
 	render_current_screen();
 	menu_render(get_active_menu(), gCamera);
@@ -1294,8 +1209,8 @@ run_menu(void)
 static void
 run(void)
 {
-	static int oldTime = 0;
-	static int currentTime = 0;
+	static Uint64 oldTime = 0;
+	static Uint64 currentTime = 0;
 
 	bool quit = false;
 
@@ -1344,7 +1259,7 @@ run(void)
 				break;
 		}
 
-		unsigned int ticks = timer_get_ticks(fpsTimer);
+		Uint32 ticks = (Uint32) timer_get_ticks(fpsTimer);
 		if (ticks < 1000/60)
 			SDL_Delay((1000/60) - ticks);
 		timer_stop(fpsTimer);
@@ -1354,7 +1269,7 @@ run(void)
 		else {
 			oldTime = currentTime;
 			currentTime = SDL_GetTicks();
-			deltaTime = (float) ((currentTime - oldTime) / 1000.0);
+			deltaTime = ((float)(currentTime - oldTime) / 1000.0f);
 		}
 #ifdef DEBUG
 		frame++;
@@ -1397,12 +1312,10 @@ void close(void)
 		screen_destroy(scoreScreen);
 	if (characterSelectScreen)
 		screen_destroy(characterSelectScreen);
-    if (window_icon) {
-        SDL_FreeSurface(window_icon);
-    }
+	if (window_icon)
+		SDL_DestroySurface(window_icon);
 
-	sprite_destroy(howto_tooltip);
-	sprite_destroy(new_skill_tooltip);
+	tooltip_manager_close();
 	camera_destroy(gCamera);
 	roommatrix_destroy(gRoomMatrix);
 	gui_destroy(gGui);
@@ -1431,7 +1344,6 @@ void close(void)
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
 	TTF_Quit();
-	IMG_Quit();
 	SDL_Quit();
 }
 

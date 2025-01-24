@@ -19,37 +19,49 @@
 #include "gamecontroller.h"
 #include "util.h"
 
-static SDL_GameController *controller = NULL;
+static SDL_Gamepad *controller = NULL;
 static SDL_Haptic *haptic = NULL;
-static Uint8 controllerMode = 0;
+static Uint8 controllerMode = GAMEPAD_TYPE_NONE;
 
 void
-gamecontroller_set(SDL_GameController *ctrler)
+gamecontroller_set(SDL_Gamepad *ctrler)
 {
+	if (ctrler == NULL) {
+		info("Game controller disconnected");
+		if (controller) {
+			SDL_CloseGamepad(controller);
+			controller = NULL;
+		}
+		if (haptic) {
+			SDL_CloseHaptic(haptic);
+			haptic = NULL;
+		}
+		controllerMode = GAMEPAD_TYPE_NONE;
+		return;
+	}
+
 	controller = ctrler;
 
-	const char *ctrlName = SDL_GameControllerName(controller);
+	const char *ctrlName = SDL_GetGamepadName(controller);
 	info("Game controller connected: %s", ctrlName);
 
 	// Try to determine if this is a PS3/4 controller
 	if (ctrlName[0] == 'P' &&
 	    ctrlName[1] == 'S' &&
 	    (ctrlName[2] == '4' || ctrlName[2] == '3'))
-		controllerMode = 2;
+		controllerMode = GAMEPAD_TYPE_PS;
 	else
-		controllerMode = 1;
+		controllerMode = GAMEPAD_TYPE_XB;
 
-	haptic = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(controller));
+	haptic = SDL_OpenHapticFromJoystick(SDL_GetGamepadJoystick(controller));
 	if (haptic) {
 		info("Haptics are supported by controller: %s", ctrlName);
-		if (SDL_HapticRumbleInit(haptic) >= 0) {
+		if (SDL_InitHapticRumble(haptic)) {
 			info("Haptics enabled for controller: %s", ctrlName);
-		}
-		else {
+		} else {
 			info("Failed to enable haptics for: %s", ctrlName);
 		}
-	}
-	else {
+	} else {
 		info("Haptics not supported by controller: %s", ctrlName);
 	}
 }
@@ -57,24 +69,27 @@ gamecontroller_set(SDL_GameController *ctrler)
 void
 gamecontroller_rumble(float intensity, Uint32 duration)
 {
+	if (controllerMode == GAMEPAD_TYPE_NONE)
+		return;
+
 	if (!haptic)
 		return;
 
-	if (SDL_HapticRumblePlay(haptic, intensity, duration) != 0)
+	if (SDL_PlayHapticRumble(haptic, intensity, duration) != 0)
 		error("Failed to play rumble: %s", SDL_GetError());
 }
 
 Uint8
-gamecontroller_mode()
+gamecontroller_mode(void)
 {
 	return controllerMode;
 }
 
 void
-gamecontroller_close()
+gamecontroller_close(void)
 {
 	if (controller)
-		SDL_GameControllerClose(controller);
+		SDL_CloseGamepad(controller);
 	if (haptic)
-		SDL_HapticClose(haptic);
+		SDL_CloseHaptic(haptic);
 }
