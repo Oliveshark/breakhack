@@ -20,7 +20,6 @@
 #include "util.h"
 
 static SDL_Gamepad *controller = NULL;
-static SDL_Haptic *haptic = NULL;
 static Uint8 controllerMode = GAMEPAD_TYPE_NONE;
 
 void
@@ -32,11 +31,8 @@ gamecontroller_set(SDL_Gamepad *ctrler)
 			SDL_CloseGamepad(controller);
 			controller = NULL;
 		}
-		if (haptic) {
-			SDL_CloseHaptic(haptic);
-			haptic = NULL;
-		}
 		controllerMode = GAMEPAD_TYPE_NONE;
+		SDL_SetGamepadEventsEnabled(false);
 		return;
 	}
 
@@ -44,38 +40,26 @@ gamecontroller_set(SDL_Gamepad *ctrler)
 
 	const char *ctrlName = SDL_GetGamepadName(controller);
 	info("Game controller connected: %s", ctrlName);
+	SDL_SetGamepadEventsEnabled(true);
 
 	// Try to determine if this is a PS3/4 controller
 	if (ctrlName[0] == 'P' &&
 	    ctrlName[1] == 'S' &&
-	    (ctrlName[2] == '4' || ctrlName[2] == '3'))
+	    (ctrlName[2] == '4' || ctrlName[2] == '3' || ctrlName[2] == '5'))
 		controllerMode = GAMEPAD_TYPE_PS;
 	else
 		controllerMode = GAMEPAD_TYPE_XB;
-
-	haptic = SDL_OpenHapticFromJoystick(SDL_GetGamepadJoystick(controller));
-	if (haptic) {
-		info("Haptics are supported by controller: %s", ctrlName);
-		if (SDL_InitHapticRumble(haptic)) {
-			info("Haptics enabled for controller: %s", ctrlName);
-		} else {
-			info("Failed to enable haptics for: %s", ctrlName);
-		}
-	} else {
-		info("Haptics not supported by controller: %s", ctrlName);
-	}
 }
 
 void
 gamecontroller_rumble(float intensity, Uint32 duration)
 {
-	if (controllerMode == GAMEPAD_TYPE_NONE)
+	if (controllerMode == GAMEPAD_TYPE_NONE || controller == NULL)
 		return;
 
-	if (!haptic)
-		return;
-
-	if (SDL_PlayHapticRumble(haptic, intensity, duration) != 0)
+	uint16_t power = (uint16_t)(intensity * 0xFFFF);
+	debug("Playing rumble: 0x%hX, %d", power, duration);
+	if (!SDL_RumbleGamepad(controller, power, power, duration))
 		error("Failed to play rumble: %s", SDL_GetError());
 }
 
@@ -90,6 +74,4 @@ gamecontroller_close(void)
 {
 	if (controller)
 		SDL_CloseGamepad(controller);
-	if (haptic)
-		SDL_CloseHaptic(haptic);
 }

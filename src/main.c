@@ -797,6 +797,8 @@ handle_events(void)
 		} else if (event.type == SDL_EVENT_GAMEPAD_REMOVED) {
 			debug("Gamepad removed");
 			gamecontroller_set(NULL);
+			skillbar_set_controller_mode(GAMEPAD_TYPE_NONE);
+			tooltip_manager_set_controller_mode(GAMEPAD_TYPE_NONE);
 		}
 
 		input_handle_event(&input, &event, &device_type);
