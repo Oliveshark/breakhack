@@ -139,9 +139,9 @@ bool initSDL(void)
 	debug("Initializing SDL_mixer");
 	mixer_init();
 
-	char title_buffer[100];
-	m_sprintf(title_buffer, 100, "%s %d.%d.%d %s", GAME_TITLE, MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION, RELEASE_TYPE);
-	gWindow = SDL_CreateWindow(title_buffer,
+	char buffer[100] = { '\0' };
+	m_sprintf(buffer, 100, "%s %d.%d.%d %s", GAME_TITLE, MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION, RELEASE_TYPE);
+	gWindow = SDL_CreateWindow(buffer,
 				   SCREEN_WIDTH,
 				   SCREEN_HEIGHT, 0);
 	if (gWindow == NULL)
@@ -175,6 +175,10 @@ bool initSDL(void)
 		debug("Disabling text input");
 		SDL_StopTextInput(gWindow);
 	}
+
+	memset(buffer, '\0', 100);
+	sprintf(buffer, "%d.%d.%d", MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION);
+	SDL_SetAppMetadata(GAME_TITLE, buffer, "com.oliveshark.breakhack");
 
 	return true;
 }
@@ -1401,7 +1405,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (!init())
-		return 1;
+		return -1;
 
 	if (settings_get()->fullscreen_enabled) {
 		// Game starts in windowed mode so this will 
