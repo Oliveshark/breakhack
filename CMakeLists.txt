@@ -11,8 +11,8 @@ set(breakhack_PATCH_VERSION 3)
 set(breakhack_RELEASE_TYPE "")
 
 # Checksums
-set(breakhack_STEAMAPI_DLL_CHECKSUM 0x1a20dd5)
-set(breakhack_STEAMAPI_SO_CHECKSUM 0x19f8c71)
+set(breakhack_STEAMAPI_DLL_CHECKSUM 0x1a4691a)
+set(breakhack_STEAMAPI_SO_CHECKSUM 0x1a11b6d)
 
 include(build_deps/cmake/FindCCache.cmake)
 include(build_deps/cmake/FindCMocka.cmake)
