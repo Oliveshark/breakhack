@@ -24,6 +24,7 @@ configure_file(
 	)
 
 set(DISABLE_STEAM_BUILD OFF CACHE BOOL "Disable Steam build")
+set(STEAM OFF)
 
 if (NOT DISABLE_STEAM_BUILD)
 	if (EXISTS "${PROJECT_SOURCE_DIR}/lib/steamworks_c_wrapper/sdk")
@@ -408,14 +409,25 @@ else ()
 endif ()
 include(InstallRequiredSystemLibraries)
 
-INSTALL(TARGETS breakhack
-	COMPONENT Release
-	RUNTIME DESTINATION bin/
-)
-INSTALL(FILES assets.pack data.pack
-	COMPONENT Release
-	DESTINATION share/breakhack/
-)
+if (NOT STEAM)
+	INSTALL(TARGETS breakhack
+		COMPONENT Release
+		RUNTIME DESTINATION bin/
+	)
+	INSTALL(FILES assets.pack data.pack
+		COMPONENT Release
+		DESTINATION share/breakhack/
+	)
+else ()
+	INSTALL(TARGETS breakhack
+		COMPONENT Release
+		RUNTIME DESTINATION .
+	)
+	INSTALL(FILES assets.pack data.pack
+		COMPONENT Release
+		DESTINATION .
+	)
+endif ()
 
 set(CPACK_INSTALL_CMAKE_PROJECTS "${PROJECT_BINARY_DIR};breakhack;Release;.")
 set(CPACK_PACKAGE_NAME "BreakHack")
