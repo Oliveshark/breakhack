@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.26)
 project(bh_random CXX)
 
 add_definitions(-std=c++11)

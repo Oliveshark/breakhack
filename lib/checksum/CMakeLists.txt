@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.26)
 project(checksum C)
 
 if (NOT CMAKE_BUILD_TYPE)

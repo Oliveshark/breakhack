@@ -84,7 +84,7 @@ cat << EOT >> $STEAM_BUILD_DIR/app_build.vdf
 	"AppID" "931040" // your AppID
 	"Desc" "Vagrant provider:Docker, Ubuntu 24.04" // internal description for this build
 	"verbose" "0" // spew more build details in console
-	"preview" "1" // make this a preview build only, nothing is uploaded
+	"preview" "0" // make this a preview build only, nothing is uploaded
 
 	"ContentRoot" "content\" // root content folder, relative to location of this file
 	"BuildOutput" "output\" // build output folder for build logs and build cache files
