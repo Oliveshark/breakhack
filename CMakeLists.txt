@@ -1,14 +1,10 @@
-cmake_minimum_required (VERSION 3.6.0)
+cmake_minimum_required (VERSION 3.26)
 
 SET(CMAKE_COLOR_MAKEFILE ON)
 
 project(breakhack C)
 
 set(breakhack_GAME_TITLE "BreakHack")
-set(breakhack_MAJOR_VERSION 4)
-set(breakhack_MINOR_VERSION 0)
-set(breakhack_PATCH_VERSION 3)
-set(breakhack_RELEASE_TYPE "")
 
 # Checksums
 set(breakhack_STEAMAPI_DLL_CHECKSUM 0x1a4691a)
@@ -17,6 +13,13 @@ set(breakhack_STEAMAPI_SO_CHECKSUM 0x1a11b6d)
 include(build_deps/cmake/FindCCache.cmake)
 include(build_deps/cmake/FindCMocka.cmake)
 include(build_deps/cmake/Findcppcheck.cmake)
+include(build_deps/cmake/git_version.cmake)
+
+get_version_from_git()
+set(breakhack_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
+set(breakhack_MINOR_VERSION ${PROJECT_VERSION_MINOR})
+set(breakhack_PATCH_VERSION ${PROJECT_VERSION_PATCH})
+set(breakhack_RELEASE_TYPE "")
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/src/config.h.in"
