@@ -147,6 +147,15 @@ ec_calloc(size_t count, unsigned long size)
 	return ptr;
 }
 
+void *
+ec_realloc(void *buf, size_t size)
+{
+	void *ptr = realloc(buf, size);
+	if (NULL == ptr)
+		fatal("in ec_calloc() on memory allocation");
+	return ptr;
+}
+
 void
 timestamp(char *tstamp, size_t sz)
 {

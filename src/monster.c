@@ -37,6 +37,7 @@
 #include "trap.h"
 #include "object.h"
 #include "mixer.h"
+#include "pos_heap.h"
 
 static void
 monster_set_sprite_clip_for_current_state(Monster *m)
@@ -371,67 +372,117 @@ monster_drunk_walk(Monster *m, RoomMatrix *rm)
 	}
 }
 
+/**
+ * \brief Get the first move in the provided path
+ */
 static Direction
-get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position *dest)
+find_first_in_path(const Position *from, const Position *dest, const Position *start)
 {
+	Position current = *dest;
+	Position next = *dest;
+	while (!position_equals(&next, start)) {
+		current = next;
+		next = from[current.x + current.y * MAP_ROOM_WIDTH];
+	}
+
+	Vector2d dir = { current.x - next.x, current.y - next.y };
+	if (dir.x > 0)
+		return RIGHT;
+	else if (dir.x < 0)
+		return LEFT;
+	else if (dir.y > 0)
+		return DOWN;
+	else
+		return UP;
+}
+
+/* Manhattan distance */
+#define MDIST(p1, p2) abs(p1.x - p2.x) + abs(p1.y - p2.y)
+
+/**
+ * \brief A* path finding algorithm
+ *
+ * This is a basic A* algorithm implementation usinga heap for the open_set.
+ * The pathing will avoid dangerous, lethal and blocked tiles but not tiles
+ * with monsters on so there can still be some stacking there.
+ */
+static Direction
+get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
+{
+	Direction ret_val = INVALID;
 	int x_dist, y_dist;
-	Position mPos;
+	const Position start = position_to_matrix_coords(&m->sprite->pos);
+	const Vector2d directions[] = {
+		VECTOR2D_UP,
+		VECTOR2D_DOWN,
+		VECTOR2D_LEFT,
+		VECTOR2D_RIGHT,
+	};
 
-	mPos = position_to_matrix_coords(&m->sprite->pos);
+	PHeap open_set;
 
-	unsigned int currentScore = 100;
-	unsigned int chosenDirection = UP;
+	uint16_t gScore[MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT];
+	uint16_t fScore[MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT];
 
-	for (unsigned int i = 0; i < 4; ++i) {
-		Position next = mPos;
-		unsigned int nextScore = 0;
+	memset(gScore, 0xFF, sizeof(gScore));
+	memset(fScore, 0xFF, sizeof(fScore));
 
-		switch (i) {
-			case UP:
-				next.y -= 1;
-				break;
-			case DOWN:
-				next.y += 1;
-				break;
-			case LEFT:
-				next.x -= 1;
-				break;
-			case RIGHT:
-				next.x += 1;
-				break;
+	Position from[MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT];
+	bool visited[MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT] = { false };
+	const size_t WIDTH = MAP_ROOM_WIDTH;
+
+	/* Pre-allocate all the space we'll need and add start node */
+	pheap_init(&open_set, MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
+	pheap_insert(&open_set, start, MDIST(start, dest));
+	visited[start.x + start.y * WIDTH] = true;
+
+	gScore[start.x + start.y * WIDTH] = 0;
+	fScore[start.x + start.y * WIDTH] = MDIST(start, dest);
+
+	while (open_set.size > 0) {
+		Position current = pheap_pop(&open_set);
+		if (position_equals(&current, &dest)) {
+			ret_val = find_first_in_path(from, &dest, &start);
+			goto out;
 		}
 
-		if (position_equals(&next, dest)) {
-			chosenDirection = (Direction) i;
-			break;
-		}
+		for (size_t i = 0; i < 4; i++) {
+			Position next = {
+				current.x + directions[i].x,
+				current.y + directions[i].y,
+			};
 
-		if (!position_in_roommatrix(&next))
-			continue;
+			if (!position_equals(&next, &dest)) {
+				if (!position_in_roommatrix(&next)
+				    || rm->spaces[next.x][next.y].occupied
+				    || rm->spaces[next.x][next.y].lethal
+				    || rm->spaces[next.x][next.y].trap) {
+					continue;
+				}
+			}
 
-		x_dist = abs(next.x - dest->x);
-		y_dist = abs(next.y - dest->y);
-
-		if (rm->spaces[next.x][next.y].occupied
-		    || rm->spaces[next.x][next.y].lethal
-		    || rm->spaces[next.x][next.y].trap) {
-			nextScore += 50;
-		}
-
-		nextScore += x_dist > y_dist ? x_dist : y_dist;
-		if (nextScore < currentScore) {
-			currentScore = nextScore;
-			chosenDirection = (Direction) i;
+			uint32_t temp_score = 1 + gScore[current.x + current.y * WIDTH];
+			if (temp_score < gScore[next.x + next.y * WIDTH]) {
+				from[next.x + next.y * WIDTH] = current;
+				gScore[next.x + next.y * WIDTH] = temp_score;
+				fScore[next.x + next.y * WIDTH] = temp_score + MDIST(next, dest);
+				if (!visited[next.x + next.y * WIDTH]) {
+					visited[next.x + next.y * WIDTH] = true;
+					pheap_insert(&open_set, next, fScore[next.x + next.y * WIDTH]);
+				}
+			}
 		}
 	}
 
-	return chosenDirection;
+out:
+	pheap_destroy(&open_set);
+	return ret_val;
 }
 
 static void
 monster_agressive_walk(Monster *m, RoomMatrix *rm)
 {
-	unsigned int chosenDirection = get_optimal_move_towards(m, rm, &rm->playerRoomPos);
+	unsigned int chosenDirection = get_optimal_move_towards(m, rm, rm->playerRoomPos);
 
 	switch (chosenDirection) {
 		case UP:
@@ -445,6 +496,9 @@ monster_agressive_walk(Monster *m, RoomMatrix *rm)
 			break;
 		case RIGHT:
 			move(m, rm, VECTOR2D_RIGHT);
+			break;
+		case INVALID:
+		default:
 			break;
 	}
 }
