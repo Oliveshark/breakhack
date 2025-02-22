@@ -54,11 +54,11 @@ cmake -B $BUILD_DIR_LINUX \
     -DCMAKE_BUILD_TYPE=Release \
     -GNinja
 cmake --build $BUILD_DIR_LINUX
-rm -rf $BUILD_DIR_LINUX/package/*
+rm -rf ${BUILD_DIR_LINUX:?}/package/*
 cpack --config $BUILD_DIR_LINUX/CPackConfig.cmake \
     -DCPACK_PACKAGE_DIRECTORY=$STEAM_CONTENT_DIR_LINUX \
     -G ZIP
-rm -rf $STEAM_CONTENT_DIR_LINUX/*
+rm -rf ${STEAM_CONTENT_DIR_LINUX:?}/*
 unzip $BUILD_DIR_LINUX/package/*.zip -d $STEAM_CONTENT_DIR_LINUX/
 
 # Build and package for windows
@@ -70,11 +70,11 @@ cmake -B $BUILD_DIR_WINDOWS \
     -DSDLTTF_VENDORED=ON \
     -GNinja
 cmake --build $BUILD_DIR_WINDOWS
-rm -rf $BUILD_DIR_WINDOWS/package/*
+rm -rf ${BUILD_DIR_WINDOWS:?}/package/*
 cpack --config $BUILD_DIR_WINDOWS/CPackConfig.cmake \
     -DCPACK_PACKAGE_DIRECTORY=$STEAM_CONTENT_DIR_WINDOWS \
     -G ZIP
-rm -rf $STEAM_CONTENT_DIR_WINDOWS/*
+rm -rf ${STEAM_CONTENT_DIR_WINDOWS:?}/*
 unzip $BUILD_DIR_WINDOWS/package/*.zip -d $STEAM_CONTENT_DIR_WINDOWS/
 
 # Setup steamworks depot build
