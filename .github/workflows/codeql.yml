@@ -45,8 +45,6 @@ jobs:
         include:
         - language: c-cpp
           build-mode: manual
-        - language: ruby
-          build-mode: none
         # CodeQL supports the following values keywords for 'language': 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
         # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
@@ -58,12 +56,38 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
 
     # Add any setup steps before running the `github/codeql-action/init` action.
     # This includes steps like installing compilers or runtimes (`actions/setup-node`
     # or others). This is typically only required for manual builds.
     # - name: Setup runtime (example)
     #   uses: actions/setup-example@v1
+
+    - name: Set up Linux dependencies
+      if: ${{ runner.os == 'Linux' }}
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install \
+          cmake \
+          mingw-w64 \
+          libflac-dev \
+          libfluidsynth-dev \
+          libgme-dev \
+          libmpg123-dev \
+          libopusfile-dev \
+          libvorbis-dev \
+          libxmp-dev \
+          libwavpack-dev \
+          ninja-build \
+          pkg-config \
+          libopusfile-dev \
+          libxmp-dev \
+          fluidsynth \
+          libcmocka-dev \
+          cppcheck
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -82,8 +106,8 @@ jobs:
     # "We were unable to automatically build your code", modify the matrix above
     # to set the build mode to "manual" for that language. Then modify this step
     # to build your code.
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
+    # Command-line programs to run using the OS shell.
+    # See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
     - if: matrix.build-mode == 'manual'
       shell: bash
       run: |
