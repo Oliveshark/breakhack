@@ -92,7 +92,7 @@ typedef int64_t		Sint64;
 typedef uint64_t	Uint64;
 
 typedef enum Direction_t {
-	UP, DOWN, LEFT, RIGHT
+	UP, DOWN, LEFT, RIGHT, INVALID
 } Direction;
 
 typedef enum GameMode {
