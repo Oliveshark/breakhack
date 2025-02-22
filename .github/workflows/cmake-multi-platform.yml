@@ -67,8 +67,8 @@ jobs:
             # Disabling windows because there's some bug
           - os: windows-latest
             c_compiler: cl
-            cpp_compiler: cl
-            cmake_args: '-DSDLMIXER_VENDORED=ON'
+            #cpp_compiler: cl
+            #cmake_args: '-DSDLMIXER_VENDORED=ON'
 
     steps:
     - uses: actions/checkout@v4
