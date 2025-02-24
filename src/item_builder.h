@@ -59,6 +59,9 @@ item_builder_build_treasure(Treasure type, double goldAmt);
 Item *
 item_builder_build_key(unsigned int type);
 
+Item *
+item_builder_build_potion(PotionEffect type);
+
 void
 item_builder_close(void);
 

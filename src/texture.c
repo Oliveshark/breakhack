@@ -246,7 +246,14 @@ texture_set_alpha(Texture *t, Uint8 alpha)
 	SDL_SetTextureAlphaMod(t->texture, alpha);
 }
 
-void 
+void
+texture_set_color_mod(Texture *t, Uint8 r, Uint8 g, Uint8 b)
+{
+	assert(t->texture);
+	SDL_SetTextureColorMod(t->texture, r, g, b);
+}
+
+void
 texture_render(Texture *texture, SDL_Rect *box, Camera *cam)
 {
 	if (!texture->texture)
@@ -255,7 +262,7 @@ texture_render(Texture *texture, SDL_Rect *box, Camera *cam)
 	texture_render_clip(texture, box, NULL, cam);
 }
 
-void 
+void
 texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip, Camera *cam)
 {
 	if (!texture->texture)
@@ -276,7 +283,7 @@ texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip, Camera *cam
 	texture->lastAccess = SDL_GetTicks();
 }
 
-void 
+void
 texture_render_clip_ex(Texture *texture, SDL_Rect *box, SDL_Rect *clip, double angle, SDL_Point *point,
 		       SDL_FlipMode flipType, Camera *cam)
 {

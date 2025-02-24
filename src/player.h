@@ -36,6 +36,12 @@ typedef struct Animation Animation;
 typedef enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR } class_t;
 typedef enum PlayerState { ALIVE, DEAD } state_t;
 
+typedef enum {
+	POTION_NONE,
+	POTION_FROST,
+	POTION_BLOODLUST
+} PotionEffect;
+
 typedef struct PlayerStatData {
 	unsigned int total_steps;
 	unsigned int steps;
@@ -67,6 +73,12 @@ typedef struct PlayerStateData {
 	bool shopOwnerKiller;
 } PlayerStateData;
 
+typedef struct PlayerEffects {
+	PotionEffect effect;
+	uint8_t damage_multiplier;
+	uint8_t damage_reduction;
+} PlayerEffects;
+
 typedef struct Player {
 	Sprite *sprite;
 	Stats stats;
@@ -84,6 +96,7 @@ typedef struct Player {
 	Animation *swordAnimation;
 	PlayerEquipment equipment;
 	PlayerStateData stateData;
+	PlayerEffects effects;
 } Player;
 
 Player*
@@ -136,6 +149,9 @@ player_has_artifact(Player *, MagicalEffect);
 
 void
 player_add_artifact(Player*, Artifact*);
+
+bool
+player_has_potion_effect(Player*, PotionEffect);
 
 void
 player_set_falling(Player*);

@@ -137,6 +137,10 @@ on_monster_collision(Player *player,
 	CombatResult result = stats_fight(&player->stats,
 					  &monster->stats);
 
+	if (player->effects.damage_multiplier > 0) {
+		result.dmg *= player->effects.damage_multiplier;
+	}
+
 	mixer_play_effect(SWING0 + get_random(2));
 	monster_hit(monster, result.dmg, result.critical);
 	animation_run(player->swordAnimation);
@@ -233,7 +237,7 @@ player_has_collided(Player *p, RoomSpace *space)
 	return !p->phase_count && space->monster && space->monster->sprite->state != SPRITE_STATE_FALLING;
 }
 
-static bool 
+static bool
 has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
 	Position roomCoord = position_to_room_coords(&player->sprite->pos);
@@ -514,7 +518,7 @@ build_sword_animation(Player *p, SDL_Renderer *renderer)
 	p->swordAnimation->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 }
 
-Player* 
+Player*
 player_create(class_t class, Camera *cam)
 {
 	Player *player = malloc(sizeof(Player));
@@ -547,6 +551,7 @@ player_create(class_t class, Camera *cam)
 
 	memset(&player->skills,
 	       0, PLAYER_SKILL_COUNT * sizeof(Skill*));
+	memset(&player->effects, 0, sizeof(PlayerEffects));
 
 	for (size_t i = 0; i < LAST_ARTIFACT_EFFECT; ++i)
 		player->equipment.artifacts[i].level = 0;
@@ -602,6 +607,12 @@ player_reset_on_levelchange(Player *player)
 	player->sprite->pos = (Position) {
 		TILE_DIMENSION, TILE_DIMENSION };
 	player->equipment.keys = 0;
+
+	/* Reset all active potions */
+	memset(&player->effects, 0, sizeof(PlayerEffects));
+
+	/* Reset the player sprite */
+	sprite_set_color_mod(player->sprite, 255, 255, 255);
 }
 
 ExperienceData
@@ -821,6 +832,12 @@ player_add_artifact(Player *p, Artifact *a)
 	gui_log("You pick an ancient %s", ad->name);
 	gui_log("%s (%u)", ad->desc, ad->level);
 	p->equipment.hasArtifacts = true;
+}
+
+bool
+player_has_potion_effect(Player *p, PotionEffect effect)
+{
+	return effect == p->effects.effect;
 }
 
 void

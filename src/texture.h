@@ -86,6 +86,9 @@ void
 texture_set_alpha(Texture*, Uint8);
 
 void
+texture_set_color_mod(Texture*, Uint8, Uint8, Uint8);
+
+void
 texture_render(Texture*, SDL_Rect*, Camera*);
 
 void

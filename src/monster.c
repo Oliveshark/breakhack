@@ -321,6 +321,8 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 		CombatResult result = stats_fight(&monster->stats,
 						  &space->player->stats);
 
+		result.dmg -= space->player->effects.damage_reduction;
+
 		player_hit(space->player, result.dmg);
 
 		if (result.dmg > 0) {
@@ -530,7 +532,7 @@ monster_coward_walk(Monster *m, RoomMatrix *rm)
 static void
 on_monster_move(Monster *m, const Position *origPos, Map *map, RoomMatrix *rm)
 {
-	Position currentTilePos = position_to_matrix_coords(&m->sprite->pos); 
+	Position currentTilePos = position_to_matrix_coords(&m->sprite->pos);
 	Player *player = rm->spaces[rm->playerRoomPos.x][rm->playerRoomPos.y].player;
 	if (player) {
 		Uint32 range = 3 + player_has_artifact(player, IMPROVED_HEARING) * 2;
@@ -780,14 +782,14 @@ monster_update_stats_for_level(Monster *m, unsigned int level)
 void
 monster_drop_loot(Monster *monster, Map *map, Player *player)
 {
-	static unsigned int treasure_drop_chance = 1;
-	unsigned int item_drop_chance = 1;
+	static Uint32 treasure_drop_chance = 1;
+	static Uint32 item_drop_chance = 1;
+	static Uint32 potion_drop_chance = 30;
 
 	if (monster->sprite->state == SPRITE_STATE_FALLING)
 		return;
 
 	Item *item;
-	Item *items[3];
 	unsigned int item_count = 0;
 	bool player_full_health = player->stats.hp >= player->stats.maxhp;
 
@@ -831,6 +833,17 @@ monster_drop_loot(Monster *monster, Map *map, Player *player)
 	if (player->stats.hp < player->stats.maxhp / 2)
 		item_drop_chance = 0;
 
+	/* TODO: This hardcoded size is a bit risky. Capacity is good but
+	 * perhaps a dynamic array would be safer just in case? */
+	Item *items[4];
+	if (player_has_potion_effect(player, POTION_NONE) && get_random(potion_drop_chance) == 0) {
+		if (get_random(1) == 0)
+			item = item_builder_build_potion(POTION_BLOODLUST);
+		else
+			item = item_builder_build_potion(POTION_FROST);
+		item->sprite->pos = monsterTilePos;
+		items[item_count++] = item;
+	}
 	if (get_random(treasure_drop_chance) == 0) {
 		item = item_builder_build_item(TREASURE, map->level);
 		item->sprite->pos = monsterTilePos;

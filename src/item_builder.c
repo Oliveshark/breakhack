@@ -196,6 +196,52 @@ item_builder_build_key(unsigned int type)
 	return item;
 }
 
+static void
+pickup_bloodlust(Item *item, Player *player)
+{
+	gui_log("You drink a bloodlust potion. Rage pulses through your veins.");
+	player->effects.effect = POTION_BLOODLUST;
+	player->effects.damage_multiplier = 4;
+	sprite_set_color_mod(player->sprite, 255, 25, 45);
+}
+
+static void
+pickup_frost(Item *item, Player *player)
+{
+	gui_log("You drink a frost potion. Your skin is ice.");
+	player->effects.effect = POTION_FROST;
+	player->effects.damage_reduction = 2 * player->stats.lvl;
+	sprite_set_color_mod(player->sprite, 94, 156, 255);
+}
+
+Item *
+item_builder_build_potion(PotionEffect effect)
+{
+	Item *item;
+
+	assert(effect != POTION_NONE);
+
+	switch (effect) {
+		case POTION_BLOODLUST:
+			item = create_item("Items/Potion.png",
+					NULL,
+					CLIP16(48, 32),
+					pickup_bloodlust);
+			break;
+		case POTION_FROST:
+			item = create_item("Items/Potion.png",
+					NULL,
+					CLIP16(96, 0),
+					pickup_frost);
+			break;
+		case POTION_NONE:
+		default:
+			break;
+	}
+
+	return item;
+}
+
 static Item *
 create_treasure(int current_level)
 {

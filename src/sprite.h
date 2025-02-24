@@ -79,6 +79,8 @@ sprite_set_blend_mode(Sprite*, SDL_BlendMode);
 void
 sprite_set_alpha(Sprite*, Uint8);
 
+void sprite_set_color_mod(Sprite*, Uint8, Uint8, Uint8);
+
 void
 sprite_destroy(Sprite *);
 

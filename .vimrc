@@ -7,8 +7,10 @@ packadd termdebug
 let g:termdebug_wide = 1
 
 " INDENTING:
-set tabstop=4
-set shiftwidth=4
 set noexpandtab " tabs are tabs, not spaces
+set copyindent
+set softtabstop=0
+set tabstop=8
+set shiftwidth=8
 
 au FileType c,h setl tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
