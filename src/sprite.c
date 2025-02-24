@@ -53,7 +53,7 @@ sprite_create(void)
 	return sprite_create_default();
 }
 
-void 
+void
 sprite_load_texture(Sprite *sprite,
 		    const char *path,
 		    int index,
@@ -114,6 +114,15 @@ sprite_set_alpha(Sprite *s, Uint8 alpha)
 		texture_set_alpha(s->textures[0], alpha);
 	if (s->textures[1])
 		texture_set_alpha(s->textures[1], alpha);
+}
+
+void
+sprite_set_color_mod(Sprite *s, Uint8 r, Uint8 g, Uint8 b)
+{
+	if (s->textures[0])
+		texture_set_color_mod(s->textures[0], r, g, b);
+	if (s->textures[1])
+		texture_set_color_mod(s->textures[1], r, g, b);
 }
 
 void

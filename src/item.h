@@ -27,17 +27,20 @@
 #include "camera.h"
 #include "linkedlist.h"
 
+/**
+ * \brief A game item struct
+ */
 typedef struct Item_t {
-	Sprite *sprite;
-	LinkedList *subsprites;
-	bool collected;
-	bool openable;
-	bool opened;
-	char label[50];
-	double price;
-	double value;
-	LinkedList *items;
-	void (*effect)(struct Item_t *, Player *);
+	Sprite *sprite;                               /**< The item sprite */
+	LinkedList *subsprites;                       /**< A list of sub-sprites */
+	bool collected;                               /**< If the item has been collected */
+	bool openable;                                /**< Can the item be opened? */
+	bool opened;                                  /**< Has the item been opened? */
+	char label[50];                               /**< The Item label */
+	double price;                                 /**< The item price (for vendor) */
+	double value;                                 /**< Value, the item value. Eg. Gold */
+	LinkedList *items;                            /**< Sub items */
+	void (*effect)(struct Item_t *, Player *);    /**< Item effect callback */
 } Item;
 
 Item *

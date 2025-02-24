@@ -17,6 +17,7 @@
  */
 
 #include "object.h"
+#include "gui.h"
 #include "util.h"
 #include "mixer.h"
 #include "random.h"
@@ -85,6 +86,10 @@ object_damage(Object *o, Player *p)
 {
 	if (!o->damage)
 		return;
+	if (player_has_potion_effect(p, POTION_FROST)) {
+		gui_log("Your frost skin protects you from damage");
+		return;
+	}
 	p->stats.hp -= o->damage;
 	player_hit(p, o->damage);
 }
