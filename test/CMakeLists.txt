@@ -1,0 +1,17 @@
+find_package(Threads REQUIRED)
+enable_testing()
+
+function(add_test TEST_NAME)
+	message("Adding test: ${TEST_NAME} -> ${ARGN}")
+	add_executable(${TEST_NAME} ${ARGN})
+	target_include_directories(${TEST_NAME} PRIVATE ${INCLUDE_DIRS})
+	target_link_libraries(${TEST_NAME} ${CMOCKA_LIBRARY} ${SDL_LIBRARY})
+	_add_test(${TEST_NAME} ${TEST_NAME})
+endfunction()
+
+add_test(test_util test_util.c ../src/util.c)
+add_test(test_linkedlist test_linkedlist.c ../src/linkedlist.c ../src/util.c)
+add_test(test_hashtable test_hashtable.c ../src/hashtable.c ../src/util.c)
+add_test(test_pos_heap test_pos_heap.c ../src/pos_heap.c ../src/util.c)
+add_test(test_input test_input.c ../src/input.c ../src/keyboard.c)
+add_test(test_position test_position.c ../src/position.c)

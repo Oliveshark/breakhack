@@ -267,36 +267,8 @@ if (MSVC)
 endif (MSVC)
 
 # TESTS:
-IF (CMOCKA_FOUND AND NOT OSX AND NOT CLANG)
-	find_package(Threads REQUIRED)
-	enable_testing()
-	add_executable(test_util test/test_util.c src/util.c)
-	target_include_directories(test_util PRIVATE ${INCLUDE_DIRS})
-	target_link_libraries(test_util ${CMOCKA_LIBRARY})
-	add_test(test_util test_util)
-
-	add_executable(test_linkedlist test/test_linkedlist.c src/linkedlist.c src/util.c)
-	target_include_directories(test_linkedlist PRIVATE ${INCLUDE_DIRS})
-	target_link_libraries(test_linkedlist ${CMOCKA_LIBRARY})
-	add_test(test_linkedlist test_linkedlist)
-
-	add_executable(test_hashtable test/test_hashtable.c src/hashtable.c src/util.c)
-	target_include_directories(test_hashtable PRIVATE ${INCLUDE_DIRS})
-	target_link_libraries(test_hashtable ${CMOCKA_LIBRARY})
-	add_test(test_hashtable test_hashtable)
-
-	add_executable(test_pos_heap test/test_pos_heap.c src/pos_heap.c src/util.c)
-	target_include_directories(test_pos_heap PRIVATE ${INCLUDE_DIRS})
-	target_link_libraries(test_pos_heap ${CMOCKA_LIBRARY})
-	add_test(test_pos_heap test_pos_heap)
-
-	add_executable(test_input test/test_input.c src/input.c src/keyboard.c)
-	target_include_directories(test_input PRIVATE ${INCLUDE_DIRS})
-	target_link_libraries(test_input
-		${CMOCKA_LIBRARY}
-		${SDL_LIBRARY}
-		)
-	add_test(test_input test_input)
+IF (CMOCKA_FOUND AND NOT OSX)
+	add_subdirectory(test)
 ENDIF ()
 
 # LINT:

@@ -17,7 +17,7 @@ clean:
 .PHONY: clean
 
 test:
-	@cmake --build build/debug --target test
+	@ctest --output-on-failure --test-dir build/debug/test
 .PHONY: test
 
 run: $(all)
