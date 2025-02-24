@@ -1,6 +1,6 @@
 /*
  * BreakHack - A dungeone crawler RPG
- * Copyright (C) 2025  Linus Probert <linus.probert@gmail.com>
+ * Copyright (C) 2018  Linus Probert <linus.probert@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef COLLISIONS_H_
-#define	COLLISIONS_H_
-
-#include <SDL3/SDL.h>
 #include <stdbool.h>
-
-#include "position.h"
-
-bool
-position_in_rect(const Position*, const SDL_Rect*);
-
-#endif // COLLISIONS_H_
+#include <stdio.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <setjmp.h>
+#include <cmocka.h>
