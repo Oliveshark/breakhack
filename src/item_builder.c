@@ -108,7 +108,7 @@ pickup_gold(Item *item, Player *player)
 {
 	player->gold += item->value;
 	mixer_play_effect(COIN);
-	gui_log("You pick up %s", &item->label);
+	gui_log("You pick up %s", item->label);
 }
 
 Item *
