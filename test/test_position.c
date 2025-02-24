@@ -15,13 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <setjmp.h>
-#include <cmocka.h>
+#include "cmocka_include.h"
 #include "../src/position.h"
 #include "../src/defines.h"
 
@@ -73,11 +67,37 @@ static void test_matrix_coords_conversion(void **state)
 	assert_pos_eq(mc, expected);
 }
 
+static void test_map_coords_conversion(void **state)
+{
+	Position pos, coords, expected;
+
+	pos = POS(0, 0);
+	coords = position_to_room_coords(&pos);
+	expected = POS(0, 0);
+	assert_pos_eq(expected, coords);
+
+	pos = POS(MAP_ROOM_WIDTH * TILE_DIMENSION - 1, MAP_ROOM_HEIGHT * TILE_DIMENSION - 1);
+	coords = position_to_room_coords(&pos);
+	expected = POS(0, 0);
+	assert_pos_eq(expected, coords);
+
+	pos = POS(MAP_ROOM_WIDTH * TILE_DIMENSION, MAP_ROOM_HEIGHT * TILE_DIMENSION);
+	coords = position_to_room_coords(&pos);
+	expected = POS(1, 1);
+	assert_pos_eq(expected, coords);
+
+	pos = POS(MAP_ROOM_WIDTH * TILE_DIMENSION + TILE_DIMENSION * 5, MAP_ROOM_HEIGHT * TILE_DIMENSION + TILE_DIMENSION * 5);
+	coords = position_to_room_coords(&pos);
+	expected = POS(1, 1);
+	assert_pos_eq(expected, coords);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_position_equals),
 		cmocka_unit_test(test_matrix_coords_conversion),
+		cmocka_unit_test(test_map_coords_conversion),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

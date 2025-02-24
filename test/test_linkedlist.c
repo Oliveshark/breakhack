@@ -16,11 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <setjmp.h>
-#include <cmocka.h>
+#include "cmocka_include.h"
 #include "../src/linkedlist.h"
 
 static void test_linkedlist_create(void **state)

@@ -1,6 +1,6 @@
 /*
  * BreakHack - A dungeone crawler RPG
- * Copyright (C) 2025  Linus Probert <linus.probert@gmail.com>
+ * Copyright (C) 2018  Linus Probert <linus.probert@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,16 +15,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "cmocka_include.h"
+#include "../src/collisions.h"
 
-#ifndef COLLISIONS_H_
-#define	COLLISIONS_H_
+static void test_position_in_rect(void **state)
+{
+	const SDL_Rect r = {0, 0, 2, 2};
+	Position p;
 
-#include <SDL3/SDL.h>
-#include <stdbool.h>
+	p = POS(1, 1);
+	assert_true(position_in_rect(&p, &r));
 
-#include "position.h"
+	p = POS(2, 2);
+	assert_false(position_in_rect(&p, &r));
 
-bool
-position_in_rect(const Position*, const SDL_Rect*);
+	p = POS(0, 0);
+	assert_true(position_in_rect(&p, &r));
 
-#endif // COLLISIONS_H_
+	p = POS(2, 0);
+	assert_false(position_in_rect(&p, &r));
+
+	p = POS(0, 2);
+	assert_false(position_in_rect(&p, &r));
+}
+
+int main(void)
+{
+	const struct CMUnitTest tests[] = {
+		cmocka_unit_test(test_position_in_rect),
+	};
+
+	return cmocka_run_group_tests(tests, NULL, NULL);
+}

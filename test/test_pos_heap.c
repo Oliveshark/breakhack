@@ -15,13 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <setjmp.h>
-#include <cmocka.h>
+#include "cmocka_include.h"
 #include "../src/pos_heap.h"
 #include "../src/util.h"
 

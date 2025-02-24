@@ -17,11 +17,7 @@
  */
 
 #include <SDL3/SDL.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <setjmp.h>
-#include <cmocka.h>
+#include "cmocka_include.h"
 #include "../src/input.h"
 
 static void
