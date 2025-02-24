@@ -19,6 +19,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
 int64_t
 c_SteamAPI_Init(void);
@@ -33,10 +34,7 @@ void
 c_SteamAPI_RunCallbacks(void);
 
 void
-c_SteamAPI_SetCallbacks(void(*recvCB)(void), void(*storCB)(void), void(*recvLB)(int64_t, const char *));
-
-bool
-c_SteamUserStats_RequestCurrentStats(void);
+c_SteamAPI_SetCallbacks(void(*storCB)(void), void(*recvLB)(int64_t, const char *));
 
 bool
 c_SteamUserStats_SetAchievement(const char *id);

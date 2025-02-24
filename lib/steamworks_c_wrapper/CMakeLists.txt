@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.26)
 project(steamworks_c_wrapper CXX)
 
 if (NOT CMAKE_BUILD_TYPE)

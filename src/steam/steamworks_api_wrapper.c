@@ -29,7 +29,6 @@ static Achievement g_Achievements[] = {
 static Uint8 numAchievements = 7;
 
 static bool m_Initiated = false;
-static bool m_bStatsReceived = false;
 static Sint64 m_AppID = 0;
 static Sint64 m_hHighscoreLeaderboard = 0;
 static Sint64 m_hQpHighscoreLeaderboard = 0;
@@ -41,21 +40,6 @@ static Sint64 m_hMageHighscore = 0;
 static Sint64 m_hWeeklyHighscore = 0;
 
 static Timer *requestDataTimer = NULL;
-
-static bool
-steam_request_stats(void)
-{
-	if (m_Initiated)
-		return c_SteamUserStats_RequestCurrentStats();
-	return false;
-}
-
-static void
-stats_received(void)
-{
-	debug("Steam stats received");
-	m_bStatsReceived = true;
-}
 
 static void
 stats_stored(void)
@@ -98,7 +82,7 @@ steam_init()
 	m_Initiated = m_AppID != 0;
 	lb_weekly = time_get_weekly_lb_name();
 	if (m_Initiated)
-		c_SteamAPI_SetCallbacks(stats_received, stats_stored, leaderboard_received);
+		c_SteamAPI_SetCallbacks(stats_stored, leaderboard_received);
 	requestDataTimer = _timer_create();
 }
 
@@ -117,9 +101,7 @@ request_data_queue_run(void)
 		timer_start(requestDataTimer);
 
 	if (timer_get_ticks(requestDataTimer) > 1000) {
-		if (!m_bStatsReceived)
-			steam_request_stats();
-		else if (!m_hHighscoreLeaderboard)
+		if (!m_hHighscoreLeaderboard)
 			c_SteamUserStats_FindLeaderboard(LB_HIGHSCORE);
 		else if (!m_hQpHighscoreLeaderboard)
 			c_SteamUserStats_FindLeaderboard(LB_QUICKPLAY_HIGHSCORE);

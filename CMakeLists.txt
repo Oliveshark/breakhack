@@ -1,22 +1,25 @@
-cmake_minimum_required (VERSION 3.6.0)
+cmake_minimum_required (VERSION 3.26)
 
 SET(CMAKE_COLOR_MAKEFILE ON)
 
 project(breakhack C)
 
 set(breakhack_GAME_TITLE "BreakHack")
-set(breakhack_MAJOR_VERSION 4)
-set(breakhack_MINOR_VERSION 0)
-set(breakhack_PATCH_VERSION 3)
-set(breakhack_RELEASE_TYPE "")
 
 # Checksums
-set(breakhack_STEAMAPI_DLL_CHECKSUM 0x1a20dd5)
-set(breakhack_STEAMAPI_SO_CHECKSUM 0x19f8c71)
+set(breakhack_STEAMAPI_DLL_CHECKSUM 0x1a4691a)
+set(breakhack_STEAMAPI_SO_CHECKSUM 0x1a11b6d)
 
 include(build_deps/cmake/FindCCache.cmake)
 include(build_deps/cmake/FindCMocka.cmake)
 include(build_deps/cmake/Findcppcheck.cmake)
+include(build_deps/cmake/git_version.cmake)
+
+get_version_from_git()
+set(breakhack_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
+set(breakhack_MINOR_VERSION ${PROJECT_VERSION_MINOR})
+set(breakhack_PATCH_VERSION ${PROJECT_VERSION_PATCH})
+set(breakhack_RELEASE_TYPE "")
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/src/config.h.in"
@@ -24,6 +27,7 @@ configure_file(
 	)
 
 set(DISABLE_STEAM_BUILD OFF CACHE BOOL "Disable Steam build")
+set(STEAM OFF)
 
 if (NOT DISABLE_STEAM_BUILD)
 	if (EXISTS "${PROJECT_SOURCE_DIR}/lib/steamworks_c_wrapper/sdk")
@@ -195,69 +199,6 @@ else ()
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__FNAME__=__FILE__")
 endif ()
 
-# PROGRAMS:
-add_executable(breakhack
-	src/main.c
-	src/texture.c
-	src/screenresolution.c
-	src/sprite.c
-	src/sprite_util.c
-	src/util.c
-	src/event.c
-	src/player.c
-	src/save.c
-	src/map.c
-	src/map_lua.c
-	src/camera.c
-	src/timer.c
-	src/roommatrix.c
-	src/position.c
-	src/monster.c
-	src/stats.c
-	src/actiontext.c
-	src/random.c
-	src/time.c
-	src/linkedlist.c
-	src/hashtable.c
-	src/gui.c
-	src/item.c
-	src/item_builder.c
-	src/pointer.c
-	src/gui_button.c
-	src/particle_engine.c
-	src/particle_emitter.c
-	src/menu.c
-	src/collisions.c
-	src/keyboard.c
-	src/input.c
-	src/mixer.c
-	src/io_util.c
-	src/physfsrwops.c
-	src/skillbar.c
-	src/texturecache.c
-	src/skill.c
-	src/projectile.c
-	src/vector2d.c
-	src/map_room_modifiers.c
-	lib/sqlite3/sqlite3.c
-	src/db.c
-	src/settings.c
-	src/actiontextbuilder.c
-	src/animation.c
-	src/trap.c
-	src/artifact.c
-	src/screen.c
-	src/hiscore.c
-	src/object.c
-	src/gui_util.c
-	src/tooltip.c
-	src/tooltip_manager.c
-	src/gamecontroller.c
-	src/effect_util.c
-	${STEAM_SOURCES}
-	)
-set_property(TARGET breakhack PROPERTY C_STANDARD 99)
-
 set(INCLUDE_DIRS
 	${PROJECT_BINARY_DIR}
 	${SDL_INCLUDE_DIR}
@@ -270,11 +211,15 @@ set(INCLUDE_DIRS
 	lib/bh_random/src
 	lib/checksum/src
 )
-
-target_include_directories(breakhack PRIVATE ${INCLUDE_DIRS})
+# PROGRAMS:
+add_executable(${PROJECT_NAME})
+add_subdirectory(src)
+add_subdirectory(lib/sqlite3)
+set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
+target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 if (NOT MSVC)
-	set_target_properties(breakhack PROPERTIES COMPILE_FLAGS
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS
 		-std=gnu11 -pedantic -Wall -Wextra -Wshadow
 		-Wpointer-arith -Wcast-qual -Wstrict-prototypes
 		-Wmissing-prototypes -Wconversion -Wno-sign-conversion
@@ -293,7 +238,7 @@ endif ()
 # Sqlite has some warnings that I we don't need to see
 set_source_files_properties(lib/sqlite3/sqlite3.c COMPILE_FLAGS -w)
 
-target_link_libraries(breakhack
+target_link_libraries(${PROJECT_NAME}
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
 	${SDL_LIBRARY}
 	${SDL_IMAGE_LIBRARY}
@@ -306,19 +251,19 @@ target_link_libraries(breakhack
 	)
 
 if (STEAM)
-	target_link_libraries(breakhack
+	target_link_libraries(${PROJECT_NAME}
 		${STEAMWORKS_LIBRARY}
 		steamworks_c_wrapper
 		)
 endif ()
 
 if (MSVC)
-	set_target_properties(breakhack PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE /NODEFAULTLIB:MSVCRTD")
-	set_target_properties(breakhack PROPERTIES COMPILE_DEFINITIONS_DEBUG "_CONSOLE")
-	set_target_properties(breakhack PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:CONSOLE")
-	set_target_properties(breakhack PROPERTIES COMPILE_DEFINITIONS_RELWITHDEBINFO "_CONSOLE")
-	set_target_properties(breakhack PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /NODEFAULTLIB:MSVCRTD")
-	set_target_properties(breakhack PROPERTIES LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:WINDOWS")
+	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE /NODEFAULTLIB:MSVCRTD")
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_DEBUG "_CONSOLE")
+	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:CONSOLE")
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS_RELWITHDEBINFO "_CONSOLE")
+	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /NODEFAULTLIB:MSVCRTD")
+	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:WINDOWS")
 endif (MSVC)
 
 # TESTS:
@@ -339,6 +284,11 @@ IF (CMOCKA_FOUND AND NOT OSX AND NOT CLANG)
 	target_include_directories(test_hashtable PRIVATE ${INCLUDE_DIRS})
 	target_link_libraries(test_hashtable ${CMOCKA_LIBRARY})
 	add_test(test_hashtable test_hashtable)
+
+	add_executable(test_pos_heap test/test_pos_heap.c src/pos_heap.c src/util.c)
+	target_include_directories(test_pos_heap PRIVATE ${INCLUDE_DIRS})
+	target_link_libraries(test_pos_heap ${CMOCKA_LIBRARY})
+	add_test(test_pos_heap test_pos_heap)
 
 	add_executable(test_input test/test_input.c src/input.c src/keyboard.c)
 	target_include_directories(test_input PRIVATE ${INCLUDE_DIRS})
@@ -408,16 +358,27 @@ else ()
 endif ()
 include(InstallRequiredSystemLibraries)
 
-INSTALL(TARGETS breakhack
-	COMPONENT Release
-	RUNTIME DESTINATION bin/
-)
-INSTALL(FILES assets.pack data.pack
-	COMPONENT Release
-	DESTINATION share/breakhack/
-)
+if (NOT STEAM)
+	INSTALL(TARGETS ${PROJECT_NAME}
+		COMPONENT Release
+		RUNTIME DESTINATION bin/
+	)
+	INSTALL(FILES assets.pack data.pack
+		COMPONENT Release
+		DESTINATION share/breakhack/
+	)
+else ()
+	INSTALL(TARGETS ${PROJECT_NAME}
+		COMPONENT Release
+		RUNTIME DESTINATION .
+	)
+	INSTALL(FILES assets.pack data.pack
+		COMPONENT Release
+		DESTINATION .
+	)
+endif ()
 
-set(CPACK_INSTALL_CMAKE_PROJECTS "${PROJECT_BINARY_DIR};breakhack;Release;.")
+set(CPACK_INSTALL_CMAKE_PROJECTS "${PROJECT_BINARY_DIR};${PROJECT_NAME};Release;.")
 set(CPACK_PACKAGE_NAME "BreakHack")
 set(CPACK_PACKAGE_VENDOR "OliveShark")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
@@ -429,9 +390,9 @@ set(CPACK_PACKAGE_VERSION_PATCH ${breakhack_PATCH_VERSION})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "BreakHack")
 set(CPACK_PACKAGE_CHECKSUM "MD5")
 if (WIN32)
-	set(CPACK_PACKAGE_FILE_NAME "breakhack-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-win32")
+	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}-win32")
 else ()
-	set(CPACK_PACKAGE_FILE_NAME "breakhack-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 endif ()
 if (STEAM)
 	set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
@@ -440,7 +401,7 @@ endif ()
 
 if(UNIX)
 	set(CPACK_GENERATOR TGZ ZIP)
-	set(CPACK_STRIP_FILES breakhack)
+	set(CPACK_STRIP_FILES ${PROJECT_NAME})
 	set(CPACK_SOURCE_STRIP_FILES "")
 elseif(WIN32)
 	set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)

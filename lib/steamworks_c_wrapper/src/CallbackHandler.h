@@ -29,11 +29,9 @@ private:
 
 public:
 	CallbackHandler(int64 appId);
-	STEAM_CALLBACK(CallbackHandler, OnUserStatsReceived, UserStatsReceived_t, m_CallbackUserStatsReceived);
 	STEAM_CALLBACK(CallbackHandler, OnUserStatsStored, UserStatsStored_t, m_CallbackUserStatsStored);
 	CCallResult<CallbackHandler, LeaderboardFindResult_t> m_FindLeaderboardCallResult;
 
-	void(*statsReceivedCb)() = nullptr;
 	void(*statsStoredCb)() = nullptr;
 	void(*leaderboardReceivedCb)(int64_t, const char*) = nullptr;
 

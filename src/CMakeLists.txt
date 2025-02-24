@@ -1,0 +1,7 @@
+file(GLOB SOURCE_FILES CONFIGURE_DEPENDS *.c)
+
+if (STEAM)
+	file(GLOB SOURCE_FILES CONFIGURE_DEPENDS steam/*.c)
+endif ()
+
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES})

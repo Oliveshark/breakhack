@@ -1,6 +1,6 @@
 /*
  * BreakHack - A dungeone crawler RPG
- * Copyright (C) 2018  Linus Probert <linus.probert@gmail.com>
+ * Copyright (C) 2025  Linus Probert <linus.probert@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ typedef int64_t		Sint64;
 typedef uint64_t	Uint64;
 
 typedef enum Direction_t {
-	UP, DOWN, LEFT, RIGHT
+	UP, DOWN, LEFT, RIGHT, INVALID
 } Direction;
 
 typedef enum GameMode {

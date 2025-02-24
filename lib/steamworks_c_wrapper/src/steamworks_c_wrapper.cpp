@@ -59,9 +59,8 @@ c_SteamAPI_RunCallbacks(void)
 		SteamAPI_RunCallbacks();
 }
 
-extern "C" void c_SteamAPI_SetCallbacks(void(*recvCB)(void), void(*storCB)(void), void(*recvLB)(int64_t, const char *))
+extern "C" void c_SteamAPI_SetCallbacks(void(*storCB)(void), void(*recvLB)(int64_t, const char *))
 {
-	m_CallbackHandler->statsReceivedCb = recvCB;
 	m_CallbackHandler->statsStoredCb = storCB;
 	m_CallbackHandler->leaderboardReceivedCb = recvLB;
 }
@@ -74,20 +73,9 @@ c_SteamAPI_Shutdown()
 }
 
 extern "C" bool
-c_SteamUserStats_RequestCurrentStats()
-{
-	if (NULL == SteamUserStats() || NULL == SteamUser())
-		return false;
-	if (!SteamUser()->BLoggedOn())
-		return false;
-
-	return SteamUserStats()->RequestCurrentStats();
-}
-
-extern "C" bool
 c_SteamUserStats_SetAchievement(const char *pchName)
 {
-	if (m_CallbackHandler && !m_CallbackHandler->CallbackReceived())
+	if (m_CallbackHandler == nullptr)
 		return false;
 
 	bool result = SteamUserStats()->SetAchievement(pchName);

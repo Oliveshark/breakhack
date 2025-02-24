@@ -27,10 +27,6 @@ jobs:
         build_type: [Release, Debug]
         c_compiler: [gcc, clang, cl, mingw-w64-gcc]
         include:
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-            cmake_args: '-DSDLMIXER_VENDORED=ON'
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
@@ -68,11 +64,17 @@ jobs:
             c_compiler: cl
           - os: macos-latest
             c_compiler: mingw-w64-gcc
+            # Disabling windows because there's some bug
+          - os: windows-latest
+            c_compiler: cl
+            #cpp_compiler: cl
+            #cmake_args: '-DSDLMIXER_VENDORED=ON'
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: recursive
+        fetch-depth: 0
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
@@ -98,7 +100,9 @@ jobs:
           pkg-config \
           libopusfile-dev \
           libxmp-dev \
-          fluidsynth
+          fluidsynth \
+          libcmocka-dev \
+          cppcheck
 
     - name: Set up Macos dependencies
       if: ${{ runner.os == 'macOS' }}

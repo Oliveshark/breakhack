@@ -67,6 +67,9 @@ ec_malloc(unsigned long size);
 void *
 ec_calloc(size_t count, unsigned long size);
 
+void *
+ec_realloc(void *buf, size_t size);
+
 void
 m_strcpy(char *dest, size_t destsz, const char *src);
 

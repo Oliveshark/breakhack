@@ -33,8 +33,8 @@ lint:
 .PHONY: lint
 
 package:
-	@cmake --build build/release --target package
-	@cmake --build build/win-release --target package
+	@cpack --config build/release/CPackConfig.cmake -G TGZ
+	@cpack --config build/win-release/CPackConfig.cmake -G TGZ
 .PHONY: package
 
 install:
