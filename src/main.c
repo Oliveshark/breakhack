@@ -1281,7 +1281,8 @@ run(void)
 		frame++;
 		if (timer_get_ticks(updateTimer) > 1000) {
 			char buffer[20];
-			m_sprintf(buffer, 20, "FPS: %u", frame / (timer_get_ticks(fpsTime) / 1000));
+			m_sprintf(buffer, 20, "FPS: %lu",
+					frame / (timer_get_ticks(fpsTime) / 1000));
 			texture_load_from_text(fpsSprite->textures[0], buffer, C_RED, C_WHITE, gRenderer);
 			fpsSprite->dim = fpsSprite->textures[0]->dim;
 			timer_start(updateTimer);
