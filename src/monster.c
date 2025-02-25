@@ -335,7 +335,7 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 		monster_behaviour_check_post_attack(monster);
 	}
 
-	return SPACE_IS_OCCUPIED(space) || space->monster;
+	return SPACE_IS_BLOCKED(space);
 }
 
 static bool

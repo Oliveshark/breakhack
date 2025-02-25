@@ -68,6 +68,8 @@ typedef struct RoomSpace {
 #define SPACE_CLEAR_FLAG(space, flag) ((space) && ((space)->flags &= ~flag))
 #define SPACE_TOGGLE_FLAG(space, flag) ((space) && ((space)->flags ^= flag))
 
+#define SPACE_IS_BLOCKED(space) (SPACE_IS_OCCUPIED(space) || (space)->monster)
+
 typedef struct RoomMatrix_t {
 	RoomSpace spaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	Position roomPos;
