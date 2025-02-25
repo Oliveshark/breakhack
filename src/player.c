@@ -219,7 +219,7 @@ player_collect_items(Player *player, RoomSpace *space)
 static void
 player_interact_traps_and_pits(Player *player, RoomSpace *space)
 {
-	if (space->lethal) {
+	if (SPACE_IS_LETHAL(space)) {
 		player_set_falling(player);
 	}
 
@@ -231,7 +231,7 @@ player_interact_traps_and_pits(Player *player, RoomSpace *space)
 static bool
 player_has_collided(Player *p, RoomSpace *space)
 {
-	if (space->occupied)
+	if (SPACE_IS_OCCUPIED(space))
 		return true;
 
 	return !p->phase_count && space->monster && space->monster->sprite->state != SPRITE_STATE_FALLING;

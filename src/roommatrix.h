@@ -37,11 +37,16 @@ typedef struct MapTile_t MapTile;
 
 struct UpdateData;
 
+typedef enum {
+	TILE_NONE = 0x00,
+	TILE_LETHAL = 0x01,
+	TILE_LIGHTSOURCE = 0x02,
+	TILE_OCCUPIED = 0x04,
+	TILE_DAMAGE = 0x08,
+} TileFlag;
+
 typedef struct RoomSpace {
-	bool occupied;
-	bool lethal;
-	bool lightsource;
-	bool damaging;
+	TileFlag flags;
 	int light;
 	MapTile *tile;
 	MapTile *wall;
@@ -54,6 +59,14 @@ typedef struct RoomSpace {
 	LinkedList *artifacts;
 	LinkedList *objects;
 } RoomSpace;
+
+#define SPACE_IS_OCCUPIED(space) (space->flags & TILE_OCCUPIED)
+#define SPACE_IS_LETHAL(space) (space->flags & TILE_LETHAL)
+#define SPACE_IS_LIGHTSOURCE(space) (space->flags & TILE_LIGHTSOURCE)
+#define SPACE_IS_DAMAGING(space) (space->flags & TILE_DAMAGE)
+#define SPACE_SET_FLAG(space, flag) ((space)->flags |= flag)
+#define SPACE_CLEAR_FLAG(space, flag) ((space)->flags &= ~flag)
+#define SPACE_TOGGLE_FLAG(space, flag) ((space)->flags ^= flag)
 
 typedef struct RoomMatrix_t {
 	RoomSpace spaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];

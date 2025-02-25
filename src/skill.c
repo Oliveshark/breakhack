@@ -278,7 +278,7 @@ static void
 handle_space_effects(RoomSpace *space,
 		     Player *player)
 {
-	if (space->lethal)
+	if (SPACE_IS_LETHAL(space))
 		player_set_falling(player);
 	else if (space->trap)
 		trap_activate(space->trap, player);
@@ -630,7 +630,7 @@ skill_backstab(Skill *skill, SkillData *data)
 		return false;
 	}
 	RoomSpace *targetSpace = &data->matrix->spaces[targetPos.x][targetPos.y];
-	if (targetSpace->occupied) {
+	if (SPACE_IS_OCCUPIED(targetSpace)) {
 		return false;
 	}
 
@@ -808,7 +808,7 @@ skill_charge(Skill *skill, SkillData *data)
 	Position lastAvailableDest = playerStartPos;
 	while (position_in_roommatrix(&destination))
 	{
-		if (space->occupied || space->monster) {
+		if (SPACE_IS_OCCUPIED(space) || space->monster) {
 			if (!space->monster || passThroughCount >= chargeThroughLvl)
 				break;
 			else
@@ -893,7 +893,7 @@ skill_blink(Skill *skill, SkillData *data)
 	{
 		RoomSpace *space = &matrix->spaces[destination.x][destination.y];
 
-		if (space->occupied) {
+		if (SPACE_IS_OCCUPIED(space)) {
 			break;
 		}
 
