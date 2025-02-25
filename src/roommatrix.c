@@ -116,6 +116,9 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 	LinkedList *monsterItem;
 	Item *item;
 
+	BH_ASSERT(rm);
+	BH_ASSERT(m);
+
 	roommatrix_reset(rm);
 
 	rm->roomPos = m->currentRoom;

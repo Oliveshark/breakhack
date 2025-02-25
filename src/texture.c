@@ -20,7 +20,6 @@
 #include <stdio.h>
 #include <physfs.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "texture.h"
 #include "util.h"
 #include "io_util.h"
@@ -51,14 +50,14 @@ texture_create_blank(Texture *t,
 				       access,
 				       t->dim.width,
 				       t->dim.height);
-	assert(t->texture != NULL);
+	BH_ASSERT(t->texture != NULL);
 	t->textureAccessType = access;
 }
 
 void
 texture_lock(Texture *t, SDL_Rect *rect, void **pixels, int *pitch)
 {
-	assert (!t->locked);
+	BH_ASSERT (!t->locked);
 	t->locked = true;
 	SDL_LockTexture(t->texture, rect, pixels, pitch);
 }
@@ -66,7 +65,7 @@ texture_lock(Texture *t, SDL_Rect *rect, void **pixels, int *pitch)
 void
 texture_unlock(Texture *t)
 {
-	assert (t->locked);
+	BH_ASSERT (t->locked);
 	t->locked = false;
 	SDL_UnlockTexture(t->texture);
 }
@@ -228,28 +227,28 @@ texture_load_from_text_blended(Texture *t, const char * text, SDL_Color fg, SDL_
 void
 texture_set_blend_mode(Texture *t, SDL_BlendMode mode)
 {
-	assert(t->texture);
+	BH_ASSERT(t->texture);
 	SDL_SetTextureBlendMode(t->texture, mode);
 }
 
 void
 texture_set_scale_mode(Texture *t, SDL_ScaleMode mode)
 {
-    assert(t->texture);
+    BH_ASSERT(t->texture);
     SDL_SetTextureScaleMode(t->texture, mode);
 }
 
 void
 texture_set_alpha(Texture *t, Uint8 alpha)
 {
-	assert(t->texture);
+	BH_ASSERT(t->texture);
 	SDL_SetTextureAlphaMod(t->texture, alpha);
 }
 
 void
 texture_set_color_mod(Texture *t, Uint8 r, Uint8 g, Uint8 b)
 {
-	assert(t->texture);
+	BH_ASSERT(t->texture);
 	SDL_SetTextureColorMod(t->texture, r, g, b);
 }
 

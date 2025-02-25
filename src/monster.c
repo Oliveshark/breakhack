@@ -724,7 +724,7 @@ monster_update(Monster *m, UpdateData *data)
 		if (m->sprite->state != SPRITE_STATE_FALLING &&
 		    m->sprite->state != SPRITE_STATE_PLUMMETED) {
 			RoomSpace *space = roommatrix_get_space_for(data->matrix, &m->sprite->pos);
-			if (space && SPACE_IS_LETHAL(space)) {
+			if (SPACE_IS_LETHAL(space)) {
 				m->sprite->state = SPRITE_STATE_FALLING;
 			}
 		}

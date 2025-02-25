@@ -60,13 +60,13 @@ typedef struct RoomSpace {
 	LinkedList *objects;
 } RoomSpace;
 
-#define SPACE_IS_OCCUPIED(space) (space->flags & TILE_OCCUPIED)
-#define SPACE_IS_LETHAL(space) (space->flags & TILE_LETHAL)
-#define SPACE_IS_LIGHTSOURCE(space) (space->flags & TILE_LIGHTSOURCE)
-#define SPACE_IS_DAMAGING(space) (space->flags & TILE_DAMAGE)
-#define SPACE_SET_FLAG(space, flag) ((space)->flags |= flag)
-#define SPACE_CLEAR_FLAG(space, flag) ((space)->flags &= ~flag)
-#define SPACE_TOGGLE_FLAG(space, flag) ((space)->flags ^= flag)
+#define SPACE_IS_OCCUPIED(space) ((space) && (space->flags & TILE_OCCUPIED))
+#define SPACE_IS_LETHAL(space) ((space) && (space->flags & TILE_LETHAL))
+#define SPACE_IS_LIGHTSOURCE(space) ((space) && (space->flags & TILE_LIGHTSOURCE))
+#define SPACE_IS_DAMAGING(space) ((space) && (space->flags & TILE_DAMAGE))
+#define SPACE_SET_FLAG(space, flag) ((space) && ((space)->flags |= flag))
+#define SPACE_CLEAR_FLAG(space, flag) ((space) && ((space)->flags &= ~flag))
+#define SPACE_TOGGLE_FLAG(space, flag) ((space) && ((space)->flags ^= flag))
 
 typedef struct RoomMatrix_t {
 	RoomSpace spaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
