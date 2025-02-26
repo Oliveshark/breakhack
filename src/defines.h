@@ -58,7 +58,7 @@
 
 /* Windows and compile crap */
 #ifdef _WIN32
-#define strdup _strdup
+#define strdup SDL_strdup
 #endif // _WIN32
 
 #define UNUSED(x) (void)(x)

@@ -27,7 +27,6 @@
 #include "item.h"
 #include "update_data.h"
 #include "defines.h"
-#include "trap.h"
 #include "object.h"
 
 static void
@@ -39,10 +38,7 @@ roommatrix_reset(RoomMatrix *m)
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			space = &m->spaces[i][j];
-			space->occupied = false;
-			space->lethal = false;
-			space->damaging = false;
-			space->lightsource = false;
+			space->flags = TILE_NONE;
 			space->light = 0;
 			space->monster = NULL;
 			space->player = NULL;
@@ -91,7 +87,7 @@ static void
 roommatrix_update_with_player(RoomMatrix *rm, Player *p)
 {
 	Position rp = position_to_matrix_coords(&p->sprite->pos);
-	rm->spaces[rp.x][rp.y].occupied = true;
+	SPACE_SET_FLAG(&rm->spaces[rp.x][rp.y], TILE_OCCUPIED);
 	rm->spaces[rp.x][rp.y].player = p;
 	rm->playerRoomPos = rp;
 }
@@ -120,6 +116,9 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 	LinkedList *monsterItem;
 	Item *item;
 
+	BH_ASSERT(rm);
+	BH_ASSERT(m);
+
 	roommatrix_reset(rm);
 
 	rm->roomPos = m->currentRoom;
@@ -131,33 +130,33 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 			RoomSpace *space = &rm->spaces[i][j];
 			if (r->tiles[i][j]) {
 				space->tile = r->tiles[i][j];
-				space->occupied =
-					r->tiles[i][j]->collider;
-				space->lightsource =
-					r->tiles[i][j]->lightsource;
-				space->lethal =
-					r->tiles[i][j]->lethal;
+				if (r->tiles[i][j]->collider)
+					SPACE_SET_FLAG(space, TILE_OCCUPIED);
+				if (r->tiles[i][j]->lightsource)
+					SPACE_SET_FLAG(space, TILE_LIGHTSOURCE);
+				if (r->tiles[i][j]->lethal)
+					SPACE_SET_FLAG(space, TILE_LETHAL);
 			}
 			if (r->walls[i][j]) {
 				space->wall = r->walls[i][j];
-				space->occupied =
-					r->walls[i][j]->collider;
-				space->lightsource =
-					r->walls[i][j]->lightsource;
+				if (r->walls[i][j]->collider)
+					SPACE_SET_FLAG(space, TILE_OCCUPIED);
+				if (r->walls[i][j]->lightsource)
+					SPACE_SET_FLAG(space, TILE_LIGHTSOURCE);
 			}
 			if (r->doors[i][j]) {
 				space->door = r->doors[i][j];
-				space->occupied =
-					r->doors[i][j]->collider;
-				space->lightsource =
-					r->doors[i][j]->lightsource;
+				if (r->doors[i][j]->collider)
+					SPACE_SET_FLAG(space, TILE_OCCUPIED);
+				if (r->doors[i][j]->lightsource)
+					SPACE_SET_FLAG(space, TILE_LIGHTSOURCE);
 			}
 			if (r->decorations[i][j]) {
 				space->decoration = r->decorations[i][j];
-				space->occupied |=
-					r->decorations[i][j]->collider;
-				space->lightsource |=
-					r->decorations[i][j]->lightsource;
+				if (r->decorations[i][j]->collider)
+					SPACE_SET_FLAG(space, TILE_OCCUPIED);
+				if (r->decorations[i][j]->lightsource)
+					SPACE_SET_FLAG(space, TILE_LIGHTSOURCE);
 			}
 			space->trap = r->traps[i][j];
 		}
@@ -213,8 +212,10 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 		position = position_to_matrix_coords(&o->sprite->pos);
 		RoomSpace *space = &rm->spaces[position.x][position.y];
 		linkedlist_push(&space->objects, o);
-		space->occupied = space->occupied || o->blocking;
-		space->damaging = o->damage > 0;
+		if (o->blocking)
+			SPACE_SET_FLAG(space, TILE_OCCUPIED);
+		if (o->damage > 0)
+			SPACE_SET_FLAG(space, TILE_DAMAGE);
 	}
 }
 
@@ -222,7 +223,7 @@ void
 roommatrix_add_lightsource(RoomMatrix *matrix, Position *pos)
 {
 	Position mpos = position_to_matrix_coords(pos);
-	matrix->spaces[mpos.x][mpos.y].lightsource = true;
+	SPACE_SET_FLAG(&matrix->spaces[mpos.x][mpos.y], TILE_LIGHTSOURCE);
 }
 
 static void
@@ -231,7 +232,7 @@ set_light_for_tile(RoomMatrix *matrix, int x, int y)
 	RoomSpace *space;
 
 	space = &matrix->spaces[x][y];
-	if (!space->lightsource)
+	if (!SPACE_IS_LIGHTSOURCE(space))
 		return;
 
 	space->light = 255;

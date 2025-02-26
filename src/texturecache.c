@@ -17,7 +17,6 @@
  */
 
 #include <SDL3/SDL.h>
-#include <assert.h>
 #include "texturecache.h"
 #include "hashtable.h"
 #include "defines.h"
@@ -72,7 +71,7 @@ texturecache_remove(Texture **texture)
 	TextureContainer *tc = ht_get(textures, (*texture)->path);
 	if (!tc)
 		return false;
-	assert(tc->texture == *texture);
+	BH_ASSERT(tc->texture == *texture);
 	texturecache_texture_container_destroy(tc);
 	*texture = NULL;
 	return true;

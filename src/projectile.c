@@ -136,7 +136,7 @@ projectile_update(Projectile *p, UpdateData *data)
 	p->processedSpaces[roomPos.x][roomPos.y] = true;
 
 	RoomSpace *space = &data->matrix->spaces[roomPos.x][roomPos.y];
-	if (!space->occupied && !space->monster)
+	if (!SPACE_IS_BLOCKED(space))
 		return;
 
 	if (space->player)

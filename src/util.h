@@ -52,6 +52,12 @@
 }
 #endif // DEBUG
 
+#ifdef DEBUG
+#define BH_ASSERT(x) if (!(x)) { fatal("Assertion failed: %s\n", #x); exit(-1); }
+#else
+#define BH_ASSERT(x) do {} while(0)
+#endif // DEBUG
+
 void
 log_print(FILE *out,
 		  const char *prefix,

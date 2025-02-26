@@ -335,7 +335,7 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 		monster_behaviour_check_post_attack(monster);
 	}
 
-	return space->occupied || space->monster;
+	return SPACE_IS_BLOCKED(space);
 }
 
 static bool
@@ -345,7 +345,9 @@ move(Monster *m, RoomMatrix *rm, Vector2d direction)
 	m->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
 
 	RoomSpace *space = roommatrix_get_space_for(rm, &m->sprite->pos);
-	if (has_collided(m, rm, direction) || space->lethal || space->trap || space->damaging) {
+	if (has_collided(m, rm, direction) || space->trap
+			|| (space->flags & (TILE_DAMAGE | TILE_LETHAL)) )
+	{
 		m->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;
 		m->sprite->pos.y -= TILE_DIMENSION * (int) direction.y;
 		return false;
@@ -456,8 +458,7 @@ get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
 
 			if (!position_equals(&next, &dest)) {
 				if (!position_in_roommatrix(&next)
-				    || rm->spaces[next.x][next.y].occupied
-				    || rm->spaces[next.x][next.y].lethal
+				    || (rm->spaces[next.x][next.y].flags & (TILE_OCCUPIED | TILE_LETHAL))
 				    || rm->spaces[next.x][next.y].trap) {
 					continue;
 				}
@@ -660,13 +661,13 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 
 	Position originalMPos = position_to_matrix_coords(&m->sprite->pos);
 
-	rm->spaces[originalMPos.x][originalMPos.y].occupied = false;
+	SPACE_CLEAR_FLAG(&rm->spaces[originalMPos.x][originalMPos.y], TILE_OCCUPIED);
 	rm->spaces[originalMPos.x][originalMPos.y].monster = NULL;
 
 	monster_walk(m, rm);
 
 	Position newPos = position_to_matrix_coords(&m->sprite->pos);
-	rm->spaces[newPos.x][newPos.y].occupied = true;
+	SPACE_SET_FLAG(&rm->spaces[newPos.x][newPos.y], TILE_OCCUPIED);
 	rm->spaces[newPos.x][newPos.y].monster = m;
 
 	if (!position_equals(&originalMPos, &newPos)) {
@@ -723,7 +724,7 @@ monster_update(Monster *m, UpdateData *data)
 		if (m->sprite->state != SPRITE_STATE_FALLING &&
 		    m->sprite->state != SPRITE_STATE_PLUMMETED) {
 			RoomSpace *space = roommatrix_get_space_for(data->matrix, &m->sprite->pos);
-			if (space && space->lethal) {
+			if (SPACE_IS_LETHAL(space)) {
 				m->sprite->state = SPRITE_STATE_FALLING;
 			}
 		}
@@ -953,7 +954,7 @@ monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 		m->stats.hp -= dmg;
 		monster_hit(m, dmg, false);
 		gui_log("%s takes %d damage from a trap", m->label, dmg);
-	} else if (space->damaging) {
+	} else if (SPACE_IS_DAMAGING(space)) {
 		LinkedList *objects = space->objects;
 		while (objects) {
 			Object *o = objects->data;
