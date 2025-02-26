@@ -27,6 +27,12 @@
 #define __FNAME__ __FILE__
 #endif // __FNAME__
 
+#ifdef VERBOSE
+#define verbose(...) log_print(stdout, "VERBOSE", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#else
+#define verbose(...) do  {} while(0)
+#endif
+
 #ifdef DEBUG
 #define debug(...) log_print(stdout, "DEBUG", __FNAME__,  __LINE__, __func__, __VA_ARGS__)
 #define info(...)  log_print(stdout, "INFO", __FNAME__, __LINE__, __func__, __VA_ARGS__)

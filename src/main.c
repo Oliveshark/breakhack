@@ -154,6 +154,13 @@ bool initSDL(void)
 	window_icon = IMG_Load_IO(io_load_rwops("Extras/icon.png"), true);
 	SDL_SetWindowIcon(gWindow, window_icon);
 
+#ifdef DEBUG
+	int num_render_drivers = SDL_GetNumRenderDrivers();
+	for (int i = 0; i < num_render_drivers; i++) {
+		debug("Available render driver: %s", SDL_GetRenderDriver(i));
+	}
+#endif
+
 	gRenderer = SDL_CreateRenderer(gWindow, NULL);
 	if (gRenderer == NULL)
 	{
