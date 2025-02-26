@@ -64,6 +64,15 @@ levelup(Player *player)
 	player->stats.hp = player->stats.maxhp;
 }
 
+static void
+player_particle_bleed(Position pos, Dimension dim, void *userdata)
+{
+	Player *p = userdata;
+	float perc = (float) p->stats.hp / p->stats.maxhp;
+	Uint32 particle_count = (Uint32) (20.0f * perc);
+	particle_engine_bloodspray(pos, dim, particle_count);
+}
+
 void
 player_levelup(Player *player)
 {
@@ -320,6 +329,18 @@ player_turn(Player *player, Vector2d *direction)
 	}
 }
 
+void
+player_update_pos(Player *player, Uint32 dx, Uint32 dy)
+{
+	player->sprite->pos.x += dx;
+	player->sprite->pos.y += dy;
+
+	Position pos = player->sprite->pos;
+	pos.x += 5;
+	pos.y += 5;
+	particle_emitter_update(player->bleed_emitter, pos, DIM(10, 10));
+}
+
 static void
 move(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
@@ -327,8 +348,7 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 
 	Position lastPos = position_to_matrix_coords(&player->sprite->pos);
 
-	player->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
-	player->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
+	player_update_pos(player, TILE_DIMENSION * (int) direction.x, TILE_DIMENSION * (int) direction.y);
 
 	if (!has_collided(player, matrix, direction)) {
 		action_spent(player);
@@ -547,6 +567,13 @@ player_create(class_t class, Camera *cam)
 	player->equipment.keys		= 0;
 	player->stateData.shopOwnerKiller = false;
 
+	ParticleEmitter *emitter = particle_emitter_create();
+	emitter->timestep = 2000;
+	emitter->enabled = false;
+	emitter->particle_func = particle_engine_bleed;
+	emitter->userdata = player;
+	player->bleed_emitter		= emitter;
+
 	build_sword_animation(player, cam->renderer);
 
 	memset(&player->skills,
@@ -701,6 +728,8 @@ player_render(Player *player, Camera *cam)
 		projectile_render(projectile->data, cam);
 		projectile = projectile->next;
 	}
+
+	particle_emitter_render(player->bleed_emitter);
 }
 
 void
@@ -759,6 +788,9 @@ player_update(UpdateData *data)
 	player->projectiles = remaining;
 
 	animation_update(player->swordAnimation);
+
+	uint32_t damage_taken = player->stats.maxhp - player->stats.hp;
+	player->bleed_emitter->enabled = damage_taken >= player->stats.maxhp / 2;
 }
 
 static void
@@ -788,6 +820,8 @@ player_destroy(Player *player)
 			skill_destroy(player->skills[i]);
 		player->skills[i] = NULL;
 	}
+
+	particle_emitter_destroy(player->bleed_emitter);
 
 	free(player);
 }

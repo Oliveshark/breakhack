@@ -26,6 +26,8 @@
 #include "linkedlist.h"
 #include "input.h"
 #include "artifact.h"
+#include "particle_engine.h"
+#include "particle_emitter.h"
 
 #define PLAYER_SKILL_COUNT 5
 
@@ -97,6 +99,7 @@ typedef struct Player {
 	PlayerEquipment equipment;
 	PlayerStateData stateData;
 	PlayerEffects effects;
+	ParticleEmitter *bleed_emitter;
 } Player;
 
 Player*
@@ -131,6 +134,9 @@ player_render_toplayer(Player*, Camera*);
 
 void
 player_turn(Player*, Vector2d *dir);
+
+void
+player_update_pos(Player*, Uint32 dx, Uint32 dy);
 
 void
 player_destroy(Player*);

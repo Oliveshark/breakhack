@@ -640,8 +640,8 @@ skill_backstab(Skill *skill, SkillData *data)
 
 	mixer_play_effect(SWING0 + get_random(2));
 
-	data->player->sprite->pos.x += (int) data->direction.x * TILE_DIMENSION;
-	data->player->sprite->pos.y += (int) data->direction.y * TILE_DIMENSION;
+	player_update_pos(data->player, data->direction.x * TILE_DIMENSION,
+			  data->direction.y * TILE_DIMENSION);
 	player_turn(data->player, &reverseDirection);
 	animation_run(data->player->swordAnimation);
 
@@ -828,8 +828,7 @@ skill_charge(Skill *skill, SkillData *data)
 	Position playerOriginPos = player->sprite->pos;
 	Sint32 xdiff = destination.x - playerStartPos.x;
 	Sint32 ydiff = destination.y - playerStartPos.y;
-	player->sprite->pos.x += xdiff * TILE_DIMENSION;
-	player->sprite->pos.y += ydiff * TILE_DIMENSION;
+	player_update_pos(player, xdiff * TILE_DIMENSION, ydiff * TILE_DIMENSION);
 	Position playerDestinationPos = player->sprite->pos;
 	player_turn(data->player, &data->direction);
 
@@ -912,8 +911,7 @@ skill_blink(Skill *skill, SkillData *data)
 	Position playerOriginPos = player->sprite->pos;
 	Sint32 xdiff = destination.x - playerStartPos.x;
 	Sint32 ydiff = destination.y - playerStartPos.y;
-	player->sprite->pos.x += xdiff * TILE_DIMENSION;
-	player->sprite->pos.y += ydiff * TILE_DIMENSION;
+	player_update_pos(player, xdiff * TILE_DIMENSION, ydiff * TILE_DIMENSION);
 	Position playerDestinationPos = player->sprite->pos;
 	player_turn(data->player, &data->direction);
 

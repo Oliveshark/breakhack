@@ -29,7 +29,7 @@ void
 particle_engine_init(void);
 
 void
-particle_engine_bleed(Position pos, Dimension dim);
+particle_engine_bleed(Position pos, Dimension dim, void *userdata);
 
 void
 particle_engine_bloodspray(Position, Dimension, unsigned int count);
@@ -50,7 +50,7 @@ void
 particle_engine_speed_lines(Position, Dimension, bool horizontal);
 
 void
-particle_engine_bloodlust(Position, Dimension);
+particle_engine_bloodlust(Position, Dimension, void *userdata);
 
 void
 particle_engine_sparkle(Position, Dimension, SDL_Color, bool global);

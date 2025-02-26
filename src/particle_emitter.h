@@ -27,7 +27,8 @@ typedef struct ParticleEmitter {
 	Timer *timer;
 	Position pos;
 	Dimension dim;
-	void (*particle_func)(Position, Dimension);
+	void (*particle_func)(Position, Dimension, void *userdata);
+	void *userdata;
 	bool enabled;
 } ParticleEmitter;
 
