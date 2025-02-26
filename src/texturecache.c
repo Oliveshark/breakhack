@@ -49,7 +49,7 @@ texturecache_add(const char *path)
 		tc->texture = texture_create();
 		texture_load_from_file(tc->texture, path, renderer);
 		ht_set(textures, path, tc);
-		debug("Cached texture: %s", path);
+		verbose("Cached texture: %s", path);
 	}
 
 	return tc->texture;

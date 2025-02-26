@@ -47,9 +47,9 @@ load_song(char *path)
 static Mix_Chunk*
 load_effect(char *path)
 {
-	debug("Loading effect: %s", path);
+	verbose("Loading effect: %s", path);
 	SDL_IOStream *io = io_load_rwops(path);
-	debug("Loaded effect: %s", path);
+	verbose("Loaded effect: %s", path);
 	Mix_Chunk *effect = Mix_LoadWAV_IO(io, true);
 	if (effect == NULL)
 		fatal("Failed to load effect (%s): %s", path, SDL_GetError());
