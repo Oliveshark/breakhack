@@ -171,6 +171,23 @@ bool initSDL(void)
 		return false;
 	}
 
+#ifdef DEBUG
+	/* Dump the renderer info */
+	const char *renderer_name = SDL_GetRendererName(gRenderer);
+	if (renderer_name != NULL) {
+		debug("Renderer: %s", renderer_name);
+		if (SDL_strcmp("gpu", renderer_name) == 0) {
+			SDL_GPUDevice *device =
+				SDL_GetPointerProperty(SDL_GetRendererProperties(gRenderer),
+						SDL_PROP_RENDERER_GPU_DEVICE_POINTER,
+						NULL);
+			debug("    Driver: %s", SDL_GetGPUDeviceDriver(device));
+		}
+	} else {
+		error("Unable to get renderer name: %s", SDL_GetError());
+	}
+#endif
+
 	if (SDL_TextInputActive(gWindow)) {
 		debug("Disabling text input");
 		SDL_StopTextInput(gWindow);
@@ -1373,7 +1390,7 @@ validate_lib_checksum(void)
 		fatal("Unable to open %s for reading\n", file);
 	}
 
-	unsigned calculated = checksum_fp(fp);	
+	unsigned calculated = checksum_fp(fp);
 	fclose(fp);
 
 	if (calculated != expected) {
@@ -1409,7 +1426,7 @@ int main(int argc, char *argv[])
 		return -1;
 
 	if (settings_get()->fullscreen_enabled) {
-		// Game starts in windowed mode so this will 
+		// Game starts in windowed mode so this will
 		// change to fullscreen
 		toggle_fullscreen();
 	}
