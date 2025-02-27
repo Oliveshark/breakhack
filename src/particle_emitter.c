@@ -13,6 +13,7 @@ particle_emitter_create(void)
 	emitter->timer = _timer_create();
 	emitter->timestep = 1;
 	emitter->enabled = false;
+	emitter->userdata = NULL;
 	return emitter;
 }
 
@@ -34,7 +35,7 @@ particle_emitter_render(ParticleEmitter *emitter)
 	timer_start(emitter->timer);
 
 	if (emitter->particle_func)
-		emitter->particle_func(emitter->pos, emitter->dim);
+		emitter->particle_func(emitter->pos, emitter->dim, emitter->userdata);
 	else
 		error("Particle emitter missing particle_func");
 }

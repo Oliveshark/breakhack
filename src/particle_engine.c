@@ -100,8 +100,9 @@ particle_engine_init(void)
 }
 
 void
-particle_engine_bleed(Position pos, Dimension dim)
+particle_engine_bleed(Position pos, Dimension dim, void *userdata)
 {
+	(void) userdata;
 	particle_engine_bloodspray(pos, dim, 10);
 }
 
@@ -267,8 +268,9 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 }
 
 void
-particle_engine_bloodlust(Position pos, Dimension dim)
+particle_engine_bloodlust(Position pos, Dimension dim, void *userdata)
 {
+	(void) userdata;
 	particle_engine_sparkle(pos, dim, C_RED, false);
 }
 
