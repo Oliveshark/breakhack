@@ -182,11 +182,6 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 if (STEAM)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSTEAM_BUILD")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DSTEAM_BUILD")
-	set(STEAM_SOURCES
-		src/steam/steamworks_api_wrapper.c
-		)
-else ()
-	set(STEAM_SOURCES "")
 endif ()
 
 if (MINGW)
