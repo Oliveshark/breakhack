@@ -102,7 +102,7 @@ bool
 map_move_monsters(Map*, RoomMatrix*);
 
 bool
-map_clear_expired_entities(Map*, Player*);
+map_clear_expired_entities(Map*, RoomMatrix *, Player*);
 
 void
 map_on_new_turn(Map*);

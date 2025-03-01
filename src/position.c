@@ -20,17 +20,16 @@
 #include "position.h"
 #include "defines.h"
 
+#define ROOM_PX_WIDTH (TILE_DIMENSION * MAP_ROOM_WIDTH)
+#define ROOM_PX_HEIGHT (TILE_DIMENSION * MAP_ROOM_HEIGHT)
+
 Position
 position_to_matrix_coords(const Position *src)
 {
-	unsigned int room_px_width, room_px_height;
 	Position pos;
 
-	room_px_width = TILE_DIMENSION * MAP_ROOM_WIDTH;
-	room_px_height = TILE_DIMENSION * MAP_ROOM_HEIGHT;
-
-	pos.x = (src->x % room_px_width) / TILE_DIMENSION;
-	pos.y = (src->y % room_px_height) / TILE_DIMENSION;
+	pos.x = (src->x % ROOM_PX_WIDTH) / TILE_DIMENSION;
+	pos.y = (src->y % ROOM_PX_HEIGHT) / TILE_DIMENSION;
 
 	return pos;
 }
@@ -38,14 +37,10 @@ position_to_matrix_coords(const Position *src)
 Position
 position_to_room_coords(Position *src)
 {
-	unsigned int room_px_width, room_px_height;
 	Position pos;
 
-	room_px_width = TILE_DIMENSION * MAP_ROOM_WIDTH;
-	room_px_height = TILE_DIMENSION * MAP_ROOM_HEIGHT;
-
-	pos.x = (src->x - (src->x % room_px_width)) / room_px_width;
-	pos.y = (src->y - (src->y % room_px_height)) / room_px_height;
+	pos.x = (src->x - (src->x % ROOM_PX_WIDTH)) / ROOM_PX_WIDTH;
+	pos.y = (src->y - (src->y % ROOM_PX_HEIGHT)) / ROOM_PX_HEIGHT;
 
 	return pos;
 }
@@ -72,21 +67,18 @@ position_proximity(unsigned int distance,
 bool
 position_in_room(Position *pos, Position *roomPos)
 {
-	int room_px_width, room_px_height, room_x_px, room_y_px;
+	int room_x_px, room_y_px;
 
-	room_px_width = TILE_DIMENSION * MAP_ROOM_WIDTH;
-	room_px_height = TILE_DIMENSION * MAP_ROOM_HEIGHT;
-
-	room_x_px = roomPos->x * room_px_width;
-	room_y_px = roomPos->y * room_px_height;
+	room_x_px = roomPos->x * ROOM_PX_WIDTH;
+	room_y_px = roomPos->y * ROOM_PX_HEIGHT;
 
 	if (pos->x < room_x_px)
 		return false;
-	else if (pos->x >= room_x_px + room_px_width)
+	else if (pos->x >= room_x_px + ROOM_PX_WIDTH)
 		return false;
 	else if (pos->y < room_y_px)
 		return false;
-	else if (pos->y >= room_y_px + room_px_height)
+	else if (pos->y >= room_y_px + ROOM_PX_HEIGHT)
 		return false;
 
 	return true;
@@ -114,4 +106,12 @@ Position
 position_add(const Position *a, const Position *b)
 {
 	return POS(a->x + b->x, a->y + b->y);
+}
+
+Position
+position_mcord_to_world_pos(const Position *cord, const Position *roomPos)
+{
+
+	return POS(roomPos->x * GAME_VIEW_WIDTH  + cord->x * TILE_DIMENSION,
+			roomPos->y * GAME_VIEW_HEIGHT + cord->y * TILE_DIMENSION);
 }

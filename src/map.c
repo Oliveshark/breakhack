@@ -27,6 +27,7 @@
 #include "update_data.h"
 #include "trap.h"
 #include "mixer.h"
+#include "loot.h"
 
 static Room*
 create_room(void)
@@ -65,7 +66,7 @@ map_create(void)
 	map->monsterMoveTimer = _timer_create();
 	map->level = 1;
 	map->lockTypes = 0;
-	
+
 	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {
 		for (j=0; j < MAP_V_ROOM_COUNT; ++j) {
 			map->rooms[i][j] = create_room();
@@ -169,7 +170,7 @@ map_add_trap(Map *map, Position *pos, Trap *trap)
 }
 
 bool
-map_clear_expired_entities(Map *map, Player *player)
+map_clear_expired_entities(Map *map, RoomMatrix *rm, Player *player)
 {
 	LinkedList *filtered = linkedlist_create();
 	bool anythingCleared = false;
@@ -177,7 +178,7 @@ map_clear_expired_entities(Map *map, Player *player)
 	while (map->monsters) {
 		Monster *monster = linkedlist_pop(&map->monsters);
 		if (monster->stats.hp <= 0) {
-			monster_drop_loot(monster, map, player);
+			loot_drop(monster, map, rm, player);
 			monster_destroy(monster);
 			anythingCleared = true;
 		} else {
@@ -321,8 +322,14 @@ map_update(UpdateData *data)
 
 	LinkedList *items = map->items;
 	while (items) {
-		item_update(items->data);
+		item_update(items->data, data);
 		items = items->next;
+	}
+
+	LinkedList *artifacts = map->artifacts;
+	while (artifacts) {
+		artifact_update(artifacts->data, data);
+		artifacts = artifacts->next;
 	}
 }
 

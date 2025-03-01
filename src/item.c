@@ -32,7 +32,7 @@ item_create(void)
 	item->collected = false;
 	item->openable = false;
 	item->opened = false;
-	m_strcpy(item->label, 50, "");
+	memset(item->label, '\0', 50);
 	item->price = 0.0;
 	item->value = 0.0;
 	item->items = NULL;
@@ -41,13 +41,16 @@ item_create(void)
 }
 
 void
-item_update(Item *item)
+item_update(Item *item, UpdateData *ud)
 {
+	sprite_update(item->sprite, ud);
+
 	LinkedList *subsprites = item->subsprites;
 	while (subsprites != NULL) {
 		Sprite *sprite = subsprites->data;
 		sprite->pos = item->sprite->pos;
 		sprite->pos.x += 15 - sprite->dim.width / 2;
+		sprite_update(sprite, ud);
 		subsprites = subsprites->next;
 	}
 }

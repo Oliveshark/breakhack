@@ -32,7 +32,7 @@
  */
 typedef struct Item_t {
 	Sprite *sprite;                               /**< The item sprite */
-	LinkedList *subsprites;                       /**< A list of sub-sprites */
+	LinkedList *subsprites;                       /**< A list of sub-sprites (labels) */
 	bool collected;                               /**< If the item has been collected */
 	bool openable;                                /**< Can the item be opened? */
 	bool opened;                                  /**< Has the item been opened? */
@@ -50,7 +50,7 @@ void
 item_collected(Item*, Player*);
 
 void
-item_update(Item*);
+item_update(Item*, UpdateData*);
 
 void
 item_render(Item*, Camera*);

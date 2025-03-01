@@ -32,8 +32,17 @@ typedef struct UpdateData UpdateData;
 typedef enum SpriteState {
 	SPRITE_STATE_FALLING,
 	SPRITE_STATE_PLUMMETED,
+	SPRITE_STATE_MOVING,
 	SPRITE_STATE_DEFAULT
 } SpriteState;
+
+typedef struct Destination {
+	double angle;
+	Position pos;
+	Dimension dim;
+	float time_ms;
+	void (*on_complete)(void);
+} Destination;
 
 typedef struct Sprite {
 	SpriteState state;
@@ -44,11 +53,12 @@ typedef struct Sprite {
 	Position offset;
 	Dimension dim;
 	double angle;
+	Destination dest;
 	SDL_Point rotationPoint;
 	SDL_FlipMode flip;
 	Timer *renderTimer;
 	Timer *animationTimer;
-	unsigned int texture_index;
+	uint32_t texture_index;
 	bool fixed;
 	bool animate;
 	bool hidden;
@@ -69,6 +79,9 @@ sprite_set_texture(Sprite *, Texture *, int index);
 
 void
 sprite_update(Sprite*, UpdateData *data);
+
+void
+sprite_interpolate_to(Sprite *s, Destination *dest);
 
 void
 sprite_render(Sprite*, Camera*);

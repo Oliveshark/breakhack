@@ -335,6 +335,46 @@ void roommatrix_destroy(RoomMatrix *m)
 	free(m);
 }
 
+size_t
+roommatrix_get_surrounding_spaces(RoomMatrix *rm, const Position *pos, Position *tile_positions, size_t size)
+{
+	BH_ASSERT(pos != NULL);
+	BH_ASSERT(tile_positions != NULL);
+	BH_ASSERT(size >= 9);
+
+	Position space_pos = position_to_matrix_coords(pos);
+	Position it_pos;
+
+	size_t found_spaces = 0;
+	RoomSpace *space = &rm->spaces[space_pos.x][space_pos.y];
+
+	if (SPACE_IS_WALKABLE(space)) {
+		tile_positions[found_spaces++] = *pos;
+	}
+
+	for (int x = space_pos.x - 1; x <= space_pos.x + 1; x++) {
+		for (int y = space_pos.y - 1; y <= space_pos.y + 1; y++) {
+			it_pos = POS(x, y);
+			if (!position_in_roommatrix(&it_pos)) {
+				continue;
+			}
+			if (position_equals(&it_pos, &space_pos)) {
+				continue;
+			}
+			debug("[%u] Checking space %d, %d", found_spaces, x, y);
+			if (found_spaces >= size) {
+				fatal("Found more spaces than expected: %u >= %u", found_spaces, size);
+			}
+			space = &rm->spaces[x][y];
+			if (SPACE_IS_WALKABLE(space)) {
+				tile_positions[found_spaces++] = position_mcord_to_world_pos(&it_pos, &rm->roomPos);
+			}
+		}
+	}
+
+	return found_spaces;
+}
+
 Player *
 roommatrix_get_player(RoomMatrix *rm)
 {

@@ -24,7 +24,6 @@
 #include "stats.h"
 #include "actiontext.h"
 #include "player.h"
-#include "linkedlist.h"
 #include "doorlocktype.h"
 #include "particle_emitter.h"
 
@@ -110,9 +109,6 @@ monster_update_stats_for_level(Monster*, unsigned int level);
 
 void
 monster_update(Monster*, struct UpdateData*);
-
-void
-monster_drop_loot(Monster*, Map*, Player*);
 
 void
 monster_set_behaviour(Monster *, MonsterBehaviour behaviour);

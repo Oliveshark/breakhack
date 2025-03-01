@@ -96,6 +96,12 @@ load_effects(void)
 	effects[BLINK_EFFECT] = load_effect("Sounds/FX/blink.wav");
 	effects[BLAST_EFFECT] = load_effect("Sounds/FX/blast.wav");
 	effects[EXPLOSION_EFFECT] = load_effect("Sounds/FX/explosion.wav");
+	effects[COIN_DROP1] = load_effect("Sounds/FX/coin2.wav");
+	effects[COIN_DROP2] = load_effect("Sounds/FX/coin3.wav");
+	effects[METAL_DROP] = load_effect("Sounds/FX/metal-small3.wav");
+	effects[POTION_DROP] = load_effect("Sounds/FX/potion_drop.wav");
+	effects[FLESH_DROP1] = load_effect("Sounds/FX/flesh_drop1.wav");
+	effects[FLESH_DROP2] = load_effect("Sounds/FX/flesh_drop2.wav");
 }
 
 void

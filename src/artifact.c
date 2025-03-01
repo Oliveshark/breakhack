@@ -198,7 +198,7 @@ artifact_create_random(Player *p, Uint8 level)
 void
 artifact_add_price(Artifact *a, unsigned int price)
 {
-	
+
 	Sprite *sprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf",
 							8,
 							C_YELLOW,
@@ -311,6 +311,16 @@ artifact_copy(const Artifact *a)
 }
 
 void
+artifact_update(Artifact *a, UpdateData *ud)
+{
+	sprite_update(a->sprite, ud);
+	if (a->priceSprite)
+		a->priceSprite->pos = a->sprite->pos;
+	if (a->levelSprite)
+		a->levelSprite->pos = a->sprite->pos;
+}
+
+void
 artifact_render(Artifact *a, Camera *cam)
 {
 	sprite_render(a->sprite, cam);
@@ -319,11 +329,9 @@ artifact_render(Artifact *a, Camera *cam)
 	pos.y += 4;
 	particle_engine_sparkle(pos, DIM(24, 24), C_PURPLE, false);
 	if (a->priceSprite) {
-		a->priceSprite->pos = a->sprite->pos;
 		sprite_render(a->priceSprite, cam);
 	}
 	if (a->levelSprite) {
-		a->levelSprite->pos = a->sprite->pos;
 		sprite_render(a->levelSprite, cam);
 	}
 }

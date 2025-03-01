@@ -69,6 +69,9 @@ Artifact *
 artifact_copy(const Artifact*);
 
 void
+artifact_update(Artifact*, struct UpdateData*);
+
+void
 artifact_render(Artifact*, Camera*);
 
 void

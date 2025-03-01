@@ -69,6 +69,7 @@ typedef struct RoomSpace {
 #define SPACE_TOGGLE_FLAG(space, flag) ((space) && ((space)->flags ^= flag))
 
 #define SPACE_IS_BLOCKED(space) (SPACE_IS_OCCUPIED(space) || (space)->monster)
+#define SPACE_IS_WALKABLE(space) (!(space->flags & (TILE_OCCUPIED | TILE_LETHAL | TILE_DAMAGE)))
 
 typedef struct RoomMatrix_t {
 	RoomSpace spaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
@@ -101,6 +102,25 @@ roommatrix_render_lightmap(RoomMatrix*, Camera*);
 
 RoomSpace*
 roommatrix_get_space_for(RoomMatrix*, const Position *p);
+
+/**
+ * \brief Get all 8 unblocked spaces surrounding the provided space
+ *
+ * Finds all unoccupied and unblocked spaces surrounding the provided space.
+ * The tile positions of the spaces are placed in the provided output array.
+ * The number of found spaces will be returned.
+ *
+ * If the provided starting position is unblocked it will always be placed
+ * first in the output array.
+ *
+ * \param[in] rm The room matrix
+ * \param[in] pos The position of the starting space
+ * \param[out] tile_positions The output array to be filled
+ * \param[in] size The size of the spaces array
+ * \returns The number of spaces placed in the output array
+ */
+size_t
+roommatrix_get_surrounding_spaces(RoomMatrix* rm, const Position *pos, Position *tile_positions, size_t size);
 
 Player *
 roommatrix_get_player(RoomMatrix*);
