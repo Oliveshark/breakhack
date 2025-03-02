@@ -142,6 +142,7 @@ create_frame_sprite(Camera *cam)
 			     cam->renderer);
 
 	SDL_SetRenderTarget(cam->renderer, texture->texture);
+	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(cam->renderer);
 
 	Texture *t = texturecache_get("GUI/GUI0.png");

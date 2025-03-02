@@ -1045,7 +1045,7 @@ render_game(void)
 static void
 run_game_render(void)
 {
-	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(gRenderer);
 
 	render_game();
@@ -1114,7 +1114,7 @@ run_game(void)
 	run_game_update();
 
 	if (gameCompleted()) {
-		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 		SDL_RenderClear(gRenderer);
 		render_game_completed();
 		render_gui();
@@ -1213,7 +1213,7 @@ run_menu(void)
 
 	menu_update(get_active_menu(), &input, gCamera);
 
-	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(gRenderer);
 	if (gGameState != CHARACTER_MENU)  {
 		SDL_SetRenderViewport(gRenderer, &menuViewport);
