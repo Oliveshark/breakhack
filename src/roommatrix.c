@@ -271,7 +271,7 @@ roommatrix_build_lightmap(RoomMatrix *matrix, Camera *camera)
 
 	/* Render spaces light value to lightmap texture */
 	SDL_SetRenderTarget(camera->renderer, matrix->lightmap->texture);
-	SDL_SetRenderDrawColor(camera->renderer, 0, 0, 0, 0);
+	SDL_SetRenderDrawColor(camera->renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
 	SDL_RenderClear(camera->renderer);
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
@@ -280,7 +280,6 @@ roommatrix_build_lightmap(RoomMatrix *matrix, Camera *camera)
 			SDL_RenderPoint(camera->renderer, (float) i, (float) j);
 		}
 	}
-	SDL_RenderPresent(camera->renderer);
 	SDL_SetRenderTarget(camera->renderer, NULL);
 }
 
@@ -306,7 +305,6 @@ roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 	SDL_Rect dst_rect = { 0, 0, GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
 
 	texture_render_clip(matrix->lightmap, &dst_rect, &src_rect, cam);
-	texture_render(matrix->lightmap, &src_rect, cam);
 }
 
 RoomSpace*

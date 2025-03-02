@@ -41,6 +41,7 @@ render_frame_on_texture(Uint32 width,
 			     cam->renderer);
 
 	SDL_SetRenderTarget(cam->renderer, texture->texture);
+	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(cam->renderer);
 
 	SDL_Rect frame_top_left		= CLIP16(offset.x, offset.y);
