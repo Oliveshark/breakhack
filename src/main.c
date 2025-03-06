@@ -59,6 +59,10 @@
 #include "config.h"
 #include "save.h"
 
+#ifdef DEBUG
+#include "debug/debug.h"
+#endif
+
 #ifdef STEAM_BUILD
 #include "checksum.h"
 #include "steam/steamworks_api_wrapper.h"
@@ -955,6 +959,10 @@ run_game_update(void)
 	bool skillActivated = check_skillbar_activation();
 	check_tooltip_activation(skillActivated);
 
+#ifdef DEBUG
+	debug_update(&updateData);
+#endif
+
 	if (gGameState == PLAYING && currentTurn == PLAYER)
 		player_update(&updateData);
 
@@ -980,7 +988,7 @@ run_game_update(void)
 		}
 	}
 
-	map_clear_expired_entities(gMap, gPlayer);
+	map_clear_expired_entities(gMap, gRoomMatrix, gPlayer);
 	repopulate_roommatrix();
 }
 
@@ -1038,6 +1046,9 @@ render_game(void)
 	map_render_top_layer(gMap, gRoomMatrix, gCamera);
 
 	roommatrix_render_lightmap(gRoomMatrix, gCamera);
+#ifdef DEBUG
+	debug_render(gCamera);
+#endif
 	actiontextbuilder_render(gCamera);
 	gui_render_event_message(gGui, gCamera);
 }

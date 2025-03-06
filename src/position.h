@@ -23,58 +23,94 @@
 
 #define POS(x, y) (Position) { x, y }
 
+/**
+ * \brief A 2D position
+ */
 typedef struct {
-	int x;
-	int y;
+	int x; /**< x coordinate */
+	int y; /**< y coordinate */
 } Position;
 
 /*
- * Return a matrix coord position for a given position
+ * \brief Return a matrix coord position for a given position
+ *
+ * \param p The position
+ * \return The matrix coord position
  */
 Position
-position_to_matrix_coords(const Position*);
+position_to_matrix_coords(const Position *p);
 
 /*
- * Get the room coord for the room containing the given position
+ * \brief Get the room coord for the room containing the given position
+ *
+ * \param p The position
+ * \return The room coord
  */
 Position
-position_to_room_coords(Position*);
+position_to_room_coords(Position *p);
 
 /*
- * Check is a position is within a given room
+ * \brief Check is a position is within a given room
+ *
+ * \param pos The position to check
+ * \param roomPos The position of the room
+ * \return True if the position is within the room
  */
 bool
 position_in_room(Position *pos, Position *roomPos);
 
 /*
- * Check if two positions are equal
+ * \brief Check if two positions are equal
+ *
+ * \param p1 The first position
+ * \param p2 The second position
+ * \return True if the two positions are equal
  */
 bool
-position_equals(const Position*, const Position*);
+position_equals(const Position *p1, const Position *p2);
 
 /*
- * Check if two positions are separated by equal
- * or less of the provided distance.
+ * \brief Check if two positions are separated by equal or less of the provided distance.
+ *
+ * \param distance The maximum distance between the two positions
+ * \param p1 The first position
+ * \param p2 The second position
+ * \return True if the two positions are within the provided distance
  */
 bool
-position_proximity(unsigned int distance, const Position*, const Position*);
+position_proximity(unsigned int distance, const Position *p1, const Position *p2);
 
 /*
- * Check if a matrix coord is still within the matrix
+ * \brief Check if a matrix coord is still within the matrix
+ *
+ * \param p The position to check
+ * \return True if the position is within the matrix
  */
 bool
-position_in_roommatrix(const Position*);
+position_in_roommatrix(const Position *p);
 
 /*
- * Get the tile position for the given world position
+ * \brief Get the tile position for the given world position
+ *
+ * \param p The world position
+ * \return The tile position
  */
 Position
-position_to_tile_pos(const Position*);
+position_to_tile_pos(const Position *p);
 
 /*
- * Add two positions
+ * \brief Add two positions
+ *
+ * \param p1 The first position
+ * \param p2 The second position
  */
 Position
-position_add(const Position*, const Position*);
+position_add(const Position *p1, const Position *p2);
+
+/**
+ * \brief Get the world position from matrix coord
+ */
+Position
+position_mcord_to_world_pos(const Position *cord, const Position *roomPos);
 
 #endif // POSITION_H_

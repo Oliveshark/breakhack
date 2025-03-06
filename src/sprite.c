@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <signal.h>
 #include <stdlib.h>
 #include "sprite.h"
 #include "util.h"
@@ -125,11 +126,46 @@ sprite_set_color_mod(Sprite *s, Uint8 r, Uint8 g, Uint8 b)
 		texture_set_color_mod(s->textures[1], r, g, b);
 }
 
+static inline void
+interpolate_position(Sprite *s, float steps_remaining)
+{
+	Position *cpos = &s->pos;
+	Position *dpos = &s->dest.pos;
+
+	float dx = (float) (dpos->x - cpos->x) / steps_remaining;
+	float dy = (float) (dpos->y - cpos->y) / steps_remaining;
+
+	s->pos.x += dx;
+	s->pos.y += dy;
+}
+
+static inline void
+interpolate_scale(Sprite *s, float steps_remaining)
+{
+	Dimension *cdim = &s->dim;
+	Dimension *ddim = &s->dest.dim;
+
+	float dw = (float) (ddim->width - cdim->width) / steps_remaining;
+	float dh = (float) (ddim->height - cdim->height) / steps_remaining;
+
+	s->dim.width += dw;
+	s->dim.height += dh;
+	s->offset = POS((s->dest.dim.width - s->dim.width)/2, (s->dest.dim.height - s->dim.height) / 2);
+}
+
+static inline void
+interpolate_angle(Sprite *s, float steps_remaining)
+{
+	float crot = s->angle;
+	float drot = s->dest.angle;
+
+	float rotation = (drot - crot) / steps_remaining;
+	s->angle += rotation;
+}
+
 void
 sprite_update(Sprite *s, UpdateData *data)
 {
-	UNUSED(data);
-
 	if (s->state == SPRITE_STATE_FALLING) {
 		if (!timer_started(s->animationTimer)) {
 			timer_start(s->animationTimer);
@@ -151,8 +187,42 @@ sprite_update(Sprite *s, UpdateData *data)
 				s->state = SPRITE_STATE_PLUMMETED;
 			}
 		}
-	}
+	} else if (s->state == SPRITE_STATE_MOVING) {
+		float deltatime_ms = data->deltatime * 1000;
+		const float steps_remaining  = s->dest.time_ms / deltatime_ms;
+		if (steps_remaining <= 1) {
+			/* No time left, just snap into place */
+			s->pos = s->dest.pos;
+			s->angle = s->dest.angle;
+			s->dim = s->dest.dim;
+			if (s->dest.on_complete) {
+				s->dest.on_complete();
+			}
+			memset(&s->dest, 0, sizeof(s->dest));
+			s->state = SPRITE_STATE_DEFAULT;
+		} else {
+			/* Interpolate position */
+			interpolate_position(s, steps_remaining);
+			interpolate_scale(s, steps_remaining);
+			interpolate_angle(s, steps_remaining);
+			s->dest.time_ms -= deltatime_ms;
+		}
 
+	}
+}
+
+void
+sprite_interpolate_to(Sprite *s, Destination *dest)
+{
+	debug("Interpolating:");
+	debug("    Pos: %dx%d -> %dx%d", s->pos.x, s->pos.y, dest->pos.x, dest->pos.y);
+	s->offset = POS((dest->dim.width - s->dim.width)/2, (dest->dim.height - s->dim.width) / 2);
+	s->rotationPoint = (SDL_Point) {
+		dest->dim.width /2,
+		dest->dim.height /2
+	};
+	s->state = SPRITE_STATE_MOVING;
+	s->dest = *dest;
 }
 
 void

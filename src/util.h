@@ -41,6 +41,7 @@
 #define info(...) do  {} while(0)
 #endif // DEBUG
 
+#define warn(...) log_print(stderr, "WARN", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #define error(...) log_print(stderr, "ERROR", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #ifdef DEBUG
 #define fatal(...) \

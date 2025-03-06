@@ -38,6 +38,7 @@
 #include "object.h"
 #include "mixer.h"
 #include "pos_heap.h"
+#include "loot.h"
 
 static void
 monster_set_sprite_clip_for_current_state(Monster *m)
@@ -778,107 +779,6 @@ monster_update_stats_for_level(Monster *m, unsigned int level)
 	m->stats.dmg *= level;
 	m->stats.atk *= level;
 	m->stats.def *= level;
-}
-
-void
-monster_drop_loot(Monster *monster, Map *map, Player *player)
-{
-	static Uint32 treasure_drop_chance = 1;
-	static Uint32 item_drop_chance = 1;
-	static Uint32 potion_drop_chance = 30;
-
-	if (monster->sprite->state == SPRITE_STATE_FALLING)
-		return;
-
-	Item *item;
-	unsigned int item_count = 0;
-	bool player_full_health = player->stats.hp >= player->stats.maxhp;
-
-	Position monsterTilePos = monster->sprite->pos;
-	monsterTilePos.x -= (monsterTilePos.x % TILE_DIMENSION);
-	monsterTilePos.y -= (monsterTilePos.y % TILE_DIMENSION);
-
-	if (monster->boss) {
-		Artifact *a = artifact_create_random(player, 2);
-		a->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->artifacts, a);
-		Item *treasure = item_builder_build_item(TREASURE, map->level*2);
-		treasure->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->items, treasure);
-	}
-
-	if (monster->items.keyType != LOCK_NONE) {
-		Item *key = item_builder_build_key(monster->items.keyType);
-		key->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->items, key);
-	}
-
-	if (strcmp(monster->label, "The Trader") == 0) {
-		Item *treasure = item_builder_build_treasure(PLATINUM, 10 * monster->stats.lvl);
-		treasure->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->items, treasure);
-	}
-
-	if (strcmp(monster->label, "A Fairy") == 0) {
-		Item *treasure = item_builder_build_treasure(PLATINUM, 3 * monster->stats.lvl);
-		treasure->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->items, treasure);
-	}
-
-	if (monster->stats.lvl > 2 && get_random(29) == 0) {
-		Artifact *a = artifact_create_random(player, 1);
-		a->sprite->pos = monsterTilePos;
-		linkedlist_append(&map->artifacts, a);
-	}
-
-	if (player->stats.hp < player->stats.maxhp / 2)
-		item_drop_chance = 0;
-
-	/* TODO: This hardcoded size is a bit risky. Capacity is good but
-	 * perhaps a dynamic array would be safer just in case? */
-	Item *items[4];
-	if (player_has_potion_effect(player, POTION_NONE) && get_random(potion_drop_chance) == 0) {
-		if (get_random(1) == 0)
-			item = item_builder_build_potion(POTION_BLOODLUST);
-		else
-			item = item_builder_build_potion(POTION_FROST);
-		item->sprite->pos = monsterTilePos;
-		items[item_count++] = item;
-	}
-	if (get_random(treasure_drop_chance) == 0) {
-		item = item_builder_build_item(TREASURE, map->level);
-		item->sprite->pos = monsterTilePos;
-		items[item_count++] = item;
-	}
-	if (get_random(item_drop_chance) == 0) {
-		ItemKey key;
-		key = get_random(DAGGER);
-		item = item_builder_build_item(key, map->level);
-		item->sprite->pos = monsterTilePos;
-		items[item_count++] = item;
-	}
-	if (!player_full_health && get_random(2) == 0) {
-		item = item_builder_build_item(FLESH, map->level);
-		item->sprite->pos = monsterTilePos;
-		items[item_count++] = item;
-	}
-
-	if (item_count == 0)
-		return;
-
-	gui_log("%s dropped something", monster->label);
-
-	if (item_count == 1) {
-		linkedlist_push(&map->items, items[0]);
-	} else {
-		Item *container = item_builder_build_sack();
-		container->sprite->pos = monsterTilePos;
-		unsigned int i;
-		for (i = 0; i < item_count; ++i) {
-			linkedlist_push(&container->items, items[i]);
-		}
-		linkedlist_push(&map->items, container);
-	}
 }
 
 void

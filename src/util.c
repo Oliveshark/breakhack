@@ -101,6 +101,8 @@ log_print(FILE *out,
 	if (out == stdout || out == stderr) {
 		fprintf(out, "\033[34m[%s]", tstamp);
 		if (strcmp(prefix, "DEBUG") == 0)
+			fprintf(out, "\033[35m");
+		else if (strcmp(prefix, "WARN") == 0)
 			fprintf(out, "\033[33m");
 		else if (strcmp(prefix, "FATAL") == 0 || strcmp(prefix, "ERROR") == 0)
 			fprintf(out, "\033[31m");
