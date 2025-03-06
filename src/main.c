@@ -122,6 +122,7 @@ static
 bool initSDL(void)
 {
 	debug("Initializing SDL");
+	SDL_SetAppMetadata(GAME_TITLE, VERSION_STR, "com.oliveshark.breakhack");
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC))
 	{
 		error("Could not initiate SDL3: %s", SDL_GetError());
@@ -144,7 +145,11 @@ bool initSDL(void)
 	mixer_init();
 
 	char buffer[100] = { '\0' };
-	m_sprintf(buffer, 100, "%s %d.%d.%d %s", GAME_TITLE, MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION, RELEASE_TYPE);
+#ifdef DEBUG
+	m_sprintf(buffer, 100, "%s %s %s", GAME_TITLE, VERSION_STR_FULL, RELEASE_TYPE);
+#else
+	m_sprintf(buffer, 100, "%s %s %s", GAME_TITLE, VERSION_STR, RELEASE_TYPE);
+#endif
 	gWindow = SDL_CreateWindow(buffer,
 				   SCREEN_WIDTH,
 				   SCREEN_HEIGHT, 0);
@@ -203,10 +208,6 @@ bool initSDL(void)
 		debug("Disabling text input");
 		SDL_StopTextInput(gWindow);
 	}
-
-	memset(buffer, '\0', 100);
-	sprintf(buffer, "%d.%d.%d", MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION);
-	SDL_SetAppMetadata(GAME_TITLE, buffer, "com.oliveshark.breakhack");
 
 	return true;
 }

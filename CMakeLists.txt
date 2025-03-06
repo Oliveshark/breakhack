@@ -19,6 +19,8 @@ get_version_from_git()
 set(breakhack_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
 set(breakhack_MINOR_VERSION ${PROJECT_VERSION_MINOR})
 set(breakhack_PATCH_VERSION ${PROJECT_VERSION_PATCH})
+set(breakhack_VERSION ${PROJECT_VERSION})
+set(breakhack_FULL_VERSION ${FULL_VERSION})
 set(breakhack_RELEASE_TYPE "")
 
 configure_file(
@@ -214,11 +216,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 if (NOT MSVC)
-	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS
-		-std=gnu11 -pedantic -Wall -Wextra -Wshadow
-		-Wpointer-arith -Wcast-qual -Wstrict-prototypes
-		-Wmissing-prototypes -Wconversion -Wno-sign-conversion
-	)
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -pedantic -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Wconversion -Wno-sign-conversion")
 	if (NOT APPLE)
 		add_definitions(-static -static-libgcc -static-libstdc++)
 	endif ()
