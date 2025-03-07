@@ -129,8 +129,6 @@ bool initSDL(void)
 		return false;
 	}
 
-	Dimension dim = getScreenDimensions();
-
 	debug("Initializing SDL_ttf");
 	if (!TTF_Init()) {
 		error("Unable to initiate ttf library: %s",

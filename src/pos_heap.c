@@ -36,7 +36,7 @@ static void swap(Node *a, Node *b) {
 	*b = tmp;
 }
 
-static void heapify(PHeap *ph, int i)
+static void heapify(PHeap *ph, size_t i)
 {
 	if (ph->size <= 0) {
 		return;

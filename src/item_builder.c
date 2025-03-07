@@ -199,6 +199,8 @@ item_builder_build_key(unsigned int type)
 static void
 pickup_bloodlust(Item *item, Player *player)
 {
+	(void) item;
+
 	gui_log("You drink a bloodlust potion. Rage pulses through your veins.");
 	player->effects.effect = POTION_BLOODLUST;
 	player->effects.damage_multiplier = 4;
@@ -208,9 +210,11 @@ pickup_bloodlust(Item *item, Player *player)
 static void
 pickup_frost(Item *item, Player *player)
 {
+	(void) item;
+
 	gui_log("You drink a frost potion. Your skin is ice.");
 	player->effects.effect = POTION_FROST;
-	player->effects.damage_reduction = 2 * player->stats.lvl;
+	player->effects.damage_reduction = (uint8_t)(2 * player->stats.lvl);
 	sprite_set_color_mod(player->sprite, 94, 156, 255);
 }
 

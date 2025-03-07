@@ -68,7 +68,7 @@ static void
 player_particle_bleed(Position pos, Dimension dim, void *userdata)
 {
 	Player *p = userdata;
-	float perc = (float) p->stats.hp / p->stats.maxhp;
+	float perc = (float) p->stats.hp / (float) p->stats.maxhp;
 	Uint32 particle_count = (Uint32) (20.0f * perc);
 	particle_engine_bloodspray(pos, dim, particle_count);
 }
@@ -568,9 +568,9 @@ player_create(class_t class, Camera *cam)
 	player->stateData.shopOwnerKiller = false;
 
 	ParticleEmitter *emitter = particle_emitter_create();
-	emitter->timestep = 2000;
+	emitter->timestep = 1000;
 	emitter->enabled = false;
-	emitter->particle_func = particle_engine_bleed;
+	emitter->particle_func = player_particle_bleed;
 	emitter->userdata = player;
 	player->bleed_emitter		= emitter;
 
@@ -790,7 +790,7 @@ player_update(UpdateData *data)
 	animation_update(player->swordAnimation);
 
 	uint32_t damage_taken = player->stats.maxhp - player->stats.hp;
-	player->bleed_emitter->enabled = damage_taken >= player->stats.maxhp / 2;
+	player->bleed_emitter->enabled = (int) damage_taken >= player->stats.maxhp / 2;
 }
 
 static void

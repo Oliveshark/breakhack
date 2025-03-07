@@ -155,19 +155,6 @@ static SDL_IOStream *create_rwops(PHYSFS_File *handle)
 	return retval;
 }
 
-
-SDL_IOStream *PHYSFSIO_makeRWops(PHYSFS_File *handle)
-{
-	SDL_IOStream *retval = NULL;
-	if (handle == NULL)
-		SDL_SetError("NULL pointer passed to PHYSFSIO_makeRWops().");
-	else
-		retval = create_rwops(handle);
-
-	return retval;
-}
-
-
 SDL_IOStream *PHYSFSIO_openRead(const char *fname)
 {
 	return create_rwops(PHYSFS_openRead(fname));

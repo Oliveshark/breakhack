@@ -27,6 +27,8 @@
 
 static void test_position_equals(void **state)
 {
+	(void) state;
+
 	Position a = POS(1, 1);
 	Position b = POS(1, 1);
 	Position c = POS(1, 2);
@@ -37,6 +39,8 @@ static void test_position_equals(void **state)
 
 static void test_matrix_coords_conversion(void **state)
 {
+	(void) state;
+
 	Position pos;
 	Position mc;
 	Position expected;
@@ -69,6 +73,8 @@ static void test_matrix_coords_conversion(void **state)
 
 static void test_map_coords_conversion(void **state)
 {
+	(void) state;
+
 	Position pos, coords, expected;
 
 	pos = POS(0, 0);

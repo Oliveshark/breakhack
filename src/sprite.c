@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <signal.h>
 #include <stdlib.h>
 #include "sprite.h"
 #include "util.h"
@@ -135,8 +134,8 @@ interpolate_position(Sprite *s, float steps_remaining)
 	float dx = (float) (dpos->x - cpos->x) / steps_remaining;
 	float dy = (float) (dpos->y - cpos->y) / steps_remaining;
 
-	s->pos.x += dx;
-	s->pos.y += dy;
+	s->pos.x += (int) dx;
+	s->pos.y += (int) dy;
 }
 
 static inline void
@@ -148,16 +147,16 @@ interpolate_scale(Sprite *s, float steps_remaining)
 	float dw = (float) (ddim->width - cdim->width) / steps_remaining;
 	float dh = (float) (ddim->height - cdim->height) / steps_remaining;
 
-	s->dim.width += dw;
-	s->dim.height += dh;
+	s->dim.width += (int) dw;
+	s->dim.height += (int) dh;
 	s->offset = POS((s->dest.dim.width - s->dim.width)/2, (s->dest.dim.height - s->dim.height) / 2);
 }
 
 static inline void
 interpolate_angle(Sprite *s, float steps_remaining)
 {
-	float crot = s->angle;
-	float drot = s->dest.angle;
+	float crot = (float) s->angle;
+	float drot = (float) s->dest.angle;
 
 	float rotation = (drot - crot) / steps_remaining;
 	s->angle += rotation;

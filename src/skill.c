@@ -640,8 +640,8 @@ skill_backstab(Skill *skill, SkillData *data)
 
 	mixer_play_effect(SWING0 + get_random(2));
 
-	player_update_pos(data->player, data->direction.x * TILE_DIMENSION,
-			  data->direction.y * TILE_DIMENSION);
+	player_update_pos(data->player, (uint32_t) data->direction.x * TILE_DIMENSION,
+			  (uint32_t) data->direction.y * TILE_DIMENSION);
 	player_turn(data->player, &reverseDirection);
 	animation_run(data->player->swordAnimation);
 
