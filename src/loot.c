@@ -99,15 +99,15 @@ get_drop_callback(DropType type)
 }
 
 
-static inline void drop_item(Sprite *sprite, Position *drop_positions, size_t
-			     num_drop_positions, DropType type)
+static inline void drop_item(Sprite *sprite, Position *drop_positions,
+			     size_t num_drop_positions, DropType type)
 {
 	/* Avoid FPE (division by zero) */
 	Position drop_pos;
 	if (num_drop_positions == 0) {
 		drop_pos = sprite->pos;
 	} else {
-		drop_pos = drop_positions[get_random(num_drop_positions - 1)];
+		drop_pos = drop_positions[get_random((uint32_t) num_drop_positions - 1)];
 	}
 
 	/* Create an interpolation dest */
@@ -115,7 +115,7 @@ static inline void drop_item(Sprite *sprite, Position *drop_positions, size_t
 		.pos = drop_pos,
 		.angle = 0,
 		.dim = DIM(32, 32),
-		.time_ms = ITEM_DROP_TIME_MS + get_random(50),
+		.time_ms = (float)(ITEM_DROP_TIME_MS + get_random(50)),
 		.on_complete = get_drop_callback(type),
 	};
 

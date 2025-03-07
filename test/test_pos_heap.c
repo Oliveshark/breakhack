@@ -21,6 +21,8 @@
 
 static void test_heap_create(void **state)
 {
+	(void) state;
+
 	PHeap ph;
 	pheap_init(&ph, 42);
 	assert_int_equal(ph.capacity, 42);
@@ -31,6 +33,8 @@ static void test_heap_create(void **state)
 
 static void test_heap_insert(void **state)
 {
+	(void) state;
+
 	PHeap ph;
 	pheap_init(&ph, 0);
 

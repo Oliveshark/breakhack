@@ -20,6 +20,8 @@
 
 static void test_position_in_rect(void **state)
 {
+	(void) state;
+
 	const SDL_Rect r = {0, 0, 2, 2};
 	Position p;
 

@@ -454,10 +454,10 @@ render_rect_particle(Particle *p, Camera *cam)
 	SDL_SetRenderDrawBlendMode(cam->renderer, p->blend_mode);
 
 	SDL_FRect box = {
-		pos.x,
-		pos.y,
-		p->particle.rect.dim.width,
-		p->particle.rect.dim.height
+		(float) pos.x,
+		(float) pos.y,
+		(float) p->particle.rect.dim.width,
+		(float) p->particle.rect.dim.height
 	};
 	SDL_SetRenderDrawColor(cam->renderer,
 			       p->color.r,

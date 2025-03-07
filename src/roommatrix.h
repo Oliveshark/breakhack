@@ -65,7 +65,7 @@ typedef struct RoomSpace {
 #define SPACE_IS_LIGHTSOURCE(space) ((space) && (space->flags & TILE_LIGHTSOURCE))
 #define SPACE_IS_DAMAGING(space) ((space) && (space->flags & TILE_DAMAGE))
 #define SPACE_SET_FLAG(space, flag) ((space) && ((space)->flags |= flag))
-#define SPACE_CLEAR_FLAG(space, flag) ((space) && ((space)->flags &= ~flag))
+#define SPACE_CLEAR_FLAG(space, flag) ((space)->flags &= ~flag)
 #define SPACE_TOGGLE_FLAG(space, flag) ((space) && ((space)->flags ^= flag))
 
 #define SPACE_IS_BLOCKED(space) (SPACE_IS_OCCUPIED(space) || (space)->monster)

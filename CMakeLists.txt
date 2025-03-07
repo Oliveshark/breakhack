@@ -19,6 +19,8 @@ get_version_from_git()
 set(breakhack_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})
 set(breakhack_MINOR_VERSION ${PROJECT_VERSION_MINOR})
 set(breakhack_PATCH_VERSION ${PROJECT_VERSION_PATCH})
+set(breakhack_VERSION ${PROJECT_VERSION})
+set(breakhack_FULL_VERSION ${FULL_VERSION})
 set(breakhack_RELEASE_TYPE "")
 
 configure_file(
@@ -144,30 +146,27 @@ set(SDLIMAGE_WEBP OFF)
 set(SDLIMAGE_XCF OFF)
 set(SDLIMAGE_XPM OFF)
 set(SDLIMAGE_XV OFF)
-add_subdirectory(external/SDL_image)
-set(SDL_IMAGE_INCLUDE_DIR lib/SDL_image/include)
+add_subdirectory(external/SDL_image SYSTEM)
 set(SDL_IMAGE_LIBRARY SDL3_image-static)
 
 # opusfile caused issues in macos build and we don't need it anyways
 set(SDLMIXER_OPUS OFF)
-add_subdirectory(external/SDL_mixer)
-set(SDL_MIXER_INCLUDE_DIR lib/SDL_mixer/include)
+add_subdirectory(external/SDL_mixer SYSTEM)
 set(SDL_MIXER_LIBRARY SDL3_mixer-static)
 
 set(SDLTTF_VENDORED ON)
-add_subdirectory(external/SDL_ttf)
-set(SDL_TTF_INCLUDE_DIR lib/SDL_ttf/include)
+add_subdirectory(external/SDL_ttf SYSTEM)
 set(SDL_TTF_LIBRARY SDL3_ttf-static)
 
 # Include lua lib
-add_subdirectory(lib/lua-5.3.5)
+add_subdirectory(lib/lua-5.3.5 SYSTEM)
 set(LUA_LIBRARIES lua)
 set(LUA_INCLUDE_DIR lib/lua-5.3.5/src)
 
 # Include PHYSFS lib
 set(PHYSFS_BUILD_SHARED off CACHE INTERNAL "" FORCE)
 set(PHYSFS_BUILD_TEST off CACHE INTERNAL "" FORCE)
-add_subdirectory(lib/physfs-3.0)
+add_subdirectory(lib/physfs-3.0 SYSTEM)
 include_directories(lib/physfs-3.0/src)
 set(PHYSFS_LIBRARY physfs-static)
 set(PHYSFS_INCLUDE_DIR physfs-3.0/src)
@@ -195,16 +194,12 @@ else ()
 endif ()
 
 set(INCLUDE_DIRS
-	${PROJECT_BINARY_DIR}
-	${SDL_INCLUDE_DIR}
-	${SDL_IMAGE_INCLUDE_DIR}
-	${SDL_TTF_INCLUDE_DIR}
-	${SDL_MIXER_INCLUDE_DIR}
-	${PHYSFS_INCLUDE_DIR}
-	${LUA_INCLUDE_DIR}
-	lib/sqlite3
-	lib/bh_random/src
-	lib/checksum/src
+	PRIVATE ${PROJECT_BINARY_DIR}
+	PRIVATE lib/sqlite3
+	PRIVATE lib/bh_random/src
+	PRIVATE lib/checksum/src
+	SYSTEM ${PHYSFS_INCLUDE_DIR}
+	SYSTEM ${LUA_INCLUDE_DIR}
 )
 # PROGRAMS:
 add_executable(${PROJECT_NAME})
@@ -214,11 +209,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 if (NOT MSVC)
-	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS
-		-std=gnu11 -pedantic -Wall -Wextra -Wshadow
-		-Wpointer-arith -Wcast-qual -Wstrict-prototypes
-		-Wmissing-prototypes -Wconversion -Wno-sign-conversion
-	)
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-qual -Wstrict-prototypes -Wmissing-prototypes -Wconversion -Wno-sign-conversion")
 	if (NOT APPLE)
 		add_definitions(-static -static-libgcc -static-libstdc++)
 	endif ()
@@ -235,15 +226,15 @@ set_source_files_properties(lib/sqlite3/sqlite3.c COMPILE_FLAGS -w)
 
 target_link_libraries(${PROJECT_NAME}
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
+	bh_random
+	checksum
 	${SDL_LIBRARY}
 	${SDL_IMAGE_LIBRARY}
 	${SDL_TTF_LIBRARY}
 	${SDL_MIXER_LIBRARY}
 	${LUA_LIBRARIES}
 	${PHYSFS_LIBRARY}
-	bh_random
-	checksum
-	)
+)
 
 if (STEAM)
 	target_link_libraries(${PROJECT_NAME}

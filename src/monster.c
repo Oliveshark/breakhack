@@ -26,8 +26,6 @@
 #include "monster.h"
 #include "random.h"
 #include "gui.h"
-#include "item.h"
-#include "item_builder.h"
 #include "map.h"
 #include "particle_engine.h"
 #include "defines.h"
@@ -38,7 +36,6 @@
 #include "object.h"
 #include "mixer.h"
 #include "pos_heap.h"
-#include "loot.h"
 
 static void
 monster_set_sprite_clip_for_current_state(Monster *m)
@@ -390,7 +387,7 @@ find_first_in_path(const Position *from, const Position *dest, const Position *s
 		next = from[current.x + current.y * MAP_ROOM_WIDTH];
 	}
 
-	Vector2d dir = { current.x - next.x, current.y - next.y };
+	Vector2d dir = { (float)(current.x - next.x), (float)(current.y - next.y) };
 	if (dir.x > 0)
 		return RIGHT;
 	else if (dir.x < 0)
@@ -402,7 +399,7 @@ find_first_in_path(const Position *from, const Position *dest, const Position *s
 }
 
 /* Manhattan distance */
-#define MDIST(p1, p2) abs(p1.x - p2.x) + abs(p1.y - p2.y)
+#define MDIST(p1, p2) (uint16_t)(abs(p1.x - p2.x) + abs(p1.y - p2.y))
 
 /**
  * \brief A* path finding algorithm
@@ -415,7 +412,6 @@ static Direction
 get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
 {
 	Direction ret_val = INVALID;
-	int x_dist, y_dist;
 	const Position start = position_to_matrix_coords(&m->sprite->pos);
 	const Vector2d directions[] = {
 		VECTOR2D_UP,
@@ -453,8 +449,8 @@ get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
 
 		for (size_t i = 0; i < 4; i++) {
 			Position next = {
-				current.x + directions[i].x,
-				current.y + directions[i].y,
+				current.x + (int) directions[i].x,
+				current.y + (int) directions[i].y,
 			};
 
 			if (!position_equals(&next, &dest)) {
@@ -465,7 +461,7 @@ get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
 				}
 			}
 
-			uint32_t temp_score = 1 + gScore[current.x + current.y * WIDTH];
+			uint16_t temp_score = 1 + gScore[current.x + current.y * WIDTH];
 			if (temp_score < gScore[next.x + next.y * WIDTH]) {
 				from[next.x + next.y * WIDTH] = current;
 				gScore[next.x + next.y * WIDTH] = temp_score;
@@ -661,7 +657,6 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 	}
 
 	Position originalMPos = position_to_matrix_coords(&m->sprite->pos);
-
 	SPACE_CLEAR_FLAG(&rm->spaces[originalMPos.x][originalMPos.y], TILE_OCCUPIED);
 	rm->spaces[originalMPos.x][originalMPos.y].monster = NULL;
 
