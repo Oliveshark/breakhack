@@ -6,6 +6,10 @@ project(breakhack C)
 
 set(breakhack_GAME_TITLE "BreakHack")
 
+# CMake options
+set(DISABLE_STEAM_BUILD OFF CACHE BOOL "Disable Steam build")
+set(RELEASE_TYPE "" CACHE STRING "Release type")
+
 # Checksums
 set(breakhack_STEAMAPI_DLL_CHECKSUM 0x1a4691a)
 set(breakhack_STEAMAPI_SO_CHECKSUM 0x1a11b6d)
@@ -21,14 +25,13 @@ set(breakhack_MINOR_VERSION ${PROJECT_VERSION_MINOR})
 set(breakhack_PATCH_VERSION ${PROJECT_VERSION_PATCH})
 set(breakhack_VERSION ${PROJECT_VERSION})
 set(breakhack_FULL_VERSION ${FULL_VERSION})
-set(breakhack_RELEASE_TYPE "")
+set(breakhack_RELEASE_TYPE ${RELEASE_TYPE})
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/src/config.h.in"
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
 
-set(DISABLE_STEAM_BUILD OFF CACHE BOOL "Disable Steam build")
 set(STEAM OFF)
 
 if (NOT DISABLE_STEAM_BUILD)
@@ -164,8 +167,8 @@ set(LUA_LIBRARIES lua)
 set(LUA_INCLUDE_DIR lib/lua-5.3.5/src)
 
 # Include PHYSFS lib
-set(PHYSFS_BUILD_SHARED off CACHE INTERNAL "" FORCE)
-set(PHYSFS_BUILD_TEST off CACHE INTERNAL "" FORCE)
+set(PHYSFS_BUILD_SHARED off)
+set(PHYSFS_BUILD_TEST off)
 add_subdirectory(lib/physfs-3.0 SYSTEM)
 include_directories(lib/physfs-3.0/src)
 set(PHYSFS_LIBRARY physfs-static)
