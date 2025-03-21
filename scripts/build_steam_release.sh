@@ -7,29 +7,29 @@ if [ ! -d lib/steamworks_c_wrapper/sdk ]; then
     echo "Steam SDK not present"
 fi
 
-if [ -z $STEAM_USR ]; then
+if [ -z "$STEAM_USR" ]; then
     echo "error: \$STEAM_USR not set"
     exit 1
 fi
 
-if [ -z $STEAM_PWD ]; then
+if [ -z "$STEAM_PWD" ]; then
     echo "error: \$STEAM_PWD not set"
     exit 1
 fi
 
-if ! command -v steamcmd 2>&1 > /dev/null; then
+if ! command -v steamcmd > /dev/null 2>&1; then
     echo "error: steamcmd is not installed"
     exit 1
 fi
-if ! command -v unzip 2>&1 > /dev/null; then
+if ! command -v unzip > /dev/null 2>&1; then
     echo "error: unzip is not installed"
     exit 1
 fi
-if ! command -v cmake 2>&1 > /dev/null; then
+if ! command -v cmake > /dev/null 2>&1; then
     echo "error: cmake is not installed"
     exit 1
 fi
-if ! command -v cpack 2>&1 > /dev/null; then
+if ! command -v cpack > /dev/null 2>&1; then
     echo "error: cpack is not installed"
     exit 1
 fi
@@ -78,11 +78,17 @@ rm -rf ${STEAM_CONTENT_DIR_WINDOWS:?}/*
 unzip $BUILD_DIR_WINDOWS/package/*.zip -d $STEAM_CONTENT_DIR_WINDOWS/
 
 # Setup steamworks depot build
+CMD=$0
+UNAME=$(uname -snmo)
+GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+GIT_TAG=$(git describe --tags --abbrev=0)
+GIT_COMMIT=$(git rev-parse --short HEAD)
+
 cat << EOT >> $STEAM_BUILD_DIR/app_build.vdf
 "AppBuild"
 {
 	"AppID" "931040" // your AppID
-	"Desc" "Vagrant provider:Docker, Ubuntu 24.04" // internal description for this build
+	"Desc" "$CMD, $UNAME, $GIT_BRANCH, $GIT_TAG, $GIT_COMMIT" // internal description for this build
 	"verbose" "0" // spew more build details in console
 	"preview" "0" // make this a preview build only, nothing is uploaded
 
@@ -115,6 +121,6 @@ EOT
 
 # Running the steam command build
 steamcmd \
-    +login $STEAM_USR $STEAM_PWD \
-    +run_app_build $(pwd)/$STEAM_BUILD_DIR/app_build.vdf \
+    +login "$STEAM_USR" "$STEAM_PWD" \
+    +run_app_build "$(pwd)/$STEAM_BUILD_DIR/app_build.vdf" \
     +quit
