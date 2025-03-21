@@ -79,10 +79,10 @@ unzip $BUILD_DIR_WINDOWS/package/*.zip -d $STEAM_CONTENT_DIR_WINDOWS/
 
 # Setup steamworks depot build
 CMD=$0
-UNAME=$(uname -snmo)
-GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-GIT_TAG=$(git describe --tags --abbrev=0)
-GIT_COMMIT=$(git rev-parse --short HEAD)
+UNAME=$(uname -snmo || echo "uname:unknown")
+GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD || echo "branch:unknown")
+GIT_TAG=$(git describe --tags --abbrev=0 || echo "tag:unknown")
+GIT_COMMIT=$(git rev-parse --short HEAD || echo "commit:unknown")
 
 cat << EOT >> $STEAM_BUILD_DIR/app_build.vdf
 "AppBuild"
