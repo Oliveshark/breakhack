@@ -29,7 +29,7 @@
 #include "texturecache.h"
 #include "sprite.h"
 #include "sprite_util.h"
-#include "map.h"
+#include "doorlocktype.h"
 
 static ItemBuilder *builder = NULL;
 
@@ -205,6 +205,7 @@ pickup_bloodlust(Item *item, Player *player)
 	player->effects.effect = POTION_BLOODLUST;
 	player->effects.damage_multiplier = 4;
 	sprite_set_color_mod(player->sprite, 255, 25, 45);
+	mixer_play_effect(GROWL);
 }
 
 static void
@@ -216,14 +217,13 @@ pickup_frost(Item *item, Player *player)
 	player->effects.effect = POTION_FROST;
 	player->effects.damage_reduction = (uint8_t)(2 * player->stats.lvl);
 	sprite_set_color_mod(player->sprite, 94, 156, 255);
+	mixer_play_effect(FREEZE);
 }
 
 Item *
 item_builder_build_potion(PotionEffect effect)
 {
-	Item *item;
-
-	assert(effect != POTION_NONE);
+	Item *item = NULL;
 
 	switch (effect) {
 		case POTION_BLOODLUST:
@@ -239,7 +239,10 @@ item_builder_build_potion(PotionEffect effect)
 					pickup_frost);
 			break;
 		case POTION_NONE:
+			fatal("Potion effect is POTION_NONE");
+			break;
 		default:
+			fatal("Unhandled potion effect");
 			break;
 	}
 

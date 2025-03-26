@@ -23,11 +23,11 @@
 #include "gamestate.h"
 
 typedef enum Music_t {
-	MENU_MUSIC,
+	BOSS_MUSIC0,
 	GAME_MUSIC0,
 	GAME_MUSIC1,
 	GAME_MUSIC2,
-	BOSS_MUSIC0,
+	MENU_MUSIC,
 	LAST_MUSIC
 } Music;
 
@@ -57,6 +57,8 @@ typedef enum Fx_t {
 	FALL1,
 	FLESH_DROP1,
 	FLESH_DROP2,
+	FREEZE,
+	GROWL,
 	KEY_PICKUP,
 	LEVEL_UP,
 	MAGIC_PICKUP,
