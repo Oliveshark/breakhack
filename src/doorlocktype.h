@@ -15,11 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#pragma once
+#ifndef _DOORLOCK_TYPE_H_
+#define _DOORLOCK_TYPE_H_
 
 typedef enum DoorLockType {
 	LOCK_NONE,
 	LOCK_SILVER,
 	LOCK_GOLD
 } DoorLockType;
+
+#endif  // _DOORLOCK_TYPE_H_
+
