@@ -56,6 +56,14 @@ load_effect(char *path)
 	return effect;
 }
 
+/**
+ * @brief Loads all predefined sound effects.
+ *
+ * This function initializes the global sound effects array by loading each sound effect
+ * from its corresponding file path using load_effect(). Each sound effect is indexed by its
+ * associated enumeration constant. If any sound effect fails to load, load_effect() will handle
+ * the error internally.
+ */
 static void
 load_effects(void)
 {
@@ -106,6 +114,13 @@ load_effects(void)
 	effects[TRIPPLE_SWORD_HIT] = load_effect("Sounds/FX/tripple_sword_hit.wav");
 }
 
+/**
+ * @brief Initializes the audio subsystem and loads sound effects.
+ *
+ * Sets up the audio system using a frequency of 44100 Hz, the default audio format, and stereo channels.
+ * If initialization fails, the function halts execution by calling fatal with the SDL error message.
+ * Afterwards, all required sound effects are loaded via load_effects().
+ */
 void
 mixer_init(void)
 {

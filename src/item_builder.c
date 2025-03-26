@@ -196,6 +196,16 @@ item_builder_build_key(unsigned int type)
 	return item;
 }
 
+/**
+ * @brief Applies the bloodlust effect to a player.
+ *
+ * Logs the consumption of a bloodlust potion, sets the player's effect state to POTION_BLOODLUST,
+ * increases the damage multiplier, modifies the player's sprite color to a blood-red hue, and plays
+ * a growl sound effect. The item parameter is ignored.
+ *
+ * @param item Unused parameter.
+ * @param player The player receiving the bloodlust effect.
+ */
 static void
 pickup_bloodlust(Item *item, Player *player)
 {
@@ -208,6 +218,16 @@ pickup_bloodlust(Item *item, Player *player)
 	mixer_play_effect(GROWL);
 }
 
+/**
+ * @brief Applies frost potion effects to the player.
+ *
+ * This function simulates the effects of drinking a frost potion by logging the event,
+ * setting the player's frost effect, and enhancing the player's damage reduction based on their level.
+ * It also updates the player's sprite color to convey a frosted appearance and plays the associated freeze sound effect.
+ *
+ * @param item Unused parameter for compatibility.
+ * @param player The player that receives the frost effects.
+ */
 static void
 pickup_frost(Item *item, Player *player)
 {
@@ -220,6 +240,16 @@ pickup_frost(Item *item, Player *player)
 	mixer_play_effect(FREEZE);
 }
 
+/**
+ * @brief Creates a potion item based on the specified effect.
+ *
+ * Constructs a potion item by invoking the underlying item creation function with the appropriate texture,
+ * clip region, and effect callback. For POTION_BLOODLUST, it creates a bloodlust potion, and for POTION_FROST, it creates a frost potion.
+ * If the provided effect is POTION_NONE or unrecognized, a fatal error is triggered.
+ *
+ * @param effect The potion effect type (e.g., POTION_BLOODLUST, POTION_FROST) that determines the properties of the created item.
+ * @return Pointer to the constructed potion item.
+ */
 Item *
 item_builder_build_potion(PotionEffect effect)
 {
