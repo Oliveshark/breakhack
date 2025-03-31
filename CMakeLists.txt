@@ -129,7 +129,7 @@ add_subdirectory(external/SDL)
 set(SDL_INCLUDE_DIR lib/SDL/include)
 set(SDL_LIBRARY SDL3-static)
 
-# Include SDL_image/mixer/ttf
+# Include SDL_image/ttf
 set(BUILD_SHARED_LIBS OFF)
 
 set(SDLIMAGE_PNG ON)
@@ -151,11 +151,6 @@ set(SDLIMAGE_XPM OFF)
 set(SDLIMAGE_XV OFF)
 add_subdirectory(external/SDL_image SYSTEM)
 set(SDL_IMAGE_LIBRARY SDL3_image-static)
-
-# opusfile caused issues in macos build and we don't need it anyways
-set(SDLMIXER_OPUS OFF)
-add_subdirectory(external/SDL_mixer SYSTEM)
-set(SDL_MIXER_LIBRARY SDL3_mixer-static)
 
 set(SDLTTF_VENDORED ON)
 add_subdirectory(external/SDL_ttf SYSTEM)
@@ -200,6 +195,7 @@ set(INCLUDE_DIRS
 	PRIVATE ${PROJECT_BINARY_DIR}
 	PRIVATE lib/sqlite3
 	PRIVATE lib/bh_random/src
+	PRIVATE lib/stb_vorbis
 	PRIVATE lib/checksum/src
 	SYSTEM ${PHYSFS_INCLUDE_DIR}
 	SYSTEM ${LUA_INCLUDE_DIR}
@@ -208,6 +204,7 @@ set(INCLUDE_DIRS
 add_executable(${PROJECT_NAME})
 add_subdirectory(src)
 add_subdirectory(lib/sqlite3)
+add_subdirectory(lib/stb_vorbis)
 set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
@@ -230,11 +227,11 @@ set_source_files_properties(lib/sqlite3/sqlite3.c COMPILE_FLAGS -w)
 target_link_libraries(${PROJECT_NAME}
 	${CMAKE_DL_LIBS} # Sqlite needs DL libs
 	bh_random
+	stb_vorbis
 	checksum
 	${SDL_LIBRARY}
 	${SDL_IMAGE_LIBRARY}
 	${SDL_TTF_LIBRARY}
-	${SDL_MIXER_LIBRARY}
 	${LUA_LIBRARIES}
 	${PHYSFS_LIBRARY}
 )

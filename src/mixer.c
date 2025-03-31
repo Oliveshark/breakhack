@@ -16,15 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <SDL3_mixer/SDL_mixer.h>
 #include "mixer.h"
 #include "util.h"
 #include "io_util.h"
 #include "settings.h"
 #include "random.h"
+#include "stb_vorbis.h"
 
-static Mix_Chunk *effects[LAST_EFFECT];
-static Mix_Music *current_song = NULL;
+typedef struct AudioData {
+	uint16_t *data;
+} AudioData;
+
+static AudioData effects[LAST_EFFECT];
+static AudioData current_song = {0};
 static Music loaded_song = LAST_MUSIC;
 
 static char *music[LAST_MUSIC] = {
@@ -35,10 +39,11 @@ static char *music[LAST_MUSIC] = {
 	 "Sounds/Music/forward-assault.ogg"			  // BOSS_MUSIC0
 };
 
-static Mix_Music*
+static AudioData*
 load_song(char *path)
 {
-	Mix_Music *m = Mix_LoadMUS_IO(io_load_rwops(path), true);
+	AudioData *audio = &current_song;
+	stb_vorbis_open_memory(io_load_rwops(path), 0, 0, &audio->data);
 	if (m == NULL)
 		fatal("Failed to load music: %s", SDL_GetError());
 	return m;
