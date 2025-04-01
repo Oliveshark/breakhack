@@ -34,15 +34,33 @@ if ! command -v cpack > /dev/null 2>&1; then
     exit 1
 fi
 
+GIT_BRANCH=${1:-master}
+BUILD_TYPE=${2:-Release}
+
+echo "Building '${BUILD_TYPE}' build from '$GIT_BRANCH' branch"
+
 STEAM_BUILD_DIR=build/steam-release
 
 BUILD_DIR_LINUX=$STEAM_BUILD_DIR/linux
 BUILD_DIR_WINDOWS=$STEAM_BUILD_DIR/windows
 
-
 STEAM_CONTENT_DIR=$STEAM_BUILD_DIR/content
 STEAM_CONTENT_DIR_WINDOWS=$STEAM_CONTENT_DIR/windows
 STEAM_CONTENT_DIR_LINUX=$STEAM_CONTENT_DIR/linux
+
+# Checkout branch and set up submodules
+git checkout $GIT_BRANCH
+git pull
+git submodule update --init --recursive
+
+if [ -n "$(git status --porcelain)" ]; then
+    echo "error: git repo not clean"
+    exit 1
+fi
+
+# Clear out any old builds
+rm -rf $STEAM_CONTENT_DIR_LINUX
+rm -rf $STEAM_CONTENT_DIR_WINDOWS
 
 # Setup the depot dirs
 mkdir -p $STEAM_CONTENT_DIR_LINUX
@@ -51,7 +69,7 @@ mkdir -p $STEAM_CONTENT_DIR_WINDOWS
 # Build and package for linux
 mkdir -p $BUILD_DIR_LINUX
 cmake -B $BUILD_DIR_LINUX \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -GNinja
 cmake --build $BUILD_DIR_LINUX
 rm -rf ${BUILD_DIR_LINUX:?}/package/*
@@ -64,7 +82,7 @@ unzip $BUILD_DIR_LINUX/package/*.zip -d $STEAM_CONTENT_DIR_LINUX/
 # Build and package for windows
 mkdir -p $BUILD_DIR_WINDOWS
 cmake -B $BUILD_DIR_WINDOWS \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-i686.cmake \
     -DSDLMIXER_VENDORED=ON \
     -DSDLTTF_VENDORED=ON \
