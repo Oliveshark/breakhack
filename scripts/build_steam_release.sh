@@ -59,8 +59,7 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 # Clear out any old builds
-rm -rf $STEAM_CONTENT_DIR_LINUX
-rm -rf $STEAM_CONTENT_DIR_WINDOWS
+rm -rf $STEAM_BUILD_DIR
 
 # Setup the depot dirs
 mkdir -p $STEAM_CONTENT_DIR_LINUX
@@ -98,7 +97,6 @@ unzip $BUILD_DIR_WINDOWS/package/*.zip -d $STEAM_CONTENT_DIR_WINDOWS/
 # Setup steamworks depot build
 CMD=$0
 UNAME=$(uname -snmo || echo "uname:unknown")
-GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD || echo "branch:unknown")
 GIT_TAG=$(git describe --tags --abbrev=0 || echo "tag:unknown")
 GIT_COMMIT=$(git rev-parse --short HEAD || echo "commit:unknown")
 
