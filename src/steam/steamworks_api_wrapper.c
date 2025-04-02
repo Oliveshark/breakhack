@@ -29,15 +29,15 @@ static Achievement g_Achievements[] = {
 static Uint8 numAchievements = 7;
 
 static bool m_Initiated = false;
-static Sint64 m_AppID = 0;
-static Sint64 m_hHighscoreLeaderboard = 0;
-static Sint64 m_hQpHighscoreLeaderboard = 0;
-static Sint64 m_hArcadeHighscoreLeaderboard = 0;
-static Sint64 m_hKillsLeaderboard = 0;
-static Sint64 m_hRogueHighscore = 0;
-static Sint64 m_hWarriorHighscore = 0;
-static Sint64 m_hMageHighscore = 0;
-static Sint64 m_hWeeklyHighscore = 0;
+static uint32_t m_AppID = 0;
+static uint64_t m_hHighscoreLeaderboard = 0;
+static uint64_t m_hQpHighscoreLeaderboard = 0;
+static uint64_t m_hArcadeHighscoreLeaderboard = 0;
+static uint64_t m_hKillsLeaderboard = 0;
+static uint64_t m_hRogueHighscore = 0;
+static uint64_t m_hWarriorHighscore = 0;
+static uint64_t m_hMageHighscore = 0;
+static uint64_t m_hWeeklyHighscore = 0;
 
 static Timer *requestDataTimer = NULL;
 
@@ -48,35 +48,35 @@ stats_stored(void)
 }
 
 static void
-leaderboard_received(Sint64 hLeaderboard, const char *name)
+leaderboard_received(unsigned long long hLeaderboard, const char *name)
 {
-	debug("Leaderboard received: %s", name);
-	if (strcmp(LB_HIGHSCORE, name) == 0)
+	debug("Leaderboard received: %s (%llu)", name, hLeaderboard);
+	if (SDL_strcmp(LB_HIGHSCORE, name) == 0)
 		m_hHighscoreLeaderboard = hLeaderboard;
-	else if (strcmp(LB_KILLS, name) == 0)
+	else if (SDL_strcmp(LB_KILLS, name) == 0)
 		m_hKillsLeaderboard = hLeaderboard;
-	else if (strcmp(LB_ROGUE_HIGHSCORE, name) == 0)
+	else if (SDL_strcmp(LB_ROGUE_HIGHSCORE, name) == 0)
 		m_hRogueHighscore = hLeaderboard;
-	else if (strcmp(LB_MAGE_HIGHSCORE, name) == 0)
+	else if (SDL_strcmp(LB_MAGE_HIGHSCORE, name) == 0)
 		m_hMageHighscore = hLeaderboard;
-	else if (strcmp(LB_WARRIOR_HIGHSCORE, name) == 0)
+	else if (SDL_strcmp(LB_WARRIOR_HIGHSCORE, name) == 0)
 		m_hWarriorHighscore = hLeaderboard;
-	else if (strcmp(LB_QUICKPLAY_HIGHSCORE, name) == 0)
+	else if (SDL_strcmp(LB_QUICKPLAY_HIGHSCORE, name) == 0)
 		m_hQpHighscoreLeaderboard = hLeaderboard;
-	else if (strcmp(LB_ARCADE_HIGHSCORE, name) == 0)
+	else if (SDL_strcmp(LB_ARCADE_HIGHSCORE, name) == 0)
 		m_hArcadeHighscoreLeaderboard = hLeaderboard;
-	else if (strcmp(lb_weekly, name) == 0)
+	else if (SDL_strcmp(lb_weekly, name) == 0)
 		m_hWeeklyHighscore = hLeaderboard;
 }
 
 bool
-steam_restart_needed()
+steam_restart_needed(void)
 {
 	return c_SteamAPI_RestartAppIfNecessary();
 }
 
 void
-steam_init()
+steam_init(void)
 {
 	m_AppID = c_SteamAPI_Init();
 	m_Initiated = m_AppID != 0;
@@ -90,7 +90,7 @@ void steam_shutdown(void)
 {
 	c_SteamAPI_Shutdown();
 	timer_destroy(requestDataTimer);
-	if (lb_weekly) 
+	if (lb_weekly)
 		free(lb_weekly);
 }
 

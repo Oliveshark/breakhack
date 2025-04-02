@@ -33,7 +33,7 @@ public:
 	CCallResult<CallbackHandler, LeaderboardFindResult_t> m_FindLeaderboardCallResult;
 
 	void(*statsStoredCb)() = nullptr;
-	void(*leaderboardReceivedCb)(int64_t, const char*) = nullptr;
+	void(*leaderboardReceivedCb)(SteamLeaderboard_t, const char*) = nullptr;
 
 	bool CallbackReceived() const;
 
