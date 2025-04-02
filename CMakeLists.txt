@@ -322,12 +322,12 @@ else ()
 endif ()
 include(InstallRequiredSystemLibraries)
 
-INSTALL(TARGETS ${PROJECT_NAME}
-	COMPONENT Release
-	COMPONENT Beta
-	RUNTIME DESTINATION bin/
-)
 if (NOT STEAM)
+	INSTALL(TARGETS ${PROJECT_NAME}
+		COMPONENT Release
+		COMPONENT Beta
+		RUNTIME DESTINATION bin/
+	)
 	INSTALL(FILES assets.pack data.pack
 		COMPONENT Release
 		DESTINATION share/breakhack/
@@ -337,6 +337,11 @@ if (NOT STEAM)
 		DESTINATION share/breakhack/
 	)
 else ()
+	INSTALL(TARGETS ${PROJECT_NAME}
+		COMPONENT Release
+		COMPONENT Beta
+		RUNTIME DESTINATION .
+	)
 	INSTALL(FILES assets.pack data.pack
 		COMPONENT Release
 		DESTINATION .
