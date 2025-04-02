@@ -24,10 +24,10 @@ extern "C" {
 #include "CallbackHandler.h"
 
 static bool m_Initiated = false;
-static int64 m_AppId = 0;
+static uint32_t m_AppId = 0;
 static CallbackHandler *m_CallbackHandler = NULL;
 
-extern "C" int64_t
+extern "C" uint32_t
 c_SteamAPI_Init()
 {
 	if (SteamAPI_Init()) {
@@ -38,7 +38,7 @@ c_SteamAPI_Init()
 	return m_AppId;
 }
 
-extern "C" int64_t
+extern "C" uint32_t
 c_SteamAPI_GetAppID()
 {
 	if (!m_Initiated)
@@ -59,7 +59,7 @@ c_SteamAPI_RunCallbacks(void)
 		SteamAPI_RunCallbacks();
 }
 
-extern "C" void c_SteamAPI_SetCallbacks(void(*storCB)(void), void(*recvLB)(int64_t, const char *))
+extern "C" void c_SteamAPI_SetCallbacks(void(*storCB)(void), void(*recvLB)(unsigned long long, const char *))
 {
 	m_CallbackHandler->statsStoredCb = storCB;
 	m_CallbackHandler->leaderboardReceivedCb = recvLB;

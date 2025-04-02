@@ -21,10 +21,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-int64_t
+uint32_t
 c_SteamAPI_Init(void);
 
-int64_t
+uint32_t
 c_SteamAPI_GetAppID(void);
 
 bool
@@ -34,7 +34,7 @@ void
 c_SteamAPI_RunCallbacks(void);
 
 void
-c_SteamAPI_SetCallbacks(void(*storCB)(void), void(*recvLB)(int64_t, const char *));
+c_SteamAPI_SetCallbacks(void(*storCB)(void), void(*recvLB)(unsigned long long, const char *));
 
 bool
 c_SteamUserStats_SetAchievement(const char *id);
