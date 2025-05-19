@@ -75,6 +75,8 @@ if (NOT CMAKE_BUILD_TYPE AND default_build_type)
 	set(CMAKE_BUILD_TYPE "${default_build_type}")
 endif ()
 
+set(CMAKE_C_FLAGS_RELEASE "-flto -O3 -fno-exceptions -fno-rtti")
+
 # Deal with travis compile issue
 if (CCACHE_FOUND AND CLANG)
 	add_definitions(-Qunused-arguments -fcolor-diagnostics)
