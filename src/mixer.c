@@ -23,9 +23,20 @@
 #include "settings.h"
 #include "random.h"
 
-static Mix_Chunk *effects[LAST_EFFECT];
-static Mix_Music *current_song = NULL;
+#define FX_TRACK_COUNT 8
+
+static MIX_Audio *effects[LAST_EFFECT];
+
+static MIX_Audio *current_song = NULL;
 static Music loaded_song = LAST_MUSIC;
+
+static MIX_Mixer *mixer = NULL;
+static MIX_Track *music_track = NULL;
+
+static uint8_t fx_track_idx = 0;
+static MIX_Track *fx_tracks[FX_TRACK_COUNT] = { NULL };
+
+static SDL_PropertiesID music_track_properties = 0;
 
 static char *music[LAST_MUSIC] = {
 	 "Sounds/Music/fantasy-forest-battle.ogg",		  // MENU_MUSIC
@@ -35,22 +46,22 @@ static char *music[LAST_MUSIC] = {
 	 "Sounds/Music/forward-assault.ogg"			  // BOSS_MUSIC0
 };
 
-static Mix_Music*
+static MIX_Audio*
 load_song(char *path)
 {
-	Mix_Music *m = Mix_LoadMUS_IO(io_load_rwops(path), true);
+	MIX_Audio *m = MIX_LoadAudio_IO(mixer, io_load_rwops(path), false, true);
 	if (m == NULL)
 		fatal("Failed to load music: %s", SDL_GetError());
 	return m;
 }
 
-static Mix_Chunk*
+static MIX_Audio*
 load_effect(char *path)
 {
 	verbose("Loading effect: %s", path);
 	SDL_IOStream *io = io_load_rwops(path);
 	verbose("Loaded effect: %s", path);
-	Mix_Chunk *effect = Mix_LoadWAV_IO(io, true);
+	MIX_Audio *effect = MIX_LoadAudio_IO(mixer, io, false, true);
 	if (effect == NULL)
 		fatal("Failed to load effect (%s): %s", path, SDL_GetError());
 	return effect;
@@ -109,13 +120,39 @@ load_effects(void)
 void
 mixer_init(void)
 {
+	if (!MIX_Init()) {
+		fatal("Failed to init SDL_Mixer: %s", SDL_GetError());
+	}
+
 	SDL_AudioSpec desired;
 	desired.freq = 44100;
-	desired.format = MIX_DEFAULT_FORMAT;
+	desired.format = SDL_AUDIO_F32;
 	desired.channels = 2;
 
-	if (!Mix_OpenAudio(0, &desired)) {
-		fatal("Failed to load sound: %s", SDL_GetError());
+	mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &desired);
+	if (mixer == NULL) {
+		fatal("Failed to init mixer: %s", SDL_GetError());
+	}
+
+	music_track = MIX_CreateTrack(mixer);
+	if (music_track == NULL) {
+		fatal("Failed to create music track: %s", SDL_GetError());
+	}
+	MIX_Track *tmp;
+	for (size_t i = 0; i < FX_TRACK_COUNT; ++i) {
+		tmp = MIX_CreateTrack(mixer);
+		if (tmp == NULL) {
+			fatal("Failed to allocate fx track: %s", SDL_GetError());
+		}
+		fx_tracks[i] = tmp;
+	}
+
+	music_track_properties = SDL_CreateProperties();
+	if (music_track_properties == 0) {
+		fatal("Failed to create music properties: %s", SDL_GetError());
+	}
+	if (!SDL_SetNumberProperty(music_track_properties, MIX_PROP_PLAY_LOOPS_NUMBER, -1)) {
+		fatal("Failed to set loop property: %s", SDL_GetError());
 	}
 
 	load_effects();
@@ -135,11 +172,11 @@ mixer_toggle_music(const GameState *state)
 	Settings *settings = settings_get();
 	settings->music_enabled = !settings->music_enabled;
 
-	if (Mix_PlayingMusic() && !settings->music_enabled)
-		Mix_PauseMusic();
-	else if (Mix_PausedMusic())
-		Mix_ResumeMusic();
-	else {
+	if (MIX_TrackPlaying(music_track) && !settings->music_enabled) {
+		MIX_PauseTrack(music_track);
+	} else if (MIX_TrackPaused(music_track)) {
+		MIX_ResumeTrack(music_track);
+	} else {
 		if (*state == MENU)
 			mixer_play_music(MENU_MUSIC);
 		else
@@ -155,7 +192,10 @@ mixer_play_effect(Fx fx)
 	if (!settings_get()->sound_enabled)
 		return;
 
-	if (Mix_PlayChannel( -1, effects[fx], 0) == -1)
+	fx_track_idx = (uint8_t)((fx_track_idx + 1) % FX_TRACK_COUNT);
+	MIX_Track *track = fx_tracks[fx_track_idx];
+	MIX_SetTrackAudio(track, effects[fx]);
+	if (!MIX_PlayTrack(track, 0))
 		error("Unable to play sound: %u", (unsigned int) fx);
 }
 
@@ -167,32 +207,28 @@ mixer_play_music(Music mus)
 
 	if (mus != loaded_song) {
 		if (current_song)
-			Mix_FreeMusic(current_song);
+			MIX_DestroyAudio(current_song);
 		current_song = load_song(music[mus]);
 		loaded_song = mus;
 	}
 
-	if (Mix_PlayingMusic())
+	if (MIX_TrackPlaying(music_track))
 		mixer_stop_music();
 
-	if (!Mix_PlayMusic(current_song, -1))
+	MIX_SetTrackAudio(music_track, current_song);
+	if (!MIX_PlayTrack(music_track, music_track_properties))
 		fatal("Failed to play music");
 }
 
 void
 mixer_stop_music(void)
 {
-	if (Mix_PlayingMusic())
-		Mix_HaltMusic();
+	if (MIX_TrackPlaying(music_track))
+		MIX_StopTrack(music_track, 0);
 }
 
 void
 mixer_close(void)
 {
-	for (size_t i = 0; i < LAST_EFFECT; ++i)
-		Mix_FreeChunk(effects[i]);
-	if (current_song)
-		Mix_FreeMusic(current_song);
-
-	Mix_CloseAudio();
+	MIX_Quit();
 }
