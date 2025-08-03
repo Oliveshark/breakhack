@@ -202,6 +202,9 @@ mixer_play_effect(Fx fx)
 void
 mixer_play_music(Music mus)
 {
+	/* TODO(Linus): We should be able to leverage this call here:
+		-> MIX_SetTrackIOStream(MIX_Track *track, SDL_IOStream *io, bool closeio);
+	   This should reduce RAM usage. */
 	if (!settings_get()->music_enabled)
 		return;
 
@@ -230,5 +233,31 @@ mixer_stop_music(void)
 void
 mixer_close(void)
 {
+	if (music_track) {
+		MIX_DestroyTrack(music_track);
+	}
+	for (size_t i = 0; i < FX_TRACK_COUNT; ++i) {
+		if (fx_tracks[i]) {
+			MIX_DestroyTrack(fx_tracks[i]);
+		}
+	}
+
+	if (current_song) {
+		MIX_DestroyAudio(current_song);
+	}
+	for (size_t i = 0; i < LAST_EFFECT; ++i) {
+		if (effects[i]) {
+			MIX_DestroyAudio(effects[i]);
+		}
+	}
+
+	if (music_track_properties) {
+		SDL_DestroyProperties(music_track_properties);
+	}
+
+	if (mixer) {
+		MIX_DestroyMixer(mixer);
+	}
+
 	MIX_Quit();
 }

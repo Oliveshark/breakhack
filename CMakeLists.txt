@@ -157,6 +157,15 @@ set(SDL_IMAGE_LIBRARY SDL3_image-static)
 
 # opusfile caused issues in macos build and we don't need it anyways
 set(SDLMIXER_OPUS OFF)
+set(SDLMIXER_AIFF OFF)
+set(SDLMIXER_VOC OFF)
+set(SDLMIXER_AU OFF)
+set(SDLMIXER_GME OFF)
+set(SDLMIXER_MIDI_TIMIDITY OFF)
+set(SDLMIXER_MOD_XMP OFF)
+set(SDLMIXER_MP3_DRMP3 OFF)
+set(SDLMIXER_MP3_MPG123 OFF)
+set(SDLMIXER_WAVPACK OFF)
 add_subdirectory(external/SDL_mixer SYSTEM)
 set(SDL_MIXER_LIBRARY SDL3_mixer-static)
 
