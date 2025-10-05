@@ -75,8 +75,6 @@ if (NOT CMAKE_BUILD_TYPE AND default_build_type)
 	set(CMAKE_BUILD_TYPE "${default_build_type}")
 endif ()
 
-set(CMAKE_C_FLAGS_RELEASE "-flto -O3 -fno-exceptions -fno-rtti")
-
 # Deal with travis compile issue
 if (CCACHE_FOUND AND CLANG)
 	add_definitions(-Qunused-arguments -fcolor-diagnostics)
@@ -89,7 +87,7 @@ else()
 	set(PACKAGE_COMPONENT "Release")
 endif()
 
-IF ( MSVC )
+if ( MSVC )
     MESSAGE ( STATUS "Setting MSVC MT switches")
 		string (REPLACE
 			"/MDd"
@@ -103,22 +101,27 @@ IF ( MSVC )
 			CMAKE_C_FLAGS_RELEASE
 			${CMAKE_C_FLAGS_RELEASE}
     )
-ELSEIF ( WIN32 )
-    SET (
+elseif ( WIN32 )
+    set (
       CMAKE_C_FLAGS_DEBUG
       "${CMAKE_C_FLAGS_DEBUG} -mconsole"
     )
-    SET (
+    set (
       CMAKE_C_FLAGS_RELEASE
       "${CMAKE_C_FLAGS_RELEASE} -mwindows"
     )
-ENDIF ()
-IF ( GCC AND NOT MINGW )
-	SET (
+elseif ( GCC AND NOT MINGW )
+	set (
 		CMAKE_C_FLAGS_DEBUG
 		"${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer"
 	)
-ENDIF ()
+	set (
+		CMAKE_C_FLAGS_RELEASE
+		"${CMAKE_C_FLAGS_RELEASE} -O2"
+	)
+elseif (EMSCRIPTEN)
+	set(CMAKE_C_FLAGS_RELEASE "-flto -O3 -fno-exceptions -fno-rtti")
+endif ()
 
 if (STEAM_BUILD)
 	include_directories(
