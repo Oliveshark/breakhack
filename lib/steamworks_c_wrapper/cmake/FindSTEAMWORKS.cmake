@@ -14,9 +14,9 @@ find_path(STEAMWORKS_INCLUDE_DIR
 
 find_library(STEAMWORKS_LIBRARY
 	NAMES
-		steam_api
+		steam_api steam_api64
 	PATHS
-		${PROJECT_SOURCE_DIR}/sdk/redistributable_bin/
+		${PROJECT_SOURCE_DIR}/sdk/redistributable_bin/win64/
 		${PROJECT_SOURCE_DIR}/sdk/redistributable_bin/linux64/
 )
 

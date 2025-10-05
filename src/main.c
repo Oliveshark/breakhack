@@ -1388,7 +1388,7 @@ void close(void)
 	SDL_Quit();
 }
 
-#ifdef STEAM_BUILD
+#ifdef CHECKSUM_VALIDATION
 static void
 validate_lib_checksum(void)
 {
@@ -1416,15 +1416,15 @@ validate_lib_checksum(void)
 		info("Checksum validated: %#x", calculated);
 	}
 }
-#endif // STEAM_BUILD
+#endif // CHECKSUM_VALIDATION
 
 int main(int argc, char *argv[])
 {
 	UNUSED(argc);
 
-#ifdef STEAM_BUILD
+#ifdef CHECKSUM_VALIDATION
 	validate_lib_checksum();
-#endif // STEAM_BUILD
+#endif // CHECKSUM_VALIDATION
 
 	PHYSFS_init(argv[0]);
 #ifndef DEBUG

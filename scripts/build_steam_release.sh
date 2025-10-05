@@ -49,6 +49,7 @@ STEAM_CONTENT_DIR_WINDOWS=$STEAM_CONTENT_DIR/windows
 STEAM_CONTENT_DIR_LINUX=$STEAM_CONTENT_DIR/linux
 
 # Checkout branch and set up submodules
+git fetch
 git checkout $GIT_BRANCH
 git pull
 git submodule update --init --recursive
@@ -82,7 +83,7 @@ unzip $BUILD_DIR_LINUX/package/*.zip -d $STEAM_CONTENT_DIR_LINUX/
 mkdir -p $BUILD_DIR_WINDOWS
 cmake -B $BUILD_DIR_WINDOWS \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-    -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-i686.cmake \
+    -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake \
     -DSDLMIXER_VENDORED=ON \
     -DSDLTTF_VENDORED=ON \
     -GNinja
