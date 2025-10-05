@@ -102,25 +102,13 @@ if ( MSVC )
 			${CMAKE_C_FLAGS_RELEASE}
     )
 elseif ( WIN32 )
-    set (
-      CMAKE_C_FLAGS_DEBUG
-      "${CMAKE_C_FLAGS_DEBUG} -mconsole"
-    )
-    set (
-      CMAKE_C_FLAGS_RELEASE
-      "${CMAKE_C_FLAGS_RELEASE} -mwindows"
-    )
+    set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -mconsole")
+    set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -mwindows")
 elseif ( GCC AND NOT MINGW )
-	set (
-		CMAKE_C_FLAGS_DEBUG
-		"${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer"
-	)
-	set (
-		CMAKE_C_FLAGS_RELEASE
-		"${CMAKE_C_FLAGS_RELEASE} -O2"
-	)
+	set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
+	set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2")
 elseif (EMSCRIPTEN)
-	set(CMAKE_C_FLAGS_RELEASE "-flto -O3 -fno-exceptions -fno-rtti")
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -flto -O3 -fno-exceptions -fno-rtti")
 endif ()
 
 if (STEAM_BUILD)
