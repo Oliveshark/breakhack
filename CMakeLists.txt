@@ -9,10 +9,11 @@ set(breakhack_GAME_TITLE "BreakHack")
 # CMake options
 set(DISABLE_STEAM_BUILD OFF CACHE BOOL "Disable Steam build")
 set(RELEASE_TYPE "" CACHE STRING "Release type")
+set(STEAM_BUILD OFF CACHE STRING "Steam build")
 
-# Checksums
-set(breakhack_STEAMAPI_DLL_CHECKSUM 0x1a4691a)
-set(breakhack_STEAMAPI_SO_CHECKSUM 0x1a11b6d)
+# Checksums, Disabled until further notice
+# set(breakhack_STEAMAPI_DLL_CHECKSUM 0x1a4691a)
+# set(breakhack_STEAMAPI_SO_CHECKSUM 0x1a11b6d)
 
 include(build_deps/cmake/FindCCache.cmake)
 include(build_deps/cmake/FindCMocka.cmake)
@@ -32,12 +33,11 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/config.h"
 	)
 
-set(STEAM OFF)
 
 if (NOT DISABLE_STEAM_BUILD)
 	if (EXISTS "${PROJECT_SOURCE_DIR}/lib/steamworks_c_wrapper/sdk")
 		MESSAGE ( STATUS "Steam SDK located, Steam build enabled")
-		set(STEAM ON)
+		set(STEAM_BUILD ON)
 	else ()
 		MESSAGE ( STATUS "Steam SDK not found, Steam build disabled")
 	endif()
@@ -45,7 +45,7 @@ else ()
 	MESSAGE ( STATUS "Steam build disabled by DISABLE_STEAM_BUILD flag")
 endif ()
 
-if (STEAM)
+if (STEAM_BUILD)
 	add_subdirectory(lib/steamworks_c_wrapper)
 endif()
 add_subdirectory(lib/bh_random)
@@ -118,7 +118,7 @@ IF ( GCC AND NOT MINGW )
 	)
 ENDIF ()
 
-if (STEAM)
+if (STEAM_BUILD)
 	include_directories(
 	lib/steamworks_c_wrapper/src
 	)
@@ -155,8 +155,17 @@ set(SDLIMAGE_XV OFF)
 add_subdirectory(external/SDL_image SYSTEM)
 set(SDL_IMAGE_LIBRARY SDL3_image-static)
 
-# opusfile caused issues in macos build and we don't need it anyways
 set(SDLMIXER_OPUS OFF)
+set(SDLMIXER_AIFF OFF)
+set(SDLMIXER_VOC OFF)
+set(SDLMIXER_AU OFF)
+set(SDLMIXER_GME OFF)
+set(SDLMIXER_MIDI_TIMIDITY OFF)
+set(SDLMIXER_MOD_XMP OFF)
+set(SDLMIXER_MP3_DRMP3 OFF)
+set(SDLMIXER_MP3_MPG123 OFF)
+set(SDLMIXER_WAVPACK OFF)
+set(SDLMIXER_VORBIS_VORBISFILE_ENABLED OFF)
 add_subdirectory(external/SDL_mixer SYSTEM)
 set(SDL_MIXER_LIBRARY SDL3_mixer-static)
 
@@ -184,7 +193,7 @@ if (CMOCKA_FOUND)
 endif(CMOCKA_FOUND)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
-if (STEAM)
+if (STEAM_BUILD)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DSTEAM_BUILD")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DSTEAM_BUILD")
 endif ()
@@ -242,7 +251,7 @@ target_link_libraries(${PROJECT_NAME}
 	${PHYSFS_LIBRARY}
 )
 
-if (STEAM)
+if (STEAM_BUILD)
 	target_link_libraries(${PROJECT_NAME}
 		${STEAMWORKS_LIBRARY}
 		steamworks_c_wrapper
@@ -304,12 +313,12 @@ endif ()
 
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_COMPONENT "${PACKAGE_COMPONENT}")
 SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION ".")
-if (STEAM)
+if (STEAM_BUILD)
 	if (WIN32)
 		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
 			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-			lib/steamworks_c_wrapper/sdk/redistributable_bin/steam_api.dll
-			)
+			lib/steamworks_c_wrapper/sdk/redistributable_bin/win64/steam_api64.dll
+		)
 	else ()
 		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS
 			${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
@@ -320,7 +329,7 @@ if (STEAM)
 endif ()
 include(InstallRequiredSystemLibraries)
 
-if (NOT STEAM)
+if (NOT STEAM_BUILD)
 	INSTALL(TARGETS ${PROJECT_NAME}
 		COMPONENT Release
 		RUNTIME DESTINATION bin/
@@ -372,7 +381,7 @@ if (WIN32)
 else ()
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 endif ()
-if (STEAM)
+if (STEAM_BUILD)
 	set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
 	set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-steambuild")
 endif ()

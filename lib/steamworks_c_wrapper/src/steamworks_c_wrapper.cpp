@@ -30,7 +30,7 @@ static CallbackHandler *m_CallbackHandler = NULL;
 extern "C" uint32_t
 c_SteamAPI_Init()
 {
-	if (SteamAPI_Init()) {
+	if (SteamAPI_InitFlat(NULL) == 0) {
 		m_AppId = SteamUtils()->GetAppID();
 		m_Initiated = true;
 	}

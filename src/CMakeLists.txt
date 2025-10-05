@@ -5,6 +5,6 @@ if (DEBUG_BUILD)
 	target_sources(${PROJECT_NAME} PRIVATE debug/debug.c)
 endif ()
 
-if (STEAM)
+if (STEAM_BUILD)
 	target_sources(${PROJECT_NAME} PRIVATE steam/steamworks_api_wrapper.c)
 endif ()
