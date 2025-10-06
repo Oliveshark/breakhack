@@ -206,6 +206,7 @@ init_sprites(Gui *gui, Camera *cam)
 	texture_create_blank(texture,
 			     SDL_TEXTUREACCESS_TARGET,
 			     cam->renderer);
+	texture_set_blend_mode(texture, SDL_BLENDMODE_BLEND);
 
 	gui->miniMap = minimap;
 
@@ -474,9 +475,6 @@ void
 gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 {
 	SDL_SetRenderTarget(cam->renderer, gui->miniMap->textures[0]->texture);
-	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-
-	debug("Updating minimap");
 
 	for (size_t i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (size_t j = 0; j < MAP_ROOM_HEIGHT; ++j) {
