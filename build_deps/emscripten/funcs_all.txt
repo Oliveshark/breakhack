@@ -1,0 +1,9 @@
+[
+    "main",
+    "SDL_main",
+    "SDL_RenderPresent",
+    "SDL_SYS_DelayNS",
+    "GLES2_RenderPresent",
+    "Emscripten_GLES_SwapWindow",
+    "dynCall_v"
+]

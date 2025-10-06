@@ -87,7 +87,7 @@ else()
 	set(PACKAGE_COMPONENT "Release")
 endif()
 
-IF ( MSVC )
+if ( MSVC )
     MESSAGE ( STATUS "Setting MSVC MT switches")
 		string (REPLACE
 			"/MDd"
@@ -101,22 +101,15 @@ IF ( MSVC )
 			CMAKE_C_FLAGS_RELEASE
 			${CMAKE_C_FLAGS_RELEASE}
     )
-ELSEIF ( WIN32 )
-    SET (
-      CMAKE_C_FLAGS_DEBUG
-      "${CMAKE_C_FLAGS_DEBUG} -mconsole"
-    )
-    SET (
-      CMAKE_C_FLAGS_RELEASE
-      "${CMAKE_C_FLAGS_RELEASE} -mwindows"
-    )
-ENDIF ()
-IF ( GCC AND NOT MINGW )
-	SET (
-		CMAKE_C_FLAGS_DEBUG
-		"${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer"
-	)
-ENDIF ()
+elseif ( WIN32 )
+    set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -mconsole")
+    set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -mwindows")
+elseif ( GCC AND NOT MINGW )
+	set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
+	set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2")
+elseif (EMSCRIPTEN)
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -flto -O3 -fno-exceptions -fno-rtti")
+endif ()
 
 if (STEAM_BUILD)
 	include_directories(
