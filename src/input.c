@@ -17,7 +17,6 @@
  */
 
 #include "input.h"
-#include "vector2d.h"
 
 void
 input_init(Input *input)

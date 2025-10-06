@@ -19,6 +19,7 @@
 #ifndef GUI_H_
 #define	GUI_H_
 
+#include "roommatrix.h"
 #define LOG_LINES_COUNT	10
 #define LOG_FONT_SIZE	8
 #define LABEL_FONT_SIZE	8
@@ -49,7 +50,7 @@ typedef struct Gui {
 	LinkedList *xp_bar;
 	Sprite *bottomFrame;
 	Sprite *statsFrame;
-	Sprite *miniMapFrame;
+	Sprite *miniMap;
 	Sprite *labels[LABEL_COUNT];
 	Sprite *activeTooltip;
 	Sprite *goldKey;
@@ -68,8 +69,31 @@ gui_update_player_stats(Gui*, Player*, Map*, SDL_Renderer*);
 void
 gui_render_panel(Gui*, Camera*);
 
+/**
+ * \brief Update the minimap with the current room
+ * \param[in]	gui	The gui
+ * \param[in]	cam	The camera
+ * \param[in]	rm	The current rooms RoomMatrix
+ */
 void
-gui_render_minimap(Gui*, Map*, Camera*);
+gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm);
+
+/**
+ * \brief Reset the gui
+ * \param gui The gui
+ * \param cam The camera
+ */
+void
+gui_reset(Gui *gui, Camera *cam);
+
+/**
+ * \brief Render the minimap
+ * \param[in]	gui	The gui
+ * \param[in]	cam	The camera
+ * \param[in]	rm	The room matrix
+ */
+void
+gui_render_minimap(Gui *gui, Camera *cam, RoomMatrix *rm);
 
 void
 gui_render_log(Gui*, Camera*);
