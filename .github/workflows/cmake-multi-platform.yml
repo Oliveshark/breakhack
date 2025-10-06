@@ -101,7 +101,6 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.platform.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.platform.c_compiler }}
         -DCMAKE_BUILD_TYPE=Release
-        -S ${{ github.workspace }}
         ${{ matrix.platform.cmake_args }}
 
     - name: Build
