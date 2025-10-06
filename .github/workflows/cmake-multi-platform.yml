@@ -42,7 +42,6 @@ jobs:
               -DSDL2MIXER_VENDORED=ON
               -DSDL2TTF_VENDORED=ON
               -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake
-              -GNinja
           - os: macos-latest
             c_compiler: gcc
             cpp_compiler: g++
