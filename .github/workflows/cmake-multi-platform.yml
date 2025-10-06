@@ -35,13 +35,6 @@ jobs:
             c_compiler: clang
             cpp_compiler: clang++
             cmake_args: '-GNinja'
-          - os: ubuntu-latest
-            c_compiler: mingw-w64-gcc
-            cpp_compiler: mingw-w64-g++
-            cmake_args: >
-              -DSDL2MIXER_VENDORED=ON
-              -DSDL2TTF_VENDORED=ON
-              -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake
           - os: macos-latest
             c_compiler: gcc
             cpp_compiler: g++
@@ -50,6 +43,12 @@ jobs:
             c_compiler: clang
             cpp_compiler: clang++
             cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja'
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+            cmake_args: >
+              -DSDLMIXER_VENDORED=ON
+              -GNinja
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -63,17 +62,23 @@ jobs:
             c_compiler: cl
           - os: macos-latest
             c_compiler: mingw-w64-gcc
-            # Disabling windows because there's some bug
-          - os: windows-latest
-            c_compiler: cl
-            #cpp_compiler: cl
-            #cmake_args: '-DSDLMIXER_VENDORED=ON'
+          - os: ubuntu-latest
+            c_compiler: mingw-w64-gcc
+            #cpp_compiler: mingw-w64-g++
+            #cmake_args: >
+              #-DSDL2MIXER_VENDORED=ON
+              #-DSDL2TTF_VENDORED=ON
+              #-DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake
+              #-GNinja
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: recursive
         fetch-depth: 0
+
+    - uses: ilammy/msvc-dev-cmd@v1
+      if: ${{ matrix.os == 'windows-latest' && matrix.c_compiler == 'cl' }}
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
