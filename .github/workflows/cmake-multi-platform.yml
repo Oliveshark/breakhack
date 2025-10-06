@@ -10,7 +10,12 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }}
 
     strategy:
       # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
@@ -23,53 +28,14 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        build_type: [Release, Debug]
-        c_compiler: [gcc, clang, cl, mingw-w64-gcc]
-        include:
-          - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-            cmake_args: '-GNinja'
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
-            cmake_args: '-GNinja'
-          - os: macos-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-            cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja'
-          - os: macos-latest
-            c_compiler: clang
-            cpp_compiler: clang++
-            cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja'
-          - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
-            cmake_args: >
-              -DSDLMIXER_VENDORED=ON
-              -GNinja
-        exclude:
-          - os: windows-latest
-            c_compiler: gcc
-          - os: windows-latest
-            c_compiler: clang
-          - os: windows-latest
-            c_compiler: mingw-w64-gcc
-          - os: ubuntu-latest
-            c_compiler: cl
-          - os: macos-latest
-            c_compiler: cl
-          - os: macos-latest
-            c_compiler: mingw-w64-gcc
-          - os: ubuntu-latest
-            c_compiler: mingw-w64-gcc
-            #cpp_compiler: mingw-w64-g++
-            #cmake_args: >
-              #-DSDL2MIXER_VENDORED=ON
-              #-DSDL2TTF_VENDORED=ON
-              #-DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake
-              #-GNinja
+        platform:
+        - { name: Windows (MSVC),     os: windows-latest, shell: sh, c_compiler: cl, cpp_compiler: cl, cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja' }
+        - { name: Ubuntu (GCC),       os: ubuntu-latest, shell: sh, c_compiler: gcc, cpp_compiler: g++, cmake_args: '-GNinja' }
+        - { name: Ubuntu (Clang),     os: ubuntu-latest, shell: sh, c_compiler: clang, cpp_compiler: clang++, cmake_args: '-GNinja' }
+        - { name: Ubuntu (mingw),     os: ubuntu-latest, shell: sh, c_compiler: mingw-w64-gcc, cpp_compiler: mingw-w64-g++,
+          cmake_args: '-DSDLMIXER_VENDORED=ON -DSDLTTF_VENDORED=ON -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake -GNinja' }
+        - { name: Mac (GCC),          os: macos-latest, shell: sh, c_compiler: gcc, cpp_compiler: g++, cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja' }
+        - { name: Mac (Clang),        os: macos-latest, shell: sh, c_compiler: clang, cpp_compiler: clang++, cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja' }
 
     steps:
     - uses: actions/checkout@v4
@@ -78,7 +44,7 @@ jobs:
         fetch-depth: 0
 
     - uses: ilammy/msvc-dev-cmd@v1
-      if: ${{ matrix.os == 'windows-latest' && matrix.c_compiler == 'cl' }}
+      if: ${{ matrix.platform.os == 'windows-latest' && matrix.platform.c_compiler == 'cl' }}
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
@@ -138,7 +104,7 @@ jobs:
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCMAKE_BUILD_TYPE=Release
         -S ${{ github.workspace }}
         ${{ matrix.cmake_args }}
 
@@ -147,8 +113,8 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Test
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.c_compiler != 'mingw-w64-gcc' }}
+      if: ${{ matrix.platform.os == 'ubuntu-latest' && matrix.platform.c_compiler != 'mingw-w64-gcc' }}
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest --output-on-failure --test-dir test --build-config ${{ matrix.build_type }}
+      run: ctest --output-on-failure --test-dir test --build-config Release
