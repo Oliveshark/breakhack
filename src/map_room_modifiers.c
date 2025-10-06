@@ -30,6 +30,7 @@ map_room_modifier_player_effect(Player *player,
 {
 	Position matrixPos = position_to_matrix_coords(&player->sprite->pos);
 	if (matrix->modifier->type == RMOD_TYPE_WINDY
+	    && player->effects.effect != POTION_STONE
 	    && !vector2d_equals(*direction, VECTOR2D_NODIR)
 	    && matrixPos.x > 0 && matrixPos.x < MAP_ROOM_WIDTH-1
 	    && matrixPos.y > 0 && matrixPos.y < MAP_ROOM_HEIGHT-1)

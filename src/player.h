@@ -39,9 +39,10 @@ typedef enum PlayerClass { ENGINEER, MAGE, PALADIN, ROGUE, WARRIOR } class_t;
 typedef enum PlayerState { ALIVE, DEAD } state_t;
 
 typedef enum {
-	POTION_NONE,
+	POTION_NONE = 0,
 	POTION_FROST,
-	POTION_BLOODLUST
+	POTION_BLOODLUST,
+	POTION_STONE,
 } PotionEffect;
 
 typedef struct PlayerStatData {
