@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Script to provision an ubuntu box for compiling and releasing breakhack.
 
@@ -23,8 +23,10 @@ sudo apt-get install -y \
     fluidsynth
 
 # Install steamcmd
-sudo add-apt-repository multiverse; sudo dpkg --add-architecture i386; sudo apt update
-sudo apt install steamcmd
+sudo add-apt-repository -y multiverse
+sudo dpkg --add-architecture i386
+sudo apt update
+sudo apt install -y steamcmd
 
 [[ -d breakhack ]] || git clone --recursive https://github.com/oliveshark/breakhack
 
