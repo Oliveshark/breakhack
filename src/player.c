@@ -26,11 +26,9 @@
 #include "gui.h"
 #include "item.h"
 #include "particle_engine.h"
-#include "keyboard.h"
 #include "mixer.h"
 #include "random.h"
 #include "projectile.h"
-#include "texturecache.h"
 #include "vector2d.h"
 #include "actiontextbuilder.h"
 #include "animation.h"
@@ -362,8 +360,9 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 		    lastSpace->trap == NULL &&
 		    lastSpace->objects == NULL &&
 		    lastSpace->items == NULL
-		   )
+		   ) {
 			map_trigger_tile_fall(lastSpace->tile);
+		}
 	}
 }
 

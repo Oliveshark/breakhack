@@ -197,10 +197,17 @@ void loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player)
 		item_drop_chance = 0;
 
 	if (player_has_potion_effect(player, POTION_NONE) && get_random(potion_drop_chance) == 0) {
-		if (get_random(1) == 0)
-			item = item_builder_build_potion(POTION_BLOODLUST);
-		else
-			item = item_builder_build_potion(POTION_FROST);
+		switch (get_random(2)) {
+			case 0:
+				item = item_builder_build_potion(POTION_BLOODLUST);
+				break;
+			case 1:
+				item = item_builder_build_potion(POTION_FROST);
+				break;
+			case 2:
+				item = item_builder_build_potion(POTION_STONE);
+				break;
+		}
 		item->sprite->pos = monsterTilePos;
 		linkedlist_append(&map->items, item);
 		drop_item(item->sprite, drop_positions, space_count, DROP_POTION);

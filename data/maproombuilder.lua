@@ -1,6 +1,6 @@
 -- FUNCTIONS
 local random = map_random
-local layoutparser = require "layoutparser" 
+local layoutparser = require "layoutparser"
 
 -- CONSTANTS
 local UP	= 1
@@ -250,7 +250,7 @@ local function build_vert_center_coridoor(room, offset)
 	if random(2) == 1 then
 		room.decor[6][offset+2] = lightDecor.candle1
 	end
-	if random(2) == 1 then 
+	if random(2) == 1 then
 		room.decor[6][offset+2] = lightDecor.candle1
 	end
 end
@@ -267,7 +267,7 @@ local function build_horiz_center_coridoor(room, offset)
 	if random(2) == 1 then
 		room.decor[offset+3][4] = lightDecor.candle1
 	end
-	if random(2) == 1 then 
+	if random(2) == 1 then
 		room.decor[offset+3][7] = lightDecor.candle1
 	end
 end

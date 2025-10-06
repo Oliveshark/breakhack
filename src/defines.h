@@ -64,15 +64,15 @@
 #define UNUSED(x) (void)(x)
 
 #define UNPACK_COLOR(color) color.r, color.g, color.b, color.a
-#define C_WHITE (SDL_Color)		{	255, 255, 255, 255 }
-#define C_RED (SDL_Color)		{	255,   0,   0, 255 }
-#define C_GREEN (SDL_Color)		{	  0, 255,   0, 255 }
-#define C_BLUE (SDL_Color)		{	 60, 134, 252, 255 }
-#define C_LIGHTBLUE (SDL_Color)	{	 143, 178, 234, 255 }
-#define C_YELLOW (SDL_Color)	{	255, 255,   0, 255 }
-#define C_BLACK (SDL_Color)		{	  0,   0,   0, 255 }
-#define C_PURPLE (SDL_Color)	{	137,  16, 229, 255 }
-#define C_GREY (SDL_Color)		{	 89,  89,  89, 255 }
+#define C_WHITE (SDL_Color)         { 255, 255, 255, 255 }
+#define C_RED (SDL_Color)           { 255,   0,   0, 255 }
+#define C_GREEN (SDL_Color)         {   0, 255,   0, 255 }
+#define C_BLUE (SDL_Color)          {  60, 134, 252, 255 }
+#define C_LIGHTBLUE (SDL_Color)     { 143, 178, 234, 255 }
+#define C_YELLOW (SDL_Color)        { 255, 255,   0, 255 }
+#define C_BLACK (SDL_Color)         {   0,   0,   0, 255 }
+#define C_PURPLE (SDL_Color)        { 137,  16, 229, 255 }
+#define C_GREY (SDL_Color)          {  89,  89,  89, 255 }
 
 // MSVC seems to have min/max defined.
 // Haven't looked into it further.
@@ -81,15 +81,6 @@
 #define min(a, b) (a < b ? a : b)
 #endif // _MSC_VER
 #define clamp(a, b, x) max(a, min(b, x))
-
-typedef int8_t		Sint8;
-typedef uint8_t		Uint8;
-typedef int16_t		Sint16;
-typedef uint16_t	Uint16;
-typedef int32_t		Sint32;
-typedef uint32_t	Uint32;
-typedef int64_t		Sint64;
-typedef uint64_t	Uint64;
 
 typedef enum Direction_t {
 	UP, DOWN, LEFT, RIGHT, INVALID

@@ -220,6 +220,19 @@ pickup_frost(Item *item, Player *player)
 	mixer_play_effect(FREEZE);
 }
 
+static void
+pickup_stone(Item *item, Player *player)
+{
+	(void) item;
+
+	gui_log("You drink a stone potion. Your body rocks.");
+	player->effects.effect = POTION_STONE;
+	player->effects.damage_reduction = (uint8_t)(player->stats.lvl);
+	player->effects.damage_multiplier = 2;
+	sprite_set_color_mod(player->sprite, 100, 100, 100);
+	mixer_play_effect(STONES);
+}
+
 Item *
 item_builder_build_potion(PotionEffect effect)
 {
@@ -237,6 +250,12 @@ item_builder_build_potion(PotionEffect effect)
 					NULL,
 					CLIP16(96, 0),
 					pickup_frost);
+			break;
+		case POTION_STONE:
+			item = create_item("Items/Potion.png",
+					NULL,
+					CLIP16(6*16, 2*16),
+					pickup_stone);
 			break;
 		case POTION_NONE:
 			fatal("Potion effect is POTION_NONE");

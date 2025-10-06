@@ -70,6 +70,7 @@ typedef enum Fx_t {
 	POTION_DROP,
 	SLAM,
 	SPLAT,
+	STONES,
 	SWING0,
 	SWING1,
 	SWING2,
