@@ -454,7 +454,7 @@ goToMainMenu(void *unused)
 	initMainMenu();
 	Position p = { 0, 0 };
 	gPlayer->sprite->pos = (Position) { 32, 32 };
-	map_set_current_room(gMap, &p);
+	map_set_current_room(gMap, &p, NULL);
 	camera_follow_position(gCamera, &p);
 }
 
@@ -663,7 +663,7 @@ resetGame(void)
 
 	player_reset_on_levelchange(gPlayer);
 
-	map_set_current_room(gMap, &gPlayer->sprite->pos);
+	map_set_current_room(gMap, &gPlayer->sprite->pos, NULL);
 	camera_follow_position(gCamera, &gPlayer->sprite->pos);
 	repopulate_roommatrix();
 }
@@ -949,6 +949,7 @@ static void
 run_game_update(void)
 {
 	static UpdateData updateData;
+	bool first_room_visit = false;
 
 	if (gGameState == IN_GAME_MENU)
 		menu_update(inGameMenu, &input, gCamera);
@@ -972,8 +973,12 @@ run_game_update(void)
 	actiontextbuilder_update(&updateData);
 	skillbar_update(gSkillBar, &updateData);
 	camera_follow_position(gCamera, &gPlayer->sprite->pos);
-	map_set_current_room(gMap, &gPlayer->sprite->pos);
+	map_set_current_room(gMap, &gPlayer->sprite->pos, &first_room_visit);
 	map_update(&updateData);
+
+	if (first_room_visit) {
+		gui_update_minimap(gGui, gCamera, gMap);
+	}
 
 	if (currentTurn == PLAYER) {
 		if (player_turn_over(gPlayer)) {
@@ -997,7 +1002,7 @@ render_gui(void)
 	SDL_SetRenderViewport(gRenderer, &statsGuiViewport);
 	gui_render_panel(gGui, gCamera);
 	SDL_SetRenderViewport(gRenderer, &minimapViewport);
-	gui_render_minimap(gGui, gMap, gCamera);
+	gui_render_minimap(gGui, gCamera);
 	SDL_SetRenderViewport(gRenderer, &skillBarViewport);
 	skillbar_render(gSkillBar, gPlayer, gCamera);
 	SDL_SetRenderViewport(gRenderer, &bottomGuiViewport);

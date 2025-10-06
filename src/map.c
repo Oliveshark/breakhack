@@ -22,6 +22,7 @@
 #include "util.h"
 #include "item.h"
 #include "item_builder.h"
+#include "object.h"
 #include "gui.h"
 #include "particle_engine.h"
 #include "update_data.h"
@@ -398,24 +399,24 @@ map_render_top_layer(Map *map, RoomMatrix *rm, Camera *cam)
 	}
 }
 
-void map_set_current_room(Map *map, Position *pos)
+void map_set_current_room(Map *map, Position *player_world_pos, bool *first_visit)
 {
 	unsigned int room_width, room_height;
 
 	room_width = MAP_ROOM_WIDTH * TILE_DIMENSION;
 	room_height = MAP_ROOM_HEIGHT * TILE_DIMENSION;
 
-	if (pos->x <= 0) {
+	if (player_world_pos->x <= 0) {
 		map->currentRoom.x = 0;
 	} else {
-		unsigned int room_cord_x = pos->x - (pos->x % room_width);
+		unsigned int room_cord_x = player_world_pos->x - (player_world_pos->x % room_width);
 		map->currentRoom.x = room_cord_x / room_width;
 	}
 
-	if (pos->y <= 0) {
+	if (player_world_pos->y <= 0) {
 		map->currentRoom.y = 0;
 	} else {
-		unsigned int room_cord_y = pos->y - (pos->y % room_height);
+		unsigned int room_cord_y = player_world_pos->y - (player_world_pos->y % room_height);
 		map->currentRoom.y = room_cord_y / room_height;
 	}
 
@@ -424,6 +425,9 @@ void map_set_current_room(Map *map, Position *pos)
 	if (map->currentRoom.y >= MAP_V_ROOM_COUNT)
 		map->currentRoom.y = MAP_V_ROOM_COUNT - 1;
 
+	if (first_visit != NULL) {
+		*first_visit = !map->rooms[map->currentRoom.x][map->currentRoom.y]->visited;
+	}
 	map->rooms[map->currentRoom.x][map->currentRoom.y]->visited = true;
 }
 

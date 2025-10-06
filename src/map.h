@@ -31,11 +31,7 @@
 #include "monster.h"
 #include "player.h"
 #include "map_room_modifiers.h"
-#include "object.h"
 #include "doorlocktype.h"
-
-typedef struct UpdateData UpdateData;
-typedef struct Trap Trap;
 
 typedef struct MapTile_t {
 	Sprite *sprite;
@@ -119,8 +115,14 @@ map_render_mid_layer(Map*, Camera*);
 void
 map_render_top_layer(Map*, RoomMatrix*, Camera*);
 
+/**
+ * \brief Set the current room based on player position
+ * \param[in]		map		The map
+ * \param[in]		pos		The players current world position
+ * \param[out]		first_visit	Set to true if this is the first visit to this room
+ */
 void
-map_set_current_room(Map*, Position*);
+map_set_current_room(Map* map, Position* player_world_pos, bool* first_visit);
 
 void
 map_trigger_tile_fall(MapTile *tile);

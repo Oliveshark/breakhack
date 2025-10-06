@@ -68,8 +68,22 @@ gui_update_player_stats(Gui*, Player*, Map*, SDL_Renderer*);
 void
 gui_render_panel(Gui*, Camera*);
 
+/**
+ * \brief Update the minimap with the current room
+ * \param[in]	gui	The gui
+ * \param[in]	cam	The camera
+ * \param[in]	map	The map
+ */
 void
-gui_render_minimap(Gui*, Map*, Camera*);
+gui_update_minimap(Gui *gui, Camera *cam, Map *map);
+
+/**
+ * \brief Render the minimap
+ * \param[in]	gui	The gui
+ * \param[in]	cam	The camera
+ */
+void
+gui_render_minimap(Gui*, Camera*);
 
 void
 gui_render_log(Gui*, Camera*);
