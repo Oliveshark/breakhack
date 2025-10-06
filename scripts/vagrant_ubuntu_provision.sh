@@ -18,8 +18,6 @@ sudo apt-get install -y \
     libwavpack-dev \
     ninja-build \
     pkg-config \
-    libopusfile-dev \
-    libxmp-dev \
     fluidsynth
 
 # Install steamcmd
