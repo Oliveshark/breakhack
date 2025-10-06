@@ -83,8 +83,6 @@ jobs:
           libwavpack-dev \
           ninja-build \
           pkg-config \
-          libopusfile-dev \
-          libxmp-dev \
           fluidsynth \
           libcmocka-dev \
           cppcheck
