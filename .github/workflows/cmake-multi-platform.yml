@@ -45,6 +45,8 @@ jobs:
 
     - uses: ilammy/msvc-dev-cmd@v1
       if: ${{ matrix.platform.os == 'windows-latest' && matrix.platform.c_compiler == 'cl' }}
+      with:
+        arch: x64
 
     - name: ccache
       uses: hendrikmuhs/ccache-action@v1.2
@@ -106,7 +108,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=Release
         -S ${{ github.workspace }}
-        ${{ matrix.cmake_args }}
+        ${{ matrix.platform.cmake_args }}
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
