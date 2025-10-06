@@ -206,6 +206,7 @@ init_sprites(Gui *gui, Camera *cam)
 	texture_create_blank(texture,
 			     SDL_TEXTUREACCESS_TARGET,
 			     cam->renderer);
+	texture_set_blend_mode(texture, SDL_BLENDMODE_BLEND);
 
 	gui->miniMap = minimap;
 
@@ -473,13 +474,7 @@ gui_render_panel(Gui *gui, Camera *cam)
 void
 gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 {
-	(void) gui;
-	(void) cam;
-
 	SDL_SetRenderTarget(cam->renderer, gui->miniMap->textures[0]->texture);
-	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-
-	debug("Updating minimap");
 
 	for (size_t i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (size_t j = 0; j < MAP_ROOM_HEIGHT; ++j) {
@@ -511,9 +506,7 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 		}
 	}
 
-	SDL_RenderPresent(cam->renderer);
 	SDL_SetRenderTarget(cam->renderer, NULL);
-	// TODO(Linus): Implement target rendering
 }
 
 void

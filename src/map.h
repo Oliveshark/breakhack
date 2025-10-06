@@ -33,6 +33,9 @@
 #include "map_room_modifiers.h"
 #include "doorlocktype.h"
 
+typedef struct UpdateData UpdateData;
+typedef struct Trap Trap;
+
 typedef struct MapTile_t {
 	Sprite *sprite;
 	bool collider;
