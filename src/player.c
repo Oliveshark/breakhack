@@ -36,6 +36,7 @@
 #include "gamecontroller.h"
 #include "event.h"
 #include "effect_util.h"
+#include "object.h"
 
 #ifdef STEAM_BUILD
 #include "steam/steamworks_api_wrapper.h"

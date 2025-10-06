@@ -38,6 +38,7 @@
 #include "tooltip.h"
 #include "actiontextbuilder.h"
 #include "effect_util.h"
+#include "object.h"
 
 static char *flurry_tooltip[] = {
 	"FLURRY", "",

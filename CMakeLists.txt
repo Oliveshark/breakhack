@@ -213,7 +213,7 @@ set(INCLUDE_DIRS
 add_executable(${PROJECT_NAME})
 add_subdirectory(src)
 add_subdirectory(lib/sqlite3)
-set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
+set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 11)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 if (NOT MSVC)

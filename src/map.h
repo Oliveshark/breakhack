@@ -31,7 +31,6 @@
 #include "monster.h"
 #include "player.h"
 #include "map_room_modifiers.h"
-#include "object.h"
 #include "doorlocktype.h"
 
 typedef struct UpdateData UpdateData;
@@ -58,17 +57,20 @@ typedef struct Room_t {
 	unsigned int lockTypes;
 } Room;
 
+/**
+ * \brief Map struct
+ */
 typedef struct Map_t {
-	Room* rooms[MAP_H_ROOM_COUNT][MAP_V_ROOM_COUNT];
-	LinkedList *textures;
-	LinkedList *monsters;
-	LinkedList *items;
-	LinkedList *artifacts;
-	LinkedList *objects;
-	Position currentRoom;
-	Timer *monsterMoveTimer;
-	int level;
-	unsigned int lockTypes;
+	Room* rooms[MAP_H_ROOM_COUNT][MAP_V_ROOM_COUNT]; /**< Rooms */
+	LinkedList *textures; /**< Texture list */
+	LinkedList *monsters; /**< Monster list */
+	LinkedList *items; /**< Item list */
+	LinkedList *artifacts; /**< Artifact list */
+	LinkedList *objects; /**< Object list */
+	Position currentRoom; /**< Current room (room index) */
+	Timer *monsterMoveTimer; /**< Monster move timer */
+	int level; /**< Level (depth) */
+	unsigned int lockTypes; /**< Lock types in map */
 } Map;
 
 Map*
@@ -119,8 +121,14 @@ map_render_mid_layer(Map*, Camera*);
 void
 map_render_top_layer(Map*, RoomMatrix*, Camera*);
 
+/**
+ * \brief Set the current room based on player position
+ * \param[in]		map		The map
+ * \param[in]		pos		The players current world position
+ * \param[out]		first_visit	Set to true if this is the first visit to this room
+ */
 void
-map_set_current_room(Map*, Position*);
+map_set_current_room(Map* map, Position* player_world_pos, bool* first_visit);
 
 void
 map_trigger_tile_fall(MapTile *tile);

@@ -23,6 +23,12 @@
 #include <stdarg.h>
 
 #include "gui.h"
+#include "SDL3/SDL_blendmode.h"
+#include "SDL3/SDL_pixels.h"
+#include "SDL3/SDL_render.h"
+#include "defines.h"
+#include "roommatrix.h"
+#include "texture.h"
 #include "util.h"
 #include "map.h"
 #include "texturecache.h"
@@ -186,10 +192,22 @@ init_sprites(Gui *gui, Camera *cam)
 							BOTTOM_GUI_HEIGHT/16,
 							cam);
 
-	gui->miniMapFrame = gui_util_create_frame_sprite(RIGHT_GUI_WIDTH/16,
-							 MINIMAP_GUI_HEIGHT/16,
-							 cam);
+	Sprite *minimap = sprite_create();
+	Texture *texture = texture_create();
+	texture->dim = (Dimension) {
+		RIGHT_GUI_WIDTH,
+		MINIMAP_GUI_HEIGHT
+	};
+	minimap->textures[0] = texture;
+	minimap->destroyTextures = true;
+	minimap->pos = (Position) { 0, 4 };
+	minimap->dim = (Dimension) { RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT };
+	minimap->fixed = true;
+	texture_create_blank(texture,
+			     SDL_TEXTUREACCESS_TARGET,
+			     cam->renderer);
 
+	gui->miniMap = minimap;
 
 	texture_load_from_text(gui->labels[KEY_LABEL]->textures[0], "Keys:", C_WHITE, C_BLACK, cam->renderer);
 	gui->labels[KEY_LABEL]->dim = gui->labels[KEY_LABEL]->textures[0]->dim;
@@ -453,27 +471,67 @@ gui_render_panel(Gui *gui, Camera *cam)
 }
 
 void
-gui_render_minimap(Gui *gui, Map *map, Camera *cam)
+gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 {
-	sprite_render(gui->miniMapFrame, cam);
+	SDL_SetRenderTarget(cam->renderer, gui->miniMap->textures[0]->texture);
+	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
-	SDL_FRect box = { 0.0f, 0.0f, 12.0f, 8.0f };
-	for (Uint8 i = 0; i < MAP_H_ROOM_COUNT; ++i) {
-		for (Uint8 j = 0; j < MAP_V_ROOM_COUNT; ++j) {
-			Room *room = map->rooms[i][j];
-			box.x = (float) i*14 + 10;
-			box.y = (float) j*10 + 14;
-			if (room && room->visited) {
-				if (map->currentRoom.x == i && map->currentRoom.y == j)
-					SDL_SetRenderDrawColor(cam->renderer, 0, 255, 255, 255);
-				else
-					SDL_SetRenderDrawColor(cam->renderer, 255, 255, 255, 255);
-				SDL_RenderFillRect(cam->renderer, &box);
-				SDL_SetRenderDrawColor(cam->renderer, 60, 134, 252, 255);
-				SDL_RenderRect(cam->renderer, &box);
+	debug("Updating minimap");
+
+	for (size_t i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (size_t j = 0; j < MAP_ROOM_HEIGHT; ++j) {
+			const RoomSpace* space = &rm->spaces[i][j];
+			const float x = (float)(i + rm->roomPos.x * MAP_ROOM_WIDTH);
+			const float y = (float)(j + rm->roomPos.y * MAP_ROOM_HEIGHT);
+
+			SDL_Color c = {0, 0, 0, SDL_ALPHA_OPAQUE };
+			if (SPACE_IS_LETHAL(space)) {
+				c.a = SDL_ALPHA_TRANSPARENT;
+			} else if (space->trap) {
+				c.r = 255;
+			} else if (space->door) {
+				c.r = 0; c.g = 0; c.b = 255;
+			} else if (space->tile && space->tile->levelExit) {
+				c.r = 0; c.g = 255; c.b = 0;
+			} else if (space->wall || SPACE_IS_OCCUPIED(space)) {
+				c.r = 200; c.g = 200; c.b = 200;
+			} else if (space->tile == NULL) {
+				c.r = 0; c.g = 0; c.b = 0;
+			} else if (SPACE_IS_WALKABLE(space)) {
+				c.r = 94; c.g = 77; c.b = 179;
+			} else {
+				c.r = 200; c.g = 200; c.b = 200;
 			}
+
+			SDL_SetRenderDrawColor(cam->renderer, c.r, c.g, c.b, c.a);
+			SDL_RenderPoint(cam->renderer, x, y);
 		}
 	}
+
+	SDL_SetRenderTarget(cam->renderer, NULL);
+}
+
+void
+gui_reset(Gui *gui, Camera *cam)
+{
+	// Clear the minimap
+	SDL_SetRenderTarget(cam->renderer, gui->miniMap->textures[0]->texture);
+	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
+	SDL_RenderClear(cam->renderer);
+	SDL_SetRenderTarget(cam->renderer, NULL);
+}
+
+void
+gui_render_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
+{
+	sprite_render(gui->miniMap, cam);
+	const SDL_FRect r = {
+		(float) rm->roomPos.x * MAP_ROOM_WIDTH,
+		4.0f + (float) rm->roomPos.y * MAP_ROOM_HEIGHT,
+		MAP_ROOM_WIDTH,
+		MAP_ROOM_HEIGHT };
+	SDL_SetRenderDrawColor(cam->renderer, 0, 255, 255, 100);
+	SDL_RenderRect(cam->renderer, &r);
 }
 
 void
@@ -537,7 +595,7 @@ void
 gui_render_log(Gui *gui, Camera *cam)
 {
 	SDL_Rect box = { 16, 0, 16, 16 };
-	
+
 	sprite_render(gui->bottomFrame, cam);
 
 	for (Uint32 i = 0; i < log_data.count; ++i) {
@@ -622,7 +680,7 @@ destroy_event_messages(void)
 	for (unsigned int i = 0; i < event_messages.count; ++i) {
 		free(event_messages.messages[i]);
 	}
-	
+
 	free(event_messages.messages);
 	event_messages.messages = NULL;
 }
@@ -638,7 +696,9 @@ gui_destroy(Gui *gui)
 
 	sprite_destroy(gui->bottomFrame);
 	sprite_destroy(gui->statsFrame);
-	sprite_destroy(gui->miniMapFrame);
+	sprite_destroy(gui->miniMap);
+	sprite_destroy(gui->silverKey);
+	sprite_destroy(gui->goldKey);
 
 	while (gui->sprites != NULL)
 		sprite_destroy(linkedlist_pop(&gui->sprites));
@@ -652,9 +712,6 @@ gui_destroy(Gui *gui)
 
 	for (int i = 0; i < LABEL_COUNT; ++i)
 		sprite_destroy(gui->labels[i]);
-
-	sprite_destroy(gui->silverKey);
-	sprite_destroy(gui->goldKey);
 
 	free(gui);
 }
