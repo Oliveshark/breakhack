@@ -473,9 +473,6 @@ gui_render_panel(Gui *gui, Camera *cam)
 void
 gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 {
-	(void) gui;
-	(void) cam;
-
 	SDL_SetRenderTarget(cam->renderer, gui->miniMap->textures[0]->texture);
 	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
@@ -511,9 +508,7 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 		}
 	}
 
-	SDL_RenderPresent(cam->renderer);
 	SDL_SetRenderTarget(cam->renderer, NULL);
-	// TODO(Linus): Implement target rendering
 }
 
 void
