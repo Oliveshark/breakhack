@@ -26,14 +26,15 @@
 #include "SDL3/SDL_blendmode.h"
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_render.h"
+#include "SDL3/SDL_surface.h"
 #include "defines.h"
+#include "map_room_modifiers.h"
 #include "roommatrix.h"
 #include "texture.h"
 #include "util.h"
 #include "map.h"
 #include "texturecache.h"
 #include "gui_util.h"
-#include "tooltip.h"
 
 #define DEFAULT_LOG { NULL, LOG_LINES_COUNT, 0, 200 }
 #define DEFAULT_EVENT_MESSAGES { NULL, 5, 0, 200 }
@@ -201,12 +202,13 @@ init_sprites(Gui *gui, Camera *cam)
 	minimap->textures[0] = texture;
 	minimap->destroyTextures = true;
 	minimap->pos = (Position) { 0, 4 };
-	minimap->dim = (Dimension) { RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT };
+	minimap->dim = (Dimension) { RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT - 8 };
 	minimap->fixed = true;
 	texture_create_blank(texture,
 			     SDL_TEXTUREACCESS_TARGET,
 			     cam->renderer);
 	texture_set_blend_mode(texture, SDL_BLENDMODE_BLEND);
+	texture_set_scale_mode(texture, SDL_SCALEMODE_NEAREST);
 
 	gui->miniMap = minimap;
 
@@ -494,7 +496,7 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 			} else if (space->wall || SPACE_IS_OCCUPIED(space)) {
 				c.r = 200; c.g = 200; c.b = 200;
 			} else if (space->tile == NULL) {
-				c.r = 0; c.g = 0; c.b = 0;
+				c.a = SDL_ALPHA_TRANSPARENT;
 			} else if (SPACE_IS_WALKABLE(space)) {
 				c.r = 94; c.g = 77; c.b = 179;
 			} else {
@@ -503,19 +505,34 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 
 			SDL_SetRenderDrawColor(cam->renderer, c.r, c.g, c.b, c.a);
 			SDL_RenderPoint(cam->renderer, x, y);
+
 		}
 	}
 
-	SDL_SetRenderTarget(cam->renderer, NULL);
-}
+	if (rm->modifier->type != RMOD_TYPE_NONE) {
+		const SDL_FRect mod_box = {
+			(float) rm->roomPos.x * MAP_ROOM_WIDTH,
+			(float) rm->roomPos.y * MAP_ROOM_HEIGHT,
+			(float) MAP_ROOM_WIDTH,
+			(float) MAP_ROOM_HEIGHT,
+		};
+		switch (rm->modifier->type) {
+			case RMOD_TYPE_WINDY:
+				SDL_SetRenderDrawColor(cam->renderer, 0, 0, 255, 100);
+				break;
+			case RMOD_TYPE_FIRE:
+				SDL_SetRenderDrawColor(cam->renderer, 255, 0, 0, 100);
+				break;
+			case RMOD_TYPE_CRUMBLING:
+				SDL_SetRenderDrawColor(cam->renderer, 247, 151, 67, 100);
+				break;
+			default:
+				assert(false);
 
-void
-gui_reset(Gui *gui, Camera *cam)
-{
-	// Clear the minimap
-	SDL_SetRenderTarget(cam->renderer, gui->miniMap->textures[0]->texture);
-	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
-	SDL_RenderClear(cam->renderer);
+		}
+		SDL_RenderFillRect(cam->renderer, &mod_box);
+	}
+
 	SDL_SetRenderTarget(cam->renderer, NULL);
 }
 
@@ -530,6 +547,29 @@ gui_render_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 		MAP_ROOM_HEIGHT };
 	SDL_SetRenderDrawColor(cam->renderer, 0, 255, 255, 100);
 	SDL_RenderRect(cam->renderer, &r);
+}
+
+void
+gui_render_minimap_overlay(Gui *gui, Camera *cam)
+{
+	static SDL_Rect target_box = {
+		50, 50, GAME_VIEW_WIDTH - 100, GAME_VIEW_HEIGHT - 100
+	};
+
+	Texture *texture = gui->miniMap->textures[0];
+	texture_set_alpha(texture, 200);
+	texture_render_clip_ex(texture, &target_box, NULL, 0.0, NULL, SDL_FLIP_NONE, cam);
+	texture_set_alpha(texture, SDL_ALPHA_OPAQUE);
+}
+
+void
+gui_reset(Gui *gui, Camera *cam)
+{
+	// Clear the minimap
+	SDL_SetRenderTarget(cam->renderer, gui->miniMap->textures[0]->texture);
+	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
+	SDL_RenderClear(cam->renderer);
+	SDL_SetRenderTarget(cam->renderer, NULL);
 }
 
 void

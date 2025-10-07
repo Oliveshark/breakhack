@@ -39,6 +39,7 @@
 #define KEY_ESC		0x4000
 #define KEY_ENTER	0x8000
 #define KEY_SPACE	0x10000
+#define KEY_TAB		0x20000
 
 #define KEY_CTRL_M		0x1
 #define KEY_CTRL_S		0x2
