@@ -283,8 +283,8 @@ texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip, Camera *cam
 }
 
 void
-texture_render_clip_ex(Texture *texture, SDL_Rect *box, SDL_Rect *clip, double angle, SDL_Point *point,
-		       SDL_FlipMode flipType, Camera *cam)
+texture_render_clip_ex(Texture *texture, SDL_Rect *dst, SDL_Rect *src, double angle, SDL_Point *rotation_point,
+		       SDL_FlipMode flip_mode, Camera *cam)
 {
 	if (!texture->texture)
 		return;
@@ -294,22 +294,22 @@ texture_render_clip_ex(Texture *texture, SDL_Rect *box, SDL_Rect *clip, double a
 	SDL_FRect fclip;
 	SDL_FPoint fpoint;
 
-	if (box)
-		SDL_RectToFRect(box, &fbox);
-	if (clip)
-		SDL_RectToFRect(clip, &fclip);
-	if (point) {
-		fpoint.x = (float) point->x;
-		fpoint.y = (float) point->y;
+	if (dst)
+		SDL_RectToFRect(dst, &fbox);
+	if (src)
+		SDL_RectToFRect(src, &fclip);
+	if (rotation_point) {
+		fpoint.x = (float) rotation_point->x;
+		fpoint.y = (float) rotation_point->y;
 	}
 
 	SDL_RenderTextureRotated(cam->renderer,
 			 texture->texture,
-			 clip ? &fclip : NULL,
-			 box ? &fbox : NULL,
+			 src ? &fclip : NULL,
+			 dst ? &fbox : NULL,
 			 angle,
-			 point ? &fpoint : NULL,
-			 flipType);
+			 rotation_point ? &fpoint : NULL,
+			 flip_mode);
 
 	texture->lastAccess = SDL_GetTicks();
 }
