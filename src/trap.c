@@ -24,7 +24,7 @@
 #include "actiontextbuilder.h"
 
 Trap *
-trap_create()
+trap_create(void)
 {
 	Trap *trap = ec_malloc(sizeof(Trap));
 	trap->sprite = sprite_create();

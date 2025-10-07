@@ -89,7 +89,7 @@ item_collected(Item *item, Player *player)
 			gui_log("You find nothing inside");
 	}
 
-	if (item->price) {
+	if (item->price > 0) {
 	    player->gold -= item->price;
 	    char costLabel[10];
 	    m_sprintf(costLabel, 10, "-$%.0f", item->price);

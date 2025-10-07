@@ -19,8 +19,6 @@
 #include "object.h"
 #include "gui.h"
 #include "util.h"
-#include "mixer.h"
-#include "random.h"
 #include "texturecache.h"
 
 Object *
@@ -36,7 +34,7 @@ object_create(void)
 }
 
 Object *
-object_create_fire()
+object_create_fire(void)
 {
 	Object *o = object_create();
 	Texture *t0 = texturecache_add("Objects/Effect0.png");
@@ -51,7 +49,7 @@ object_create_fire()
 }
 
 Object *
-object_create_green_gas()
+object_create_green_gas(void)
 {
 	Object *o = object_create();
 	Texture *t0 = texturecache_add("Objects/Effect0.png");

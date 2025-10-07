@@ -48,8 +48,3 @@ add_library(lua STATIC
 	src/lzio.c
 	)
 
-if (NOT MSVC)
-	target_link_libraries(lua
-		-lm
-		)
-endif ()

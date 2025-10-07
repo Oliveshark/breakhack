@@ -41,7 +41,7 @@ DbQuery MIGRATE_COMMANDS[] = {
 			"value INTEGER)",
 		NULL, NULL
 	},
-	{ NULL } // Sentinel
+	{ NULL, NULL, NULL} // Sentinel
 };
 
 static int load_settings_cb(void *unused, int count, char **values, char **colNames);

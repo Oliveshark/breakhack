@@ -128,7 +128,7 @@ Sprite* tooltip_manager_get_tooltip(TooltipType type)
 	return NULL;
 }
 
-void tooltip_manager_close()
+void tooltip_manager_close(void)
 {
 	tooltip_destroy(new_skill_tooltip);
 	tooltip_destroy(howto_tooltip);

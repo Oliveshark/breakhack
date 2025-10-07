@@ -348,7 +348,7 @@ particle_engine_wind(Vector2d direction)
 }
 
 void
-particle_engine_heat()
+particle_engine_heat(void)
 {
 	unsigned int count = 5;
 
