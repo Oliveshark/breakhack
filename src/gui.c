@@ -197,7 +197,7 @@ init_sprites(Gui *gui, Camera *cam)
 	Texture *texture = texture_create();
 	texture->dim = (Dimension) {
 		RIGHT_GUI_WIDTH,
-		MINIMAP_GUI_HEIGHT
+		MINIMAP_GUI_HEIGHT - 8
 	};
 	minimap->textures[0] = texture;
 	minimap->destroyTextures = true;
@@ -509,7 +509,7 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 		}
 	}
 
-	if (rm->modifier->type != RMOD_TYPE_NONE) {
+	if (rm->modifier && rm->modifier->type != RMOD_TYPE_NONE) {
 		const SDL_FRect mod_box = {
 			(float) rm->roomPos.x * MAP_ROOM_WIDTH,
 			(float) rm->roomPos.y * MAP_ROOM_HEIGHT,
