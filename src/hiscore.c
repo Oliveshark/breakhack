@@ -41,7 +41,7 @@ DbQuery MIGRATE_COMMANDS[] = {
 			"FOREIGN KEY(hiscoreId) REFERENCES hiscore(id))",
 		NULL, NULL
 	},
-	{ NULL } // Sentinel
+	{ NULL, NULL, NULL } // Sentinel
 };
 
 static int

@@ -21,7 +21,7 @@
 #include "util.h"
 #include "timer.h"
 
-Timer* _timer_create()
+Timer* _timer_create(void)
 {
 	Timer *t = ec_malloc(sizeof(Timer));
 	t->startTime = 0;
