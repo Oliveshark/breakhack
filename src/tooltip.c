@@ -47,6 +47,8 @@ render_button_texture_for(const char *text, Position pos, Camera *cam, GamepadTy
 		clip = CONTROLLER_OPT(32, controller_type);
 	} else if (strcmp(text, "ENTER") == 0) {
 		clip = CONTROLLER_OPT(0, controller_type);
+	} else if (strcmp(text, "TAB") == 0) {
+		clip = CLIP16(32, 80);
 	} else if (strcmp(text, "SPACE") == 0) {
 		clip = CLIP16(0, 80);
 	} else {

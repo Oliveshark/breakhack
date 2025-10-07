@@ -117,6 +117,7 @@ static bool is_player_dead(void);
 static void initGamepads(void);
 
 static SDL_Surface *window_icon = NULL;
+static bool gShowMap = false;
 
 static
 bool initSDL(void)
@@ -807,6 +808,9 @@ handle_main_input(void)
 	}
 
 	handle_settings_input();
+	if (input_key_is_pressed(&input, KEY_TAB)) {
+		gShowMap = !gShowMap;
+	}
 }
 
 static bool
@@ -907,7 +911,7 @@ check_next_level(void)
 	}
 }
 
-static void
+static inline void
 populateUpdateData(UpdateData *data, float deltatime)
 {
 	data->player = gPlayer;
@@ -1071,6 +1075,9 @@ run_game_render(void)
 
 	SDL_SetRenderViewport(gRenderer, &mainViewport);
 	particle_engine_render_global(gCamera);
+	if (gShowMap) {
+		gui_render_minimap_overlay(gGui, gCamera);
+	}
 	gui_render_tooltip(gGui, gCamera);
 
 	if (gGameState == IN_GAME_MENU) {

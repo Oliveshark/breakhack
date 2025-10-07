@@ -84,6 +84,8 @@ get_event_key(SDL_Event *event)
 			key = KEY_ENTER; break;
 		case SDLK_SPACE:
 			key = KEY_SPACE; break;
+		case SDLK_TAB:
+			key = KEY_TAB; break;
 		default:
 			key = 0; break;
 	}
@@ -117,8 +119,9 @@ get_event_button(SDL_Event *event)
 			key = KEY_ENTER; break;
 		case SDL_GAMEPAD_BUTTON_BACK :
 			key = KEY_ESC; break;
-		case SDL_GAMEPAD_BUTTON_LEFT_STICK :
 		case SDL_GAMEPAD_BUTTON_RIGHT_STICK :
+			key = KEY_TAB; break;
+		case SDL_GAMEPAD_BUTTON_LEFT_STICK :
 			key = KEY_SPACE; break;
 		default:
 			key = 0; break;

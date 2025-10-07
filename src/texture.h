@@ -95,8 +95,8 @@ void
 texture_render_clip(Texture*, SDL_Rect*, SDL_Rect*, Camera*);
 
 void
-texture_render_clip_ex(Texture*, SDL_Rect*, SDL_Rect*, double angle, SDL_Point*,
-		       SDL_FlipMode, Camera*);
+texture_render_clip_ex(Texture *texture, SDL_Rect *dst, SDL_Rect *src, double angle, SDL_Point *rotation_point,
+		       SDL_FlipMode flip_mode, Camera *cam);
 
 void
 texture_destroy(Texture *texture);

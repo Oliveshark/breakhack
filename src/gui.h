@@ -95,6 +95,14 @@ gui_reset(Gui *gui, Camera *cam);
 void
 gui_render_minimap(Gui *gui, Camera *cam, RoomMatrix *rm);
 
+/**
+ * \brief Render the large minimap overlay
+ * \param[in]	gui	The gui
+ * \param[in]	cam	The camera
+ */
+void
+gui_render_minimap_overlay(Gui *gui, Camera *cam);
+
 void
 gui_render_log(Gui*, Camera*);
 

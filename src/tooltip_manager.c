@@ -79,6 +79,8 @@ static char *how_to_play_tooltip[] = {
 	"",
 	"   TOGGLE FULLSCREEN: CTRL + F", "",
 	"",
+	"   TOGGLE MAP:        ", "TAB", "",
+	"",
 	"   TOGGLE MENU:       ", "ESC", "",
 	"",
 	"   Your stats and inventory are listed in the right panel", "",

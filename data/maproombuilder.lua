@@ -436,7 +436,7 @@ local function build_normal_room(room)
 		room.modifier.type = "FIRE"
 		room.modifier.arg = ""
 	elseif ((not pitsAdded and not crumbling and (CURRENT_LEVEL > 1 or QUICK_MODE)) or CURRENT_LEVEL > 3) and random(8) == 1 then
-		directions = { "LEFT", "RIGHT", "UP", "DOWN" }
+		local directions = { "LEFT", "RIGHT", "UP", "DOWN" }
 		room.modifier.type = "WINDY"
 		room.modifier.arg = directions[random(#directions)]
 	end
@@ -466,7 +466,7 @@ function module.is_tile_avilable(room, rx, ry)
 end
 
 function module.create_empty_room()
-	room = {
+	local room = {
 		exits = {},
 		active = false,
 		goal = false,
