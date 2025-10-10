@@ -492,11 +492,18 @@ use_skill(Player *player, Skill *skill, SkillData *skillData)
 	if (skill->animation) {
 		Animation *a = skill->animation;
 
-		// Copy the orientation and position of the sword animation for the skill animation
-		// \see player_turn
-		a->sprite->pos = player->swordAnimation->sprite->pos;
-		a->sprite->flip = player->swordAnimation->sprite->flip;
-		a->sprite->angle = player->swordAnimation->sprite->angle;
+		if (skill->animation_properties.on_player) {
+			a->sprite->pos = player->sprite->pos;
+		} else {
+			// Copy the orientation and position of the sword animation for the skill animation
+			// \see player_turn
+			a->sprite->pos = player->swordAnimation->sprite->pos;
+			a->sprite->flip = player->swordAnimation->sprite->flip;
+			a->sprite->angle = player->swordAnimation->sprite->angle;
+		}
+
+		a->sprite->pos.x += skill->animation_properties.offset.x;
+		a->sprite->pos.y += skill->animation_properties.offset.y;
 
 		animation_run(a);
 		linkedlist_append(&player->skillAnimations, skill->animation);
@@ -577,11 +584,11 @@ build_sword_animation(Player *p, SDL_Renderer *renderer)
 {
 	animation_load_texture(p->swordAnimation, "Extras/SwordSwing.png", renderer);
 	animation_set_frames(p->swordAnimation, (AnimationClip[]) {
-			     {  0, 0, 32, 32, 20 },
-			     { 32, 0, 32, 32, 20 },
-			     { 64, 0, 32, 32, 20 },
-			     { 96, 0, 32, 32, 20 },
-			     { 128, 0, 32, 32, 20 }
+			     {  0, 0, 32, 32, 50 },
+			     { 32, 0, 32, 32, 50 },
+			     { 64, 0, 32, 32, 50 },
+			     { 96, 0, 32, 32, 50 },
+			     { 128, 0, 32, 32, 50 }
 			     });
 
 	p->swordAnimation->loop = false;

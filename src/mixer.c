@@ -109,6 +109,7 @@ load_effects(void)
 	effects[SLAM] = load_effect("Sounds/FX/slam.wav");
 	effects[SPLAT] = load_effect("Sounds/FX/splat.wav");
 	effects[STONES] = load_effect("Sounds/FX/stones.wav");
+	effects[SUCK] = load_effect("Sounds/FX/suck.wav");
 	effects[SWING0] = load_effect("Sounds/FX/swing.wav");
 	effects[SWING1] = load_effect("Sounds/FX/swing2.wav");
 	effects[SWING2] = load_effect("Sounds/FX/swing3.wav");
