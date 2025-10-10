@@ -540,6 +540,12 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 		SDL_RenderFillRect(cam->renderer, &mod_box);
 	}
 
+	SDL_SetRenderTarget(cam->renderer, NULL);
+}
+
+void
+gui_update_minimap_pos(Gui *gui, Camera *cam, RoomMatrix *rm)
+{
 	SDL_SetRenderTarget(cam->renderer, gui->miniMapOverlay->textures[0]->texture);
 	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
 	SDL_RenderClear(cam->renderer);
