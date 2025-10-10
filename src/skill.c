@@ -1098,7 +1098,6 @@ create_erupt(Camera *cam)
 	a->loop = false;
 	a->sprite->dim = DIM(96, 96);
 	a->sprite->clip = (SDL_Rect) { 0, 0, 64, 64 };
-	a->sprite->rotationPoint = (SDL_Point) { 64, 64 };
 	skill->animation_properties.offset = POS(-32, -32);
 	skill->animation_properties.on_player = true;
 	return skill;
