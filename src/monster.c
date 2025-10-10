@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "monster.h"
+#include "animation_controller.h"
 #include "util.h"
 #include "player.h"
 #include "monster.h"
