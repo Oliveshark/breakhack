@@ -101,6 +101,7 @@ typedef struct Player {
 	PlayerStateData stateData;
 	PlayerEffects effects;
 	ParticleEmitter *bleed_emitter;
+	LinkedList *skillAnimations;
 } Player;
 
 Player*

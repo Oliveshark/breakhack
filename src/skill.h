@@ -20,6 +20,7 @@
 #define	SKILL_H_
 
 #include <stdbool.h>
+#include "animation.h"
 #include "roommatrix.h"
 #include "sprite.h"
 #include "vector2d.h"
@@ -60,6 +61,7 @@ typedef struct Skill_t {
 	bool (*available)(Player*);
 	bool (*use)(struct Skill_t*, SkillData*);
 	Tooltip *tooltip;
+	Animation *animation;
 } Skill;
 
 Skill*
