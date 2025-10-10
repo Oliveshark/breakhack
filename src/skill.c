@@ -308,6 +308,8 @@ create_default(const char *s_label, Sprite *s)
 	skill->levelcap = 1;
 	skill->tooltip = NULL;
 	skill->animation = NULL;
+	skill->animation_properties.offset = POS(0, 0);
+	skill->animation_properties.on_player = false;
 	return skill;
 }
 
@@ -338,9 +340,8 @@ vampiric_blow_skill(Skill *skill, SkillData *data)
 		return false;
 	}
 
-	animation_run(player->swordAnimation);
 	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
-	mixer_play_effect(SWING0);
+	mixer_play_effect(SUCK);
 	if (monster) {
 		gui_log("You attack %s with a vampiric blow", monster->lclabel);
 		player->stats.advantage = true;
@@ -350,7 +351,6 @@ vampiric_blow_skill(Skill *skill, SkillData *data)
 		monster_hit(monster, result.dmg, result.critical);
 
 		if (result.dmg) {
-			mixer_play_effect(SWORD_HIT);
 			monster_set_bleeding(monster);
 
 			unsigned int gain = player->stats.lvl * 3;
@@ -379,7 +379,7 @@ vampiric_blow_skill(Skill *skill, SkillData *data)
 }
 
 static Skill *
-create_vampiric_blow(void)
+create_vampiric_blow(Camera *cam)
 {
 	Texture *t = texturecache_add("Extras/Skills.png");
 	Sprite *s = sprite_create();
@@ -391,6 +391,23 @@ create_vampiric_blow(void)
 	skill->levelcap = 2;
 	skill->use = vampiric_blow_skill;
 	skill->resetTime = 5;
+	skill->tooltip = tooltip_create(vampiric_blow_tooltip, cam);
+	skill->animation = animation_create(6);
+
+	Animation *a = skill->animation;
+	animation_load_texture(a, "Extras/VampiricBlow.png", cam->renderer);
+	animation_set_frames(a, (AnimationClip[]) {
+			     {  0, 0, 32, 32, 120 },
+			     { 32, 0, 32, 32, 120 },
+			     { 64, 0, 32, 32, 120 },
+			     { 96, 0, 32, 32, 120 },
+			     { 128, 0, 32, 32, 120 },
+			     { 160, 0, 32, 32, 120 },
+			});
+	a->loop = false;
+	a->sprite->dim = GAME_DIMENSION;
+	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
+	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 	return skill;
 }
 
@@ -681,7 +698,6 @@ skill_backstab(Skill *skill, SkillData *data)
 	player_update_pos(data->player, (uint32_t) data->direction.x * TILE_DIMENSION,
 			  (uint32_t) data->direction.y * TILE_DIMENSION);
 	player_turn(data->player, &reverseDirection);
-	animation_run(data->player->swordAnimation);
 
 	if (targetSpace->monster) {
 		Monster *m = targetSpace->monster;
@@ -705,7 +721,7 @@ skill_backstab(Skill *skill, SkillData *data)
 }
 
 static Skill *
-create_backstab(void)
+create_backstab(Camera *cam)
 {
 	Texture *t = texturecache_add("Extras/Skills.png");
 	Sprite *s = sprite_create();
@@ -720,6 +736,26 @@ create_backstab(void)
 	skill->available = NULL;
 	skill->use = skill_backstab;
 	skill->actionRequired = true;
+	skill->tooltip = tooltip_create(backstab_tooltip, cam);
+	skill->animation = animation_create(9);
+
+	Animation *a = skill->animation;
+	animation_load_texture(a, "Extras/BackStab.png", cam->renderer);
+	animation_set_frames(a, (AnimationClip[]) {
+			     {  0, 0, 32, 32, 100 },
+			     { 32, 0, 32, 32, 100 },
+			     { 64, 0, 32, 32, 100 },
+			     { 96, 0, 32, 32, 100 },
+			     { 128, 0, 32, 32, 100 },
+			     { 160, 0, 32, 32, 100 },
+			     { 192, 0, 32, 32, 100 },
+			     { 224, 0, 32, 32, 100 },
+			     { 256, 0, 32, 32, 100 }
+			});
+	a->loop = false;
+	a->sprite->dim = GAME_DIMENSION;
+	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
+	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 	return skill;
 }
 
@@ -1031,7 +1067,7 @@ skill_erupt(Skill *skill, SkillData *data)
 }
 
 static Skill *
-create_erupt(void)
+create_erupt(Camera *cam)
 {
 	Texture *t = texturecache_add("Extras/Skills.png");
 	Sprite *s = sprite_create();
@@ -1044,6 +1080,27 @@ create_erupt(void)
 	skill->use = skill_erupt;
 	skill->instantUse = true;
 	skill->resetTime = 3;
+	skill->tooltip = tooltip_create(erupt_tooltip, cam);
+	skill->animation = animation_create(8);
+
+	Animation *a = skill->animation;
+	animation_load_texture(a, "Extras/AcidSplash.png", cam->renderer);
+	animation_set_frames(a, (AnimationClip[]) {
+			     {  0, 0, 64, 64, 80 },
+			     { 64, 0, 64, 64, 80 },
+			     { 128, 0, 64, 64, 80 },
+			     { 192, 0, 64, 64, 80 },
+			     { 256, 0, 64, 64, 80 },
+			     { 320, 0, 64, 64, 80 },
+			     { 384, 0, 64, 64, 100 },
+			     { 448, 0, 64, 64,100 }
+			});
+	a->loop = false;
+	a->sprite->dim = DIM(96, 96);
+	a->sprite->clip = (SDL_Rect) { 0, 0, 64, 64 };
+	a->sprite->rotationPoint = (SDL_Point) { 64, 64 };
+	skill->animation_properties.offset = POS(-32, -32);
+	skill->animation_properties.on_player = true;
 	return skill;
 }
 
@@ -1056,8 +1113,7 @@ skill_create(enum SkillType t, Camera *cam)
 			skill = create_flurry(cam);
 			break;
 		case VAMPIRIC_BLOW:
-			skill = create_vampiric_blow();
-			skill->tooltip = tooltip_create(vampiric_blow_tooltip, cam);
+			skill = create_vampiric_blow(cam);
 			break;
 		case SIP_HEALTH:
 			skill = create_sip_health();
@@ -1072,8 +1128,7 @@ skill_create(enum SkillType t, Camera *cam)
 			skill->tooltip = tooltip_create(blink_tooltip, cam);
 			break;
 		case ERUPT:
-			skill = create_erupt();
-			skill->tooltip = tooltip_create(erupt_tooltip, cam);
+			skill = create_erupt(cam);
 			break;
 		case DAGGER_THROW:
 			skill = create_throw_dagger();
@@ -1087,8 +1142,7 @@ skill_create(enum SkillType t, Camera *cam)
 			skill->tooltip = tooltip_create(trip_tooltip, cam);
 			break;
 		case BACKSTAB:
-			skill = create_backstab();
-			skill->tooltip = tooltip_create(backstab_tooltip, cam);
+			skill = create_backstab(cam);
 			break;
 		case PHASE:
 			skill = create_phase();

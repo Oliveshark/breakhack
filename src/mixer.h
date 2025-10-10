@@ -71,6 +71,7 @@ typedef enum Fx_t {
 	SLAM,
 	SPLAT,
 	STONES,
+	SUCK,
 	SWING0,
 	SWING1,
 	SWING2,

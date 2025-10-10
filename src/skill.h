@@ -62,6 +62,10 @@ typedef struct Skill_t {
 	bool (*use)(struct Skill_t*, SkillData*);
 	Tooltip *tooltip;
 	Animation *animation;
+	struct {
+		Position offset;
+		bool on_player; /// Render animation on player, else on target
+	} animation_properties;
 } Skill;
 
 Skill*
