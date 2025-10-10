@@ -1011,7 +1011,7 @@ render_gui(void)
 	SDL_SetRenderViewport(gRenderer, &statsGuiViewport);
 	gui_render_panel(gGui, gCamera);
 	SDL_SetRenderViewport(gRenderer, &minimapViewport);
-	gui_render_minimap(gGui, gCamera, gRoomMatrix);
+	gui_render_minimap(gGui, gCamera);
 	SDL_SetRenderViewport(gRenderer, &skillBarViewport);
 	skillbar_render(gSkillBar, gPlayer, gCamera);
 	SDL_SetRenderViewport(gRenderer, &bottomGuiViewport);

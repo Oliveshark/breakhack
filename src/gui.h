@@ -51,6 +51,7 @@ typedef struct Gui {
 	Sprite *bottomFrame;
 	Sprite *statsFrame;
 	Sprite *miniMap;
+	Sprite *miniMapOverlay;
 	Sprite *labels[LABEL_COUNT];
 	Sprite *activeTooltip;
 	Sprite *goldKey;
@@ -93,7 +94,7 @@ gui_reset(Gui *gui, Camera *cam);
  * \param[in]	rm	The room matrix
  */
 void
-gui_render_minimap(Gui *gui, Camera *cam, RoomMatrix *rm);
+gui_render_minimap(Gui *gui, Camera *cam);
 
 /**
  * \brief Render the large minimap overlay

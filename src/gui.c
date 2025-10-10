@@ -103,6 +103,29 @@ create_label_sprite(Position pos)
 	return s;
 }
 
+static Sprite*
+create_minimap_blank_sprite(SDL_Renderer *renderer)
+{
+	Sprite *sprite = sprite_create();
+	Texture *texture = texture_create();
+	texture->dim = (Dimension) {
+		RIGHT_GUI_WIDTH,
+			MINIMAP_GUI_HEIGHT - 8
+	};
+	sprite->textures[0] = texture;
+	sprite->destroyTextures = true;
+	sprite->pos = (Position) { 0, 4 };
+	sprite->dim = (Dimension) { RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT - 8 };
+	sprite->fixed = true;
+	texture_create_blank(texture,
+			SDL_TEXTUREACCESS_TARGET,
+			renderer);
+	texture_set_blend_mode(texture, SDL_BLENDMODE_BLEND);
+	texture_set_scale_mode(texture, SDL_SCALEMODE_NEAREST);
+
+	return sprite;
+}
+
 static void
 init_sprites(Gui *gui, Camera *cam)
 {
@@ -193,24 +216,8 @@ init_sprites(Gui *gui, Camera *cam)
 							BOTTOM_GUI_HEIGHT/16,
 							cam);
 
-	Sprite *minimap = sprite_create();
-	Texture *texture = texture_create();
-	texture->dim = (Dimension) {
-		RIGHT_GUI_WIDTH,
-		MINIMAP_GUI_HEIGHT - 8
-	};
-	minimap->textures[0] = texture;
-	minimap->destroyTextures = true;
-	minimap->pos = (Position) { 0, 4 };
-	minimap->dim = (Dimension) { RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT - 8 };
-	minimap->fixed = true;
-	texture_create_blank(texture,
-			     SDL_TEXTUREACCESS_TARGET,
-			     cam->renderer);
-	texture_set_blend_mode(texture, SDL_BLENDMODE_BLEND);
-	texture_set_scale_mode(texture, SDL_SCALEMODE_NEAREST);
-
-	gui->miniMap = minimap;
+	gui->miniMap = create_minimap_blank_sprite(cam->renderer);
+	gui->miniMapOverlay = create_minimap_blank_sprite(cam->renderer);
 
 	texture_load_from_text(gui->labels[KEY_LABEL]->textures[0], "Keys:", C_WHITE, C_BLACK, cam->renderer);
 	gui->labels[KEY_LABEL]->dim = gui->labels[KEY_LABEL]->textures[0]->dim;
@@ -533,20 +540,27 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 		SDL_RenderFillRect(cam->renderer, &mod_box);
 	}
 
+	SDL_SetRenderTarget(cam->renderer, gui->miniMapOverlay->textures[0]->texture);
+	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
+	SDL_RenderClear(cam->renderer);
+
+	// Render current room square
+	const SDL_FRect r = {
+		(float) rm->roomPos.x * MAP_ROOM_WIDTH,
+		(float) rm->roomPos.y * MAP_ROOM_HEIGHT,
+		MAP_ROOM_WIDTH,
+		MAP_ROOM_HEIGHT };
+	SDL_SetRenderDrawColor(cam->renderer, 235, 235, 52, 200);
+	SDL_RenderRect(cam->renderer, &r);
+
 	SDL_SetRenderTarget(cam->renderer, NULL);
 }
 
 void
-gui_render_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
+gui_render_minimap(Gui *gui, Camera *cam)
 {
 	sprite_render(gui->miniMap, cam);
-	const SDL_FRect r = {
-		(float) rm->roomPos.x * MAP_ROOM_WIDTH,
-		4.0f + (float) rm->roomPos.y * MAP_ROOM_HEIGHT,
-		MAP_ROOM_WIDTH,
-		MAP_ROOM_HEIGHT };
-	SDL_SetRenderDrawColor(cam->renderer, 0, 255, 255, 100);
-	SDL_RenderRect(cam->renderer, &r);
+	sprite_render(gui->miniMapOverlay, cam);
 }
 
 void
@@ -556,10 +570,14 @@ gui_render_minimap_overlay(Gui *gui, Camera *cam)
 		50, 50, GAME_VIEW_WIDTH - 100, GAME_VIEW_HEIGHT - 100
 	};
 
+	// Render map
 	Texture *texture = gui->miniMap->textures[0];
 	texture_set_alpha(texture, 200);
 	texture_render_clip_ex(texture, &target_box, NULL, 0.0, NULL, SDL_FLIP_NONE, cam);
 	texture_set_alpha(texture, SDL_ALPHA_OPAQUE);
+
+	// Render map overlay
+	texture_render_clip_ex(gui->miniMapOverlay->textures[0], &target_box, NULL, 0.0, NULL, SDL_FLIP_NONE, cam);
 }
 
 void
