@@ -539,7 +539,6 @@ skill_bash(Skill *skill, SkillData *data)
 		return false;
 	}
 
-	animation_run(data->player->swordAnimation);
 	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
 	mixer_play_effect(SWING0);
 	if (monster) {
@@ -566,7 +565,7 @@ skill_bash(Skill *skill, SkillData *data)
 }
 
 static Skill *
-create_bash(void)
+create_bash(Camera *cam)
 {
 	Texture *t = texturecache_add("Extras/Skills.png");
 	Sprite *s = sprite_create();
@@ -581,6 +580,24 @@ create_bash(void)
 	skill->available = NULL;
 	skill->use = skill_bash;
 	skill->actionRequired = true;
+	skill->tooltip = tooltip_create(bash_tooltip, cam);
+	skill->animation = animation_create(7);
+	Animation *a = skill->animation;
+
+	animation_load_texture(a, "Extras/ShieldBash.png", cam->renderer);
+	animation_set_frames(a, (AnimationClip[]) {
+			     {  0, 0, 32, 32, 20 },
+			     { 32, 0, 32, 32, 20 },
+			     { 64, 0, 32, 32, 20 },
+			     { 96, 0, 32, 32, 20 },
+			     { 128, 0, 32, 32, 20 },
+			     { 160, 0, 32, 32, 20 },
+			     { 192, 0, 32, 32, 20 },
+			});
+	a->loop = false;
+	a->sprite->dim = GAME_DIMENSION;
+	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
+	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 	return skill;
 }
 
@@ -1063,8 +1080,7 @@ skill_create(enum SkillType t, Camera *cam)
 			skill->tooltip = tooltip_create(dagger_tooltip, cam);
 			break;
 		case BASH:
-			skill = create_bash();
-			skill->tooltip = tooltip_create(bash_tooltip, cam);
+			skill = create_bash(cam);
 			break;
 		case TRIP:
 			skill = create_trip();
