@@ -26,9 +26,6 @@
 #include "vector2d.h"
 
 void
-particle_engine_init(void);
-
-void
 particle_engine_bleed(Position pos, Dimension dim, void *userdata);
 
 void
