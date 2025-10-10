@@ -479,18 +479,6 @@ render_skill_animations(Player *player, Camera *cam)
 }
 
 static void
-destroy_skill_animations(LinkedList *skillAnimations)
-{
-	LinkedList *next = skillAnimations;
-	LinkedList *tmp;
-	while (next != NULL) {
-		tmp = next;
-		next = next->next;
-		free(tmp);
-	}
-}
-
-static void
 use_skill(Player *player, Skill *skill, SkillData *skillData)
 {
 	skill->active = false;
@@ -887,7 +875,9 @@ player_destroy(Player *player)
 		player->skills[i] = NULL;
 	}
 
-	destroy_skill_animations(player->skillAnimations);
+	while (player->skillAnimations) {
+		linkedlist_pop(&player->skillAnimations);
+	}
 
 	particle_emitter_destroy(player->bleed_emitter);
 
