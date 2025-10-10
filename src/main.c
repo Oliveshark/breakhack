@@ -904,6 +904,8 @@ check_next_level(void)
 		}
 
 		mixer_play_effect(NEXT_LEVEL);
+		gui_log("You descend the stairs. You have reached dungeon level %d", cLevel);
+		gui_event_message("Dungeon level %d", cLevel);
 		choose_music();
 		if (!gameCompleted()) {
 			resetGame();
