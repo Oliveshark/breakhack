@@ -97,6 +97,6 @@ void
 animation_controller_close(void)
 {
 	while (s_controller.animations) {
-		free(linkedlist_pop(&s_controller.animations));
+		animation_destroy(linkedlist_pop(&s_controller.animations));
 	}
 }
