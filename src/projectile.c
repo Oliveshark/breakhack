@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "projectile.h"
+#include "animation_controller.h"
 #include "util.h"
 #include "texturecache.h"
 #include "player.h"
@@ -103,6 +104,7 @@ perform_dagger_explosion(Player *player, RoomMatrix *rm, Position *collisionPos)
 	if (player_has_artifact(player, VOLATILE_DAGGERS)) {
 		mixer_play_effect(EXPLOSION_EFFECT);
 		particle_engine_fire_explosion(*collisionPos, DIM(32, 32));
+		animation_controller_create(EXPLOSION_ANIMATION, *collisionPos);
 		effect_damage_surroundings(collisionPos,
 					   rm,
 					   player,

@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "monster.h"
+#include "animation_controller.h"
 #include "util.h"
 #include "player.h"
 #include "monster.h"
@@ -164,6 +165,7 @@ assassin_cloak_effect(Monster *m, bool cloak)
 	else
 		gui_log("%s reappears, filled with rage", m->label);
 	particle_engine_fire_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+	animation_controller_create(EXPLOSION_ANIMATION, m->sprite->pos);
 	m->sprite->hidden = cloak;
 	m->stateIndicator.sprite->hidden = cloak;
 	mixer_play_effect(cloak ? FADE_OUT : FADE_IN);

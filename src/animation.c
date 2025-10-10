@@ -54,7 +54,7 @@ animation_update(Animation *animation)
 	}
 
 	if (timer_get_ticks(animation->clipTimer)
-	    > animation->clips[animation->currentClip].renderTime)
+	    >= animation->clips[animation->currentClip].renderTime)
 	{
 		animation->currentClip++;
 		if (animation->currentClip >= animation->clipCount) {

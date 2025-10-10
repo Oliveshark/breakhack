@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "player.h"
+#include "animation_controller.h"
 #include "monster.h"
 #include "util.h"
 #include "gui.h"
@@ -166,6 +167,7 @@ on_monster_collision(Player *player,
 	if (monster->stats.hp <= 0 && (player_has_artifact(player, EXPLOSIVE_KILLS))) {
 		mixer_play_effect(EXPLOSION_EFFECT);
 		particle_engine_fire_explosion(monster->sprite->pos, DIM(32, 32));
+		animation_controller_create(EXPLOSION_ANIMATION, monster->sprite->pos);
 		effect_damage_surroundings(&monster->sprite->pos,
 					   matrix,
 					   player,
