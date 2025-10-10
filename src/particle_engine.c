@@ -61,7 +61,7 @@ typedef struct Engine_t {
 	LinkedList *game_particles;
 } Engine;
 
-static Engine		*engine		= NULL;
+static Engine		s_engine;
 
 static Particle*
 create_rect_particle(void)
@@ -81,24 +81,6 @@ create_rect_particle(void)
 	return p;
 }
 
-static void
-check_engine(void)
-{
-	if (!engine)
-		fatal("Particle engine not initiated");
-}
-
-void
-particle_engine_init(void)
-{
-	if (engine != NULL)
-		fatal("Engine already initiated");
-
-	engine = ec_malloc(sizeof(Engine));
-	engine->game_particles = linkedlist_create();
-	engine->global_particles = linkedlist_create();
-}
-
 void
 particle_engine_bleed(Position pos, Dimension dim, void *userdata)
 {
@@ -109,8 +91,6 @@ particle_engine_bleed(Position pos, Dimension dim, void *userdata)
 void
 particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 {
-	check_engine();
-
 	if (count > 100)
 		count = 100;
 
@@ -138,7 +118,7 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 		p->movetime = mt;
 		p->lifetime = lt;
 		p->color = C_RED;
-		linkedlist_append(&engine->game_particles, p);
+		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -175,7 +155,7 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 		p->lifetime = lt;
 		p->blend_mode = SDL_BLENDMODE_BLEND;
 		p->color = colors[get_random((unsigned int) c_count-1)];
-		linkedlist_append(&engine->game_particles, p);
+		linkedlist_append(&s_engine.game_particles, p);
 	}
 	free(colors);
 }
@@ -183,28 +163,24 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 void
 particle_engine_fire_explosion(Position pos, Dimension dim)
 {
-	check_engine();
 	create_explosion(pos, dim, 3, C_YELLOW, C_YELLOW, C_RED);
 }
 
 void
 particle_engine_blink(Position pos, Dimension dim)
 {
-	check_engine();
 	create_explosion(pos, dim, 3, (SDL_Color) { 0, 0, 255, 255 }, C_BLUE, C_LIGHTBLUE);
 }
 
 void
 particle_engine_eldritch_explosion(Position pos, Dimension dim)
 {
-	check_engine();
 	create_explosion(pos, dim, 1, C_GREEN);
 }
 
 void
 particle_engine_dust_puff(Position pos, Dimension dim)
 {
-	check_engine();
 	for (unsigned int i = 0; i < 50; ++i) {
 		int x, y, xv, yv, w, h;
 		unsigned int lt;
@@ -229,7 +205,7 @@ particle_engine_dust_puff(Position pos, Dimension dim)
 		p->lifetime = lt;
 		p->color = C_GREY;
 		p->blend_mode = SDL_BLENDMODE_BLEND;
-		linkedlist_append(&engine->game_particles, p);
+		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -263,7 +239,7 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 			p->particle.rect.dim = (Dimension) { 20, 1 };
 		else
 			p->particle.rect.dim = (Dimension) { 2, 20 };
-		linkedlist_append(&engine->game_particles, p);
+		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -302,9 +278,9 @@ particle_engine_sparkle(Position pos, Dimension dim, SDL_Color color, bool globa
 		p->color.a = (Uint8) alpha;
 		p->fixed = global;
 		if (global)
-			linkedlist_append(&engine->global_particles, p);
+			linkedlist_append(&s_engine.global_particles, p);
 		else
-			linkedlist_append(&engine->game_particles, p);
+			linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -343,7 +319,7 @@ particle_engine_wind(Vector2d direction)
 		p->lifetime = lt;
 		p->color = C_BLUE;
 		p->fixed = true;
-		linkedlist_append(&engine->game_particles, p);
+		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -386,7 +362,7 @@ particle_engine_heat(void)
 		else
 			p->color = C_RED;
 		p->fixed = true;
-		linkedlist_append(&engine->game_particles, p);
+		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -436,10 +412,8 @@ update_particles(LinkedList **particles, float deltaTime)
 void
 particle_engine_update(float deltaTime)
 {
-	check_engine();
-
-	update_particles(&engine->global_particles, deltaTime);
-	update_particles(&engine->game_particles, deltaTime);
+	update_particles(&s_engine.global_particles, deltaTime);
+	update_particles(&s_engine.game_particles, deltaTime);
 }
 
 static void
@@ -499,8 +473,6 @@ render_line_particle(Particle *p, Camera *cam)
 static void
 render_particles(LinkedList *particles, Camera *cam)
 {
-	check_engine();
-
 	LinkedList *render_list = particles;
 
 	while (render_list) {
@@ -516,29 +488,26 @@ render_particles(LinkedList *particles, Camera *cam)
 void
 particle_engine_render_game(Camera *cam)
 {
-	render_particles(engine->game_particles, cam);
+	render_particles(s_engine.game_particles, cam);
 }
 
 void
 particle_engine_render_global(Camera *cam)
 {
-	render_particles(engine->global_particles, cam);
+	render_particles(s_engine.global_particles, cam);
 }
 
 void
 particle_engine_clear(void)
 {
-	check_engine();
-	while (engine->game_particles)
-		free(linkedlist_pop(&engine->game_particles));
-	while (engine->global_particles)
-		free(linkedlist_pop(&engine->global_particles));
+	while (s_engine.game_particles)
+		free(linkedlist_pop(&s_engine.game_particles));
+	while (s_engine.global_particles)
+		free(linkedlist_pop(&s_engine.global_particles));
 }
 
 void
 particle_engine_close(void)
 {
 	particle_engine_clear();
-	free(engine);
-	engine = NULL;
 }
