@@ -80,6 +80,15 @@ void
 gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm);
 
 /**
+ * \brief Update the current room indicator on minimap
+ * \param[in]	gui	The gui
+ * \param[in]	cam	The camera
+ * \param[in]	rm	The current rooms RoomMatrix
+ */
+void
+gui_update_minimap_pos(Gui *gui, Camera *cam, RoomMatrix *rm);
+
+/**
  * \brief Reset the gui
  * \param gui The gui
  * \param cam The camera

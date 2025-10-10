@@ -1002,6 +1002,7 @@ run_game_update(void)
 	map_clear_expired_entities(gMap, gRoomMatrix, gPlayer);
 	repopulate_roommatrix();
 
+	gui_update_minimap_pos(gGui, gCamera, gRoomMatrix);
 	if (first_room_visit) {
 		gui_update_minimap(gGui, gCamera, gRoomMatrix);
 	}
