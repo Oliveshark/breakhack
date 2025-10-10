@@ -24,6 +24,7 @@
 #include <SDL3/SDL_main.h>
 #include <physfs.h>
 #include <string.h>
+#include "animation_controller.h"
 #include "linkedlist.h"
 #include "player.h"
 #include "screenresolution.h"
@@ -259,6 +260,7 @@ initGame(void)
 #ifdef DEBUG
 	gPointer = pointer_create(gRenderer);
 #endif // DEBUG
+	animation_controller_init();
 	menuTimer = _timer_create();
 	actiontextbuilder_init(gRenderer);
 
@@ -976,6 +978,7 @@ run_game_update(void)
 
 	gui_update_player_stats(gGui, gPlayer, gMap, gRenderer);
 	camera_update(gCamera, updateData.deltatime);
+	animation_controller_update();
 	particle_engine_update(deltaTime);
 	roommatrix_update(&updateData);
 	actiontextbuilder_update(&updateData);
@@ -1046,14 +1049,15 @@ render_game(void)
 {
 	SDL_SetRenderViewport(gRenderer, &gameViewport);
 	map_render(gMap, gCamera);
-	particle_engine_render_game(gCamera);
 
+	particle_engine_render_game(gCamera);
 	map_render_mid_layer(gMap, gCamera);
 
 	if (!is_player_dead()) {
 		player_render(gPlayer, gCamera);
 		player_render_toplayer(gPlayer, gCamera);
 	}
+	animation_controller_render(gCamera);
 
 	map_render_top_layer(gMap, gRoomMatrix, gCamera);
 
@@ -1384,6 +1388,7 @@ void close(void)
 	actiontextbuilder_close();
 	item_builder_close();
 	particle_engine_close();
+	animation_controller_close();
 	timer_destroy(menuTimer);
 	mixer_close();
 	texturecache_close();
