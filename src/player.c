@@ -257,8 +257,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	RoomSpace *space = &matrix->spaces[matrixPos.x][matrixPos.y];
 
 	if (player_has_collided(player, space)) {
-		player->sprite->pos.x -= TILE_DIMENSION * (int)direction.x;
-		player->sprite->pos.y -= TILE_DIMENSION * (int)direction.y;
+		player_update_pos(player, -TILE_DIMENSION * (int)direction.x, -TILE_DIMENSION * (int)direction.y);
 
 		gamecontroller_rumble(0.30f, 100);
 		if (space->monster) {
@@ -343,6 +342,8 @@ player_update_pos(Player *player, Uint32 dx, Uint32 dy)
 static void
 move(Player *player, RoomMatrix *matrix, Vector2d direction)
 {
+	// TODO(Linus): This data flow is ugly as hell. Clean up
+
 	player_turn(player, &direction);
 
 	Position lastPos = position_to_matrix_coords(&player->sprite->pos);
