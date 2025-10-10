@@ -259,7 +259,6 @@ initGame(void)
 #ifdef DEBUG
 	gPointer = pointer_create(gRenderer);
 #endif // DEBUG
-	particle_engine_init();
 	menuTimer = _timer_create();
 	actiontextbuilder_init(gRenderer);
 
