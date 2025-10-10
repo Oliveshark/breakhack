@@ -442,13 +442,74 @@ handle_next_move(UpdateData *data)
 }
 
 static void
-use_skill(Skill *skill, SkillData *skillData)
+update_skill_animations(Player *player)
+{
+	LinkedList *next = player->skillAnimations;
+	LinkedList *prev = NULL;
+	while (next != NULL) {
+		Animation *a = next->data;
+		if (!a->running) {
+			next->data = NULL;
+			if (prev) {
+				prev->next = next->next;
+			} else {
+				player->skillAnimations = next->next;
+			}
+			LinkedList *tmp = next;
+			next = next->next;
+			free(tmp);
+			continue;
+		}
+		animation_update(a);
+		prev = next;
+		next = next->next;
+	}
+}
+
+static void
+render_skill_animations(Player *player, Camera *cam)
+{
+	LinkedList *next = player->skillAnimations;
+	while (next != NULL) {
+		Animation *a = next->data;
+		animation_render(a, cam);
+		next = next->next;
+	}
+}
+
+static void
+destroy_skill_animations(LinkedList *skillAnimations)
+{
+	LinkedList *next = skillAnimations;
+	LinkedList *tmp;
+	while (next != NULL) {
+		tmp = next;
+		next = next->next;
+		free(tmp);
+	}
+}
+
+static void
+use_skill(Player *player, Skill *skill, SkillData *skillData)
 {
 	skill->active = false;
 	skill->use(skill, skillData);
 	if (skill->actionRequired)
 		action_spent(skillData->player);
 	skill->resetCountdown = skill->resetTime;
+
+	if (skill->animation) {
+		Animation *a = skill->animation;
+
+		// Copy the orientation and position of the sword animation for the skill animation
+		// \see player_turn
+		a->sprite->pos = player->swordAnimation->sprite->pos;
+		a->sprite->flip = player->swordAnimation->sprite->flip;
+		a->sprite->angle = player->swordAnimation->sprite->angle;
+
+		animation_run(a);
+		linkedlist_append(&player->skillAnimations, skill->animation);
+	}
 }
 
 static void
@@ -487,7 +548,7 @@ check_skill_activation(UpdateData *data)
 		skill->active = (selected - 1) == i && !skill->active && skill->resetCountdown == 0;
 		if (skill->active && skill->instantUse) {
 			SkillData skillData = { player, matrix, VECTOR2D_NODIR };
-			use_skill(skill, &skillData);
+			use_skill(player, skill, &skillData);
 		}
 	}
 }
@@ -515,7 +576,7 @@ check_skill_trigger(UpdateData *data)
 		return false;
 
 	SkillData skillData = { player, matrix, nextDir };
-	use_skill(player->skills[activeSkill], &skillData);
+	use_skill(player, player->skills[activeSkill], &skillData);
 
 	return true;
 }
@@ -624,6 +685,8 @@ player_create(class_t class, Camera *cam)
 	player->sprite->pos = (Position) { TILE_DIMENSION, TILE_DIMENSION };
 	player->sprite->dim = GAME_DIMENSION;
 	player->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
+
+	player->skillAnimations = NULL;
 
 	return player;
 }
@@ -736,6 +799,7 @@ void
 player_render_toplayer(Player *player, Camera *camera)
 {
 	animation_render(player->swordAnimation, camera);
+	render_skill_animations(player, camera);
 }
 
 void
@@ -788,6 +852,7 @@ player_update(UpdateData *data)
 	player->projectiles = remaining;
 
 	animation_update(player->swordAnimation);
+	update_skill_animations(player);
 
 	uint32_t damage_taken = player->stats.maxhp - player->stats.hp;
 	player->bleed_emitter->enabled = (int) damage_taken >= player->stats.maxhp / 2;
@@ -820,6 +885,8 @@ player_destroy(Player *player)
 			skill_destroy(player->skills[i]);
 		player->skills[i] = NULL;
 	}
+
+	destroy_skill_animations(player->skillAnimations);
 
 	particle_emitter_destroy(player->bleed_emitter);
 

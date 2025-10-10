@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "defines.h"
 #include "texturecache.h"
 #include "skill.h"
 #include "util.h"
@@ -403,7 +404,6 @@ skill_use_flurry(Skill *skill, SkillData *data)
 		return false;
 	}
 
-	animation_run(data->player->swordAnimation);
 	Monster *monster = data->matrix->spaces[targetPos.x][targetPos.y].monster;
 	mixer_play_effect(TRIPPLE_SWING);
 	if (monster) {
@@ -434,7 +434,7 @@ skill_use_flurry(Skill *skill, SkillData *data)
 }
 
 static Skill *
-create_flurry(void)
+create_flurry(Camera *cam)
 {
 	Texture *t = texturecache_add("Extras/Skills.png");
 	Sprite *s = sprite_create();
@@ -445,6 +445,25 @@ create_flurry(void)
 	Skill *skill = create_default("Flurry", s);
 	skill->levelcap = 2;
 	skill->use = skill_use_flurry;
+	skill->tooltip = tooltip_create(flurry_tooltip, cam);
+	skill->animation = animation_create(8);
+
+	Animation *a = skill->animation;
+	animation_load_texture(a, "Extras/TrippleSwing.png", cam->renderer);
+	animation_set_frames(a, (AnimationClip[]) {
+			     {  0, 0, 32, 32, 20 },
+			     { 32, 0, 32, 32, 20 },
+			     { 64, 0, 32, 32, 20 },
+			     { 96, 0, 32, 32, 20 },
+			     { 128, 0, 32, 32, 20 },
+			     { 160, 0, 32, 32, 20 },
+			     { 192, 0, 32, 32, 20 },
+			     { 224, 0, 32, 32, 20 }
+			});
+	a->loop = false;
+	a->sprite->dim = GAME_DIMENSION;
+	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
+	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 	return skill;
 }
 
@@ -1017,8 +1036,7 @@ skill_create(enum SkillType t, Camera *cam)
 	Skill *skill;
 	switch (t) {
 		case FLURRY:
-			skill = create_flurry();
-			skill->tooltip = tooltip_create(flurry_tooltip, cam);
+			skill = create_flurry(cam);
 			break;
 		case VAMPIRIC_BLOW:
 			skill = create_vampiric_blow();
