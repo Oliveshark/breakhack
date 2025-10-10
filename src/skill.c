@@ -306,6 +306,7 @@ create_default(const char *s_label, Sprite *s)
 	skill->use = NULL;
 	skill->levelcap = 1;
 	skill->tooltip = NULL;
+	skill->animation = NULL;
 	return skill;
 }
 
@@ -1076,5 +1077,7 @@ skill_destroy(Skill *skill)
 	sprite_destroy(skill->icon);
 	if (skill->tooltip)
 		tooltip_destroy(skill->tooltip);
+	if (skill->animation)
+		animation_destroy(skill->animation);
 	free(skill);
 }

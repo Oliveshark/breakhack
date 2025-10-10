@@ -525,16 +525,16 @@ build_sword_animation(Player *p, SDL_Renderer *renderer)
 {
 	animation_load_texture(p->swordAnimation, "Extras/SwordSwing.png", renderer);
 	animation_set_frames(p->swordAnimation, (AnimationClip[]) {
-			     {  0, 0, 16, 16, 20 },
-			     { 16, 0, 16, 16, 20 },
-			     { 32, 0, 16, 16, 20 },
-			     { 48, 0, 16, 16, 20 },
-			     { 64, 0, 16, 16, 20 }
+			     {  0, 0, 32, 32, 20 },
+			     { 32, 0, 32, 32, 20 },
+			     { 64, 0, 32, 32, 20 },
+			     { 96, 0, 32, 32, 20 },
+			     { 128, 0, 32, 32, 20 }
 			     });
 
 	p->swordAnimation->loop = false;
 	p->swordAnimation->sprite->dim = GAME_DIMENSION;
-	p->swordAnimation->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
+	p->swordAnimation->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
 	p->swordAnimation->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 }
 
