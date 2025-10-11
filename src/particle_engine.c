@@ -253,10 +253,6 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 	for (unsigned int i = 0; i < count; ++i) {
 		NEXT_GAME_PARTICLE(p);
 
-		if (p == NULL) {
-			return;
-		}
-
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
 
