@@ -1410,16 +1410,6 @@ void close(void)
 	gWindow = NULL;
 	TTF_Quit();
 	SDL_Quit();
-
-#ifdef PROFILER
-	FILE *fp = fopen("profile.txt", "w");
-	if (fp == NULL) {
-		PROFILER_STOP(stdout);
-	} else {
-		PROFILER_STOP(fp);
-	}
-	fclose(fp);
-#endif
 }
 
 #ifdef CHECKSUM_VALIDATION
@@ -1488,6 +1478,16 @@ int main(int argc, char *argv[])
 	run();
 	close();
 	PHYSFS_deinit();
+
+#ifdef PROFILER
+	FILE *fp = fopen("profile.txt", "w");
+	if (fp == NULL) {
+		PROFILER_STOP(stdout);
+	} else {
+		PROFILER_STOP(fp);
+		fclose(fp);
+	}
+#endif
 
 	return 0;
 }

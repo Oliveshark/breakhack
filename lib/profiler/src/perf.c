@@ -8,7 +8,7 @@
 
 #include "perf.h"
 
-static int _FD;
+static int _FD = 0;
 
 static long perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
                             int cpu, int group_fd, unsigned long flags)
@@ -23,6 +23,11 @@ static long perf_event_open(struct perf_event_attr *hw_event, pid_t pid,
 void perf_setup(void)
 {
     static struct perf_event_attr pe;
+
+    if (_FD) {
+	    close(_FD);
+	    _FD = 0;
+    }
 
     pe.type = PERF_TYPE_SOFTWARE;
     pe.size = sizeof(pe);
@@ -55,7 +60,10 @@ uint64_t perf_read_page_fault_count(void)
 {
     size_t count = 0;
     if (_FD) {
-        read(_FD, &count, sizeof(count));
+        ssize_t bytes = read(_FD, &count, sizeof(count));
+	if (bytes != sizeof(count)) {
+		count = 0;
+	}
     }
     return count;
 }

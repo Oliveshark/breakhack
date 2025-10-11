@@ -46,6 +46,9 @@ static ReturnData variable_create_data(void)
 static ReturnData* malloc_create_data(void)
 {
     ReturnData *data = malloc(sizeof(ReturnData));
+    if (!data) {
+	    return NULL;
+    }
     data->fnum = 1.2;
     data->count = 100;
     data->dnum = 3.4;
