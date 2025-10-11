@@ -19,7 +19,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "particle_engine.h"
-#include "linkedlist.h"
 #include "util.h"
 #include "defines.h"
 #include "vector2d.h"
@@ -56,18 +55,49 @@ typedef struct Particle {
 	ParticleUnion particle;
 } Particle;
 
+#define MAX_PARTICLES 4096
 typedef struct Engine_t {
-	LinkedList *global_particles;
-	LinkedList *game_particles;
+	Particle global_particles[MAX_PARTICLES];
+	Particle game_particles[MAX_PARTICLES];
+	size_t global_idx;
+	size_t game_idx;
 } Engine;
 
-static Engine		s_engine;
+static Engine		s_engine = {0};
 
-static Particle*
-create_rect_particle(void)
+static Particle* next_game_particle(void)
 {
-	Particle *p = ec_malloc(sizeof(Particle));
+	if (s_engine.game_idx < MAX_PARTICLES) {
+		return &s_engine.game_particles[s_engine.game_idx++];
+	}
+	warn("Game particles maxed out");
+	return NULL;
+}
 
+static Particle* next_global_particle(void)
+{
+	if (s_engine.global_idx < MAX_PARTICLES) {
+		return &s_engine.global_particles[s_engine.global_idx++];
+	}
+	warn("Global particles maxed out");
+	return NULL;
+}
+
+#define NEXT_GAME_PARTICLE(p) \
+	do { \
+		p = next_game_particle(); \
+		if (p == NULL) { return; } \
+	} while (0);
+
+#define NEXT_GLOBAL_PARTICLE(p) \
+	do { \
+		p = next_global_particle(); \
+		if (p == NULL) { return; } \
+	} while (0);
+
+static void
+build_rect_particle(Particle *p)
+{
 	p->type = RECT;
 	p->velocity = VECTOR2D_NODIR;
 	p->movetime = 100;
@@ -77,8 +107,6 @@ create_rect_particle(void)
 	p->color = C_WHITE;
 	p->particle.rect.pos = (Position) { 0, 0 };
 	p->particle.rect.dim = (Dimension) { 1, 1 };
-
-	return p;
 }
 
 void
@@ -94,10 +122,11 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 	if (count > 100)
 		count = 100;
 
+	Particle *p;
+	int x, y, xv, yv, w, h;
+	unsigned int mt, lt;
 	for (unsigned int i = 0; i < count; ++i) {
-		int x, y, xv, yv, w, h;
-		unsigned int mt, lt;
-		Particle *p;
+		NEXT_GAME_PARTICLE(p);
 
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
@@ -111,14 +140,13 @@ particle_engine_bloodspray(Position pos, Dimension dim, unsigned int count)
 		w = get_random(3) + 2;
 		h = get_random(3) + 2;
 
-		p = create_rect_particle();
+		build_rect_particle(p);
 		p->particle.rect.pos = (Position) { x, y };
 		p->particle.rect.dim = (Dimension) { w, h };
 		p->velocity = (Vector2d) { (float) xv, (float) yv };
 		p->movetime = mt;
 		p->lifetime = lt;
 		p->color = C_RED;
-		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -134,10 +162,11 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 	}
 	va_end(args);
 
+	Particle *p;
+	int x, y, xv, yv;
+	unsigned int lt;
 	for (unsigned int i = 0; i < 150; ++i) {
-		int x, y, xv, yv;
-		unsigned int lt;
-		Particle *p;
+		NEXT_GAME_PARTICLE(p);
 
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
@@ -147,7 +176,7 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 
 		lt = get_random(20);
 
-		p = create_rect_particle();
+		build_rect_particle(p);
 		p->particle.rect.pos = (Position) { x, y };
 		p->particle.rect.dim = (Dimension) { 2, 2 };
 		p->velocity = (Vector2d) { (float) xv, (float) yv };
@@ -155,7 +184,6 @@ create_explosion(Position pos, Dimension dim, unsigned int c_count, ...)
 		p->lifetime = lt;
 		p->blend_mode = SDL_BLENDMODE_BLEND;
 		p->color = colors[get_random((unsigned int) c_count-1)];
-		linkedlist_append(&s_engine.game_particles, p);
 	}
 	free(colors);
 }
@@ -181,10 +209,11 @@ particle_engine_eldritch_explosion(Position pos, Dimension dim)
 void
 particle_engine_dust_puff(Position pos, Dimension dim)
 {
+	int x, y, xv, yv, w, h;
+	unsigned int lt;
+	Particle *p;
 	for (unsigned int i = 0; i < 50; ++i) {
-		int x, y, xv, yv, w, h;
-		unsigned int lt;
-		Particle *p;
+		NEXT_GAME_PARTICLE(p);
 
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
@@ -197,7 +226,7 @@ particle_engine_dust_puff(Position pos, Dimension dim)
 		w = get_random(3);
 		h = get_random(3);
 
-		p = create_rect_particle();
+		build_rect_particle(p);
 		p->particle.rect.pos = (Position) { x, y };
 		p->particle.rect.dim = (Dimension) { w, h };
 		p->velocity = (Vector2d) { (float) xv, (float) yv };
@@ -205,7 +234,6 @@ particle_engine_dust_puff(Position pos, Dimension dim)
 		p->lifetime = lt;
 		p->color = C_GREY;
 		p->blend_mode = SDL_BLENDMODE_BLEND;
-		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -219,17 +247,22 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 	if (dim.width == 0 || dim.height == 0)
 		return;
 
+	int x, y;
+	unsigned int lt;
+	Particle *p;
 	for (unsigned int i = 0; i < count; ++i) {
-		int x, y;
-		unsigned int lt;
-		Particle *p;
+		NEXT_GAME_PARTICLE(p);
+
+		if (p == NULL) {
+			return;
+		}
 
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
 
 		lt = get_random(10);
 
-		p = create_rect_particle();
+		build_rect_particle(p);
 		p->velocity = (Vector2d) { 0, 0 };
 		p->movetime = lt;
 		p->lifetime = lt;
@@ -239,7 +272,6 @@ particle_engine_speed_lines(Position pos, Dimension dim, bool horizontal)
 			p->particle.rect.dim = (Dimension) { 20, 1 };
 		else
 			p->particle.rect.dim = (Dimension) { 2, 20 };
-		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -253,10 +285,15 @@ particle_engine_bloodlust(Position pos, Dimension dim, void *userdata)
 void
 particle_engine_sparkle(Position pos, Dimension dim, SDL_Color color, bool global)
 {
+	int x, y, yv, alpha;
+	unsigned int lt;
+	Particle *p;
 	for (unsigned int i = 0; i < 10; ++i) {
-		int x, y, yv, alpha;
-		unsigned int lt;
-		Particle *p;
+		if (global) {
+			NEXT_GLOBAL_PARTICLE(p);
+		} else {
+			NEXT_GAME_PARTICLE(p);
+		}
 
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
@@ -267,7 +304,7 @@ particle_engine_sparkle(Position pos, Dimension dim, SDL_Color color, bool globa
 
 		lt = get_random(20);
 
-		p = create_rect_particle();
+		build_rect_particle(p);
 		p->particle.rect.pos = (Position) { x, y };
 		p->particle.rect.dim = (Dimension) { 2, 2 };
 		p->velocity = (Vector2d) { (float) 0, (float) yv };
@@ -277,10 +314,6 @@ particle_engine_sparkle(Position pos, Dimension dim, SDL_Color color, bool globa
 		p->color = color;
 		p->color.a = (Uint8) alpha;
 		p->fixed = global;
-		if (global)
-			linkedlist_append(&s_engine.global_particles, p);
-		else
-			linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -295,12 +328,13 @@ particle_engine_wind(Vector2d direction)
 	if (dim.width == 0 || dim.height == 0)
 		return;
 
+	int x, y;
+	int w, h;
+	unsigned int lt;
+	int velocity;
+	Particle *p;
 	for (unsigned int i = 0; i < count; ++i) {
-		int x, y;
-		int w, h;
-		unsigned int lt;
-		Particle *p;
-		int velocity;
+		NEXT_GAME_PARTICLE(p);
 
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
@@ -311,7 +345,7 @@ particle_engine_wind(Vector2d direction)
 
 		lt = get_random(500);
 
-		p = create_rect_particle();
+		build_rect_particle(p);
 		p->particle.rect.pos = (Position) { x, y };
 		p->particle.rect.dim = (Dimension) { w, h };
 		p->velocity = (Vector2d) { direction.x * (float) velocity, direction.y * (float) velocity };
@@ -319,7 +353,6 @@ particle_engine_wind(Vector2d direction)
 		p->lifetime = lt;
 		p->color = C_BLUE;
 		p->fixed = true;
-		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -334,12 +367,13 @@ particle_engine_heat(void)
 	if (dim.width == 0 || dim.height == 0)
 		return;
 
+	int x, y;
+	int w, h;
+	unsigned int lt;
+	int yvel, xvel;
+	Particle *p;
 	for (unsigned int i = 0; i < count; ++i) {
-		int x, y;
-		int w, h;
-		unsigned int lt;
-		Particle *p;
-		int yvel, xvel;
+		NEXT_GAME_PARTICLE(p);
 
 		x = get_random(dim.width) + pos.x;
 		y = get_random(dim.height) + pos.y;
@@ -351,7 +385,7 @@ particle_engine_heat(void)
 
 		lt = get_random(500);
 
-		p = create_rect_particle();
+		build_rect_particle(p);
 		p->particle.rect.pos = (Position) { x, y };
 		p->particle.rect.dim = (Dimension) { w, h };
 		p->velocity = (Vector2d) { (float) xvel, (float) yvel };
@@ -362,7 +396,6 @@ particle_engine_heat(void)
 		else
 			p->color = C_RED;
 		p->fixed = true;
-		linkedlist_append(&s_engine.game_particles, p);
 	}
 }
 
@@ -389,31 +422,31 @@ move_particle(Particle *particle, float deltaTime)
 }
 
 static void
-update_particles(LinkedList **particles, float deltaTime)
+update_particles(Particle *particles, size_t *idx, float deltaTime)
 {
-	LinkedList *cleared = linkedlist_create();
-	while (*particles) {
-		Particle *particle = linkedlist_pop(particles);
-		if (particle->movetime)
-			particle->movetime--;
+	Particle *p;
+	size_t i = 0;
+	while (i < *idx) {
+		p = &particles[i];
+		if (p->movetime)
+			p->movetime--;
 
-		if (particle->lifetime > 0) {
-			particle->lifetime--;
-			move_particle(particle, deltaTime);
-			linkedlist_push(&cleared, particle);
+		if (p->lifetime > 0) {
+			p->lifetime--;
+			move_particle(p, deltaTime);
+			i++;
 		} else {
-			free(particle);
+			// If this particle is dead then shift one in from the end of the list
+			*p = particles[--(*idx)];
 		}
 	}
-
-	*particles = cleared;
 }
 
 void
 particle_engine_update(float deltaTime)
 {
-	update_particles(&s_engine.global_particles, deltaTime);
-	update_particles(&s_engine.game_particles, deltaTime);
+	update_particles(s_engine.global_particles, &s_engine.global_idx, deltaTime);
+	update_particles(s_engine.game_particles, &s_engine.game_idx, deltaTime);
 }
 
 static void
@@ -471,39 +504,34 @@ render_line_particle(Particle *p, Camera *cam)
 }
 
 static void
-render_particles(LinkedList *particles, Camera *cam)
+render_particles(Particle *particles, size_t size, Camera *cam)
 {
-	LinkedList *render_list = particles;
-
-	while (render_list) {
-		Particle *p = render_list->data;
+	Particle *p;
+	for (size_t i = 0; i < size; ++i) {
+		p = &particles[i];
 		if (p->type == RECT)
 			render_rect_particle(p, cam);
 		else
 			render_line_particle(p, cam);
-		render_list = render_list->next;
 	}
 }
 
 void
 particle_engine_render_game(Camera *cam)
 {
-	render_particles(s_engine.game_particles, cam);
+	render_particles(s_engine.game_particles, s_engine.game_idx, cam);
 }
 
 void
 particle_engine_render_global(Camera *cam)
 {
-	render_particles(s_engine.global_particles, cam);
+	render_particles(s_engine.global_particles, s_engine.global_idx, cam);
 }
 
 void
 particle_engine_clear(void)
 {
-	while (s_engine.game_particles)
-		free(linkedlist_pop(&s_engine.game_particles));
-	while (s_engine.global_particles)
-		free(linkedlist_pop(&s_engine.global_particles));
+	// Nothing to do due to static allocation
 }
 
 void
