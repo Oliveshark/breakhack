@@ -27,8 +27,6 @@
 #include "animation_controller.h"
 #include "linkedlist.h"
 #include "player.h"
-#include "screenresolution.h"
-#include "dimension.h"
 #include "camera.h"
 #include "map.h"
 #include "map_lua.h"
@@ -62,6 +60,10 @@
 
 #ifdef DEBUG
 #include "debug/debug.h"
+#endif
+
+#ifdef PROFILER
+#include "profiler.h"
 #endif
 
 #ifdef STEAM_BUILD
@@ -1408,6 +1410,16 @@ void close(void)
 	gWindow = NULL;
 	TTF_Quit();
 	SDL_Quit();
+
+#ifdef PROFILER
+	FILE *fp = fopen("profile.txt", "w");
+	if (fp == NULL) {
+		PROFILER_STOP(stdout);
+	} else {
+		PROFILER_STOP(fp);
+	}
+	fclose(fp);
+#endif
 }
 
 #ifdef CHECKSUM_VALIDATION
@@ -1456,6 +1468,10 @@ int main(int argc, char *argv[])
 	PHYSFS_mount("assets", NULL, 0);
 	PHYSFS_mount("data", NULL, 0);
 #endif // DEBUG
+
+#ifdef PROFILER
+	PROFILER_SETUP()
+#endif
 
 	if (argc > 1) {
 		set_random_seed(atoi(argv[1]));
