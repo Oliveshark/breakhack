@@ -21,7 +21,7 @@ int main(void)
     u64 cpu_elapsed = cpu_end - cpu_start;
     u64 cpu_freq = 0;
     if (os_elapsed) {
-        cpu_freq = os_freq * cpu_elapsed / os_elapsed;
+        cpu_freq = (u64)((double) os_freq * cpu_elapsed / os_elapsed);
     }
 
     printf("    OS Freq: %lu (reported)\n", os_freq);

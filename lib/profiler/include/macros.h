@@ -36,7 +36,7 @@
 #define PROFILER_STOP(fp)
 #define TIME_BLOCK_BEGIN(label)
 #define TIME_BLOCK_END(label)
-#define TIME_BANDWIDTH_BEGIN(label)
+#define TIME_BANDWIDTH_BEGIN(label, bytes)
 #define TIME_BANDWIDTH_END(label)
 #define TIME_FUNC_BEGIN()
 #define TIME_FUNC_END()

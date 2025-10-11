@@ -1,6 +1,5 @@
-#define PROFILER 1
-
 #include <sys/time.h>
+#include <stdint.h>
 #include "rdtsc.h"
 
 #ifdef __arm__

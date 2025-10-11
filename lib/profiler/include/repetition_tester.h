@@ -9,7 +9,7 @@
     do { \
         fprintf(stderr, "%s()[%d] %s\n", __func__, __LINE__, msg); \
         tester->mode = TestMode_Error; \
-    } while (0);
+    } while (0)
 
 typedef enum TestMode {
     TestMode_Uninitialized,
