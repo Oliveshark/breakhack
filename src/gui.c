@@ -36,18 +36,26 @@
 #include "texturecache.h"
 #include "gui_util.h"
 
-#define DEFAULT_LOG { NULL, LOG_LINES_COUNT, 0, 200 }
-#define DEFAULT_EVENT_MESSAGES { NULL, 5, 0, 200 }
+#define DEFAULT_EVENT_MESSAGES { NULL, 5, 0, LOG_LINES_MAX_LEN }
 
 #define POS_Y_COLLECTABLES	 64
 #define POS_Y_XPBAR		128
 
 static struct LogData_t {
-	char **log;
-	unsigned int len;
-	unsigned int count;
-	unsigned int strlen;
-} log_data = DEFAULT_LOG;
+	char log[LOG_LINES_COUNT][LOG_LINES_MAX_LEN];
+	uint8_t capacity;
+	uint8_t head;
+	uint8_t tail;
+	uint8_t count;
+	uint8_t strlen;
+} log_data = {
+	{ "", "", "", "", "", "", "", "", "", "" },
+	LOG_LINES_COUNT,
+	0,
+	0,
+	0,
+	LOG_LINES_MAX_LEN
+};
 
 static struct GuiEventMsgs {
 	char **messages;
@@ -55,19 +63,6 @@ static struct GuiEventMsgs {
 	unsigned int count;
 	unsigned int strlen;
 } event_messages = DEFAULT_EVENT_MESSAGES;
-
-static void
-gui_malloc_log(void)
-{
-	if (log_data.log != NULL)
-		return;
-
-	unsigned int i;
-
-	log_data.log = ec_malloc(log_data.len * sizeof(char*));
-	for (i = 0; i < log_data.len; ++i)
-		log_data.log[i] = NULL;
-}
 
 static void
 gui_malloc_eventmessages(void)
@@ -273,7 +268,6 @@ gui_create(Camera *cam)
 				    POS_Y_COLLECTABLES + 32 + 5
 				    ));
 
-	gui_malloc_log();
 	gui_malloc_eventmessages();
 
 	init_sprites(gui, cam);
@@ -599,31 +593,32 @@ gui_reset(Gui *gui, Camera *cam)
 void
 gui_log(const char *fmt, ...)
 {
-	char buffer[200];
-	char *new_message;
+	char buffer[LOG_LINES_MAX_LEN];
+	uint8_t next_idx;
+	char *next_message;
 	char tstamp[10];
 
 	va_list args;
 
-	new_message = ec_malloc(log_data.strlen * sizeof(char));
-	timestamp(tstamp, 10);
+	next_idx = (uint8_t)(log_data.head + 1) % log_data.capacity;
 
-	va_start(args, fmt);
-	m_vsprintf(buffer, 200, fmt, args);
-	va_end(args);
-	m_sprintf(new_message, log_data.strlen, "%s > %s", tstamp, buffer);
-
-	log_data.count++;
-	if (log_data.count > log_data.len) {
-		log_data.count = log_data.len;
-		free(log_data.log[0]);
-		log_data.log[0] = NULL;
-		for (size_t i = 0; i < log_data.count - 1; ++i) {
-			log_data.log[i] = log_data.log[i+1];
-			log_data.log[i+1] = NULL;
-		}
+	// Increment indexes
+	if (log_data.count > 0 && log_data.head == log_data.tail) {
+		log_data.tail = (uint8_t)(log_data.tail + 1) % log_data.capacity;
+		log_data.count = log_data.capacity;
+	} else if (log_data.count < log_data.capacity) {
+		log_data.count++;
 	}
-	log_data.log[log_data.count-1] = new_message;
+
+	next_message = log_data.log[log_data.head];
+	log_data.head = next_idx;
+
+	// Build log line
+	timestamp(tstamp, 10);
+	va_start(args, fmt);
+	m_vsprintf(buffer, LOG_LINES_MAX_LEN, fmt, args);
+	va_end(args);
+	m_sprintf(next_message, log_data.strlen, "%s > %s", tstamp, buffer);
 }
 
 void
@@ -656,15 +651,27 @@ gui_render_tooltip(Gui *gui, Camera *cam)
 void
 gui_render_log(Gui *gui, Camera *cam)
 {
-	SDL_Rect box = { 16, 0, 16, 16 };
+	static uint8_t last_head = 0;
 
 	sprite_render(gui->bottomFrame, cam);
 
-	for (Uint32 i = 0; i < log_data.count; ++i) {
+	// Update log textures
+	const uint8_t visible = log_data.count;
+	if (log_data.head != last_head) {
+		for (uint8_t i = 0; i < visible; ++i) {
+			const uint8_t log_index = (uint8_t)((log_data.tail + i) % log_data.capacity);
+			Texture *t = gui->log_lines[i];
+			texture_load_from_text(t, log_data.log[log_index], C_WHITE, C_BLACK, cam->renderer);
+		}
+	}
+	last_head = log_data.head;
+
+	// Render log textures
+	SDL_Rect box = { 16, 0, 16, 16 };
+	for (uint8_t i = 0; i < visible; ++i) {
 		Texture *t;
 		box.y = 16 + ((LOG_FONT_SIZE+5) * i);
 		t = gui->log_lines[i];
-		texture_load_from_text(t, log_data.log[i], C_WHITE, C_BLACK, cam->renderer);
 		box.w = t->dim.width;
 		box.h = t->dim.height;
 		texture_render(t, &box, cam);
@@ -714,23 +721,10 @@ gui_clear_message_log(void)
 	}
 	event_messages.count = 0;
 
-	for (size_t i = 0; i < log_data.count; ++i)
-		free(log_data.log[i]);
+	// Don't need to clear the log buffer. Just reset the head/tail
+	log_data.head = 0;
+	log_data.tail = 0;
 	log_data.count = 0;
-}
-
-static void
-destroy_log(void)
-{
-	if (log_data.log == NULL)
-		return;
-
-	unsigned int i;
-	for (i = 0; i < log_data.count; ++i)
-		free(log_data.log[i]);
-
-	free(log_data.log);
-	log_data.log = NULL;
 }
 
 static void
@@ -750,7 +744,6 @@ destroy_event_messages(void)
 void
 gui_destroy(Gui *gui)
 {
-	destroy_log();
 	destroy_event_messages();
 
 	timer_destroy(gui->event_message_timer);
