@@ -630,7 +630,6 @@ skill_trip(Skill *skill, SkillData *data)
 
 	RoomSpace *space = &data->matrix->spaces[targetPos.x][targetPos.y];
 	mixer_play_effect(SWING0 + get_random(2));
-	animation_run(data->player->swordAnimation);
 	if (space->monster) {
 		CombatResult result = stats_fight(&data->player->stats, &space->monster->stats);
 		if (result.dmg)
@@ -657,7 +656,7 @@ skill_trip(Skill *skill, SkillData *data)
 }
 
 static Skill *
-create_trip(void)
+create_trip(Camera *cam)
 {
 	Texture *t = texturecache_add("Extras/Skills.png");
 	Sprite *s = sprite_create();
@@ -672,6 +671,25 @@ create_trip(void)
 	skill->available = NULL;
 	skill->use = skill_trip;
 	skill->actionRequired = true;
+	skill->tooltip = tooltip_create(trip_tooltip, cam);
+	skill->animation = animation_create(8);
+
+	Animation *a = skill->animation;
+	animation_load_texture(a, "Extras/Trip.png", cam->renderer);
+	animation_set_frames(a, (AnimationClip[]) {
+			     {  0, 0, 32, 32, 20 },
+			     { 32, 0, 32, 32, 20 },
+			     { 64, 0, 32, 32, 20 },
+			     { 96, 0, 32, 32, 20 },
+			     { 128, 0, 32, 32, 20 },
+			     { 160, 0, 32, 32, 20 },
+			     { 192, 0, 32, 32, 20 },
+			     { 224, 0, 32, 32, 20 }
+			});
+	a->loop = false;
+	a->sprite->dim = GAME_DIMENSION;
+	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
+	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
 	return skill;
 }
 
@@ -1137,8 +1155,7 @@ skill_create(enum SkillType t, Camera *cam)
 			skill = create_bash(cam);
 			break;
 		case TRIP:
-			skill = create_trip();
-			skill->tooltip = tooltip_create(trip_tooltip, cam);
+			skill = create_trip(cam);
 			break;
 		case BACKSTAB:
 			skill = create_backstab(cam);
