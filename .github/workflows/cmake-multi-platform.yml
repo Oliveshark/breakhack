@@ -29,14 +29,14 @@ jobs:
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
         platform:
-        - { name: Windows (MSVC),         os: windows-latest, shell: sh, c_compiler: cl, cpp_compiler: cl, cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja' }
-        - { name: Ubuntu (GCC),           os: ubuntu-latest, shell: sh, c_compiler: gcc, cpp_compiler: g++, cmake_args: '-GNinja' }
-        - { name: Ubuntu (GCC, PROF),     os: ubuntu-latest, shell: sh, c_compiler: gcc, cpp_compiler: g++, cmake_args: '-DPROFILER=ON -GNinja' }
-        - { name: Ubuntu (Clang),         os: ubuntu-latest, shell: sh, c_compiler: clang, cpp_compiler: clang++, cmake_args: '-GNinja' }
-        - { name: Ubuntu (mingw),         os: ubuntu-latest, shell: sh, c_compiler: mingw-w64-gcc, cpp_compiler: mingw-w64-g++,
+        - { name: Windows (MSVC),             os: windows-latest, shell: sh, c_compiler: cl, cpp_compiler: cl, cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja' }
+        - { name: Ubuntu (GCC),               os: ubuntu-latest, shell: sh, c_compiler: gcc, cpp_compiler: g++, cmake_args: '-GNinja' }
+        - { name: 'Ubuntu (GCC, PROFILER)',   os: ubuntu-latest, shell: sh, c_compiler: gcc, cpp_compiler: g++, cmake_args: '-DPROFILER=ON -GNinja' }
+        - { name: Ubuntu (Clang),             os: ubuntu-latest, shell: sh, c_compiler: clang, cpp_compiler: clang++, cmake_args: '-GNinja' }
+        - { name: Ubuntu (mingw),             os: ubuntu-latest, shell: sh, c_compiler: mingw-w64-gcc, cpp_compiler: mingw-w64-g++,
           cmake_args: '-DSDLMIXER_VENDORED=ON -DSDLTTF_VENDORED=ON -DCMAKE_TOOLCHAIN_FILE=build_deps/toolchains/mingw-w64-x86_64.cmake -GNinja' }
-        - { name: Mac (GCC),              os: macos-latest, shell: sh, c_compiler: gcc, cpp_compiler: g++, cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja' }
-        - { name: Mac (Clang),            os: macos-latest, shell: sh, c_compiler: clang, cpp_compiler: clang++, cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja' }
+        - { name: Mac (GCC),                  os: macos-latest, shell: sh, c_compiler: gcc, cpp_compiler: g++, cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja' }
+        - { name: Mac (Clang),                os: macos-latest, shell: sh, c_compiler: clang, cpp_compiler: clang++, cmake_args: '-DSDLMIXER_VENDORED=ON -GNinja' }
 
     steps:
     - uses: actions/checkout@v4
