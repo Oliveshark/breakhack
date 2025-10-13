@@ -1,4 +1,4 @@
-#define PROFILER 1
+#define PROFILER
 
 #include "common.h"
 #include "profiler_c.h"
