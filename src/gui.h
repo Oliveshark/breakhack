@@ -21,6 +21,7 @@
 
 #include "roommatrix.h"
 #define LOG_LINES_COUNT	10
+#define LOG_LINES_MAX_LEN 200
 #define LOG_FONT_SIZE	8
 #define LABEL_FONT_SIZE	8
 
