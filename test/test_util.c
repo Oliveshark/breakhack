@@ -18,6 +18,8 @@
 #include "cmocka_include.h"
 #include "../src/util.h"
 
+#include <stdint.h>
+
 static void test_util_ec_malloc(void **state)
 {
 	(void) state;

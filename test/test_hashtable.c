@@ -20,6 +20,8 @@
 #include "../src/hashtable.h"
 #include "../src/util.h"
 
+#include <stdint.h>
+
 static void test_hashtable_create(void **state)
 {
 	(void) state;

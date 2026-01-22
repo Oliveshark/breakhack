@@ -19,6 +19,8 @@
 #include "cmocka_include.h"
 #include "../src/linkedlist.h"
 
+#include <stdint.h>
+
 static void test_linkedlist_create(void **state)
 {
 	(void) state;
@@ -171,7 +173,7 @@ static void test_linkedlist_get_index(void **state)
 
 	value1 = malloc(sizeof(int));
 	value2 = malloc(sizeof(int));
-	
+
 	*value1 = 1;
 	*value2 = 2;
 
