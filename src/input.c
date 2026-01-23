@@ -199,7 +199,7 @@ input_handle_event(Input *input, SDL_Event *event, InputDeviceType *device_type)
 {
 	InputDeviceType current_device_type = DeviceType_Unknown;
 
-	if (event->type == SDL_EVENT_KEY_DOWN) {
+	if (event->type == SDL_EVENT_KEY_DOWN && !event->key.repeat) {
 		Uint32 key;
 		if ((key = get_event_modkey(event))) {
 			input->modKeyState |= key;
