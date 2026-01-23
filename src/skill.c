@@ -1029,7 +1029,7 @@ create_blink(void)
 	s->clip = CLIP32(64, 64);
 	s->fixed = true;
 	Skill *skill = create_default("Blink", s);
-	skill->levelcap = 3;
+	skill->levelcap = 4;
 	skill->use = skill_blink;
 	skill->resetTime = 4;
 	return skill;
