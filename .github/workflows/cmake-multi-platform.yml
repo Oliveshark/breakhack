@@ -9,6 +9,19 @@ on:
     branches: [ "dev" ]
 
 jobs:
+  lua-lint:
+    name: Lua formatting (StyLua)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install StyLua
+      uses: JohnnyMorganz/stylua-action@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        version: latest
+        args: --check data/
+
   build:
     name: ${{ matrix.platform.name }}
     runs-on: ${{ matrix.platform.os }}

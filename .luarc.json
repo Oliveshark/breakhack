@@ -1,0 +1,27 @@
+{
+    "diagnostics.globals": [
+        "map_random",
+        "map_randomseed",
+        "add_keybearers",
+        "set_current_room",
+        "map",
+        "CURRENT_LEVEL",
+        "QUICK_MODE",
+        "ARCADE_MODE",
+        "get_random_seed",
+        "info",
+        "PlayerData",
+        "create_map",
+        "add_chest",
+        "read_file",
+        "add_texture",
+        "create_shop_artifact",
+        "add_tile",
+        "add_decoration",
+        "set_modifier",
+        "add_wall",
+        "add_door",
+        "add_monster",
+        "add_trap"
+    ]
+}
