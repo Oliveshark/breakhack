@@ -167,8 +167,8 @@ hiscore_get_top10(void)
 static int
 load_top_gold_cb(void *result, int count, char **values, char **colNames)
 {
-	UNUSED(count);
-	UNUSED(colNames);
+	(void)count;
+	(void)colNames;
 
 	double *gold = result;
 	*gold = atof(values[0]);

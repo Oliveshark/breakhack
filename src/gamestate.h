@@ -23,6 +23,7 @@ typedef enum GameState_t {
 	MENU,
 	CREDITS,
 	SCORE_SCREEN,
+	SEED_ENTRY,
 	PLAYING,
 	IN_GAME_MENU,
 	CHARACTER_MENU,
