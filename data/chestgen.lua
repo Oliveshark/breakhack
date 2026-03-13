@@ -1,34 +1,34 @@
-local room_builder = require "maproombuilder"
+local room_builder = require("maproombuilder")
 local module = {}
 local random = map_random
 
 local textures = {
 	"Items/Chest0.png",
-	"Items/Chest1.png"
+	"Items/Chest1.png",
 }
 
 local chests = {}
-for i=0,1 do
+for i = 0, 1 do
 	table.insert(chests, {
 		textures[1],
 		textures[2],
 		0,
-		i * 16
-	});
+		i * 16,
+	})
 	table.insert(chests, {
 		textures[1],
 		textures[2],
 		16,
-		i * 16
-	});
+		i * 16,
+	})
 end
 
 local function repack(data)
 	return {
-		texturePath1	= data[1],
-		texturePath2	= data[2],
-		clipX			= data[3],
-		clipY			= data[4]
+		texturePath1 = data[1],
+		texturePath2 = data[2],
+		clipX = data[3],
+		clipY = data[4],
 	}
 end
 
@@ -49,10 +49,10 @@ function module.add_chests_to_room(room)
 	end
 end
 
-function module.load_chests(map, chests)
-	for i=0,15 do
-		for j=0,11 do
-			chest = chests[i][j]
+function module.load_chests(map, room_chests)
+	for i = 0, 15 do
+		for j = 0, 11 do
+			local chest = room_chests[i][j]
 			if chest then
 				add_chest(map, i, j, CURRENT_LEVEL, repack(chest))
 			end
