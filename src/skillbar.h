@@ -17,7 +17,7 @@
  */
 
 #ifndef SKILLBAR_H_
-#define	SKILLBAR_H_
+#define SKILLBAR_H_
 
 #include <SDL3/SDL.h>
 #include "linkedlist.h"
@@ -47,25 +47,18 @@ typedef struct SkillBar {
 	Uint32 lastActivation;
 } SkillBar;
 
-void
-skillbar_set_controller_mode(Uint8 ctrl_mode);
+void skillbar_set_controller_mode(Uint8 ctrl_mode);
 
-SkillBar *
-skillbar_create(Camera*);
+SkillBar *skillbar_create(Camera *);
 
-bool
-skillbar_check_skill_activation(SkillBar*, Player*);
+bool skillbar_check_skill_activation(SkillBar *, Player *);
 
-void
-skillbar_render(SkillBar*, Player*, Camera*);
+void skillbar_render(SkillBar *, Player *, Camera *);
 
-void
-skillbar_update(SkillBar*, struct UpdateData*);
+void skillbar_update(SkillBar *, struct UpdateData *);
 
-void
-skillbar_reset(SkillBar*);
+void skillbar_reset(SkillBar *);
 
-void
-skillbar_destroy(SkillBar*);
+void skillbar_destroy(SkillBar *);
 
 #endif // SKILLBAR_H_

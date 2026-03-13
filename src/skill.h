@@ -17,7 +17,7 @@
  */
 
 #ifndef SKILL_H_
-#define	SKILL_H_
+#define SKILL_H_
 
 #include <stdbool.h>
 #include "animation.h"
@@ -58,8 +58,8 @@ typedef struct Skill_t {
 	bool actionRequired;
 	bool instantUse;
 	bool active;
-	bool (*available)(Player*);
-	bool (*use)(struct Skill_t*, SkillData*);
+	bool (*available)(Player *);
+	bool (*use)(struct Skill_t *, SkillData *);
 	Tooltip *tooltip;
 	Animation *animation;
 	struct {
@@ -68,10 +68,8 @@ typedef struct Skill_t {
 	} animation_properties;
 } Skill;
 
-Skill*
-skill_create(enum SkillType, Camera *cam);
+Skill *skill_create(enum SkillType, Camera *cam);
 
-void
-skill_destroy(Skill*);
+void skill_destroy(Skill *);
 
 #endif // SKILL_H_

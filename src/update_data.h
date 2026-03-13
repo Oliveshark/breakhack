@@ -17,7 +17,7 @@
  */
 
 #ifndef UPDATE_DATA_H_
-#define	UPDATE_DATA_H_
+#define UPDATE_DATA_H_
 
 #include "player.h"
 #include "map.h"

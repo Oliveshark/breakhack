@@ -17,7 +17,7 @@
  */
 
 #ifndef PARTICLE_ENGINE_H_
-#define	PARTICLE_ENGINE_H_
+#define PARTICLE_ENGINE_H_
 
 #include <SDL3/SDL.h>
 #include "position.h"
@@ -25,52 +25,36 @@
 #include "camera.h"
 #include "vector2d.h"
 
-void
-particle_engine_bleed(Position pos, Dimension dim, void *userdata);
+void particle_engine_bleed(Position pos, Dimension dim, void *userdata);
 
-void
-particle_engine_bloodspray(Position, Dimension, unsigned int count);
+void particle_engine_bloodspray(Position, Dimension, unsigned int count);
 
-void
-particle_engine_fire_explosion(Position, Dimension);
+void particle_engine_fire_explosion(Position, Dimension);
 
-void
-particle_engine_blink(Position, Dimension);
+void particle_engine_blink(Position, Dimension);
 
-void
-particle_engine_eldritch_explosion(Position, Dimension);
+void particle_engine_eldritch_explosion(Position, Dimension);
 
-void
-particle_engine_dust_puff(Position, Dimension);
+void particle_engine_dust_puff(Position, Dimension);
 
-void
-particle_engine_speed_lines(Position, Dimension, bool horizontal);
+void particle_engine_speed_lines(Position, Dimension, bool horizontal);
 
-void
-particle_engine_bloodlust(Position, Dimension, void *userdata);
+void particle_engine_bloodlust(Position, Dimension, void *userdata);
 
-void
-particle_engine_sparkle(Position, Dimension, SDL_Color, bool global);
+void particle_engine_sparkle(Position, Dimension, SDL_Color, bool global);
 
-void
-particle_engine_wind(Vector2d direction);
+void particle_engine_wind(Vector2d direction);
 
-void
-particle_engine_heat(void);
+void particle_engine_heat(void);
 
-void
-particle_engine_update(float deltatime);
+void particle_engine_update(float deltatime);
 
-void
-particle_engine_render_game(Camera*);
+void particle_engine_render_game(Camera *);
 
-void
-particle_engine_render_global(Camera*);
+void particle_engine_render_global(Camera *);
 
-void
-particle_engine_clear(void);
+void particle_engine_clear(void);
 
-void
-particle_engine_close(void);
+void particle_engine_close(void);
 
 #endif // PARTICLE_ENGINE_H_

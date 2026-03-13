@@ -32,9 +32,10 @@ actiontextbuilder_init(SDL_Renderer *renderer)
 }
 
 void
-actiontextbuilder_create_text(const char *msg, SDL_Color color, const Position *p)
+actiontextbuilder_create_text(const char *msg, SDL_Color color,
+                              const Position *p)
 {
-	assert (gRenderer != NULL);
+	assert(gRenderer != NULL);
 	Sprite *sprite = sprite_create();
 	sprite->pos = *p;
 	sprite_load_text_texture(sprite, "GUI/SDS_8x8.ttf", 0, 11, 1);

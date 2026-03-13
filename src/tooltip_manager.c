@@ -20,100 +20,147 @@
 #include "sprite.h"
 
 static char *artifacts_tooltip[] = {
-	"CONGRATULATIONS!", "",
-	"",
-	"   You just picked up your first artifact!", "",
-	"",
-	"   Your current artifacts and corresponding level are", "",
-	"   listed next to your skills.", "",
-	"",
-	"",
-	"   Artifacts have mystical effects that improve your offensive", "",
-	"   or defensive advantage in the dungeon. However it is sometimes", "",
-	"   hard to know what effect an artifact has.", "",
-	"",
-	"",
-	"   Perhaps an experienced dungeoner will know more?", "",
-	"",
-	"",
-	"Press ", "ESC", " to close", "",
-	NULL
-};
+    "CONGRATULATIONS!",
+    "",
+    "",
+    "   You just picked up your first artifact!",
+    "",
+    "",
+    "   Your current artifacts and corresponding level are",
+    "",
+    "   listed next to your skills.",
+    "",
+    "",
+    "",
+    "   Artifacts have mystical effects that improve your offensive",
+    "",
+    "   or defensive advantage in the dungeon. However it is sometimes",
+    "",
+    "   hard to know what effect an artifact has.",
+    "",
+    "",
+    "",
+    "   Perhaps an experienced dungeoner will know more?",
+    "",
+    "",
+    "",
+    "Press ",
+    "ESC",
+    " to close",
+    "",
+    NULL};
 
 static char *skills_tooltip[] = {
-	"CONGRATULATIONS!", "",
-	"",
-	"   You have aquired a new level and a new skill!", "",
-	"",
-	"   Skills are listed in the bar below the game screen.", "",
-	"",
-	"",
-	"   SKILL INFO:            SHIFT + <N>", "",
-	"                          Where <N> is the number corresponding to the skill", "",
-	"                          Eg. 1, 2, 3, 4, 5", "",
-	"",
-	"   DISABLE TOOLTIPS:      CTRL + D", "",
-	"",
-	"",
-	"Press ", "ESC", " to close", "",
-	NULL
-};
+    "CONGRATULATIONS!",
+    "",
+    "",
+    "   You have aquired a new level and a new skill!",
+    "",
+    "",
+    "   Skills are listed in the bar below the game screen.",
+    "",
+    "",
+    "",
+    "   SKILL INFO:            SHIFT + <N>",
+    "",
+    "                          Where <N> is the number corresponding to the "
+    "skill",
+    "",
+    "                          Eg. 1, 2, 3, 4, 5",
+    "",
+    "",
+    "   DISABLE TOOLTIPS:      CTRL + D",
+    "",
+    "",
+    "",
+    "Press ",
+    "ESC",
+    " to close",
+    "",
+    NULL};
 
 static char *how_to_play_tooltip[] = {
-	"HOW TO PLAY", "",
-	"",
-	"   NAVIGATION:        Use ARROWS or WASD or HJKL to move", "",
-	"                      Controller: LEFT STICK or D-PAD", "",
-	"",
-	"   ATTACK:            Walk into a monster to attack it", "",
-	"",
-	"   HOLD TURN:         Press ", "SPACE", "",
-	"",
-	"   THROW DAGGER:      Press ", "4", " then chose a direction (nav keys)", "",
-	"",
-	"   DRINK HEALTH:      Press ", "5", " (if you need health and have potions)", "",
-	"",
-	"   TOGGLE MUSIC:      CTRL + M", "",
-	"",
-	"   TOGGLE SOUND:      CTRL + S", "",
-	"",
-	"   TOGGLE FULLSCREEN: CTRL + F", "",
-	"",
-	"   TOGGLE MAP:        ", "TAB", "",
-	"",
-	"   TOGGLE MENU:       ", "ESC", "",
-	"",
-	"   Your stats and inventory are listed in the right panel", "",
-	"",
-	"",
-	"   GOOD LUCK!", "",
-	"   May your death be quick and painless...", "",
-	"",
-	"",
-	"",
-	"Press ", "ESC", " to close", "",
-	NULL
-};
+    "HOW TO PLAY",
+    "",
+    "",
+    "   NAVIGATION:        Use ARROWS or WASD or HJKL to move",
+    "",
+    "                      Controller: LEFT STICK or D-PAD",
+    "",
+    "",
+    "   ATTACK:            Walk into a monster to attack it",
+    "",
+    "",
+    "   HOLD TURN:         Press ",
+    "SPACE",
+    "",
+    "",
+    "   THROW DAGGER:      Press ",
+    "4",
+    " then chose a direction (nav keys)",
+    "",
+    "",
+    "   DRINK HEALTH:      Press ",
+    "5",
+    " (if you need health and have potions)",
+    "",
+    "",
+    "   TOGGLE MUSIC:      CTRL + M",
+    "",
+    "",
+    "   TOGGLE SOUND:      CTRL + S",
+    "",
+    "",
+    "   TOGGLE FULLSCREEN: CTRL + F",
+    "",
+    "",
+    "   TOGGLE MAP:        ",
+    "TAB",
+    "",
+    "",
+    "   TOGGLE MENU:       ",
+    "ESC",
+    "",
+    "",
+    "   Your stats and inventory are listed in the right panel",
+    "",
+    "",
+    "",
+    "   GOOD LUCK!",
+    "",
+    "   May your death be quick and painless...",
+    "",
+    "",
+    "",
+    "",
+    "Press ",
+    "ESC",
+    " to close",
+    "",
+    NULL};
 
-static Tooltip	*new_skill_tooltip	= NULL;
-static Tooltip	*howto_tooltip		= NULL;
-static Tooltip	*new_artifact_tooltip	= NULL;
+static Tooltip *new_skill_tooltip = NULL;
+static Tooltip *howto_tooltip = NULL;
+static Tooltip *new_artifact_tooltip = NULL;
 
-static GamepadType	controller_type	= GAMEPAD_TYPE_NONE;
+static GamepadType controller_type = GAMEPAD_TYPE_NONE;
 
-void tooltip_manager_init(Camera *gCamera)
+void
+tooltip_manager_init(Camera *gCamera)
 {
 	howto_tooltip = tooltip_create(how_to_play_tooltip, gCamera);
 	new_skill_tooltip = tooltip_create(skills_tooltip, gCamera);
 	new_artifact_tooltip = tooltip_create(artifacts_tooltip, gCamera);
 }
 
-void tooltip_manager_set_controller_mode(GamepadType mode)
+void
+tooltip_manager_set_controller_mode(GamepadType mode)
 {
 	controller_type = mode;
 }
 
-Sprite* tooltip_manager_get_tooltip(TooltipType type)
+Sprite *
+tooltip_manager_get_tooltip(TooltipType type)
 {
 	switch (type) {
 		case TOOLTIP_TYPE_HOWTO:
@@ -130,7 +177,8 @@ Sprite* tooltip_manager_get_tooltip(TooltipType type)
 	return NULL;
 }
 
-void tooltip_manager_close(void)
+void
+tooltip_manager_close(void)
 {
 	tooltip_destroy(new_skill_tooltip);
 	tooltip_destroy(howto_tooltip);

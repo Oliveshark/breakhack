@@ -20,9 +20,7 @@
 
 #include "player.h"
 
-typedef enum EventType {
-	MONSTER_KILLED_EVENT
-} EventType;
+typedef enum EventType { MONSTER_KILLED_EVENT } EventType;
 
 typedef struct MonsterKilledEvent {
 	EventType *type;
@@ -35,13 +33,10 @@ typedef union Event {
 	MonsterKilledEvent monsterKilled;
 } Event;
 
-typedef void (*EventCallback)(Event*);
+typedef void (*EventCallback)(Event *);
 
-void
-event_register_listener(EventCallback cb);
+void event_register_listener(EventCallback cb);
 
-void
-event_clear_listeners(void);
+void event_clear_listeners(void);
 
-void
-event_trigger(Event *event);
+void event_trigger(Event *event);

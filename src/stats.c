@@ -64,7 +64,7 @@ get_defence_roll(Stats *defender)
 CombatResult
 stats_fight(Stats *attacker, Stats *defender)
 {
-	CombatResult result = { 0, false };
+	CombatResult result = {0, false};
 
 	int atkRoll = get_attack_roll(attacker);
 	int defRoll = get_defence_roll(defender);

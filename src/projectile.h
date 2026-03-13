@@ -38,22 +38,17 @@ typedef struct Projectile {
 	Uint32 collisionCount;
 	Uint32 bounceCount;
 	bool processedSpaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
-	void (*onRender)(struct Projectile*);
+	void (*onRender)(struct Projectile *);
 } Projectile;
 
-Projectile *
-projectile_dagger_create(void);
+Projectile *projectile_dagger_create(void);
 
-Projectile *
-projectile_create(void);
+Projectile *projectile_create(void);
 
-void
-projectile_update(Projectile*, UpdateData *);
+void projectile_update(Projectile *, UpdateData *);
 
-void
-projectile_render(Projectile*, Camera*);
+void projectile_render(Projectile *, Camera *);
 
-void
-projectile_destroy(Projectile*);
+void projectile_destroy(Projectile *);
 
 #endif // PROJECTILE_H_

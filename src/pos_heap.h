@@ -67,5 +67,4 @@ Position pheap_pop(PHeap *ph);
  */
 void pheap_destroy(PHeap *ph);
 
-#endif  // _POS_HEAP_H_
-
+#endif // _POS_HEAP_H_

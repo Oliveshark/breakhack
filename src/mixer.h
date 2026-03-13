@@ -17,7 +17,7 @@
  */
 
 #ifndef MIXER_H_
-#define	MIXER_H_
+#define MIXER_H_
 
 #include <stdbool.h>
 #include "gamestate.h"
@@ -82,25 +82,18 @@ typedef enum Fx_t {
 	LAST_EFFECT
 } Fx;
 
-void
-mixer_init(void);
+void mixer_init(void);
 
-bool
-mixer_toggle_sound(void);
+bool mixer_toggle_sound(void);
 
-bool
-mixer_toggle_music(const GameState*);
+bool mixer_toggle_music(const GameState *);
 
-void
-mixer_play_effect(Fx fx);
+void mixer_play_effect(Fx fx);
 
-void
-mixer_play_music(Music);
+void mixer_play_music(Music);
 
-void
-mixer_stop_music(void);
+void mixer_stop_music(void);
 
-void
-mixer_close(void);
+void mixer_close(void);
 
 #endif // MIXER_H_

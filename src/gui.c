@@ -36,10 +36,10 @@
 #include "texturecache.h"
 #include "gui_util.h"
 
-#define DEFAULT_EVENT_MESSAGES { NULL, 5, 0, LOG_LINES_MAX_LEN }
+#define DEFAULT_EVENT_MESSAGES {NULL, 5, 0, LOG_LINES_MAX_LEN}
 
-#define POS_Y_COLLECTABLES	 64
-#define POS_Y_XPBAR		128
+#define POS_Y_COLLECTABLES 64
+#define POS_Y_XPBAR 128
 
 static struct LogData_t {
 	char log[LOG_LINES_COUNT][LOG_LINES_MAX_LEN];
@@ -48,14 +48,12 @@ static struct LogData_t {
 	uint8_t tail;
 	uint8_t count;
 	uint8_t strlen;
-} log_data = {
-	{ "", "", "", "", "", "", "", "", "", "" },
-	LOG_LINES_COUNT,
-	0,
-	0,
-	0,
-	LOG_LINES_MAX_LEN
-};
+} log_data = {{"", "", "", "", "", "", "", "", "", ""},
+              LOG_LINES_COUNT,
+              0,
+              0,
+              0,
+              LOG_LINES_MAX_LEN};
 
 static struct GuiEventMsgs {
 	char **messages;
@@ -72,12 +70,12 @@ gui_malloc_eventmessages(void)
 
 	unsigned int i;
 
-	event_messages.messages = ec_malloc(event_messages.len * sizeof(char*));
+	event_messages.messages = ec_malloc(event_messages.len * sizeof(char *));
 	for (i = 0; i < event_messages.len; ++i)
 		event_messages.messages[i] = NULL;
 }
 
-static Sprite*
+static Sprite *
 create_xp_sprite(Texture *t, SDL_Rect clip, Position pos)
 {
 	Sprite *s = sprite_create();
@@ -88,7 +86,7 @@ create_xp_sprite(Texture *t, SDL_Rect clip, Position pos)
 	return s;
 }
 
-static Sprite*
+static Sprite *
 create_label_sprite(Position pos)
 {
 	Sprite *s = sprite_create();
@@ -98,23 +96,18 @@ create_label_sprite(Position pos)
 	return s;
 }
 
-static Sprite*
+static Sprite *
 create_minimap_blank_sprite(SDL_Renderer *renderer)
 {
 	Sprite *sprite = sprite_create();
 	Texture *texture = texture_create();
-	texture->dim = (Dimension) {
-		RIGHT_GUI_WIDTH,
-			MINIMAP_GUI_HEIGHT - 8
-	};
+	texture->dim = (Dimension){RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT - 8};
 	sprite->textures[0] = texture;
 	sprite->destroyTextures = true;
-	sprite->pos = (Position) { 0, 4 };
-	sprite->dim = (Dimension) { RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT - 8 };
+	sprite->pos = (Position){0, 4};
+	sprite->dim = (Dimension){RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT - 8};
 	sprite->fixed = true;
-	texture_create_blank(texture,
-			SDL_TEXTUREACCESS_TARGET,
-			renderer);
+	texture_create_blank(texture, SDL_TEXTUREACCESS_TARGET, renderer);
 	texture_set_blend_mode(texture, SDL_BLENDMODE_BLEND);
 	texture_set_scale_mode(texture, SDL_SCALEMODE_NEAREST);
 
@@ -134,33 +127,26 @@ init_sprites(Gui *gui, Camera *cam)
 	 */
 
 	// Left end
-	linkedlist_append(&gui->sprites, create_xp_sprite(
-		t,
-		(SDL_Rect) { 6 * 16, 0, 16, 16 },
-		POS(16, POS_Y_XPBAR)
-	));
+	linkedlist_append(&gui->sprites,
+	                  create_xp_sprite(t, (SDL_Rect){6 * 16, 0, 16, 16},
+	                                   POS(16, POS_Y_XPBAR)));
 
 	// Right end
-	linkedlist_append(&gui->sprites, create_xp_sprite(
-		t,
-		(SDL_Rect) { 8 * 16, 0, 16, 16 },
-		POS(16 + (16 * 7), POS_Y_XPBAR)
-	));
+	linkedlist_append(&gui->sprites,
+	                  create_xp_sprite(t, (SDL_Rect){8 * 16, 0, 16, 16},
+	                                   POS(16 + (16 * 7), POS_Y_XPBAR)));
 
 	for (i = 1; i < 7; ++i) {
-		linkedlist_append(&gui->sprites, create_xp_sprite(
-			t,
-			(SDL_Rect) { 7 * 16, 0, 16, 16 },
-			POS(16 + (i * 16), POS_Y_XPBAR)
-		));
+		linkedlist_append(&gui->sprites,
+		                  create_xp_sprite(t, (SDL_Rect){7 * 16, 0, 16, 16},
+		                                   POS(16 + (i * 16), POS_Y_XPBAR)));
 	}
 
 	for (i = 0; i < 8; ++i) {
-		linkedlist_append(&gui->xp_bar, create_xp_sprite(
-			t,
-			(SDL_Rect) { 6 * 16, 4 * 16, 16, 16 },
-			POS(16 + (i * 16), POS_Y_XPBAR)
-		));
+		linkedlist_append(&gui->xp_bar,
+		                  create_xp_sprite(t,
+		                                   (SDL_Rect){6 * 16, 4 * 16, 16, 16},
+		                                   POS(16 + (i * 16), POS_Y_XPBAR)));
 	}
 
 	Sprite *s;
@@ -193,7 +179,7 @@ init_sprites(Gui *gui, Camera *cam)
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
 	s->clip = CLIP16(0, 0);
-	s->pos = POS(58, POS_Y_XPBAR + 15 + (3*14));
+	s->pos = POS(58, POS_Y_XPBAR + 15 + (3 * 14));
 	gui->silverKey = s;
 
 	t = texturecache_add("Extras/Keys.png");
@@ -201,24 +187,23 @@ init_sprites(Gui *gui, Camera *cam)
 	s->fixed = true;
 	sprite_set_texture(s, t, 0);
 	s->clip = CLIP16(16, 0);
-	s->pos = POS(74, POS_Y_XPBAR + 15 + (3*14));
+	s->pos = POS(74, POS_Y_XPBAR + 15 + (3 * 14));
 	gui->goldKey = s;
 
-	gui->statsFrame = gui_util_create_frame_sprite(RIGHT_GUI_WIDTH/16,
-						       STATS_GUI_HEIGHT/16,
-						       cam);
-	gui->bottomFrame = gui_util_create_frame_sprite(BOTTOM_GUI_WIDTH/16,
-							BOTTOM_GUI_HEIGHT/16,
-							cam);
+	gui->statsFrame = gui_util_create_frame_sprite(RIGHT_GUI_WIDTH / 16,
+	                                               STATS_GUI_HEIGHT / 16, cam);
+	gui->bottomFrame = gui_util_create_frame_sprite(
+	    BOTTOM_GUI_WIDTH / 16, BOTTOM_GUI_HEIGHT / 16, cam);
 
 	gui->miniMap = create_minimap_blank_sprite(cam->renderer);
 	gui->miniMapOverlay = create_minimap_blank_sprite(cam->renderer);
 
-	texture_load_from_text(gui->labels[KEY_LABEL]->textures[0], "Keys:", C_WHITE, C_BLACK, cam->renderer);
+	texture_load_from_text(gui->labels[KEY_LABEL]->textures[0],
+	                       "Keys:", C_WHITE, C_BLACK, cam->renderer);
 	gui->labels[KEY_LABEL]->dim = gui->labels[KEY_LABEL]->textures[0]->dim;
 }
 
-Gui*
+Gui *
 gui_create(Camera *cam)
 {
 	Texture *t;
@@ -237,36 +222,24 @@ gui_create(Camera *cam)
 	}
 
 	gui->event_message = texture_create();
-	texture_load_font(gui->event_message, "GUI/SDS_8x8.ttf", EVENT_MESSAGE_FONT_SIZE, 2);
+	texture_load_font(gui->event_message, "GUI/SDS_8x8.ttf",
+	                  EVENT_MESSAGE_FONT_SIZE, 2);
 	gui->event_message_timer = _timer_create();
 
-	gui->labels[CURRENT_XP_LABEL] = create_label_sprite(POS(16, POS_Y_XPBAR + 18));
-	gui->labels[LEVEL_LABEL] = create_label_sprite(POS(16, POS_Y_XPBAR + 18 + 14));
+	gui->labels[CURRENT_XP_LABEL] =
+	    create_label_sprite(POS(16, POS_Y_XPBAR + 18));
+	gui->labels[LEVEL_LABEL] =
+	    create_label_sprite(POS(16, POS_Y_XPBAR + 18 + 14));
 	gui->labels[DUNGEON_LEVEL_LABEL] =
-		create_label_sprite(POS(
-				    16,
-				    POS_Y_XPBAR + 18 + (2*14)
-				    ));
+	    create_label_sprite(POS(16, POS_Y_XPBAR + 18 + (2 * 14)));
 	gui->labels[KEY_LABEL] =
-		create_label_sprite(POS(
-				    16,
-				    POS_Y_XPBAR + 18 + (3*14)
-				    ));
+	    create_label_sprite(POS(16, POS_Y_XPBAR + 18 + (3 * 14)));
 	gui->labels[HEALTH_POTION_LABEL] =
-		create_label_sprite(POS(
-				    32,
-				    POS_Y_COLLECTABLES + 5
-				    ));
+	    create_label_sprite(POS(32, POS_Y_COLLECTABLES + 5));
 	gui->labels[GOLD_LABEL] =
-		create_label_sprite(POS(
-				    32,
-				    POS_Y_COLLECTABLES + 16 + 5
-				    ));
+	    create_label_sprite(POS(32, POS_Y_COLLECTABLES + 16 + 5));
 	gui->labels[DAGGER_LABEL] =
-		create_label_sprite(POS(
-				    32,
-				    POS_Y_COLLECTABLES + 32 + 5
-				    ));
+	    create_label_sprite(POS(32, POS_Y_COLLECTABLES + 32 + 5));
 
 	gui_malloc_eventmessages();
 
@@ -283,7 +256,7 @@ set_max_health(Gui *gui, int max)
 
 	assert(max % 3 == 0);
 
-	if (((unsigned int) max / 3) == (unsigned int) linkedlist_size(gui->health))
+	if (((unsigned int)max / 3) == (unsigned int)linkedlist_size(gui->health))
 		return;
 
 	// Clear sprite list
@@ -293,12 +266,12 @@ set_max_health(Gui *gui, int max)
 	texture0 = texturecache_add("GUI/GUI0.png");
 	texture1 = texturecache_add("GUI/GUI1.png");
 
-	for (i = 0; i < max/3; ++i) {
+	for (i = 0; i < max / 3; ++i) {
 		Sprite *sprite = sprite_create();
 		sprite->fixed = true;
 		sprite->animate = false;
-		sprite->clip = (SDL_Rect) { 0, 16, 16, 16 };
-		sprite->pos = POS(16 + (i%8)*16, 16 + ((i-(i%8))/8)*16);
+		sprite->clip = (SDL_Rect){0, 16, 16, 16};
+		sprite->pos = POS(16 + (i % 8) * 16, 16 + ((i - (i % 8)) / 8) * 16);
 		sprite_set_texture(sprite, texture0, 0);
 		sprite_set_texture(sprite, texture1, 1);
 		linkedlist_append(&gui->health, sprite);
@@ -312,12 +285,12 @@ set_current_health(Gui *gui, int current)
 		current = 0;
 
 	int partial = current % 3;
-	int full = (current - partial)/3;
+	int full = (current - partial) / 3;
 	int count = 0;
 
 	LinkedList *item = gui->health;
 	while (item != NULL) {
-		Sprite *sprite = (Sprite*) item->data;
+		Sprite *sprite = (Sprite *)item->data;
 		if (count < full) {
 			sprite->clip.x = 0;
 		} else if (count == full) {
@@ -337,13 +310,14 @@ static void
 update_xp_bar(Gui *gui, ExperienceData *data)
 {
 	unsigned int xp_from_levelup = data->current - data->previousLevel;
-	unsigned int xp_required_from_last_level = data->nextLevel - data->previousLevel;
+	unsigned int xp_required_from_last_level =
+	    data->nextLevel - data->previousLevel;
 	float xp_step = ((float)xp_required_from_last_level) / 32; // 4 * 8
-	float xp_current_step = (float) xp_from_levelup / xp_step;
+	float xp_current_step = (float)xp_from_levelup / xp_step;
 
-	unsigned int partial_xp_block = ((unsigned int) xp_current_step) % 4;
+	unsigned int partial_xp_block = ((unsigned int)xp_current_step) % 4;
 	unsigned int full_xp_blocks =
-		(unsigned int) ((xp_current_step - (float) partial_xp_block) / 4);
+	    (unsigned int)((xp_current_step - (float)partial_xp_block) / 4);
 
 	LinkedList *xp_bars = gui->xp_bar;
 	unsigned int i = 0;
@@ -354,11 +328,9 @@ update_xp_bar(Gui *gui, ExperienceData *data)
 
 		if (i < full_xp_blocks) {
 			s->clip.x = 6 * 16;
-		}
-		else if (i == full_xp_blocks && partial_xp_block != 0) {
+		} else if (i == full_xp_blocks && partial_xp_block != 0) {
 			s->clip.x = (6 * 16) + (16 * (4 - partial_xp_block));
-		}
-		else {
+		} else {
 			s->hidden = true;
 		}
 
@@ -367,7 +339,8 @@ update_xp_bar(Gui *gui, ExperienceData *data)
 }
 
 void
-gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *renderer)
+gui_update_player_stats(Gui *gui, Player *player, Map *map,
+                        SDL_Renderer *renderer)
 {
 	// TODO(Linus): Perhaps split this up a bit?
 	// some static functions maybe?
@@ -394,49 +367,61 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 		set_current_health(gui, current_health);
 	}
 
-	if (last_xp != (int) data.current) {
+	if (last_xp != (int)data.current) {
 		update_xp_bar(gui, &data);
 	}
 
-	if (dungeon_level != (unsigned int) map->level) {
+	if (dungeon_level != (unsigned int)map->level) {
 		m_sprintf(buffer, 200, "Dungeon level: %d", map->level);
-		texture_load_from_text(gui->labels[DUNGEON_LEVEL_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
-		gui->labels[DUNGEON_LEVEL_LABEL]->dim = gui->labels[DUNGEON_LEVEL_LABEL]->textures[0]->dim;
-		dungeon_level = (unsigned int) map->level;
+		texture_load_from_text(gui->labels[DUNGEON_LEVEL_LABEL]->textures[0],
+		                       buffer, C_WHITE, C_BLACK, renderer);
+		gui->labels[DUNGEON_LEVEL_LABEL]->dim =
+		    gui->labels[DUNGEON_LEVEL_LABEL]->textures[0]->dim;
+		dungeon_level = (unsigned int)map->level;
 	}
 
-	if (current_potion_sips != (int) player->potion_sips) {
-		m_sprintf(buffer, 200, "x %u", (unsigned int) player->potion_sips);
-		texture_load_from_text(gui->labels[HEALTH_POTION_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
-		gui->labels[HEALTH_POTION_LABEL]->dim = gui->labels[HEALTH_POTION_LABEL]->textures[0]->dim;
+	if (current_potion_sips != (int)player->potion_sips) {
+		m_sprintf(buffer, 200, "x %u", (unsigned int)player->potion_sips);
+		texture_load_from_text(gui->labels[HEALTH_POTION_LABEL]->textures[0],
+		                       buffer, C_WHITE, C_BLACK, renderer);
+		gui->labels[HEALTH_POTION_LABEL]->dim =
+		    gui->labels[HEALTH_POTION_LABEL]->textures[0]->dim;
 		current_potion_sips = player->potion_sips;
 	}
 
-	if (current_dagger_count != (int) player->daggers) {
-		m_sprintf(buffer, 200, "x %u", (unsigned int) player->daggers);
-		texture_load_from_text(gui->labels[DAGGER_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
-		gui->labels[DAGGER_LABEL]->dim = gui->labels[DAGGER_LABEL]->textures[0]->dim;
-		current_dagger_count = (int) player->daggers;
+	if (current_dagger_count != (int)player->daggers) {
+		m_sprintf(buffer, 200, "x %u", (unsigned int)player->daggers);
+		texture_load_from_text(gui->labels[DAGGER_LABEL]->textures[0], buffer,
+		                       C_WHITE, C_BLACK, renderer);
+		gui->labels[DAGGER_LABEL]->dim =
+		    gui->labels[DAGGER_LABEL]->textures[0]->dim;
+		current_dagger_count = (int)player->daggers;
 	}
 
 	if (last_gold != player->gold) {
 		m_sprintf(buffer, 200, "x %.2f", player->gold);
-		texture_load_from_text(gui->labels[GOLD_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
-		gui->labels[GOLD_LABEL]->dim = gui->labels[GOLD_LABEL]->textures[0]->dim;
+		texture_load_from_text(gui->labels[GOLD_LABEL]->textures[0], buffer,
+		                       C_WHITE, C_BLACK, renderer);
+		gui->labels[GOLD_LABEL]->dim =
+		    gui->labels[GOLD_LABEL]->textures[0]->dim;
 		last_gold = player->gold;
 	}
 
-	if (last_xp != (int) data.current) {
+	if (last_xp != (int)data.current) {
 		m_sprintf(buffer, 200, "XP: %u / %u", data.current, data.nextLevel);
-		texture_load_from_text(gui->labels[CURRENT_XP_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
-		gui->labels[CURRENT_XP_LABEL]->dim = gui->labels[CURRENT_XP_LABEL]->textures[0]->dim;
+		texture_load_from_text(gui->labels[CURRENT_XP_LABEL]->textures[0],
+		                       buffer, C_WHITE, C_BLACK, renderer);
+		gui->labels[CURRENT_XP_LABEL]->dim =
+		    gui->labels[CURRENT_XP_LABEL]->textures[0]->dim;
 		last_xp = data.current;
 	}
 
 	if (last_level != data.level) {
 		m_sprintf(buffer, 200, "Level: %u", data.level);
-		texture_load_from_text(gui->labels[LEVEL_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
-		gui->labels[LEVEL_LABEL]->dim = gui->labels[LEVEL_LABEL]->textures[0]->dim;
+		texture_load_from_text(gui->labels[LEVEL_LABEL]->textures[0], buffer,
+		                       C_WHITE, C_BLACK, renderer);
+		gui->labels[LEVEL_LABEL]->dim =
+		    gui->labels[LEVEL_LABEL]->textures[0]->dim;
 		last_level = data.level;
 	}
 
@@ -481,41 +466,50 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 
 	for (size_t i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (size_t j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			const RoomSpace* space = &rm->spaces[i][j];
+			const RoomSpace *space = &rm->spaces[i][j];
 			const float x = (float)(i + rm->roomPos.x * MAP_ROOM_WIDTH);
 			const float y = (float)(j + rm->roomPos.y * MAP_ROOM_HEIGHT);
 
-			SDL_Color c = {0, 0, 0, SDL_ALPHA_OPAQUE };
+			SDL_Color c = {0, 0, 0, SDL_ALPHA_OPAQUE};
 			if (SPACE_IS_LETHAL(space)) {
 				c.a = SDL_ALPHA_TRANSPARENT;
 			} else if (space->trap) {
 				c.r = 255;
 			} else if (space->door) {
-				c.r = 0; c.g = 0; c.b = 255;
+				c.r = 0;
+				c.g = 0;
+				c.b = 255;
 			} else if (space->tile && space->tile->levelExit) {
-				c.r = 0; c.g = 255; c.b = 0;
+				c.r = 0;
+				c.g = 255;
+				c.b = 0;
 			} else if (space->wall || SPACE_IS_OCCUPIED(space)) {
-				c.r = 200; c.g = 200; c.b = 200;
+				c.r = 200;
+				c.g = 200;
+				c.b = 200;
 			} else if (space->tile == NULL) {
 				c.a = SDL_ALPHA_TRANSPARENT;
 			} else if (SPACE_IS_WALKABLE(space)) {
-				c.r = 94; c.g = 77; c.b = 179;
+				c.r = 94;
+				c.g = 77;
+				c.b = 179;
 			} else {
-				c.r = 200; c.g = 200; c.b = 200;
+				c.r = 200;
+				c.g = 200;
+				c.b = 200;
 			}
 
 			SDL_SetRenderDrawColor(cam->renderer, c.r, c.g, c.b, c.a);
 			SDL_RenderPoint(cam->renderer, x, y);
-
 		}
 	}
 
 	if (rm->modifier && rm->modifier->type != RMOD_TYPE_NONE) {
 		const SDL_FRect mod_box = {
-			(float) rm->roomPos.x * MAP_ROOM_WIDTH,
-			(float) rm->roomPos.y * MAP_ROOM_HEIGHT,
-			(float) MAP_ROOM_WIDTH,
-			(float) MAP_ROOM_HEIGHT,
+		    (float)rm->roomPos.x * MAP_ROOM_WIDTH,
+		    (float)rm->roomPos.y * MAP_ROOM_HEIGHT,
+		    (float)MAP_ROOM_WIDTH,
+		    (float)MAP_ROOM_HEIGHT,
 		};
 		switch (rm->modifier->type) {
 			case RMOD_TYPE_WINDY:
@@ -529,7 +523,6 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 				break;
 			default:
 				assert(false);
-
 		}
 		SDL_RenderFillRect(cam->renderer, &mod_box);
 	}
@@ -540,16 +533,15 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm)
 void
 gui_update_minimap_pos(Gui *gui, Camera *cam, RoomMatrix *rm)
 {
-	SDL_SetRenderTarget(cam->renderer, gui->miniMapOverlay->textures[0]->texture);
+	SDL_SetRenderTarget(cam->renderer,
+	                    gui->miniMapOverlay->textures[0]->texture);
 	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
 	SDL_RenderClear(cam->renderer);
 
 	// Render current room square
-	const SDL_FRect r = {
-		(float) rm->roomPos.x * MAP_ROOM_WIDTH,
-		(float) rm->roomPos.y * MAP_ROOM_HEIGHT,
-		MAP_ROOM_WIDTH,
-		MAP_ROOM_HEIGHT };
+	const SDL_FRect r = {(float)rm->roomPos.x * MAP_ROOM_WIDTH,
+	                     (float)rm->roomPos.y * MAP_ROOM_HEIGHT, MAP_ROOM_WIDTH,
+	                     MAP_ROOM_HEIGHT};
 	SDL_SetRenderDrawColor(cam->renderer, 235, 235, 52, 200);
 	SDL_RenderRect(cam->renderer, &r);
 
@@ -566,18 +558,19 @@ gui_render_minimap(Gui *gui, Camera *cam)
 void
 gui_render_minimap_overlay(Gui *gui, Camera *cam)
 {
-	static SDL_Rect target_box = {
-		50, 50, GAME_VIEW_WIDTH - 100, GAME_VIEW_HEIGHT - 100
-	};
+	static SDL_Rect target_box = {50, 50, GAME_VIEW_WIDTH - 100,
+	                              GAME_VIEW_HEIGHT - 100};
 
 	// Render map
 	Texture *texture = gui->miniMap->textures[0];
 	texture_set_alpha(texture, 200);
-	texture_render_clip_ex(texture, &target_box, NULL, 0.0, NULL, SDL_FLIP_NONE, cam);
+	texture_render_clip_ex(texture, &target_box, NULL, 0.0, NULL, SDL_FLIP_NONE,
+	                       cam);
 	texture_set_alpha(texture, SDL_ALPHA_OPAQUE);
 
 	// Render map overlay
-	texture_render_clip_ex(gui->miniMapOverlay->textures[0], &target_box, NULL, 0.0, NULL, SDL_FLIP_NONE, cam);
+	texture_render_clip_ex(gui->miniMapOverlay->textures[0], &target_box, NULL,
+	                       0.0, NULL, SDL_FLIP_NONE, cam);
 }
 
 void
@@ -659,18 +652,20 @@ gui_render_log(Gui *gui, Camera *cam)
 	const uint8_t visible = log_data.count;
 	if (log_data.head != last_head) {
 		for (uint8_t i = 0; i < visible; ++i) {
-			const uint8_t log_index = (uint8_t)((log_data.tail + i) % log_data.capacity);
+			const uint8_t log_index =
+			    (uint8_t)((log_data.tail + i) % log_data.capacity);
 			Texture *t = gui->log_lines[i];
-			texture_load_from_text(t, log_data.log[log_index], C_WHITE, C_BLACK, cam->renderer);
+			texture_load_from_text(t, log_data.log[log_index], C_WHITE, C_BLACK,
+			                       cam->renderer);
 		}
 	}
 	last_head = log_data.head;
 
 	// Render log textures
-	SDL_Rect box = { 16, 0, 16, 16 };
+	SDL_Rect box = {16, 0, 16, 16};
 	for (uint8_t i = 0; i < visible; ++i) {
 		Texture *t;
-		box.y = 16 + ((LOG_FONT_SIZE+5) * i);
+		box.y = 16 + ((LOG_FONT_SIZE + 5) * i);
 		t = gui->log_lines[i];
 		box.w = t->dim.width;
 		box.h = t->dim.height;
@@ -681,30 +676,27 @@ gui_render_log(Gui *gui, Camera *cam)
 void
 gui_render_event_message(Gui *gui, Camera *cam)
 {
-	static SDL_Rect box = { 0, 0, 150, 50 };
+	static SDL_Rect box = {0, 0, 150, 50};
 
 	if (timer_started(gui->event_message_timer)
-	    && timer_get_ticks(gui->event_message_timer) < EVENT_MESSAGE_DISPLAY_TIME)
-	{
+	    && timer_get_ticks(gui->event_message_timer)
+	           < EVENT_MESSAGE_DISPLAY_TIME) {
 		texture_render(gui->event_message, &box, cam);
 		return;
 	}
 
 	if (event_messages.count > 0) {
-		texture_load_from_text(gui->event_message,
-				       event_messages.messages[0],
-				       C_WHITE,
-				       C_BLACK,
-				       cam->renderer);
+		texture_load_from_text(gui->event_message, event_messages.messages[0],
+		                       C_WHITE, C_BLACK, cam->renderer);
 
-		box.x = (GAME_VIEW_WIDTH/2) - (gui->event_message->dim.width/2);
-		box.y = (GAME_VIEW_HEIGHT/2) - (gui->event_message->dim.height/2);
+		box.x = (GAME_VIEW_WIDTH / 2) - (gui->event_message->dim.width / 2);
+		box.y = (GAME_VIEW_HEIGHT / 2) - (gui->event_message->dim.height / 2);
 		box.w = gui->event_message->dim.width;
 		box.h = gui->event_message->dim.height;
 
 		free(event_messages.messages[0]);
 		for (size_t i = 1; i < event_messages.count; ++i) {
-			event_messages.messages[i-1] = event_messages.messages[i];
+			event_messages.messages[i - 1] = event_messages.messages[i];
 		}
 		event_messages.count--;
 

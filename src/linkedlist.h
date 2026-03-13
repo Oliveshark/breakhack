@@ -17,7 +17,7 @@
  */
 
 #ifndef LINKEDLIST_H_
-#define	LINKEDLIST_H_
+#define LINKEDLIST_H_
 
 struct Node {
 	struct Node *next;
@@ -25,19 +25,19 @@ struct Node {
 };
 typedef struct Node LinkedList;
 
-LinkedList* linkedlist_create(void);
+LinkedList *linkedlist_create(void);
 
 void linkedlist_push(LinkedList **head, void *value);
 
-void* linkedlist_pop(LinkedList **head);
+void *linkedlist_pop(LinkedList **head);
 
 void linkedlist_append(LinkedList **head, void *value);
 
-void* linkedlist_poplast(LinkedList **head);
+void *linkedlist_poplast(LinkedList **head);
 
-void* linkedlist_get(LinkedList **head, unsigned int index);
+void *linkedlist_get(LinkedList **head, unsigned int index);
 
-void linkedlist_each(LinkedList **head, void (*fun)(void*));
+void linkedlist_each(LinkedList **head, void (*fun)(void *));
 
 void linkedlist_destroy(LinkedList **head);
 

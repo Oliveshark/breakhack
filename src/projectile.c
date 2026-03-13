@@ -49,12 +49,11 @@ projectile_dagger_create(void)
 	p->sprite->onRender = onDaggerRender;
 	p->sprite->animate = false;
 	p->sprite->clip = CLIP16(0, 0);
-	p->sprite->dim = (Dimension) { 32, 32 };
-	p->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+	p->sprite->dim = (Dimension){32, 32};
+	p->sprite->rotationPoint = (SDL_Point){16, 16};
 	p->collisionCount = 0;
 	p->bounceCount = 0;
-	memset(&p->processedSpaces,
-	       false,
+	memset(&p->processedSpaces, false,
 	       sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
 	return p;
 }
@@ -76,8 +75,10 @@ static Position
 get_collision_pos_for(Projectile *p)
 {
 	Position collisionPos = p->sprite->pos;
-	if (p->velocity.x > 0) collisionPos.x += TILE_DIMENSION;
-	if(p->velocity.y > 0) collisionPos.y += TILE_DIMENSION;
+	if (p->velocity.x > 0)
+		collisionPos.x += TILE_DIMENSION;
+	if (p->velocity.y > 0)
+		collisionPos.y += TILE_DIMENSION;
 	return collisionPos;
 }
 
@@ -85,16 +86,17 @@ static Position
 get_projectile_pos_for(Projectile *p)
 {
 	Position projectilePos = p->sprite->pos;
-	if (p->velocity.x < 0) projectilePos.x += TILE_DIMENSION;
-	if (p->velocity.y < 0) projectilePos.y += TILE_DIMENSION;
+	if (p->velocity.x < 0)
+		projectilePos.x += TILE_DIMENSION;
+	if (p->velocity.y < 0)
+		projectilePos.y += TILE_DIMENSION;
 	return projectilePos;
 }
 
 static void
 clear_processed_spaces(Projectile *p)
 {
-	memset(&p->processedSpaces,
-	       false,
+	memset(&p->processedSpaces, false,
 	       sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
 }
 
@@ -105,13 +107,9 @@ perform_dagger_explosion(Player *player, RoomMatrix *rm, Position *collisionPos)
 		mixer_play_effect(EXPLOSION_EFFECT);
 		particle_engine_fire_explosion(*collisionPos, DIM(32, 32));
 		animation_controller_create(EXPLOSION_ANIMATION, *collisionPos);
-		effect_damage_surroundings(collisionPos,
-					   rm,
-					   player,
-					   &player->stats,
-					   player_has_artifact(player, VOLATILE_DAGGERS),
-					   0,
-					   false);
+		effect_damage_surroundings(
+		    collisionPos, rm, player, &player->stats,
+		    player_has_artifact(player, VOLATILE_DAGGERS), 0, false);
 	}
 }
 
@@ -120,8 +118,8 @@ projectile_update(Projectile *p, UpdateData *data)
 {
 	bool alive = false;
 
-	p->sprite->pos.x += (int) (p->velocity.x * data->deltatime);
-	p->sprite->pos.y += (int) (p->velocity.y * data->deltatime);
+	p->sprite->pos.x += (int)(p->velocity.x * data->deltatime);
+	p->sprite->pos.y += (int)(p->velocity.y * data->deltatime);
 
 	if (timer_get_ticks(p->lifetime) > 2000)
 		p->alive = false;
@@ -150,7 +148,8 @@ projectile_update(Projectile *p, UpdateData *data)
 		tmpStats.dmg *= 2;
 		CombatResult result = stats_fight(&tmpStats, &space->monster->stats);
 		if (result.dmg > 0) {
-			gui_log("Your dagger pierced %s for %u damage", space->monster->lclabel, result.dmg);
+			gui_log("Your dagger pierced %s for %u damage",
+			        space->monster->lclabel, result.dmg);
 			data->player->stat_data.hits += 1;
 			perform_dagger_explosion(data->player, data->matrix, &collisionPos);
 		} else {
@@ -158,17 +157,21 @@ projectile_update(Projectile *p, UpdateData *data)
 		}
 		monster_hit(space->monster, result.dmg, result.critical);
 		player_monster_kill_check(data->player, space->monster);
-		alive = player_has_artifact(data->player, PIERCING_DAGGERS) > p->collisionCount;
+		alive = player_has_artifact(data->player, PIERCING_DAGGERS)
+		        > p->collisionCount;
 		projectilePos = space->monster->sprite->pos;
 	} else {
 		p->bounceCount += 1;
 		vector2d_reverse(&p->velocity);
 		clear_processed_spaces(p);
-		alive = p->bounceCount <= player_has_artifact(data->player, DAGGER_BOUNCE);
+		alive =
+		    p->bounceCount <= player_has_artifact(data->player, DAGGER_BOUNCE);
 	}
 
 	mixer_play_effect(SWORD_HIT);
-	if (!alive && get_random(5) <= player_has_artifact(data->player, DAGGER_RECOVERY)) {
+	if (!alive
+	    && get_random(5)
+	           <= player_has_artifact(data->player, DAGGER_RECOVERY)) {
 		Item *item = item_builder_build_item(DAGGER, 1);
 		item->sprite->pos = position_to_tile_pos(&projectilePos);
 		linkedlist_append(&data->map->items, item);

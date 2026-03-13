@@ -17,7 +17,7 @@
  */
 
 #ifndef SPRITE_H_
-#define	SPRITE_H_
+#define SPRITE_H_
 
 #include <stdbool.h>
 
@@ -46,7 +46,7 @@ typedef struct Destination {
 
 typedef struct Sprite {
 	SpriteState state;
-	Texture* textures[2];
+	Texture *textures[2];
 	SDL_Rect clip;
 	bool destroyTextures;
 	Position pos;
@@ -62,39 +62,30 @@ typedef struct Sprite {
 	bool fixed;
 	bool animate;
 	bool hidden;
-	void (*onRender)(Sprite*);
+	void (*onRender)(Sprite *);
 } Sprite;
 
-Sprite*
-sprite_create(void);
+Sprite *sprite_create(void);
 
-void
-sprite_load_texture(Sprite *, const char *path, int index, SDL_Renderer *);
+void sprite_load_texture(Sprite *, const char *path, int index, SDL_Renderer *);
 
-void
-sprite_load_text_texture(Sprite *, const char *path, int index, int size, int outline);
+void sprite_load_text_texture(Sprite *, const char *path, int index, int size,
+                              int outline);
 
-void
-sprite_set_texture(Sprite *, Texture *, int index);
+void sprite_set_texture(Sprite *, Texture *, int index);
 
-void
-sprite_update(Sprite*, UpdateData *data);
+void sprite_update(Sprite *, UpdateData *data);
 
-void
-sprite_interpolate_to(Sprite *s, Destination *dest);
+void sprite_interpolate_to(Sprite *s, Destination *dest);
 
-void
-sprite_render(Sprite*, Camera*);
+void sprite_render(Sprite *, Camera *);
 
-void
-sprite_set_blend_mode(Sprite*, SDL_BlendMode);
+void sprite_set_blend_mode(Sprite *, SDL_BlendMode);
 
-void
-sprite_set_alpha(Sprite*, Uint8);
+void sprite_set_alpha(Sprite *, Uint8);
 
-void sprite_set_color_mod(Sprite*, Uint8, Uint8, Uint8);
+void sprite_set_color_mod(Sprite *, Uint8, Uint8, Uint8);
 
-void
-sprite_destroy(Sprite *);
+void sprite_destroy(Sprite *);
 
 #endif // SPRITE_H_

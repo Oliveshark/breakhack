@@ -24,7 +24,7 @@
 #include "defines.h"
 #include "util.h"
 
-Hashtable*
+Hashtable *
 ht_create(unsigned int size)
 {
 	Hashtable *table;
@@ -35,7 +35,7 @@ ht_create(unsigned int size)
 
 	table = ec_malloc(sizeof(Hashtable));
 	table->size = size;
-	table->entries = ec_malloc((unsigned int) sizeof(Entry) * size);
+	table->entries = ec_malloc((unsigned int)sizeof(Entry) * size);
 
 	for (i = 0; i < size; ++i) {
 		table->entries[i] = NULL;
@@ -51,13 +51,13 @@ hash(Hashtable *table, const char *key)
 	unsigned int hash = 5381;
 
 	while (*key) {
-		hash = 33 * hash ^ (unsigned char) *key++;
+		hash = 33 * hash ^ (unsigned char)*key++;
 	}
 
 	return hash % table->size;
 }
 
-static Entry*
+static Entry *
 entry_create(const char *key, void *value)
 {
 	Entry *entry;
@@ -78,15 +78,12 @@ ht_set(Hashtable *table, const char *key, void *val)
 	Entry *next;
 	Entry *last = NULL;
 
-	hashkey =  hash(table, key);
+	hashkey = hash(table, key);
 
 	next = table->entries[hashkey];
 
 	/* Find a position */
-	while (next != NULL
-	       && next->key != NULL
-	       && strcmp(key, next->key) > 0)
-	{
+	while (next != NULL && next->key != NULL && strcmp(key, next->key) > 0) {
 		last = next;
 		next = next->next;
 	}
@@ -105,7 +102,7 @@ ht_set(Hashtable *table, const char *key, void *val)
 		if (next == table->entries[hashkey]) {
 			table->entries[hashkey] = newEntry;
 			newEntry->next = next;
-		} else if(next == NULL) {
+		} else if (next == NULL) {
 			last->next = newEntry;
 		} else {
 			newEntry->next = next;
@@ -114,7 +111,7 @@ ht_set(Hashtable *table, const char *key, void *val)
 	}
 }
 
-void*
+void *
 ht_get(Hashtable *table, const char *key)
 {
 	unsigned int hashkey = 0;
@@ -134,7 +131,7 @@ ht_get(Hashtable *table, const char *key)
 	return entry->value;
 }
 
-void*
+void *
 ht_remove(Hashtable *table, const char *key)
 {
 	unsigned int hashkey = 0;
@@ -174,7 +171,7 @@ ht_destroy(Hashtable *table)
 }
 
 void
-ht_foreach(Hashtable *table, void (*func)(void*))
+ht_foreach(Hashtable *table, void (*func)(void *))
 {
 	Entry *entry;
 	unsigned int i;

@@ -104,62 +104,42 @@ typedef struct Player {
 	LinkedList *skillAnimations;
 } Player;
 
-Player*
-player_create(class_t, Camera*);
+Player *player_create(class_t, Camera *);
 
-void
-player_reset_on_levelchange(Player *player);
+void player_reset_on_levelchange(Player *player);
 
-ExperienceData
-player_get_xp_data(Player*);
+ExperienceData player_get_xp_data(Player *);
 
-void
-player_monster_kill_check(Player*, Monster*);
+void player_monster_kill_check(Player *, Monster *);
 
-void
-player_sip_health(Player*);
+void player_sip_health(Player *);
 
-void
-player_hit(Player*, unsigned int dmg);
+void player_hit(Player *, unsigned int dmg);
 
-void
-player_reset_steps(Player*);
+void player_reset_steps(Player *);
 
-void
-player_update(struct UpdateData *);
+void player_update(struct UpdateData *);
 
-void
-player_render(Player*, Camera*);
+void player_render(Player *, Camera *);
 
-void
-player_render_toplayer(Player*, Camera*);
+void player_render_toplayer(Player *, Camera *);
 
-void
-player_turn(Player*, Vector2d *dir);
+void player_turn(Player *, Vector2d *dir);
 
-void
-player_update_pos(Player*, Uint32 dx, Uint32 dy);
+void player_update_pos(Player *, Uint32 dx, Uint32 dy);
 
-void
-player_destroy(Player*);
+void player_destroy(Player *);
 
-bool
-player_turn_over(Player*);
+bool player_turn_over(Player *);
 
-void
-player_levelup(Player*);
+void player_levelup(Player *);
 
-void
-player_set_level(Player*, Uint8 level);
+void player_set_level(Player *, Uint8 level);
 
-Uint32
-player_has_artifact(Player *, MagicalEffect);
+Uint32 player_has_artifact(Player *, MagicalEffect);
 
-void
-player_add_artifact(Player*, Artifact*);
+void player_add_artifact(Player *, Artifact *);
 
-bool
-player_has_potion_effect(Player*, PotionEffect);
+bool player_has_potion_effect(Player *, PotionEffect);
 
-void
-player_set_falling(Player*);
+void player_set_falling(Player *);

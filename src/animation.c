@@ -25,8 +25,8 @@
 Animation *
 animation_create(unsigned int clipCount)
 {
-	Animation *animation = ec_malloc(sizeof(Animation)
-					 + clipCount * sizeof(AnimationClip));
+	Animation *animation =
+	    ec_malloc(sizeof(Animation) + clipCount * sizeof(AnimationClip));
 	animation->clipTimer = _timer_create();
 	animation->clipCount = clipCount;
 	animation->currentClip = 0;
@@ -37,7 +37,8 @@ animation_create(unsigned int clipCount)
 }
 
 void
-animation_load_texture(Animation *animation, const char *path, SDL_Renderer *renderer)
+animation_load_texture(Animation *animation, const char *path,
+                       SDL_Renderer *renderer)
 {
 	sprite_load_texture(animation->sprite, path, 0, renderer);
 }
@@ -54,8 +55,7 @@ animation_update(Animation *animation)
 	}
 
 	if (timer_get_ticks(animation->clipTimer)
-	    >= animation->clips[animation->currentClip].renderTime)
-	{
+	    >= animation->clips[animation->currentClip].renderTime) {
 		animation->currentClip++;
 		if (animation->currentClip >= animation->clipCount) {
 			animation->currentClip = 0;
@@ -67,12 +67,11 @@ animation_update(Animation *animation)
 		}
 	}
 
-	animation->sprite->clip = (SDL_Rect) {
-		animation->clips[animation->currentClip].x,
-		animation->clips[animation->currentClip].y,
-		animation->clips[animation->currentClip].w,
-		animation->clips[animation->currentClip].h
-	};
+	animation->sprite->clip =
+	    (SDL_Rect){animation->clips[animation->currentClip].x,
+	               animation->clips[animation->currentClip].y,
+	               animation->clips[animation->currentClip].w,
+	               animation->clips[animation->currentClip].h};
 }
 
 void
@@ -114,4 +113,3 @@ animation_destroy(Animation *animation)
 	sprite_destroy(animation->sprite);
 	free(animation);
 }
-

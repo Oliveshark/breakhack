@@ -21,8 +21,8 @@
 #include "linkedlist.h"
 #include "util.h"
 
-static
-LinkedList* linkedlist_node_create(void)
+static LinkedList *
+linkedlist_node_create(void)
 {
 	LinkedList *newList = ec_malloc(sizeof(LinkedList));
 	newList->next = NULL;
@@ -30,12 +30,14 @@ LinkedList* linkedlist_node_create(void)
 	return newList;
 }
 
-LinkedList* linkedlist_create(void)
+LinkedList *
+linkedlist_create(void)
 {
 	return NULL;
 }
 
-void linkedlist_push(LinkedList **head, void *value)
+void
+linkedlist_push(LinkedList **head, void *value)
 {
 
 	LinkedList *node = linkedlist_node_create();
@@ -45,7 +47,8 @@ void linkedlist_push(LinkedList **head, void *value)
 	*head = node;
 }
 
-void* linkedlist_pop(LinkedList **head)
+void *
+linkedlist_pop(LinkedList **head)
 {
 	if (*head == NULL)
 		return NULL;
@@ -58,7 +61,8 @@ void* linkedlist_pop(LinkedList **head)
 	return data;
 }
 
-void linkedlist_append(LinkedList **head, void *value)
+void
+linkedlist_append(LinkedList **head, void *value)
 {
 	LinkedList *node;
 
@@ -76,13 +80,14 @@ void linkedlist_append(LinkedList **head, void *value)
 	node->next->data = value;
 }
 
-void* linkedlist_poplast(LinkedList **head)
+void *
+linkedlist_poplast(LinkedList **head)
 {
 	if (*head == NULL)
 		return NULL;
 
 	if ((*head)->next == NULL) {
-		void* data = (*head)->data;
+		void *data = (*head)->data;
 		free(*head);
 		*head = NULL;
 		return data;
@@ -99,7 +104,8 @@ void* linkedlist_poplast(LinkedList **head)
 	return linkedlist_poplast(&nextNode);
 }
 
-void* linkedlist_get(LinkedList **head, unsigned int index)
+void *
+linkedlist_get(LinkedList **head, unsigned int index)
 {
 	if (*head == NULL)
 		return NULL;
@@ -110,7 +116,8 @@ void* linkedlist_get(LinkedList **head, unsigned int index)
 }
 
 /* cppcheck-suppress constParameter */
-void linkedlist_each(LinkedList **head, void (*fun)(void*))
+void
+linkedlist_each(LinkedList **head, void (*fun)(void *))
 {
 	const LinkedList *next = *head;
 
@@ -120,7 +127,8 @@ void linkedlist_each(LinkedList **head, void (*fun)(void*))
 	}
 }
 
-void linkedlist_destroy(LinkedList **head)
+void
+linkedlist_destroy(LinkedList **head)
 {
 	if (*head == NULL) {
 		return;
@@ -136,7 +144,8 @@ void linkedlist_destroy(LinkedList **head)
 	*head = NULL;
 }
 
-unsigned int linkedlist_size(LinkedList *head)
+unsigned int
+linkedlist_size(LinkedList *head)
 {
 	if (head == NULL) {
 		return 0;

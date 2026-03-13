@@ -135,9 +135,11 @@ damage_surroundings(Monster *m, RoomMatrix *rm)
 
 			RoomSpace *r = &rm->spaces[matrixPos.x][matrixPos.y];
 			if (r->monster) {
-				CombatResult result = stats_fight(&m->stats, &r->monster->stats);
+				CombatResult result =
+				    stats_fight(&m->stats, &r->monster->stats);
 				monster_hit(r->monster, result.dmg, result.critical);
-				gui_log("%s takes %d damage from the explosion", r->monster->label, result.dmg);
+				gui_log("%s takes %d damage from the explosion",
+				        r->monster->label, result.dmg);
 			} else if (r->player) {
 				CombatResult result = stats_fight(&m->stats, &r->player->stats);
 				player_hit(r->player, result.dmg);
@@ -151,7 +153,8 @@ static void
 sorcerer_blast(Monster *m, RoomMatrix *rm)
 {
 	gui_log("%s creates a magical explosion", m->label);
-	particle_engine_eldritch_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+	particle_engine_eldritch_explosion(m->sprite->pos,
+	                                   DIM(TILE_DIMENSION, TILE_DIMENSION));
 	mixer_play_effect(BURST);
 
 	damage_surroundings(m, rm);
@@ -164,12 +167,12 @@ assassin_cloak_effect(Monster *m, bool cloak)
 		gui_log("%s dissappears from sight", m->label);
 	else
 		gui_log("%s reappears, filled with rage", m->label);
-	particle_engine_fire_explosion(m->sprite->pos, DIM(TILE_DIMENSION, TILE_DIMENSION));
+	particle_engine_fire_explosion(m->sprite->pos,
+	                               DIM(TILE_DIMENSION, TILE_DIMENSION));
 	m->sprite->hidden = cloak;
 	m->stateIndicator.sprite->hidden = cloak;
 	mixer_play_effect(cloak ? FADE_OUT : FADE_IN);
 }
-
 
 static void
 monster_behaviour_check_post_attack(Monster *m)
@@ -221,14 +224,12 @@ monster_behaviour_check(Monster *m, RoomMatrix *rm)
 		case GUERILLA:
 		case SORCERER:
 		case FIRE_DEMON:
-			if (m->state.stepsSinceChange > 5
-			    && m->state.current == SCARED) {
+			if (m->state.stepsSinceChange > 5 && m->state.current == SCARED) {
 				monster_state_change(m, AGRESSIVE);
 			}
 			break;
 		case ASSASSIN:
-			if (m->state.stepsSinceChange > 5
-			    && m->state.current == SCARED) {
+			if (m->state.stepsSinceChange > 5 && m->state.current == SCARED) {
 				assassin_cloak_effect(m, false);
 				monster_state_change(m, AGRESSIVE);
 			}
@@ -256,36 +257,37 @@ create_emitters(Monster *m)
 	emitter->enabled = false;
 	emitter->particle_func = particle_engine_bleed;
 	m->emitters.bleed = emitter;
-
 }
 
-Monster*
+Monster *
 monster_create(void)
 {
 	Monster *m = ec_malloc(sizeof(Monster));
 	m->sprite = sprite_create();
 	m->sprite->dim = GAME_DIMENSION;
-	m->sprite->clip = (SDL_Rect) { 0, 0, 16, 16 };
-	m->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+	m->sprite->clip = (SDL_Rect){0, 0, 16, 16};
+	m->sprite->rotationPoint = (SDL_Point){16, 16};
 
-	m->stats = (Stats) {
-		12, // Max HP
-		12, // hp
-		2,  // dmg
-		0,  // atk
-		0,  // def
-		1,  // speed
-		1,   // lvl
-		false, // advantage
-		false // disadvantage
+	m->stats = (Stats){
+	    12,    // Max HP
+	    12,    // hp
+	    2,     // dmg
+	    0,     // atk
+	    0,     // def
+	    1,     // speed
+	    1,     // lvl
+	    false, // advantage
+	    false  // disadvantage
 	};
 
 	m->label = NULL;
 	m->lclabel = NULL;
 	m->steps = 0;
 	m->stateIndicator.sprite = sprite_create();
-	sprite_set_texture(m->stateIndicator.sprite, texturecache_add("GUI/GUI0.png"), 0);
-	sprite_set_texture(m->stateIndicator.sprite, texturecache_add("GUI/GUI1.png"), 1);
+	sprite_set_texture(m->stateIndicator.sprite,
+	                   texturecache_add("GUI/GUI0.png"), 0);
+	sprite_set_texture(m->stateIndicator.sprite,
+	                   texturecache_add("GUI/GUI1.png"), 1);
 	m->stateIndicator.sprite->dim = GAME_DIMENSION;
 	m->stateIndicator.displayCount = 0;
 	m->stateIndicator.shownOnPlayerRoomEnter = false;
@@ -317,16 +319,15 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 	RoomSpace *space = roommatrix_get_space_for(matrix, &monster->sprite->pos);
 
 	if (space->player && monster->state.current == AGRESSIVE) {
-		CombatResult result = stats_fight(&monster->stats,
-						  &space->player->stats);
+		CombatResult result =
+		    stats_fight(&monster->stats, &space->player->stats);
 
 		result.dmg -= space->player->effects.damage_reduction;
 
 		player_hit(space->player, result.dmg);
 
 		if (result.dmg > 0) {
-			gui_log("%s hit you for %u damage",
-				monster->label, result.dmg);
+			gui_log("%s hit you for %u damage", monster->label, result.dmg);
 			camera_shake(direction, 300);
 		} else {
 			gui_log("%s missed you", monster->label);
@@ -340,15 +341,14 @@ has_collided(Monster *monster, RoomMatrix *matrix, Vector2d direction)
 static bool
 move(Monster *m, RoomMatrix *rm, Vector2d direction)
 {
-	m->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
-	m->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
+	m->sprite->pos.x += TILE_DIMENSION * (int)direction.x;
+	m->sprite->pos.y += TILE_DIMENSION * (int)direction.y;
 
 	RoomSpace *space = roommatrix_get_space_for(rm, &m->sprite->pos);
 	if (has_collided(m, rm, direction) || space->trap
-			|| (space->flags & (TILE_DAMAGE | TILE_LETHAL)) )
-	{
-		m->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;
-		m->sprite->pos.y -= TILE_DIMENSION * (int) direction.y;
+	    || (space->flags & (TILE_DAMAGE | TILE_LETHAL))) {
+		m->sprite->pos.x -= TILE_DIMENSION * (int)direction.x;
+		m->sprite->pos.y -= TILE_DIMENSION * (int)direction.y;
 		return false;
 	}
 	return true;
@@ -379,7 +379,8 @@ monster_drunk_walk(Monster *m, RoomMatrix *rm)
  * \brief Get the first move in the provided path
  */
 static Direction
-find_first_in_path(const Position *from, const Position *dest, const Position *start)
+find_first_in_path(const Position *from, const Position *dest,
+                   const Position *start)
 {
 	Position current = *dest;
 	Position next = *dest;
@@ -388,7 +389,7 @@ find_first_in_path(const Position *from, const Position *dest, const Position *s
 		next = from[current.x + current.y * MAP_ROOM_WIDTH];
 	}
 
-	Vector2d dir = { (float)(current.x - next.x), (float)(current.y - next.y) };
+	Vector2d dir = {(float)(current.x - next.x), (float)(current.y - next.y)};
 	if (dir.x > 0)
 		return RIGHT;
 	else if (dir.x < 0)
@@ -415,10 +416,10 @@ get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
 	Direction ret_val = INVALID;
 	const Position start = position_to_matrix_coords(&m->sprite->pos);
 	const Vector2d directions[] = {
-		VECTOR2D_UP,
-		VECTOR2D_DOWN,
-		VECTOR2D_LEFT,
-		VECTOR2D_RIGHT,
+	    VECTOR2D_UP,
+	    VECTOR2D_DOWN,
+	    VECTOR2D_LEFT,
+	    VECTOR2D_RIGHT,
 	};
 
 	PHeap open_set;
@@ -430,7 +431,7 @@ get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
 	memset(fScore, 0xFF, sizeof(fScore));
 
 	Position from[MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT];
-	bool visited[MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT] = { false };
+	bool visited[MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT] = {false};
 	const size_t WIDTH = MAP_ROOM_WIDTH;
 
 	/* Pre-allocate all the space we'll need and add start node */
@@ -450,13 +451,14 @@ get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
 
 		for (size_t i = 0; i < 4; i++) {
 			Position next = {
-				current.x + (int) directions[i].x,
-				current.y + (int) directions[i].y,
+			    current.x + (int)directions[i].x,
+			    current.y + (int)directions[i].y,
 			};
 
 			if (!position_equals(&next, &dest)) {
 				if (!position_in_roommatrix(&next)
-				    || (rm->spaces[next.x][next.y].flags & (TILE_OCCUPIED | TILE_LETHAL))
+				    || (rm->spaces[next.x][next.y].flags
+				        & (TILE_OCCUPIED | TILE_LETHAL))
 				    || rm->spaces[next.x][next.y].trap) {
 					continue;
 				}
@@ -466,10 +468,12 @@ get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
 			if (temp_score < gScore[next.x + next.y * WIDTH]) {
 				from[next.x + next.y * WIDTH] = current;
 				gScore[next.x + next.y * WIDTH] = temp_score;
-				fScore[next.x + next.y * WIDTH] = temp_score + MDIST(next, dest);
+				fScore[next.x + next.y * WIDTH] =
+				    temp_score + MDIST(next, dest);
 				if (!visited[next.x + next.y * WIDTH]) {
 					visited[next.x + next.y * WIDTH] = true;
-					pheap_insert(&open_set, next, fScore[next.x + next.y * WIDTH]);
+					pheap_insert(&open_set, next,
+					             fScore[next.x + next.y * WIDTH]);
 				}
 			}
 		}
@@ -483,7 +487,8 @@ out:
 static void
 monster_agressive_walk(Monster *m, RoomMatrix *rm)
 {
-	unsigned int chosenDirection = get_optimal_move_towards(m, rm, rm->playerRoomPos);
+	unsigned int chosenDirection =
+	    get_optimal_move_towards(m, rm, rm->playerRoomPos);
 
 	switch (chosenDirection) {
 		case UP:
@@ -532,13 +537,13 @@ static void
 on_monster_move(Monster *m, const Position *origPos, Map *map, RoomMatrix *rm)
 {
 	Position currentTilePos = position_to_matrix_coords(&m->sprite->pos);
-	Player *player = rm->spaces[rm->playerRoomPos.x][rm->playerRoomPos.y].player;
+	Player *player =
+	    rm->spaces[rm->playerRoomPos.x][rm->playerRoomPos.y].player;
 	if (player) {
 		Uint32 range = 3 + player_has_artifact(player, IMPROVED_HEARING) * 2;
 		bool withinHearingDist =
-			range > 3 && position_proximity(range,
-							&currentTilePos,
-							&rm->playerRoomPos);
+		    range > 3
+		    && position_proximity(range, &currentTilePos, &rm->playerRoomPos);
 
 		RoomSpace *space = &rm->spaces[currentTilePos.x][currentTilePos.y];
 		if (space->light < 100 && withinHearingDist) {
@@ -658,7 +663,8 @@ monster_move(Monster *m, RoomMatrix *rm, Map *map)
 	}
 
 	Position originalMPos = position_to_matrix_coords(&m->sprite->pos);
-	SPACE_CLEAR_FLAG(&rm->spaces[originalMPos.x][originalMPos.y], TILE_OCCUPIED);
+	SPACE_CLEAR_FLAG(&rm->spaces[originalMPos.x][originalMPos.y],
+	                 TILE_OCCUPIED);
 	rm->spaces[originalMPos.x][originalMPos.y].monster = NULL;
 
 	monster_walk(m, rm);
@@ -718,9 +724,10 @@ monster_update(Monster *m, UpdateData *data)
 			m->stateIndicator.shownOnPlayerRoomEnter = false;
 		}
 
-		if (m->sprite->state != SPRITE_STATE_FALLING &&
-		    m->sprite->state != SPRITE_STATE_PLUMMETED) {
-			RoomSpace *space = roommatrix_get_space_for(data->matrix, &m->sprite->pos);
+		if (m->sprite->state != SPRITE_STATE_FALLING
+		    && m->sprite->state != SPRITE_STATE_PLUMMETED) {
+			RoomSpace *space =
+			    roommatrix_get_space_for(data->matrix, &m->sprite->pos);
 			if (SPACE_IS_LETHAL(space)) {
 				m->sprite->state = SPRITE_STATE_FALLING;
 			}
@@ -748,17 +755,14 @@ monster_hit(Monster *monster, unsigned int dmg, bool critical)
 		Position p = monster->sprite->pos;
 		p.x += 8;
 		p.y += 8;
-		Dimension d = { 8, 8 };
+		Dimension d = {8, 8};
 		particle_engine_bloodspray(p, d, dmg);
 		char msg[10];
 		m_sprintf(msg, 10, "-%d", dmg);
-		actiontextbuilder_create_text(msg,
-					      C_RED,
-					      &monster->sprite->pos);
+		actiontextbuilder_create_text(msg, C_RED, &monster->sprite->pos);
 	} else {
-		actiontextbuilder_create_text("Dodged",
-					      C_YELLOW,
-					      &monster->sprite->pos);
+		actiontextbuilder_create_text("Dodged", C_YELLOW,
+		                              &monster->sprite->pos);
 	}
 	if (critical)
 		monster_set_bleeding(monster);
@@ -841,8 +845,8 @@ monster_set_state(Monster *m, StateType state, Uint8 forceCount)
 void
 monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 {
-	m->sprite->pos.x += TILE_DIMENSION * (int) direction.x;
-	m->sprite->pos.y += TILE_DIMENSION * (int) direction.y;
+	m->sprite->pos.x += TILE_DIMENSION * (int)direction.x;
+	m->sprite->pos.y += TILE_DIMENSION * (int)direction.y;
 
 	RoomSpace *space = roommatrix_get_space_for(rm, &m->sprite->pos);
 	if (space->trap) {
@@ -861,8 +865,8 @@ monster_push(Monster *m, Player *p, RoomMatrix *rm, Vector2d direction)
 			monster_hit(m, o->damage * 3, false);
 		}
 	} else if (has_collided(m, rm, direction)) {
-		m->sprite->pos.x -= TILE_DIMENSION * (int) direction.x;
-		m->sprite->pos.y -= TILE_DIMENSION * (int) direction.y;
+		m->sprite->pos.x -= TILE_DIMENSION * (int)direction.x;
+		m->sprite->pos.y -= TILE_DIMENSION * (int)direction.y;
 	}
 
 	monster_update_pos(m, m->sprite->pos);

@@ -30,8 +30,7 @@ typedef struct TexureContainer {
 	Texture *texture;
 } TextureContainer;
 
-static void
-texturecache_texture_container_destroy(TextureContainer *);
+static void texturecache_texture_container_destroy(TextureContainer *);
 
 void
 texturecache_init(SDL_Renderer *rend)
@@ -40,7 +39,7 @@ texturecache_init(SDL_Renderer *rend)
 	renderer = rend;
 }
 
-Texture*
+Texture *
 texturecache_add(const char *path)
 {
 	TextureContainer *tc = ht_get(textures, path);
@@ -55,7 +54,7 @@ texturecache_add(const char *path)
 	return tc->texture;
 }
 
-Texture*
+Texture *
 texturecache_get(const char *path)
 {
 	TextureContainer *tc = ht_get(textures, path);
@@ -87,5 +86,6 @@ texturecache_texture_container_destroy(TextureContainer *tc)
 void
 texturecache_close(void)
 {
-	ht_destroy_custom(textures, (void(*)(void*)) texturecache_texture_container_destroy);
+	ht_destroy_custom(textures,
+	                  (void (*)(void *))texturecache_texture_container_destroy);
 }

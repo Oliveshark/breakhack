@@ -17,7 +17,7 @@
  */
 
 #ifndef MONSTER_H_
-#define	MONSTER_H_
+#define MONSTER_H_
 
 #include <SDL3/SDL.h>
 #include "sprite.h"
@@ -87,48 +87,34 @@ typedef struct Monster {
 	bool boss;
 } Monster;
 
-Monster* monster_create(void);
+Monster *monster_create(void);
 
-void
-monster_update_pos(Monster*, Position);
+void monster_update_pos(Monster *, Position);
 
-bool
-monster_move(Monster*, RoomMatrix*, Map*);
+bool monster_move(Monster *, RoomMatrix *, Map *);
 
-void
-monster_render(Monster*, Camera*);
+void monster_render(Monster *, Camera *);
 
-void
-monster_render_top_layer(Monster*, RoomMatrix*, Camera*);
+void monster_render_top_layer(Monster *, RoomMatrix *, Camera *);
 
-void
-monster_hit(Monster*, unsigned int dmg, bool critical);
+void monster_hit(Monster *, unsigned int dmg, bool critical);
 
-void
-monster_update_stats_for_level(Monster*, unsigned int level);
+void monster_update_stats_for_level(Monster *, unsigned int level);
 
-void
-monster_update(Monster*, struct UpdateData*);
+void monster_update(Monster *, struct UpdateData *);
 
-void
-monster_set_behaviour(Monster *, MonsterBehaviour behaviour);
+void monster_set_behaviour(Monster *, MonsterBehaviour behaviour);
 
-void
-monster_set_state(Monster *m, StateType state, Uint8 forceCount);
+void monster_set_state(Monster *m, StateType state, Uint8 forceCount);
 
-void
-monster_push(Monster *, Player *, RoomMatrix*, Vector2d dir);
+void monster_push(Monster *, Player *, RoomMatrix *, Vector2d dir);
 
-void
-monster_reset_steps(Monster *m);
+void monster_reset_steps(Monster *m);
 
-void
-monster_set_bloodlust(Monster*, bool bloodlust);
+void monster_set_bloodlust(Monster *, bool bloodlust);
 
-void
-monster_set_bleeding(Monster*);
+void monster_set_bleeding(Monster *);
 
-void
-monster_destroy(Monster*);
+void monster_destroy(Monster *);
 
 #endif // MONSTER_H_

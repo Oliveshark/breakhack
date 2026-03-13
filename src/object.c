@@ -42,7 +42,7 @@ object_create_fire(void)
 	sprite_set_texture(o->sprite, t0, 0);
 	sprite_set_texture(o->sprite, t1, 1);
 	o->sprite->dim = GAME_DIMENSION;
-	o->sprite->clip = CLIP16(16, 21*16);
+	o->sprite->clip = CLIP16(16, 21 * 16);
 	o->damage = 3;
 	o->timeout = 5;
 	return o;
@@ -57,7 +57,7 @@ object_create_green_gas(void)
 	sprite_set_texture(o->sprite, t0, 0);
 	sprite_set_texture(o->sprite, t1, 1);
 	o->sprite->dim = GAME_DIMENSION;
-	o->sprite->clip = CLIP16(32, 24*16);
+	o->sprite->clip = CLIP16(32, 24 * 16);
 	o->damage = 3;
 	o->timeout = 3;
 	return o;

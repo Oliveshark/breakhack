@@ -70,7 +70,7 @@ item_render(Item *item, Camera *cam)
 void
 item_collected(Item *item, Player *player)
 {
-	if (item->price > player->gold){
+	if (item->price > player->gold) {
 		gui_log("You don't have enough gold to buy %s", item->label);
 		return;
 	}
@@ -90,10 +90,11 @@ item_collected(Item *item, Player *player)
 	}
 
 	if (item->price > 0) {
-	    player->gold -= item->price;
-	    char costLabel[10];
-	    m_sprintf(costLabel, 10, "-$%.0f", item->price);
-	    actiontextbuilder_create_text(costLabel, C_YELLOW, &player->sprite->pos);
+		player->gold -= item->price;
+		char costLabel[10];
+		m_sprintf(costLabel, 10, "-$%.0f", item->price);
+		actiontextbuilder_create_text(costLabel, C_YELLOW,
+		                              &player->sprite->pos);
 	}
 
 	if (item->effect != NULL)

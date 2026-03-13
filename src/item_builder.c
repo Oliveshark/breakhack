@@ -51,39 +51,40 @@ static void
 eat_flesh(Item *item, Player *player)
 {
 	int original_hp = player->stats.hp;
-	player->stats.hp += (int) item->value;
+	player->stats.hp += (int)item->value;
 	if (player->stats.hp > player->stats.maxhp)
 		player->stats.hp = player->stats.maxhp;
 
 	mixer_play_effect(EAT);
 	gui_log("You eat some foul meat and gain %d health",
-		player->stats.hp - original_hp);
+	        player->stats.hp - original_hp);
 }
 
 static void
 drink_health(Item *item, Player *player)
 {
-	player->potion_sips += (int) item->value;
+	player->potion_sips += (int)item->value;
 
 	mixer_play_effect(BOTTLE);
-	gui_log("You collect %u sips of health", (unsigned int) item->value);
+	gui_log("You collect %u sips of health", (unsigned int)item->value);
 }
 
 static void
 pickup_dagger(Item *item, Player *player)
 {
-	player->daggers += (Uint32) item->value;
+	player->daggers += (Uint32)item->value;
 
 	mixer_play_effect(DAGGER_PICKUP);
 	double count = player->class == ROGUE ? item->value * 2 : item->value;
 	if (count > 1)
-		gui_log("You collect %u daggers", (Uint32) count);
+		gui_log("You collect %u daggers", (Uint32)count);
 	else
 		gui_log("You collect a dagger");
 }
 
 static Item *
-create_item(const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item*, Player*))
+create_item(const char *path0, const char *path1, SDL_Rect clip,
+            void (*cb)(Item *, Player *))
 {
 	Item *item;
 
@@ -176,17 +177,13 @@ item_builder_build_key(unsigned int type)
 	switch (type) {
 		case 1:
 			m_sprintf(label, 20, "a silver key");
-			item = create_item("Extras/Keys.png",
-					   NULL,
-					   CLIP16(0, 0),
-					   &pickup_silver_key);
+			item = create_item("Extras/Keys.png", NULL, CLIP16(0, 0),
+			                   &pickup_silver_key);
 			break;
 		case 2:
 			m_sprintf(label, 20, "a gold key");
-			item = create_item("Extras/Keys.png",
-					   NULL,
-					   CLIP16(16, 0),
-					   &pickup_gold_key);
+			item = create_item("Extras/Keys.png", NULL, CLIP16(16, 0),
+			                   &pickup_gold_key);
 			break;
 		default:
 			fatal("Bad keytype provided");
@@ -199,7 +196,7 @@ item_builder_build_key(unsigned int type)
 static void
 pickup_bloodlust(Item *item, Player *player)
 {
-	(void) item;
+	(void)item;
 
 	gui_log("You drink a bloodlust potion. Rage pulses through your veins.");
 	player->effects.effect = POTION_BLOODLUST;
@@ -211,7 +208,7 @@ pickup_bloodlust(Item *item, Player *player)
 static void
 pickup_frost(Item *item, Player *player)
 {
-	(void) item;
+	(void)item;
 
 	gui_log("You drink a frost potion. Your skin is ice.");
 	player->effects.effect = POTION_FROST;
@@ -223,7 +220,7 @@ pickup_frost(Item *item, Player *player)
 static void
 pickup_stone(Item *item, Player *player)
 {
-	(void) item;
+	(void)item;
 
 	gui_log("You drink a stone potion. Your body rocks.");
 	player->effects.effect = POTION_STONE;
@@ -240,22 +237,16 @@ item_builder_build_potion(PotionEffect effect)
 
 	switch (effect) {
 		case POTION_BLOODLUST:
-			item = create_item("Items/Potion.png",
-					NULL,
-					CLIP16(48, 32),
-					pickup_bloodlust);
+			item = create_item("Items/Potion.png", NULL, CLIP16(48, 32),
+			                   pickup_bloodlust);
 			break;
 		case POTION_FROST:
-			item = create_item("Items/Potion.png",
-					NULL,
-					CLIP16(96, 0),
-					pickup_frost);
+			item = create_item("Items/Potion.png", NULL, CLIP16(96, 0),
+			                   pickup_frost);
 			break;
 		case POTION_STONE:
-			item = create_item("Items/Potion.png",
-					NULL,
-					CLIP16(6*16, 2*16),
-					pickup_stone);
+			item = create_item("Items/Potion.png", NULL, CLIP16(6 * 16, 2 * 16),
+			                   pickup_stone);
 			break;
 		case POTION_NONE:
 			fatal("Potion effect is POTION_NONE");
@@ -275,7 +266,7 @@ create_treasure(int current_level)
 	unsigned int highest_treasure;
 	unsigned int value;
 
-	amt = (unsigned int) 1 + get_random(5*current_level) % 40;
+	amt = (unsigned int)1 + get_random(5 * current_level) % 40;
 
 	if (current_level > 9) {
 		highest_treasure = PLATINUM;
@@ -286,42 +277,36 @@ create_treasure(int current_level)
 	}
 
 	value = get_random(highest_treasure);
-	return item_builder_build_treasure((Treasure) value, amt);
+	return item_builder_build_treasure((Treasure)value, amt);
 }
 
 Item *
 item_builder_build_item(ItemKey key, int level)
 {
-	static const char *path_flesh		= "Items/Flesh.png";
-	static const char *path_potion		= "Items/Potion.png";
-	static const char *path_short_wep	= "Items/ShortWep.png";
+	static const char *path_flesh = "Items/Flesh.png";
+	static const char *path_potion = "Items/Potion.png";
+	static const char *path_short_wep = "Items/ShortWep.png";
 
 	check_builder();
 
 	Item *item = NULL;
 	switch (key) {
 		case TREASURE:
-			item = create_treasure(level*2);
+			item = create_treasure(level * 2);
 			break;
 		case FLESH:
-			item = create_item(path_flesh,
-					   NULL,
-					   CLIP16(get_random(7) * 16, get_random(1) * 16),
-					   &eat_flesh);
+			item = create_item(path_flesh, NULL,
+			                   CLIP16(get_random(7) * 16, get_random(1) * 16),
+			                   &eat_flesh);
 			item->value = 1 + get_random(level);
 			break;
 		case HEALTH:
-			item = create_item(path_potion,
-					   NULL,
-					   CLIP16(0, 0),
-					   &drink_health);
+			item = create_item(path_potion, NULL, CLIP16(0, 0), &drink_health);
 			item->value = 1 + get_random(level);
 			break;
 		case DAGGER:
-			item = create_item(path_short_wep,
-					   NULL,
-					   CLIP16(0, 0),
-					   &pickup_dagger);
+			item =
+			    create_item(path_short_wep, NULL, CLIP16(0, 0), &pickup_dagger);
 			item->value = 1;
 			break;
 		default:
@@ -330,14 +315,12 @@ item_builder_build_item(ItemKey key, int level)
 	}
 
 	if (item->value != 1) {
-		Sprite *valueSprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf",
-								     8,
-								     C_BLUE,
-								     C_BLACK,
-								     "%g",
-								     item->value);
-		valueSprite->offset.x = item->sprite->dim.width - valueSprite->dim.width;
-		valueSprite->offset.y = item->sprite->dim.height - valueSprite->dim.height;
+		Sprite *valueSprite = sprite_util_create_text_sprite(
+		    "GUI/SDS_8x8.ttf", 8, C_BLUE, C_BLACK, "%g", item->value);
+		valueSprite->offset.x =
+		    item->sprite->dim.width - valueSprite->dim.width;
+		valueSprite->offset.y =
+		    item->sprite->dim.height - valueSprite->dim.height;
 		linkedlist_append(&item->subsprites, valueSprite);
 	}
 
@@ -347,19 +330,14 @@ item_builder_build_item(ItemKey key, int level)
 Item *
 item_builder_build_sack(void)
 {
-	return create_item("Items/Chest0.png",
-			   NULL,
-			   CLIP16(0, 32),
-			   NULL);
+	return create_item("Items/Chest0.png", NULL, CLIP16(0, 32), NULL);
 }
 
 Item *
-item_builder_build_container(const char *path0, const char *path1, SDL_Rect clip)
+item_builder_build_container(const char *path0, const char *path1,
+                             SDL_Rect clip)
 {
-	Item *chest = create_item(path0,
-				  path1,
-				  clip,
-				  NULL);
+	Item *chest = create_item(path0, path1, clip, NULL);
 	chest->openable = true;
 	chest->sprite->animate = false;
 	return chest;

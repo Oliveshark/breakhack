@@ -17,7 +17,7 @@
  */
 
 #ifndef TEXTURE_H_
-#define	TEXTURE_H_
+#define TEXTURE_H_
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -36,69 +36,44 @@ typedef struct Texture {
 	bool locked;
 } Texture;
 
-Texture*
-texture_create(void);
+Texture *texture_create(void);
 
-void
-texture_create_blank(Texture *t,
-					 SDL_TextureAccess,
-					 SDL_Renderer*);
+void texture_create_blank(Texture *t, SDL_TextureAccess, SDL_Renderer *);
 
-void
-texture_lock(Texture*, SDL_Rect*, void **pixels, int *pitch);
+void texture_lock(Texture *, SDL_Rect *, void **pixels, int *pitch);
 
-void
-texture_unlock(Texture*);
+void texture_unlock(Texture *);
 
-void
-texture_load_from_file(Texture*, const char *path, SDL_Renderer*);
+void texture_load_from_file(Texture *, const char *path, SDL_Renderer *);
 
-void
-texture_load_font(Texture*, const char *path, unsigned int size, int outline);
+void texture_load_font(Texture *, const char *path, unsigned int size,
+                       int outline);
 
-void
-texture_load_from_text(Texture*,
-		       const char *text,
-		       SDL_Color,
-		       SDL_Color,
-		       SDL_Renderer*);
+void texture_load_from_text(Texture *, const char *text, SDL_Color, SDL_Color,
+                            SDL_Renderer *);
 
-void
-texture_load_from_text_shaded(Texture*,
-					   const char *text,
-					   SDL_Color,
-					   SDL_Color,
-					   SDL_Renderer*);
+void texture_load_from_text_shaded(Texture *, const char *text, SDL_Color,
+                                   SDL_Color, SDL_Renderer *);
 
-void
-texture_load_from_text_blended(Texture*,
-					   const char *text,
-					   SDL_Color,
-					   SDL_Renderer*);
+void texture_load_from_text_blended(Texture *, const char *text, SDL_Color,
+                                    SDL_Renderer *);
 
-void
-texture_set_blend_mode(Texture*, SDL_BlendMode);
+void texture_set_blend_mode(Texture *, SDL_BlendMode);
 
-void
-texture_set_scale_mode(Texture*, SDL_ScaleMode);
+void texture_set_scale_mode(Texture *, SDL_ScaleMode);
 
-void
-texture_set_alpha(Texture*, Uint8);
+void texture_set_alpha(Texture *, Uint8);
 
-void
-texture_set_color_mod(Texture*, Uint8, Uint8, Uint8);
+void texture_set_color_mod(Texture *, Uint8, Uint8, Uint8);
 
-void
-texture_render(Texture*, SDL_Rect*, Camera*);
+void texture_render(Texture *, SDL_Rect *, Camera *);
 
-void
-texture_render_clip(Texture*, SDL_Rect*, SDL_Rect*, Camera*);
+void texture_render_clip(Texture *, SDL_Rect *, SDL_Rect *, Camera *);
 
-void
-texture_render_clip_ex(Texture *texture, SDL_Rect *dst, SDL_Rect *src, double angle, SDL_Point *rotation_point,
-		       SDL_FlipMode flip_mode, Camera *cam);
+void texture_render_clip_ex(Texture *texture, SDL_Rect *dst, SDL_Rect *src,
+                            double angle, SDL_Point *rotation_point,
+                            SDL_FlipMode flip_mode, Camera *cam);
 
-void
-texture_destroy(Texture *texture);
+void texture_destroy(Texture *texture);
 
 #endif // TEXTURE_H_

@@ -32,14 +32,10 @@ typedef struct GameController {
 	unsigned int mode;
 } GameController;
 
-void
-gamecontroller_set(SDL_Gamepad *controller);
+void gamecontroller_set(SDL_Gamepad *controller);
 
-void
-gamecontroller_rumble(float intensity, Uint32 duration);
+void gamecontroller_rumble(float intensity, Uint32 duration);
 
-Uint8
-gamecontroller_mode(void);
+Uint8 gamecontroller_mode(void);
 
-void
-gamecontroller_close(void);
+void gamecontroller_close(void);

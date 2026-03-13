@@ -21,34 +21,33 @@
 #include "util.h"
 #include "random.h"
 
-
 // Preserve a link for global access
 // See: TODO in camera_shake(void)
 static Camera *gCamera = NULL;
 
-Camera *camera_create(SDL_Renderer *renderer)
+Camera *
+camera_create(SDL_Renderer *renderer)
 {
 	gCamera = ec_malloc(sizeof(Camera));
 	gCamera->renderer = renderer;
 	gCamera->shakeTimer = _timer_create();
 	gCamera->velocity = VECTOR2D_NODIR;
-	gCamera->pos = (Position) { 0, 0 };
-	gCamera->basePos = (Position) { 0, 0 };
+	gCamera->pos = (Position){0, 0};
+	gCamera->basePos = (Position){0, 0};
 	return gCamera;
 }
 
-Position camera_to_camera_position(Camera *cam, Position *pos)
+Position
+camera_to_camera_position(Camera *cam, Position *pos)
 {
-	return (Position) {
-		pos->x - cam->pos.x,
-		pos->y - cam->pos.y
-	};
+	return (Position){pos->x - cam->pos.x, pos->y - cam->pos.y};
 }
 
-void camera_follow_position(Camera *cam, Position *pos)
+void
+camera_follow_position(Camera *cam, Position *pos)
 {
 	int room_width, room_height;
-	Position newPos = { 0, 0 };
+	Position newPos = {0, 0};
 
 	room_width = MAP_ROOM_WIDTH * TILE_DIMENSION;
 	room_height = MAP_ROOM_HEIGHT * TILE_DIMENSION;
@@ -93,8 +92,8 @@ camera_update(Camera *camera, float deltatime)
 		camera->velocity.x *= -1;
 		camera->velocity.y *= -1;
 	}
-	camera->pos.x += (int) (camera->velocity.x * deltatime);
-	camera->pos.y += (int) (camera->velocity.y * deltatime);
+	camera->pos.x += (int)(camera->velocity.x * deltatime);
+	camera->pos.y += (int)(camera->velocity.y * deltatime);
 }
 
 void
@@ -109,7 +108,7 @@ camera_shake(Vector2d dir, int intensity)
 		return;
 	timer_start(gCamera->shakeTimer);
 	gCamera->velocity = dir;
-	gCamera->velocity.x *= (float) intensity;
-	gCamera->velocity.y *= (float) intensity;
+	gCamera->velocity.x *= (float)intensity;
+	gCamera->velocity.y *= (float)intensity;
 	gCamera->basePos = gCamera->pos;
 }

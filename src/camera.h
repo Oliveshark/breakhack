@@ -17,7 +17,7 @@
  */
 
 #ifndef CAMERA_H_
-#define	CAMERA_H_
+#define CAMERA_H_
 
 #include <SDL3/SDL.h>
 
@@ -33,22 +33,16 @@ typedef struct Camera {
 	SDL_Renderer *renderer;
 } Camera;
 
-Camera*
-camera_create(SDL_Renderer*);
+Camera *camera_create(SDL_Renderer *);
 
-Position
-camera_to_camera_position(Camera *cam, Position *pos);
+Position camera_to_camera_position(Camera *cam, Position *pos);
 
-void
-camera_follow_position(Camera*, Position*);
+void camera_follow_position(Camera *, Position *);
 
-void
-camera_update(Camera *, float deltatime);
+void camera_update(Camera *, float deltatime);
 
-void
-camera_shake(Vector2d dir, int intensity);
+void camera_shake(Vector2d dir, int intensity);
 
-void
-camera_destroy(Camera *);
+void camera_destroy(Camera *);
 
 #endif // CAMERA_H_

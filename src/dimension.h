@@ -17,9 +17,13 @@
  */
 
 #ifndef DIMENSION_H_
-#define	DIMENSION_H_
+#define DIMENSION_H_
 
-#define DIM(x, y)	(Dimension) { x, y }
+#define DIM(x, y)                                                              \
+	(Dimension)                                                                \
+	{                                                                          \
+		x, y                                                                   \
+	}
 
 typedef struct {
 	unsigned int width;

@@ -53,26 +53,18 @@ typedef struct Artifact {
 	unsigned int price;
 } Artifact;
 
-Sprite *
-artifact_sprite_for(MagicalEffect);
+Sprite *artifact_sprite_for(MagicalEffect);
 
-Artifact *
-artifact_create_random(Player*, Uint8 level);
+Artifact *artifact_create_random(Player *, Uint8 level);
 
-void
-artifact_add_price(Artifact*, unsigned int price);
+void artifact_add_price(Artifact *, unsigned int price);
 
-Artifact *
-artifact_create(MagicalEffect);
+Artifact *artifact_create(MagicalEffect);
 
-Artifact *
-artifact_copy(const Artifact*);
+Artifact *artifact_copy(const Artifact *);
 
-void
-artifact_update(Artifact*, struct UpdateData*);
+void artifact_update(Artifact *, struct UpdateData *);
 
-void
-artifact_render(Artifact*, Camera*);
+void artifact_render(Artifact *, Camera *);
 
-void
-artifact_destroy(Artifact*);
+void artifact_destroy(Artifact *);

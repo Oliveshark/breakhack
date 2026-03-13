@@ -17,18 +17,14 @@
  */
 
 #ifndef RANDOM_H_
-#define	RANDOM_H_
+#define RANDOM_H_
 
-unsigned int
-get_random_map_seed(unsigned int level);
+unsigned int get_random_map_seed(unsigned int level);
 
-unsigned int
-get_random_seed(void);
+unsigned int get_random_seed(void);
 
-void
-set_random_seed(unsigned int s);
+void set_random_seed(unsigned int s);
 
-unsigned int
-get_random(unsigned int max);
+unsigned int get_random(unsigned int max);
 
 #endif // RANDOM_H_

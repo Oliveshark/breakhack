@@ -35,5 +35,4 @@
  */
 void loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player);
 
-#endif  // _LOOT_H_
-
+#endif // _LOOT_H_

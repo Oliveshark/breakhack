@@ -29,12 +29,9 @@
  *
  * \param update_data The UpdateData struct
  */
-void
-debug_update(UpdateData *update_data);
+void debug_update(UpdateData *update_data);
 
-void
-debug_render(Camera *cam);
+void debug_render(Camera *cam);
 
-#endif  // _DEBUG_H_
-#endif  // DEBUG
-
+#endif // _DEBUG_H_
+#endif // DEBUG

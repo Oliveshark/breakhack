@@ -19,7 +19,8 @@
 #include "util.h"
 #include <assert.h>
 
-static void add_node(PHeap *ph, Position pos, uint32_t score)
+static void
+add_node(PHeap *ph, Position pos, uint32_t score)
 {
 	if (ph->size == ph->capacity) {
 		ph->capacity *= 2;
@@ -30,13 +31,16 @@ static void add_node(PHeap *ph, Position pos, uint32_t score)
 	node->score = score;
 }
 
-static void swap(Node *a, Node *b) {
+static void
+swap(Node *a, Node *b)
+{
 	Node tmp = *a;
 	*a = *b;
 	*b = tmp;
 }
 
-static void heapify(PHeap *ph, size_t i)
+static void
+heapify(PHeap *ph, size_t i)
 {
 	if (ph->size <= 0) {
 		return;
@@ -59,24 +63,27 @@ static void heapify(PHeap *ph, size_t i)
 	}
 }
 
-void pheap_init(PHeap *ph, size_t capacity)
+void
+pheap_init(PHeap *ph, size_t capacity)
 {
 	ph->capacity = capacity > 0 ? capacity : 1;
 	ph->size = 0;
 	ph->list = ec_calloc(ph->capacity, sizeof(Node));
 }
 
-void pheap_insert(PHeap *ph, Position p, uint32_t score)
+void
+pheap_insert(PHeap *ph, Position p, uint32_t score)
 {
 	add_node(ph, p, score);
 	size_t i = ph->size - 1;
-	while (i != 0 && ph->list[(i - 1)/2].score > ph->list[i].score) {
+	while (i != 0 && ph->list[(i - 1) / 2].score > ph->list[i].score) {
 		swap(&ph->list[i], &ph->list[(i - 1) / 2]);
 		i = (i - 1) / 2;
 	}
 }
 
-Position pheap_pop(PHeap *ph)
+Position
+pheap_pop(PHeap *ph)
 {
 	Position p = ph->list[0].pos;
 
@@ -89,7 +96,8 @@ Position pheap_pop(PHeap *ph)
 	return p;
 }
 
-void pheap_destroy(PHeap *ph)
+void
+pheap_destroy(PHeap *ph)
 {
 	free(ph->list);
 	ph->list = NULL;

@@ -22,17 +22,13 @@
 #include "effect_util.h"
 
 void
-effect_damage_surroundings(Position *pos,
-			   RoomMatrix *rm,
-			   Player *player,
-			   Stats *attackerStats,
-			   unsigned int radius,
-			   unsigned int pushRadius,
-			   bool damagePlayer)
+effect_damage_surroundings(Position *pos, RoomMatrix *rm, Player *player,
+                           Stats *attackerStats, unsigned int radius,
+                           unsigned int pushRadius, bool damagePlayer)
 {
 	Position roomPos = position_to_matrix_coords(pos);
-	for (Sint32 i = -radius; i <= (Sint32) radius; ++i) {
-		for (Sint32 j = -radius; j <= (Sint32) radius; ++j) {
+	for (Sint32 i = -radius; i <= (Sint32)radius; ++i) {
+		for (Sint32 j = -radius; j <= (Sint32)radius; ++j) {
 			if (i == 0 && j == 0)
 				continue;
 
@@ -42,19 +38,20 @@ effect_damage_surroundings(Position *pos,
 
 			RoomSpace *r = &rm->spaces[matrixPos.x][matrixPos.y];
 			if (r->monster) {
-				CombatResult result = stats_fight(attackerStats, &r->monster->stats);
+				CombatResult result =
+				    stats_fight(attackerStats, &r->monster->stats);
 				monster_hit(r->monster, result.dmg, result.critical);
-				gui_log("%s takes %d damage from the explosion", r->monster->label, result.dmg);
+				gui_log("%s takes %d damage from the explosion",
+				        r->monster->label, result.dmg);
 
-				Vector2d dir = vector2d_to_direction(&VEC2D((float) i, (float) j));
+				Vector2d dir =
+				    vector2d_to_direction(&VEC2D((float)i, (float)j));
 				for (unsigned int k = 0; k < pushRadius; ++k) {
-					monster_push(r->monster,
-						     player,
-						     rm,
-						     dir);
+					monster_push(r->monster, player, rm, dir);
 				}
 			} else if (r->player && damagePlayer) {
-				CombatResult result = stats_fight(attackerStats, &r->player->stats);
+				CombatResult result =
+				    stats_fight(attackerStats, &r->player->stats);
 				player_hit(r->player, result.dmg);
 				gui_log("You take %d damage from the explosion", result.dmg);
 			}

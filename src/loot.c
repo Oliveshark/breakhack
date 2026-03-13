@@ -98,37 +98,38 @@ get_drop_callback(DropType type)
 	}
 }
 
-
-static inline void drop_item(Sprite *sprite, Position *drop_positions,
-			     size_t num_drop_positions, DropType type)
+static inline void
+drop_item(Sprite *sprite, Position *drop_positions, size_t num_drop_positions,
+          DropType type)
 {
 	/* Avoid FPE (division by zero) */
 	Position drop_pos;
 	if (num_drop_positions == 0) {
 		drop_pos = sprite->pos;
 	} else {
-		drop_pos = drop_positions[get_random((uint32_t) num_drop_positions - 1)];
+		drop_pos = drop_positions[get_random((uint32_t)num_drop_positions - 1)];
 	}
 
 	/* Create an interpolation dest */
 	Destination dest = {
-		.pos = drop_pos,
-		.angle = 0,
-		.dim = DIM(32, 32),
-		.time_ms = (float)(ITEM_DROP_TIME_MS + get_random(50)),
-		.on_complete = get_drop_callback(type),
+	    .pos = drop_pos,
+	    .angle = 0,
+	    .dim = DIM(32, 32),
+	    .time_ms = (float)(ITEM_DROP_TIME_MS + get_random(50)),
+	    .on_complete = get_drop_callback(type),
 	};
 
 	/* Make the item smaller to simulate it flying */
 	sprite->dim = DIM(4, 4);
-	sprite->angle = (float) get_random(720) + 360;
+	sprite->angle = (float)get_random(720) + 360;
 
 	sprite_interpolate_to(sprite, &dest);
 
 	item_dropped = true;
 }
 
-void loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player)
+void
+loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player)
 {
 	static Uint32 treasure_drop_chance = 1;
 	static Uint32 item_drop_chance = 1;
@@ -147,7 +148,8 @@ void loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player)
 	Position monsterTilePos = position_to_tile_pos(&monster->sprite->pos);
 
 	/* Find possible loot drop positions */
-	size_t space_count = roommatrix_get_surrounding_spaces(rm, &monsterTilePos, drop_positions, DROP_POSITION_COUNT);
+	size_t space_count = roommatrix_get_surrounding_spaces(
+	    rm, &monsterTilePos, drop_positions, DROP_POSITION_COUNT);
 
 	/* Drop artifacts */
 	if (monster->boss) {
@@ -166,7 +168,7 @@ void loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player)
 
 	/* Drop random loot */
 	if (monster->boss) {
-		Item *treasure = item_builder_build_item(TREASURE, map->level*2);
+		Item *treasure = item_builder_build_item(TREASURE, map->level * 2);
 		treasure->sprite->pos = monsterTilePos;
 		linkedlist_append(&map->items, treasure);
 		drop_item(treasure->sprite, drop_positions, space_count, DROP_COINS);
@@ -180,14 +182,16 @@ void loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player)
 	}
 
 	if (strcmp(monster->label, "The Trader") == 0) {
-		Item *treasure = item_builder_build_treasure(PLATINUM, 10 * monster->stats.lvl);
+		Item *treasure =
+		    item_builder_build_treasure(PLATINUM, 10 * monster->stats.lvl);
 		treasure->sprite->pos = monsterTilePos;
 		linkedlist_append(&map->items, treasure);
 		drop_item(treasure->sprite, drop_positions, space_count, DROP_COINS);
 	}
 
 	if (strcmp(monster->label, "A Fairy") == 0) {
-		Item *treasure = item_builder_build_treasure(PLATINUM, 3 * monster->stats.lvl);
+		Item *treasure =
+		    item_builder_build_treasure(PLATINUM, 3 * monster->stats.lvl);
 		treasure->sprite->pos = monsterTilePos;
 		linkedlist_append(&map->items, treasure);
 		drop_item(treasure->sprite, drop_positions, space_count, DROP_COINS);
@@ -196,7 +200,8 @@ void loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player)
 	if (player->stats.hp < player->stats.maxhp / 2)
 		item_drop_chance = 0;
 
-	if (player_has_potion_effect(player, POTION_NONE) && get_random(potion_drop_chance) == 0) {
+	if (player_has_potion_effect(player, POTION_NONE)
+	    && get_random(potion_drop_chance) == 0) {
 		switch (get_random(2)) {
 			case 0:
 				item = item_builder_build_potion(POTION_BLOODLUST);
@@ -224,9 +229,8 @@ void loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player)
 		item = item_builder_build_item(key, map->level);
 		item->sprite->pos = monsterTilePos;
 		linkedlist_append(&map->items, item);
-		drop_item(item->sprite, drop_positions,
-			  space_count,
-			  key == DAGGER ? DROP_WEAPON : DROP_HEALTH);
+		drop_item(item->sprite, drop_positions, space_count,
+		          key == DAGGER ? DROP_WEAPON : DROP_HEALTH);
 	}
 	if (!player_full_health && get_random(2) == 0) {
 		item = item_builder_build_item(FLESH, map->level);

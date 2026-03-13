@@ -31,31 +31,26 @@
  * \brief A game item struct
  */
 typedef struct Item_t {
-	Sprite *sprite;                               /**< The item sprite */
-	LinkedList *subsprites;                       /**< A list of sub-sprites (labels) */
-	bool collected;                               /**< If the item has been collected */
-	bool openable;                                /**< Can the item be opened? */
-	bool opened;                                  /**< Has the item been opened? */
-	char label[50];                               /**< The Item label */
-	double price;                                 /**< The item price (for vendor) */
-	double value;                                 /**< Value, the item value. Eg. Gold */
-	LinkedList *items;                            /**< Sub items */
-	void (*effect)(struct Item_t *, Player *);    /**< Item effect callback */
+	Sprite *sprite;         /**< The item sprite */
+	LinkedList *subsprites; /**< A list of sub-sprites (labels) */
+	bool collected;         /**< If the item has been collected */
+	bool openable;          /**< Can the item be opened? */
+	bool opened;            /**< Has the item been opened? */
+	char label[50];         /**< The Item label */
+	double price;           /**< The item price (for vendor) */
+	double value;           /**< Value, the item value. Eg. Gold */
+	LinkedList *items;      /**< Sub items */
+	void (*effect)(struct Item_t *, Player *); /**< Item effect callback */
 } Item;
 
-Item *
-item_create(void);
+Item *item_create(void);
 
-void
-item_collected(Item*, Player*);
+void item_collected(Item *, Player *);
 
-void
-item_update(Item*, UpdateData*);
+void item_update(Item *, UpdateData *);
 
-void
-item_render(Item*, Camera*);
+void item_render(Item *, Camera *);
 
-void
-item_destroy(Item*);
+void item_destroy(Item *);
 
 #endif // ITEM_H_

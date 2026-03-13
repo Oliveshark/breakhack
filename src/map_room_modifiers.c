@@ -23,19 +23,19 @@
 #include "position.h"
 
 void
-map_room_modifier_player_effect(Player *player,
-				RoomMatrix *matrix,
-				Vector2d *direction,
-				void (*move_cb)(Player*, RoomMatrix*, Vector2d))
+map_room_modifier_player_effect(Player *player, RoomMatrix *matrix,
+                                Vector2d *direction,
+                                void (*move_cb)(Player *, RoomMatrix *,
+                                                Vector2d))
 {
 	Position matrixPos = position_to_matrix_coords(&player->sprite->pos);
 	if (matrix->modifier->type == RMOD_TYPE_WINDY
 	    && player->effects.effect != POTION_STONE
-	    && !vector2d_equals(*direction, VECTOR2D_NODIR)
-	    && matrixPos.x > 0 && matrixPos.x < MAP_ROOM_WIDTH-1
-	    && matrixPos.y > 0 && matrixPos.y < MAP_ROOM_HEIGHT-1)
-	{
-		if (!vector2d_is_opposite(*direction, matrix->modifier->data.wind.direction)) {
+	    && !vector2d_equals(*direction, VECTOR2D_NODIR) && matrixPos.x > 0
+	    && matrixPos.x < MAP_ROOM_WIDTH - 1 && matrixPos.y > 0
+	    && matrixPos.y < MAP_ROOM_HEIGHT - 1) {
+		if (!vector2d_is_opposite(*direction,
+		                          matrix->modifier->data.wind.direction)) {
 			move_cb(player, matrix, matrix->modifier->data.wind.direction);
 		}
 	}

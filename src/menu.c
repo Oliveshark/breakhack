@@ -29,9 +29,9 @@
 #include "collisions.h"
 #include "texturecache.h"
 
-static SDL_Color C_MENU_DEFAULT		= { 255, 255, 0, 255 };
-static SDL_Color C_MENU_OUTLINE_DEFAULT	= { 0,	0, 0, 255 };
-static SDL_Color C_MENU_HOVER		= { 255, 0, 0, 255 };
+static SDL_Color C_MENU_DEFAULT = {255, 255, 0, 255};
+static SDL_Color C_MENU_OUTLINE_DEFAULT = {0, 0, 0, 255};
+static SDL_Color C_MENU_HOVER = {255, 0, 0, 255};
 
 typedef struct MenuItem {
 	Sprite *sprite;
@@ -49,11 +49,8 @@ menu_create(void)
 	menu->descriptions = linkedlist_create();
 	menu->selected = 0;
 	menu->menuDescription = sprite_create();
-	sprite_load_text_texture(menu->menuDescription,
-				 "GUI/SDS_8x8.ttf",
-				 0,
-				 10,
-				 1);
+	sprite_load_text_texture(menu->menuDescription, "GUI/SDS_8x8.ttf", 0, 10,
+	                         1);
 	menu->menuDescription->fixed = true;
 	menu->menuDescription->pos = POS(20, SCREEN_HEIGHT - 20);
 	menu->menuDescription->hidden = true;
@@ -62,7 +59,8 @@ menu_create(void)
 }
 
 void
-menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size, SDL_Renderer *renderer)
+menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items,
+                      unsigned int size, SDL_Renderer *renderer)
 {
 	if (*menu != NULL) {
 		menu_destroy(*menu);
@@ -77,24 +75,26 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 		Sprite *s1 = sprite_create();
 		sprite_load_text_texture(s1, "GUI/SDS_8x8.ttf", 0, 25, 2);
 		texture_load_from_text(s1->textures[0], menu_items[i].label,
-				       C_MENU_DEFAULT, C_MENU_OUTLINE_DEFAULT, renderer);
+		                       C_MENU_DEFAULT, C_MENU_OUTLINE_DEFAULT,
+		                       renderer);
 
-		hcenter = (SCREEN_WIDTH/2) - (s1->textures[0]->dim.width/2);
-		s1->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
+		hcenter = (SCREEN_WIDTH / 2) - (s1->textures[0]->dim.width / 2);
+		s1->pos = (Position){(int)hcenter, (int)200 + (i * 50)};
 		s1->dim = s1->textures[0]->dim;
 		s1->fixed = true;
 
 		Sprite *s2 = sprite_create();
 		sprite_load_text_texture(s2, "GUI/SDS_8x8.ttf", 0, 25, 2);
 		texture_load_from_text(s2->textures[0], menu_items[i].label,
-				       C_MENU_HOVER, C_MENU_OUTLINE_DEFAULT, renderer);
+		                       C_MENU_HOVER, C_MENU_OUTLINE_DEFAULT, renderer);
 
-		s2->pos = (Position) { (int) hcenter, (int) 200 + (i*50) };
+		s2->pos = (Position){(int)hcenter, (int)200 + (i * 50)};
 		s2->dim = s2->textures[0]->dim;
 		s2->fixed = true;
 
 		menu_item_add(*menu, s1, s2, menu_items[i].callback);
-		linkedlist_append(&(*menu)->descriptions, (void*) menu_items[i].description);
+		linkedlist_append(&(*menu)->descriptions,
+		                  (void *)menu_items[i].description);
 	}
 
 	(*menu)->selected = 0;
@@ -102,25 +102,17 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 }
 
 Menu *
-menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *cam)
+menu_create_character_selector(void (*onCharacterSelect)(const char *),
+                               Camera *cam)
 {
-	static char * const spriteSheets[] = {
-		"Commissions/Warrior.png",
-		"Commissions/Rogue.png",
-		"Commissions/Mage.png"
-	};
+	static char *const spriteSheets[] = {"Commissions/Warrior.png",
+	                                     "Commissions/Rogue.png",
+	                                     "Commissions/Mage.png"};
 
-	static char * const callbackData[] = {
-		"warrior",
-		"rogue",
-		"mage"
-	};
+	static char *const callbackData[] = {"warrior", "rogue", "mage"};
 
-	static char * const descriptions[] = {
-		"Play as the warrior",
-		"Play as the rogue",
-		"Play as the mage"
-	};
+	static char *const descriptions[] = {
+	    "Play as the warrior", "Play as the rogue", "Play as the mage"};
 
 	Menu *menu = menu_create();
 	int xoffset = 168;
@@ -139,8 +131,8 @@ menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *
 		s2->pos = POS(xoffset - 32, 256);
 		s2->fixed = true;
 
-		menu_item_add(menu, s1, s2, (void (*)(void *)) onCharacterSelect);
-		MenuItem *item = linkedlist_get(&menu->items, (Uint32) i);
+		menu_item_add(menu, s1, s2, (void (*)(void *))onCharacterSelect);
+		MenuItem *item = linkedlist_get(&menu->items, (Uint32)i);
 		item->button->usrdata = callbackData[i];
 		xoffset += 168;
 
@@ -177,8 +169,8 @@ handle_keyboard_input(Menu *m, Input *input)
 	if (lastSelect != -1)
 		mixer_play_effect(CLICK);
 
-	((MenuItem*) linkedlist_get(&m->items, lastSelect))->button->hover = false;
-	((MenuItem*) linkedlist_get(&m->items, m->selected))->button->hover = true;
+	((MenuItem *)linkedlist_get(&m->items, lastSelect))->button->hover = false;
+	((MenuItem *)linkedlist_get(&m->items, m->selected))->button->hover = true;
 
 	return false;
 }
@@ -189,7 +181,7 @@ handle_mouse_motion(Menu *m, Input *input)
 	if (!input_mouse_moved(input))
 		return;
 
-	Position p = { input->mouseX, input->mouseY };
+	Position p = {input->mouseX, input->mouseY};
 
 	int lastSelect = m->selected;
 	int index = 0;
@@ -206,7 +198,6 @@ handle_mouse_motion(Menu *m, Input *input)
 		}
 		index++;
 	}
-
 }
 
 static void
@@ -219,14 +210,10 @@ redraw_description(Menu *m, SDL_Renderer *renderer)
 	}
 
 	m->menuDescription->hidden = false;
-	texture_load_from_text(m->menuDescription->textures[0],
-			       description,
-			       C_WHITE,
-			       C_BLACK,
-			       renderer);
-	m->menuDescription->dim = DIM(
-		m->menuDescription->textures[0]->dim.width,
-		m->menuDescription->textures[0]->dim.height);
+	texture_load_from_text(m->menuDescription->textures[0], description,
+	                       C_WHITE, C_BLACK, renderer);
+	m->menuDescription->dim = DIM(m->menuDescription->textures[0]->dim.width,
+	                              m->menuDescription->textures[0]->dim.height);
 }
 
 void
@@ -247,10 +234,9 @@ menu_update(Menu *m, Input *input, Camera *cam)
 		MenuItem *item = items->data;
 		items = items->next;
 
-		Position p = { input->mouseX, input->mouseY };
+		Position p = {input->mouseX, input->mouseY};
 		if (position_in_rect(&p, &item->button->area)
-		    && input_mousebutton_is_pressed(input, MBUTTON_LEFT))
-		{
+		    && input_mousebutton_is_pressed(input, MBUTTON_LEFT)) {
 			item->button->event(item->button->usrdata);
 			return;
 		}
@@ -263,18 +249,15 @@ menu_update(Menu *m, Input *input, Camera *cam)
 }
 
 void
-menu_item_add(Menu *m, Sprite *s1, Sprite *s2, void (*event)(void*))
+menu_item_add(Menu *m, Sprite *s1, Sprite *s2, void (*event)(void *))
 {
 	MenuItem *item = ec_malloc(sizeof(MenuItem));
 	item->sprite = s1;
 	item->hsprite = s2;
 
-	SDL_Rect area = {
-		item->sprite->pos.x,
-		item->sprite->pos.y,
-		item->sprite->textures[0]->dim.width,
-		item->sprite->textures[0]->dim.height
-	};
+	SDL_Rect area = {item->sprite->pos.x, item->sprite->pos.y,
+	                 item->sprite->textures[0]->dim.width,
+	                 item->sprite->textures[0]->dim.height};
 	item->button = gui_button_create(area, event, NULL);
 	if (linkedlist_size(m->items) == 0)
 		item->button->hover = true;
@@ -301,7 +284,6 @@ menu_render(Menu *m, Camera *cam)
 	}
 
 	sprite_render(m->menuDescription, cam);
-
 }
 
 static void
@@ -327,4 +309,3 @@ menu_destroy(Menu *m)
 	sprite_destroy(m->menuDescription);
 	free(m);
 }
-

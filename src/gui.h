@@ -17,16 +17,16 @@
  */
 
 #ifndef GUI_H_
-#define	GUI_H_
+#define GUI_H_
 
 #include "roommatrix.h"
-#define LOG_LINES_COUNT	10
+#define LOG_LINES_COUNT 10
 #define LOG_LINES_MAX_LEN 200
-#define LOG_FONT_SIZE	8
-#define LABEL_FONT_SIZE	8
+#define LOG_FONT_SIZE 8
+#define LABEL_FONT_SIZE 8
 
-#define EVENT_MESSAGE_DISPLAY_TIME	2500
-#define EVENT_MESSAGE_FONT_SIZE		20
+#define EVENT_MESSAGE_DISPLAY_TIME 2500
+#define EVENT_MESSAGE_FONT_SIZE 20
 
 #include "linkedlist.h"
 #include "sprite.h"
@@ -62,14 +62,11 @@ typedef struct Gui {
 	Timer *event_message_timer;
 } Gui;
 
-Gui*
-gui_create(Camera *);
+Gui *gui_create(Camera *);
 
-void
-gui_update_player_stats(Gui*, Player*, Map*, SDL_Renderer*);
+void gui_update_player_stats(Gui *, Player *, Map *, SDL_Renderer *);
 
-void
-gui_render_panel(Gui*, Camera*);
+void gui_render_panel(Gui *, Camera *);
 
 /**
  * \brief Update the minimap with the current room
@@ -77,8 +74,7 @@ gui_render_panel(Gui*, Camera*);
  * \param[in]	cam	The camera
  * \param[in]	rm	The current rooms RoomMatrix
  */
-void
-gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm);
+void gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm);
 
 /**
  * \brief Update the current room indicator on minimap
@@ -86,16 +82,14 @@ gui_update_minimap(Gui *gui, Camera *cam, RoomMatrix *rm);
  * \param[in]	cam	The camera
  * \param[in]	rm	The current rooms RoomMatrix
  */
-void
-gui_update_minimap_pos(Gui *gui, Camera *cam, RoomMatrix *rm);
+void gui_update_minimap_pos(Gui *gui, Camera *cam, RoomMatrix *rm);
 
 /**
  * \brief Reset the gui
  * \param gui The gui
  * \param cam The camera
  */
-void
-gui_reset(Gui *gui, Camera *cam);
+void gui_reset(Gui *gui, Camera *cam);
 
 /**
  * \brief Render the minimap
@@ -103,36 +97,27 @@ gui_reset(Gui *gui, Camera *cam);
  * \param[in]	cam	The camera
  * \param[in]	rm	The room matrix
  */
-void
-gui_render_minimap(Gui *gui, Camera *cam);
+void gui_render_minimap(Gui *gui, Camera *cam);
 
 /**
  * \brief Render the large minimap overlay
  * \param[in]	gui	The gui
  * \param[in]	cam	The camera
  */
-void
-gui_render_minimap_overlay(Gui *gui, Camera *cam);
+void gui_render_minimap_overlay(Gui *gui, Camera *cam);
 
-void
-gui_render_log(Gui*, Camera*);
+void gui_render_log(Gui *, Camera *);
 
-void
-gui_render_event_message(Gui*, Camera*);
+void gui_render_event_message(Gui *, Camera *);
 
-void
-gui_render_tooltip(Gui*, Camera*);
+void gui_render_tooltip(Gui *, Camera *);
 
-void
-gui_log(const char *fmt, ...);
+void gui_log(const char *fmt, ...);
 
-void
-gui_event_message(const char *fmt, ...);
+void gui_event_message(const char *fmt, ...);
 
-void
-gui_clear_message_log(void);
+void gui_clear_message_log(void);
 
-void
-gui_destroy(Gui*);
+void gui_destroy(Gui *);
 
 #endif // GUI_H_
