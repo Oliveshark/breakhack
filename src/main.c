@@ -480,32 +480,65 @@ showHowToTooltip(void *unused)
 }
 
 static void
+copySeedToClipboard(void *unused)
+{
+	UNUSED(unused);
+	char seed_str[16];
+	SDL_snprintf(seed_str, sizeof(seed_str), "%u", get_random_seed());
+	SDL_SetClipboardText(seed_str);
+	gui_event_message("Seed copied to clipboard");
+	toggleInGameMenu(NULL);
+}
+
+static void
+buildSeedLabel(char *buf, size_t size)
+{
+	SDL_snprintf(buf, size, "SEED:%u", get_random_seed());
+}
+
+static void
 initInGameMenu(void)
 {
-	static TEXT_MENU_ITEM menu_items[] = {
-	    {"RESUME", "", toggleInGameMenu},
-	    {"HOW TO PLAY", "", showHowToTooltip},
-	    {"MAIN MENU", "", goToMainMenu},
-	    {"QUIT", "Exit game", exitGame},
-	};
+	static char seed_label[32];
+	buildSeedLabel(seed_label, sizeof(seed_label));
 
-	menu_create_text_menu(&inGameMenu, &menu_items[0], 4, gRenderer);
+	TEXT_MENU_ITEM menu_items[5];
+	int count = 0;
+
+	menu_items[count++] = (TEXT_MENU_ITEM){"RESUME", "Resume the current game", toggleInGameMenu};
+	menu_items[count++] = (TEXT_MENU_ITEM){"HOW TO PLAY", "Show the in-game guide", showHowToTooltip};
+	if (!weeklyGame) {
+		menu_items[count++] = (TEXT_MENU_ITEM){seed_label, "Copy seed to clipboard", copySeedToClipboard};
+	}
+	menu_items[count++] = (TEXT_MENU_ITEM){"MAIN MENU", "Return to the main menu", goToMainMenu};
+	menu_items[count++] = (TEXT_MENU_ITEM){"QUIT", "Exit game", exitGame};
+
+	menu_create_text_menu(&inGameMenu, &menu_items[0], count, gRenderer);
 }
 
 static void
 createInGameGameOverMenu(void)
 {
-	static TEXT_MENU_ITEM menu_items[] = {
-	    {"NEW GAME", "Start a new game with the same settings", goToCharacterMenu},
-	    {"MAIN MENU", "", goToMainMenu},
-	    {"QUIT", "Exit game", exitGame},
-	};
+	static char seed_label[32];
+	buildSeedLabel(seed_label, sizeof(seed_label));
 
 	if (inGameMenu) {
 		menu_destroy(inGameMenu);
 		inGameMenu = NULL;
 	}
-	menu_create_text_menu(&inGameMenu, &menu_items[0], 3, gRenderer);
+
+	TEXT_MENU_ITEM menu_items[4];
+	int count = 0;
+
+	menu_items[count++] =
+	    (TEXT_MENU_ITEM){"NEW GAME", "Start a new game with the same settings", goToCharacterMenu};
+	if (!weeklyGame) {
+		menu_items[count++] = (TEXT_MENU_ITEM){seed_label, "Copy seed to clipboard", copySeedToClipboard};
+	}
+	menu_items[count++] = (TEXT_MENU_ITEM){"MAIN MENU", "Return to the main menu", goToMainMenu};
+	menu_items[count++] = (TEXT_MENU_ITEM){"QUIT", "Exit game", exitGame};
+
+	menu_create_text_menu(&inGameMenu, &menu_items[0], count, gRenderer);
 }
 
 static void
