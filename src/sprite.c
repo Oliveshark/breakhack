@@ -54,8 +54,7 @@ sprite_create(void)
 }
 
 void
-sprite_load_texture(Sprite *sprite, const char *path, int index,
-                    SDL_Renderer *renderer)
+sprite_load_texture(Sprite *sprite, const char *path, int index, SDL_Renderer *renderer)
 {
 	if (index > 1)
 		fatal("in sprite_load_texture() index out of bounds");
@@ -71,8 +70,7 @@ sprite_load_texture(Sprite *sprite, const char *path, int index,
 }
 
 void
-sprite_load_text_texture(Sprite *sprite, const char *path, int index, int size,
-                         int outline)
+sprite_load_text_texture(Sprite *sprite, const char *path, int index, int size, int outline)
 {
 	if (index > 1)
 		fatal("in sprite_load_texture() index out of bounds");
@@ -149,8 +147,7 @@ interpolate_scale(Sprite *s, float steps_remaining)
 
 	s->dim.width += (int)dw;
 	s->dim.height += (int)dh;
-	s->offset = POS((s->dest.dim.width - s->dim.width) / 2,
-	                (s->dest.dim.height - s->dim.height) / 2);
+	s->offset = POS((s->dest.dim.width - s->dim.width) / 2, (s->dest.dim.height - s->dim.height) / 2);
 }
 
 static inline void
@@ -177,8 +174,7 @@ sprite_update(Sprite *s, UpdateData *data)
 				s->dim.height -= 4;
 				s->pos.x += 2;
 				s->pos.y += 2;
-				s->rotationPoint =
-				    (SDL_Point){s->dim.width / 2, s->dim.height / 2};
+				s->rotationPoint = (SDL_Point){s->dim.width / 2, s->dim.height / 2};
 			}
 			if (s->dim.width < 4) {
 				s->hidden = true;
@@ -212,10 +208,8 @@ void
 sprite_interpolate_to(Sprite *s, Destination *dest)
 {
 	debug("Interpolating:");
-	debug("    Pos: %dx%d -> %dx%d", s->pos.x, s->pos.y, dest->pos.x,
-	      dest->pos.y);
-	s->offset = POS((dest->dim.width - s->dim.width) / 2,
-	                (dest->dim.height - s->dim.width) / 2);
+	debug("    Pos: %dx%d -> %dx%d", s->pos.x, s->pos.y, dest->pos.x, dest->pos.y);
+	s->offset = POS((dest->dim.width - s->dim.width) / 2, (dest->dim.height - s->dim.width) / 2);
 	s->rotationPoint = (SDL_Point){dest->dim.width / 2, dest->dim.height / 2};
 	s->state = SPRITE_STATE_MOVING;
 	s->dest = *dest;
@@ -250,8 +244,8 @@ sprite_render(Sprite *s, Camera *cam)
 	SDL_Rect box = {cameraPos.x, cameraPos.y, s->dim.width, s->dim.height};
 
 	if (s->angle != 0 || s->flip != SDL_FLIP_NONE) {
-		texture_render_clip_ex(s->textures[s->texture_index], &box, &s->clip,
-		                       s->angle, &s->rotationPoint, s->flip, cam);
+		texture_render_clip_ex(s->textures[s->texture_index], &box, &s->clip, s->angle, &s->rotationPoint, s->flip,
+		                       cam);
 	} else if (s->clip.w && s->clip.h) {
 		texture_render_clip(s->textures[s->texture_index], &box, &s->clip, cam);
 	} else {

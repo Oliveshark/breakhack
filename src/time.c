@@ -69,8 +69,7 @@ static char *
 create_lb_name(struct tm *tm)
 {
 	char *name = ec_malloc(sizeof(char) * 15);
-	m_sprintf(name, 15, "%u%.2u%.2u_weekly", tm->tm_year % 100, tm->tm_mon + 1,
-	          tm->tm_mday);
+	m_sprintf(name, 15, "%u%.2u%.2u_weekly", tm->tm_year % 100, tm->tm_mon + 1, tm->tm_mday);
 	return name;
 }
 

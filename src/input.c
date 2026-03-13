@@ -312,13 +312,11 @@ input_key_is_down(Input *input, Uint64 key)
 bool
 input_mousebutton_is_pressed(Input *input, Uint8 button)
 {
-	return (input->mouseButtonState & button)
-	       && !(input->lastMouseButtonState & button);
+	return (input->mouseButtonState & button) && !(input->lastMouseButtonState & button);
 }
 
 bool
 input_mouse_moved(Input *input)
 {
-	return (input->mouseX != input->lastMouseX)
-	       || (input->mouseY != input->lastMouseY);
+	return (input->mouseX != input->lastMouseX) || (input->mouseY != input->lastMouseY);
 }

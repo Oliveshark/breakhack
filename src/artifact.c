@@ -160,8 +160,7 @@ static int EngineerArtifacts[] = {
 static void
 add_level_sprite(Artifact *a)
 {
-	Sprite *sprite = sprite_util_create_text_sprite(
-	    "GUI/SDS_8x8.ttf", 8, C_BLUE, C_BLACK, "%u", a->level);
+	Sprite *sprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf", 8, C_BLUE, C_BLACK, "%u", a->level);
 	sprite->pos = a->sprite->pos;
 	sprite->offset = POS(32 - sprite->dim.width, 32 - sprite->dim.height);
 	a->levelSprite = sprite;
@@ -195,8 +194,7 @@ void
 artifact_add_price(Artifact *a, unsigned int price)
 {
 
-	Sprite *sprite = sprite_util_create_text_sprite(
-	    "GUI/SDS_8x8.ttf", 8, C_YELLOW, C_BLACK, "$%u", price);
+	Sprite *sprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf", 8, C_YELLOW, C_BLACK, "$%u", price);
 	sprite->pos = a->sprite->pos;
 	a->price = price;
 	a->priceSprite = sprite;

@@ -21,10 +21,10 @@
 
 #include <stdbool.h>
 
-#define POS(x, y)                                                              \
-	(Position)                                                                 \
-	{                                                                          \
-		x, y                                                                   \
+#define POS(x, y)                                                                                                      \
+	(Position)                                                                                                         \
+	{                                                                                                                  \
+		x, y                                                                                                           \
 	}
 
 /**
@@ -78,8 +78,7 @@ bool position_equals(const Position *p1, const Position *p2);
  * \param p2 The second position
  * \return True if the two positions are within the provided distance
  */
-bool position_proximity(unsigned int distance, const Position *p1,
-                        const Position *p2);
+bool position_proximity(unsigned int distance, const Position *p1, const Position *p2);
 
 /*
  * \brief Check if a matrix coord is still within the matrix
@@ -108,7 +107,6 @@ Position position_add(const Position *p1, const Position *p2);
 /**
  * \brief Get the world position from matrix coord
  */
-Position position_mcord_to_world_pos(const Position *cord,
-                                     const Position *roomPos);
+Position position_mcord_to_world_pos(const Position *cord, const Position *roomPos);
 
 #endif // POSITION_H_

@@ -4,7 +4,7 @@ IndentWidth: 4
 TabWidth: 4
 UseTab: ForIndentation
 BreakBeforeBraces: Linux
-ColumnLimit: 80
+ColumnLimit: 120
 PointerAlignment: Right
 IndentCaseLabels: true
 SpaceBeforeParens: ControlStatements

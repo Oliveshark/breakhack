@@ -81,8 +81,7 @@ m_vsprintf(char *dest, size_t sz, const char *fmt, va_list args)
 }
 
 void
-log_print(FILE *out, const char *prefix, const char *file, int line,
-          const char *function, const char *fmt, ...)
+log_print(FILE *out, const char *prefix, const char *file, int line, const char *function, const char *fmt, ...)
 {
 	va_list args;
 	char tstamp[10];
@@ -101,15 +100,12 @@ log_print(FILE *out, const char *prefix, const char *file, int line,
 		else
 			fprintf(out, "\033[32m");
 		fprintf(out, "[%5s]", prefix);
-		fprintf(out, "\033[36m[%20s:%-3d]\033[37m[%20s()]\033[0m ", file, line,
-		        function);
+		fprintf(out, "\033[36m[%20s:%-3d]\033[37m[%20s()]\033[0m ", file, line, function);
 	} else {
-		fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file,
-		        line, function);
+		fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line, function);
 	}
 #else  // _WIN32
-	fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line,
-	        function);
+	fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line, function);
 #endif // _WIN32
 #else  // DEBUG
 	UNUSED(prefix);

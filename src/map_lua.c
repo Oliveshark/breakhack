@@ -181,8 +181,7 @@ l_add_texture(lua_State *L)
 }
 
 static void
-extract_tile_data(lua_State *L,
-                  void (*f_add_tile)(Map *, Position *, MapTile *))
+extract_tile_data(lua_State *L, void (*f_add_tile)(Map *, Position *, MapTile *))
 {
 	Map *map;
 	int tile_x, tile_y;
@@ -227,11 +226,9 @@ extract_tile_data(lua_State *L,
 
 	MapTile *tile = map_create_tile();
 	if (t_index0 >= 0)
-		sprite_set_texture(tile->sprite,
-		                   linkedlist_get(&map->textures, t_index0), 0);
+		sprite_set_texture(tile->sprite, linkedlist_get(&map->textures, t_index0), 0);
 	if (t_index1 >= 0)
-		sprite_set_texture(tile->sprite,
-		                   linkedlist_get(&map->textures, t_index1), 1);
+		sprite_set_texture(tile->sprite, linkedlist_get(&map->textures, t_index1), 1);
 	tile->sprite->clip = clip;
 
 	tile->collider = collider;
@@ -339,9 +336,8 @@ l_add_trap(lua_State *L)
 	sprite_set_texture(trap->sprite, t0, 0);
 	sprite_set_texture(trap->sprite, t1, 1);
 	trap->sprite->clip = CLIP16(clipx, clipy);
-	trap->sprite->pos = (Position){
-	    cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + xpos * TILE_DIMENSION,
-	    cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + ypos * TILE_DIMENSION};
+	trap->sprite->pos = (Position){cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + xpos * TILE_DIMENSION,
+	                               cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + ypos * TILE_DIMENSION};
 	trap->damage = damage;
 
 	Position trapPos = {xpos, ypos};
@@ -372,20 +368,16 @@ l_add_chest(lua_State *L)
 	int clip_x = (int)luaL_checkinteger(L, -2);
 	int clip_y = (int)luaL_checkinteger(L, -1);
 
-	Item *chest = item_builder_build_container(texture_path_1, texture_path_2,
-	                                           CLIP16(clip_x, clip_y));
+	Item *chest = item_builder_build_container(texture_path_1, texture_path_2, CLIP16(clip_x, clip_y));
 	const Position *cr = &map->currentRoom;
-	chest->sprite->pos = (Position){
-	    cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + x * TILE_DIMENSION,
-	    cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + y * TILE_DIMENSION};
+	chest->sprite->pos = (Position){cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + x * TILE_DIMENSION,
+	                                cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + y * TILE_DIMENSION};
 	lua_pop(L, 4);
 
 	if (get_random(1) == 0)
-		linkedlist_append(&chest->items,
-		                  item_builder_build_item(TREASURE, level));
+		linkedlist_append(&chest->items, item_builder_build_item(TREASURE, level));
 	if (get_random(4) == 0)
-		linkedlist_append(&chest->items,
-		                  item_builder_build_item(HEALTH, level));
+		linkedlist_append(&chest->items, item_builder_build_item(HEALTH, level));
 	if (get_random(4) == 0) {
 		Item *dagger = item_builder_build_item(DAGGER, level);
 		dagger->value = get_random(4) + 1;
@@ -420,8 +412,7 @@ add_keybearer_to_map(Map *map, int keyType)
 			continue;
 
 		if (!monster_is_in_room_with_locktype(map, m, keyType)) {
-			debug("Adding key %d to monster '%s' (%u)", keyType, m->label,
-			      index);
+			debug("Adding key %d to monster '%s' (%u)", keyType, m->label, index);
 			m->items.keyType = keyType;
 			return;
 		} else {
@@ -528,8 +519,7 @@ l_load_script(lua_State *L)
 
 	io_load_file_buffer(&content, &size, filename);
 	if (luaL_loadbuffer(L, content, size, name) != 0) {
-		luaL_error(L, "Error loading module %s from file %s\n\t%s",
-		           lua_tostring(L, 1), filename, lua_tostring(L, -1));
+		luaL_error(L, "Error loading module %s from file %s\n\t%s", lua_tostring(L, 1), filename, lua_tostring(L, -1));
 	}
 	free(content);
 
@@ -612,8 +602,7 @@ build_player_state_table(lua_State *L, Player *player)
 }
 
 static Map *
-generate_map(unsigned int level, const char *file, GameMode gameMode,
-             Player *player, SDL_Renderer *renderer)
+generate_map(unsigned int level, const char *file, GameMode gameMode, Player *player, SDL_Renderer *renderer)
 {
 	int status, result;
 
@@ -740,8 +729,7 @@ map_lua_generator_single_room__run(unsigned int level, SDL_Renderer *renderer)
 }
 
 Map *
-map_lua_generator_run(unsigned int level, GameMode gameMode, Player *player,
-                      SDL_Renderer *renderer)
+map_lua_generator_run(unsigned int level, GameMode gameMode, Player *player, SDL_Renderer *renderer)
 {
 	char file[] = "mapgen.lua";
 	return generate_map(level, file, gameMode, player, renderer);

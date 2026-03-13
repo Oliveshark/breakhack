@@ -113,8 +113,7 @@ player_gain_xp(Player *player, unsigned int xp_gain)
 		player_levelup(player);
 		gui_log("You have reached level %u", player->stats.lvl);
 		gui_event_message("You reached level %u", player->stats.lvl);
-		actiontextbuilder_create_text("Level up", C_GREEN,
-		                              &player->sprite->pos);
+		actiontextbuilder_create_text("Level up", C_GREEN, &player->sprite->pos);
 	}
 }
 
@@ -139,8 +138,7 @@ action_spent(Player *p)
 }
 
 static void
-on_monster_collision(Player *player, Monster *monster, RoomMatrix *matrix,
-                     Vector2d direction)
+on_monster_collision(Player *player, Monster *monster, RoomMatrix *matrix, Vector2d direction)
 {
 	CombatResult result = stats_fight(&player->stats, &monster->stats);
 
@@ -161,20 +159,17 @@ on_monster_collision(Player *player, Monster *monster, RoomMatrix *matrix,
 		player->stat_data.misses += 1;
 	}
 	player_monster_kill_check(player, monster);
-	if (monster->stats.hp <= 0
-	    && (player_has_artifact(player, EXPLOSIVE_KILLS))) {
+	if (monster->stats.hp <= 0 && (player_has_artifact(player, EXPLOSIVE_KILLS))) {
 		mixer_play_effect(EXPLOSION_EFFECT);
 		particle_engine_fire_explosion(monster->sprite->pos, DIM(32, 32));
 		animation_controller_create(EXPLOSION_ANIMATION, monster->sprite->pos);
-		effect_damage_surroundings(
-		    &monster->sprite->pos, matrix, player, &player->stats,
-		    player_has_artifact(player, EXPLOSIVE_KILLS), 0, false);
+		effect_damage_surroundings(&monster->sprite->pos, matrix, player, &player->stats,
+		                           player_has_artifact(player, EXPLOSIVE_KILLS), 0, false);
 	}
 
 	if (monster->stats.hp > 0) {
 		if (get_random(10) < player_has_artifact(player, PUSH_BACK)) {
-			gui_log("The force of your blow sends %s reeling",
-			        monster->lclabel);
+			gui_log("The force of your blow sends %s reeling", monster->lclabel);
 			monster_push(monster, player, matrix, direction);
 		}
 
@@ -237,8 +232,7 @@ player_has_collided(Player *p, RoomSpace *space)
 	if (SPACE_IS_OCCUPIED(space))
 		return true;
 
-	return !p->phase_count && space->monster
-	       && space->monster->sprite->state != SPRITE_STATE_FALLING;
+	return !p->phase_count && space->monster && space->monster->sprite->state != SPRITE_STATE_FALLING;
 }
 
 static bool
@@ -253,8 +247,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 	RoomSpace *space = &matrix->spaces[matrixPos.x][matrixPos.y];
 
 	if (player_has_collided(player, space)) {
-		player_update_pos(player, -TILE_DIMENSION * (int)direction.x,
-		                  -TILE_DIMENSION * (int)direction.y);
+		player_update_pos(player, -TILE_DIMENSION * (int)direction.x, -TILE_DIMENSION * (int)direction.y);
 
 		gamecontroller_rumble(0.30f, 100);
 		if (space->monster) {
@@ -276,8 +269,7 @@ has_collided(Player *player, RoomMatrix *matrix, Vector2d direction)
 
 		// If not phased or phase will end this turn, react to traps and pits
 		if (!player->phase_count
-		    || (player->phase_count == 1
-		        && player->stats.speed == (player->stat_data.steps + 1))) {
+		    || (player->phase_count == 1 && player->stats.speed == (player->stat_data.steps + 1))) {
 			player_interact_objects(player, space);
 			player_interact_traps_and_pits(player, space);
 		}
@@ -346,16 +338,14 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 
 	Position lastPos = position_to_matrix_coords(&player->sprite->pos);
 
-	player_update_pos(player, TILE_DIMENSION * (int)direction.x,
-	                  TILE_DIMENSION * (int)direction.y);
+	player_update_pos(player, TILE_DIMENSION * (int)direction.x, TILE_DIMENSION * (int)direction.y);
 
 	if (!has_collided(player, matrix, direction)) {
 		action_spent(player);
 		RoomSpace *lastSpace = &matrix->spaces[lastPos.x][lastPos.y];
-		if (matrix->modifier->type == RMOD_TYPE_CRUMBLING && lastPos.x > 1
-		    && lastPos.y > 1 && lastPos.x < 14 && lastPos.y < 10
-		    && lastSpace->decoration == NULL && lastSpace->trap == NULL
-		    && lastSpace->objects == NULL && lastSpace->items == NULL) {
+		if (matrix->modifier->type == RMOD_TYPE_CRUMBLING && lastPos.x > 1 && lastPos.y > 1 && lastPos.x < 14
+		    && lastPos.y < 10 && lastSpace->decoration == NULL && lastSpace->trap == NULL && lastSpace->objects == NULL
+		    && lastSpace->items == NULL) {
 			map_trigger_tile_fall(lastSpace->tile);
 		}
 	}
@@ -364,8 +354,7 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 void
 player_sip_health(Player *player)
 {
-	bool hasSips = player->class == MAGE ? player->potion_sips > 1
-	                                     : player->potion_sips > 0;
+	bool hasSips = player->class == MAGE ? player->potion_sips > 1 : player->potion_sips > 0;
 
 	if (hasSips) {
 		--player->potion_sips;
@@ -418,8 +407,7 @@ handle_next_move(UpdateData *data)
 	if (!vector2d_equals(nextDir, VECTOR2D_NODIR))
 		move(player, matrix, nextDir);
 
-	if (!position_equals(&originPos, &player->sprite->pos)
-	    && matrix->modifier->type == RMOD_TYPE_FIRE) {
+	if (!position_equals(&originPos, &player->sprite->pos) && matrix->modifier->type == RMOD_TYPE_FIRE) {
 		Object *o = object_create_fire();
 		o->damage *= player->stats.lvl;
 		o->sprite->pos = originPos;
@@ -535,8 +523,7 @@ check_skill_activation(UpdateData *data)
 			continue;
 		if (skill->available && !skill->available(player))
 			continue;
-		skill->active =
-		    (selected - 1) == i && !skill->active && skill->resetCountdown == 0;
+		skill->active = (selected - 1) == i && !skill->active && skill->resetCountdown == 0;
 		if (skill->active && skill->instantUse) {
 			SkillData skillData = {player, matrix, VECTOR2D_NODIR};
 			use_skill(player, skill, &skillData);
@@ -575,14 +562,11 @@ check_skill_trigger(UpdateData *data)
 static void
 build_sword_animation(Player *p, SDL_Renderer *renderer)
 {
-	animation_load_texture(p->swordAnimation, "Extras/SwordSwing.png",
-	                       renderer);
-	animation_set_frames(p->swordAnimation,
-	                     (AnimationClip[]){{0, 0, 32, 32, 50},
-	                                       {32, 0, 32, 32, 50},
-	                                       {64, 0, 32, 32, 50},
-	                                       {96, 0, 32, 32, 50},
-	                                       {128, 0, 32, 32, 50}});
+	animation_load_texture(p->swordAnimation, "Extras/SwordSwing.png", renderer);
+	animation_set_frames(
+	    p->swordAnimation,
+	    (AnimationClip[]){
+	        {0, 0, 32, 32, 50}, {32, 0, 32, 32, 50}, {64, 0, 32, 32, 50}, {96, 0, 32, 32, 50}, {128, 0, 32, 32, 50}});
 
 	p->swordAnimation->loop = false;
 	p->swordAnimation->sprite->dim = GAME_DIMENSION;
@@ -807,8 +791,7 @@ player_update(UpdateData *data)
 	sprite_update(player->sprite, data);
 
 	check_skill_activation(data);
-	if (player->sprite->state != SPRITE_STATE_FALLING
-	    && !check_skill_trigger(data))
+	if (player->sprite->state != SPRITE_STATE_FALLING && !check_skill_trigger(data))
 		handle_next_move(data);
 
 	if (player->sprite->state == SPRITE_STATE_FALLING && player->stats.hp > 0) {
@@ -839,8 +822,7 @@ player_update(UpdateData *data)
 	update_skill_animations(player);
 
 	uint32_t damage_taken = player->stats.maxhp - player->stats.hp;
-	player->bleed_emitter->enabled =
-	    (int)damage_taken >= player->stats.maxhp / 2;
+	player->bleed_emitter->enabled = (int)damage_taken >= player->stats.maxhp / 2;
 }
 
 static void

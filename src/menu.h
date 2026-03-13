@@ -40,11 +40,9 @@ typedef struct Menu_t {
 
 Menu *menu_create(void);
 
-void menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items,
-                           unsigned int size, SDL_Renderer *);
+void menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size, SDL_Renderer *);
 
-Menu *menu_create_character_selector(void (*onCharacterSelect)(const char *),
-                                     Camera *cam);
+Menu *menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *cam);
 
 void menu_update(Menu *, Input *, Camera *cam);
 

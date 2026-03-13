@@ -7,8 +7,7 @@ static void
 file_error(const char *path)
 {
 	PHYSFS_ErrorCode code = PHYSFS_getLastErrorCode();
-	fatal("Unable to open file %s: (%d) %s", path, code,
-	      PHYSFS_getErrorByCode(code));
+	fatal("Unable to open file %s: (%d) %s", path, code, PHYSFS_getErrorByCode(code));
 }
 
 SDL_IOStream *

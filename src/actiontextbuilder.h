@@ -30,8 +30,7 @@ void actiontextbuilder_update(UpdateData *);
 
 void actiontextbuilder_render(Camera *);
 
-void actiontextbuilder_create_text(const char *msg, SDL_Color,
-                                   const Position *);
+void actiontextbuilder_create_text(const char *msg, SDL_Color, const Position *);
 
 void actiontextbuilder_close(void);
 

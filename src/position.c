@@ -52,8 +52,7 @@ position_equals(const Position *p1, const Position *p2)
 }
 
 bool
-position_proximity(unsigned int distance, const Position *p1,
-                   const Position *p2)
+position_proximity(unsigned int distance, const Position *p1, const Position *p2)
 {
 	unsigned int dx, dy;
 
@@ -86,15 +85,13 @@ position_in_room(Position *pos, Position *roomPos)
 bool
 position_in_roommatrix(const Position *pos)
 {
-	return pos->x >= 0 && pos->x < MAP_ROOM_WIDTH && pos->y >= 0
-	       && pos->y < MAP_ROOM_HEIGHT;
+	return pos->x >= 0 && pos->x < MAP_ROOM_WIDTH && pos->y >= 0 && pos->y < MAP_ROOM_HEIGHT;
 }
 
 Position
 position_to_tile_pos(const Position *p)
 {
-	return (Position){p->x - (p->x % TILE_DIMENSION),
-	                  p->y - (p->y % TILE_DIMENSION)};
+	return (Position){p->x - (p->x % TILE_DIMENSION), p->y - (p->y % TILE_DIMENSION)};
 }
 
 Position

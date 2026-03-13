@@ -86,6 +86,5 @@ texturecache_texture_container_destroy(TextureContainer *tc)
 void
 texturecache_close(void)
 {
-	ht_destroy_custom(textures,
-	                  (void (*)(void *))texturecache_texture_container_destroy);
+	ht_destroy_custom(textures, (void (*)(void *))texturecache_texture_container_destroy);
 }

@@ -55,11 +55,7 @@
 #define MBUTTON_MIDDLE 0x2
 #define MBUTTON_RIGHT 0x4
 
-typedef enum InputDeviceType {
-	DeviceType_Unknown,
-	DeviceType_Keyboard,
-	DeviceType_Gamepad
-} InputDeviceType;
+typedef enum InputDeviceType { DeviceType_Unknown, DeviceType_Keyboard, DeviceType_Gamepad } InputDeviceType;
 
 typedef struct Input {
 	Uint64 keyState;

@@ -20,8 +20,7 @@
 #include "gui_util.h"
 
 static Sprite *
-render_frame_on_texture(Uint32 width, Uint32 height, Position offset,
-                        Camera *cam)
+render_frame_on_texture(Uint32 width, Uint32 height, Position offset, Camera *cam)
 {
 	Sprite *frame = sprite_create();
 	Texture *texture = texture_create();

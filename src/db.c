@@ -57,8 +57,7 @@ db_execute(sqlite3 *db, DbQuery *query)
 }
 
 bool
-db_execute_stmnt(const char *stmnt, sqlite3 *db,
-                 int (*cb)(void *, int, char **, char **), void *cb_arg)
+db_execute_stmnt(const char *stmnt, sqlite3 *db, int (*cb)(void *, int, char **, char **), void *cb_arg)
 {
 	debug("Executing sql: %s", stmnt);
 

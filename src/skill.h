@@ -29,19 +29,7 @@
 // Forward declaration
 typedef struct Player Player;
 
-enum SkillType {
-	FLURRY,
-	BASH,
-	CHARGE,
-	DAGGER_THROW,
-	SIP_HEALTH,
-	BACKSTAB,
-	TRIP,
-	PHASE,
-	BLINK,
-	ERUPT,
-	VAMPIRIC_BLOW
-};
+enum SkillType { FLURRY, BASH, CHARGE, DAGGER_THROW, SIP_HEALTH, BACKSTAB, TRIP, PHASE, BLINK, ERUPT, VAMPIRIC_BLOW };
 
 typedef struct SkillData_t {
 	Player *player;

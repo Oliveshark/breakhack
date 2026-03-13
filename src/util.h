@@ -28,64 +28,56 @@
 #endif // __FNAME__
 
 #ifdef VERBOSE
-#define verbose(...)                                                           \
-	log_print(stdout, "VERBOSE", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#define verbose(...) log_print(stdout, "VERBOSE", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #else
-#define verbose(...)                                                           \
-	do {                                                                       \
+#define verbose(...)                                                                                                   \
+	do {                                                                                                               \
 	} while (0)
 #endif
 
 #ifdef DEBUG
-#define debug(...)                                                             \
-	log_print(stdout, "DEBUG", __FNAME__, __LINE__, __func__, __VA_ARGS__)
-#define info(...)                                                              \
-	log_print(stdout, "INFO", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#define debug(...) log_print(stdout, "DEBUG", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#define info(...) log_print(stdout, "INFO", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #else // DEBUG
-#define debug(...)                                                             \
-	do {                                                                       \
+#define debug(...)                                                                                                     \
+	do {                                                                                                               \
 	} while (0)
-#define info(...)                                                              \
-	do {                                                                       \
+#define info(...)                                                                                                      \
+	do {                                                                                                               \
 	} while (0)
 #endif // DEBUG
 
-#define warn(...)                                                              \
-	log_print(stderr, "WARN", __FNAME__, __LINE__, __func__, __VA_ARGS__)
-#define error(...)                                                             \
-	log_print(stderr, "ERROR", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#define warn(...) log_print(stderr, "WARN", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#define error(...) log_print(stderr, "ERROR", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #ifdef DEBUG
-#define fatal(...)                                                             \
-	{                                                                          \
-		log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__,              \
-		          __VA_ARGS__);                                                \
-		printf("\n- Press any key to close -\n");                              \
-		getchar();                                                             \
-		exit(-1);                                                              \
+#define fatal(...)                                                                                                     \
+	{                                                                                                                  \
+		log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__, __VA_ARGS__);                                        \
+		printf("\n- Press any key to close -\n");                                                                      \
+		getchar();                                                                                                     \
+		exit(-1);                                                                                                      \
 	}
 #else // DEBUG
-#define fatal(...)                                                             \
-	{                                                                          \
-		log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__,              \
-		          __VA_ARGS__);                                                \
-		exit(-1);                                                              \
+#define fatal(...)                                                                                                     \
+	{                                                                                                                  \
+		log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__, __VA_ARGS__);                                        \
+		exit(-1);                                                                                                      \
 	}
 #endif // DEBUG
 
 #ifdef DEBUG
-#define BH_ASSERT(x)                                                           \
-	if (!(x)) {                                                                \
-		fatal("Assertion failed: %s\n", #x);                                   \
-		exit(-1);                                                              \
+#define BH_ASSERT(x)                                                                                                   \
+	if (!(x)) {                                                                                                        \
+		fatal("Assertion failed: %s\n", #x);                                                                           \
+		exit(-1);                                                                                                      \
 	}
 #else
-#define BH_ASSERT(x)                                                           \
-	do {                                                                       \
+#define BH_ASSERT(x)                                                                                                   \
+	do {                                                                                                               \
 	} while (0)
 #endif // DEBUG
 
-void log_print(FILE *out, const char *prefix, const char *file, int line,
-               const char *func, const char *fmt, ...);
+void log_print(FILE *out, const char *prefix, const char *file, int line, const char *func, const char *fmt, ...);
 
 void *ec_malloc(unsigned long size);
 

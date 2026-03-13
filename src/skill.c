@@ -41,349 +41,310 @@
 #include "effect_util.h"
 #include "object.h"
 
-static char *flurry_tooltip[] = {
-    "FLURRY",
-    "",
-    "",
-    "   Hits an adjecant enemy with a flurry of three strikes.",
-    "",
-    "   Each strike has the same odds of hitting as a regular attack",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   5 turns",
-    "",
-    "",
-    "USAGE:",
-    "",
-    "   activate the skill (press ",
-    "1",
-    ")",
-    "",
-    "   followed by a direction (left, right, up or down)",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    "",
-    NULL};
+static char *flurry_tooltip[] = {"FLURRY",     "",
+                                 "",           "   Hits an adjecant enemy with a flurry of three strikes.",
+                                 "",           "   Each strike has the same odds of hitting as a regular attack",
+                                 "",           "",
+                                 "COOLDOWN:",  "",
+                                 "   5 turns", "",
+                                 "",           "USAGE:",
+                                 "",           "   activate the skill (press ",
+                                 "1",          ")",
+                                 "",           "   followed by a direction (left, right, up or down)",
+                                 "",           "",
+                                 "",           "Press ",
+                                 "ESC",        " to close",
+                                 "",           "",
+                                 NULL};
 
-static char *vampiric_blow_tooltip[] = {
-    "VAMPIRIC BLOW",
-    "",
-    "",
-    "   Hits an adjecant enemy with a vampiric blow.",
-    "",
-    "   Upon hitting you will siphon life from the target",
-    "",
-    "   and cause the target to bleed.",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   5 turns",
-    "",
-    "",
-    "USAGE:",
-    "",
-    "   activate the skill (press ",
-    "1",
-    ")",
-    "",
-    "   followed by a direction (left, right, up or down)",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    "",
-    NULL};
+static char *vampiric_blow_tooltip[] = {"VAMPIRIC BLOW",
+                                        "",
+                                        "",
+                                        "   Hits an adjecant enemy with a vampiric blow.",
+                                        "",
+                                        "   Upon hitting you will siphon life from the target",
+                                        "",
+                                        "   and cause the target to bleed.",
+                                        "",
+                                        "",
+                                        "COOLDOWN:",
+                                        "",
+                                        "   5 turns",
+                                        "",
+                                        "",
+                                        "USAGE:",
+                                        "",
+                                        "   activate the skill (press ",
+                                        "1",
+                                        ")",
+                                        "",
+                                        "   followed by a direction (left, right, up or down)",
+                                        "",
+                                        "",
+                                        "",
+                                        "Press ",
+                                        "ESC",
+                                        " to close",
+                                        "",
+                                        "",
+                                        NULL};
 
-static char *bash_tooltip[] = {
-    "BASH",
-    "",
-    "",
-    "   Bashes an adjecant enemy with your shield",
-    "",
-    "   On a successful hit the target will be stunned for 2 turns",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   3 turns",
-    "",
-    "",
-    "USAGE:",
-    "",
-    "   activate the skill (press ",
-    "2",
-    ")",
-    "",
-    "   followed by a direction (left, right, up or down)",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    NULL};
+static char *bash_tooltip[] = {"BASH",       "",
+                               "",           "   Bashes an adjecant enemy with your shield",
+                               "",           "   On a successful hit the target will be stunned for 2 turns",
+                               "",           "",
+                               "COOLDOWN:",  "",
+                               "   3 turns", "",
+                               "",           "USAGE:",
+                               "",           "   activate the skill (press ",
+                               "2",          ")",
+                               "",           "   followed by a direction (left, right, up or down)",
+                               "",           "",
+                               "",           "Press ",
+                               "ESC",        " to close",
+                               "",           NULL};
 
-static char *trip_tooltip[] = {
-    "TRIP",
-    "",
-    "",
-    "   Trips an adjecant enemy causing him to fall (move), in",
-    "",
-    "   the direction you tripped it in.",
-    "",
-    "   On a successful hit the enemy will also be stunned."
-    "",
-    "",
-    "   This can be combined with traps and pits to great effect.",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   3 turns",
-    "",
-    "",
-    "USAGE:",
-    "",
-    "   activate the skill (press ",
-    "2",
-    ")",
-    "",
-    "   followed by a direction (left, right, up or down)",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    NULL};
+static char *trip_tooltip[] = {"TRIP",
+                               "",
+                               "",
+                               "   Trips an adjecant enemy causing him to fall (move), in",
+                               "",
+                               "   the direction you tripped it in.",
+                               "",
+                               "   On a successful hit the enemy will also be stunned."
+                               "",
+                               "",
+                               "   This can be combined with traps and pits to great effect.",
+                               "",
+                               "",
+                               "COOLDOWN:",
+                               "",
+                               "   3 turns",
+                               "",
+                               "",
+                               "USAGE:",
+                               "",
+                               "   activate the skill (press ",
+                               "2",
+                               ")",
+                               "",
+                               "   followed by a direction (left, right, up or down)",
+                               "",
+                               "",
+                               "",
+                               "Press ",
+                               "ESC",
+                               " to close",
+                               "",
+                               NULL};
 
-static char *backstab_tooltip[] = {
-    "BACKSTAB",   "",
-    "",           "   You flip over an adjecant enemy taking it's place and",
-    "",           "   it taking yours, finnishing off with a stab in the back",
-    "",           "   of your foe.",
-    "",           "   A successful attack will also leave the enemy stunned.",
-    "",           "",
-    "COOLDOWN:",  "",
-    "   5 turns", "",
-    "",           "USAGE:",
-    "",           "   activate the skill (press ",
-    "1",          ")",
-    "",           "   followed by a direction (left, right, up or down)",
-    "",           "",
-    "",           "Press ",
-    "ESC",        " to close",
-    "",           NULL};
+static char *backstab_tooltip[] = {"BACKSTAB",   "",
+                                   "",           "   You flip over an adjecant enemy taking it's place and",
+                                   "",           "   it taking yours, finnishing off with a stab in the back",
+                                   "",           "   of your foe.",
+                                   "",           "   A successful attack will also leave the enemy stunned.",
+                                   "",           "",
+                                   "COOLDOWN:",  "",
+                                   "   5 turns", "",
+                                   "",           "USAGE:",
+                                   "",           "   activate the skill (press ",
+                                   "1",          ")",
+                                   "",           "   followed by a direction (left, right, up or down)",
+                                   "",           "",
+                                   "",           "Press ",
+                                   "ESC",        " to close",
+                                   "",           NULL};
 
-static char *phase_tooltip[] = {
-    "PHASE",
-    "",
-    "",
-    "   You phase out of existence for a time. While you are phased you",
-    "",
-    "   are unaffected by gravity, traps and enemies won't see you.",
-    "",
-    "   You can also pass through enemies.",
-    "",
-    "",
-    "   The effect lasts for 3 turns",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   8 turns",
-    "",
-    "",
-    "USAGE:",
-    "   activate the skill (press ",
-    "3",
-    ")",
-    "",
-    "   then move as normal",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    NULL};
+static char *phase_tooltip[] = {"PHASE",
+                                "",
+                                "",
+                                "   You phase out of existence for a time. While you are phased you",
+                                "",
+                                "   are unaffected by gravity, traps and enemies won't see you.",
+                                "",
+                                "   You can also pass through enemies.",
+                                "",
+                                "",
+                                "   The effect lasts for 3 turns",
+                                "",
+                                "",
+                                "COOLDOWN:",
+                                "",
+                                "   8 turns",
+                                "",
+                                "",
+                                "USAGE:",
+                                "   activate the skill (press ",
+                                "3",
+                                ")",
+                                "",
+                                "   then move as normal",
+                                "",
+                                "",
+                                "",
+                                "Press ",
+                                "ESC",
+                                " to close",
+                                "",
+                                NULL};
 
-static char *charge_tooltip[] = {
-    "CHARGE",
-    "",
-    "",
-    "   You charge in a chosen direction into the first obstructing",
-    "",
-    "   object. Charging into an enemy can deliver massive damage.",
-    "",
-    "",
-    "   Damage is affected by charge distance.",
-    "",
-    "   Longer distance, more damage.",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   5 turns",
-    "",
-    "",
-    "USAGE:",
-    "   activate the skill (press ",
-    "3",
-    ")",
-    "",
-    "   followed by a direction (left, right, up or down)",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    NULL};
+static char *charge_tooltip[] = {"CHARGE",
+                                 "",
+                                 "",
+                                 "   You charge in a chosen direction into the first obstructing",
+                                 "",
+                                 "   object. Charging into an enemy can deliver massive damage.",
+                                 "",
+                                 "",
+                                 "   Damage is affected by charge distance.",
+                                 "",
+                                 "   Longer distance, more damage.",
+                                 "",
+                                 "",
+                                 "COOLDOWN:",
+                                 "",
+                                 "   5 turns",
+                                 "",
+                                 "",
+                                 "USAGE:",
+                                 "   activate the skill (press ",
+                                 "3",
+                                 ")",
+                                 "",
+                                 "   followed by a direction (left, right, up or down)",
+                                 "",
+                                 "",
+                                 "",
+                                 "Press ",
+                                 "ESC",
+                                 " to close",
+                                 "",
+                                 NULL};
 
-static char *blink_tooltip[] = {
-    "BLINK",
-    "",
-    "",
-    "   You blink in a chosen direction into the first obstructing",
-    "",
-    "   object picking up items in your path. Monsters will not",
-    "",
-    "   obstruct your blink.",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   4 turns",
-    "",
-    "",
-    "USAGE:",
-    "   activate the skill (press ",
-    "3",
-    ")",
-    "",
-    "   followed by a direction (left, right, up or down)",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    NULL};
+static char *blink_tooltip[] = {"BLINK",
+                                "",
+                                "",
+                                "   You blink in a chosen direction into the first obstructing",
+                                "",
+                                "   object picking up items in your path. Monsters will not",
+                                "",
+                                "   obstruct your blink.",
+                                "",
+                                "",
+                                "COOLDOWN:",
+                                "",
+                                "   4 turns",
+                                "",
+                                "",
+                                "USAGE:",
+                                "   activate the skill (press ",
+                                "3",
+                                ")",
+                                "",
+                                "   followed by a direction (left, right, up or down)",
+                                "",
+                                "",
+                                "",
+                                "Press ",
+                                "ESC",
+                                " to close",
+                                "",
+                                NULL};
 
-static char *erupt_tooltip[] = {
-    "ERUPT",
-    "",
-    "",
-    "   You erupt in a magical explosion damaging monsters",
-    "",
-    "   around you pushing them back and causing fear",
-    "",
-    "   for 3 turns.",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   3 turns",
-    "",
-    "",
-    "USAGE:",
-    "   Erupt (press ",
-    "2",
-    ")",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    NULL};
+static char *erupt_tooltip[] = {"ERUPT",
+                                "",
+                                "",
+                                "   You erupt in a magical explosion damaging monsters",
+                                "",
+                                "   around you pushing them back and causing fear",
+                                "",
+                                "   for 3 turns.",
+                                "",
+                                "",
+                                "COOLDOWN:",
+                                "",
+                                "   3 turns",
+                                "",
+                                "",
+                                "USAGE:",
+                                "   Erupt (press ",
+                                "2",
+                                ")",
+                                "",
+                                "",
+                                "",
+                                "Press ",
+                                "ESC",
+                                " to close",
+                                "",
+                                NULL};
 
-static char *dagger_tooltip[] = {
-    "THROW DAGGER",
-    "",
-    "",
-    "   You throw a dagger in the chosen direction.",
-    "",
-    "",
-    "   Damage is affected by throwing distance.",
-    "",
-    "   Longer distance, more damage.",
-    "",
-    "",
-    "   Dagger supply is not infinite, your current dagger",
-    "",
-    "   inventory is displayed in the panel to the right.",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   0 turns",
-    "",
-    "",
-    "USAGE:",
-    "",
-    "   activate the skill (press ",
-    "4",
-    ")",
-    "",
-    "   followed by a direction (left, right, up or down)",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    NULL};
+static char *dagger_tooltip[] = {"THROW DAGGER",
+                                 "",
+                                 "",
+                                 "   You throw a dagger in the chosen direction.",
+                                 "",
+                                 "",
+                                 "   Damage is affected by throwing distance.",
+                                 "",
+                                 "   Longer distance, more damage.",
+                                 "",
+                                 "",
+                                 "   Dagger supply is not infinite, your current dagger",
+                                 "",
+                                 "   inventory is displayed in the panel to the right.",
+                                 "",
+                                 "",
+                                 "COOLDOWN:",
+                                 "",
+                                 "   0 turns",
+                                 "",
+                                 "",
+                                 "USAGE:",
+                                 "",
+                                 "   activate the skill (press ",
+                                 "4",
+                                 ")",
+                                 "",
+                                 "   followed by a direction (left, right, up or down)",
+                                 "",
+                                 "",
+                                 "",
+                                 "Press ",
+                                 "ESC",
+                                 " to close",
+                                 "",
+                                 NULL};
 
-static char *health_tooltip[] = {
-    "DRINK HEALTH",
-    "",
-    "",
-    "   You take a sip from your health vial",
-    "",
-    "",
-    "   The current amount of sips in your vials is",
-    "",
-    "   displayed in the panel to the right.",
-    "",
-    "",
-    "COOLDOWN:",
-    "",
-    "   0 turns",
-    "",
-    "",
-    "USAGE:",
-    "",
-    "   Sip health (press ",
-    "5",
-    ")",
-    "",
-    "",
-    "",
-    "Press ",
-    "ESC",
-    " to close",
-    "",
-    NULL};
+static char *health_tooltip[] = {"DRINK HEALTH",
+                                 "",
+                                 "",
+                                 "   You take a sip from your health vial",
+                                 "",
+                                 "",
+                                 "   The current amount of sips in your vials is",
+                                 "",
+                                 "   displayed in the panel to the right.",
+                                 "",
+                                 "",
+                                 "COOLDOWN:",
+                                 "",
+                                 "   0 turns",
+                                 "",
+                                 "",
+                                 "USAGE:",
+                                 "",
+                                 "   Sip health (press ",
+                                 "5",
+                                 ")",
+                                 "",
+                                 "",
+                                 "",
+                                 "Press ",
+                                 "ESC",
+                                 " to close",
+                                 "",
+                                 NULL};
 
 static void
 perform_pickups_for_space(RoomSpace *space, Player *player)
@@ -480,14 +441,12 @@ vampiric_blow_skill(Skill *skill, SkillData *data)
 			monster_set_bleeding(monster);
 
 			unsigned int gain = player->stats.lvl * 3;
-			gain =
-			    min(gain, (unsigned int)player->stats.maxhp - player->stats.hp);
+			gain = min(gain, (unsigned int)player->stats.maxhp - player->stats.hp);
 			if (gain > 0) {
 				gui_log("You gain %u health", gain);
 				char msg[4];
 				m_sprintf(msg, 4, "+%u", gain);
-				actiontextbuilder_create_text(msg, C_GREEN,
-				                              &player->sprite->pos);
+				actiontextbuilder_create_text(msg, C_GREEN, &player->sprite->pos);
 				player->stats.hp += gain;
 				player->stats.hp = min(player->stats.maxhp, player->stats.hp);
 			}
@@ -553,8 +512,7 @@ skill_use_flurry(Skill *skill, SkillData *data)
 		unsigned int hitCount = 0;
 		for (size_t i = 0; i < 3; ++i) {
 			unsigned int originalHp = monster->stats.hp;
-			CombatResult result =
-			    stats_fight(&data->player->stats, &monster->stats);
+			CombatResult result = stats_fight(&data->player->stats, &monster->stats);
 			if (result.dmg > 0 && originalHp > 0) {
 				gui_log("You hit for %u damage", result.dmg);
 				hitCount++;
@@ -681,16 +639,12 @@ skill_bash(Skill *skill, SkillData *data)
 	mixer_play_effect(SWING0);
 	if (monster) {
 		gui_log("You bash %s with your shield", monster->lclabel);
-		CombatResult result =
-		    stats_fight(&data->player->stats, &monster->stats);
+		CombatResult result = stats_fight(&data->player->stats, &monster->stats);
 		if (result.dmg > 0) {
 			gui_log("You hit for %u damage", result.dmg);
 			if (monster->stats.hp > 0) {
 				gui_log("%s seems dazed and confused", monster->label);
-				monster_set_state(monster, STUNNED,
-				                  (Uint8)(3
-				                          + player_has_artifact(
-				                              data->player, INCREASED_STUN)));
+				monster_set_state(monster, STUNNED, (Uint8)(3 + player_has_artifact(data->player, INCREASED_STUN)));
 			}
 			mixer_play_effect(SLAM);
 		} else {
@@ -755,27 +709,21 @@ skill_trip(Skill *skill, SkillData *data)
 	RoomSpace *space = &data->matrix->spaces[targetPos.x][targetPos.y];
 	mixer_play_effect(SWING0 + get_random(2));
 	if (space->monster) {
-		CombatResult result =
-		    stats_fight(&data->player->stats, &space->monster->stats);
+		CombatResult result = stats_fight(&data->player->stats, &space->monster->stats);
 		if (result.dmg)
 			mixer_play_effect(SWORD_HIT);
-		gui_log("You trip %s causing it to fall away from you",
-		        space->monster->lclabel);
+		gui_log("You trip %s causing it to fall away from you", space->monster->lclabel);
 		monster_hit(space->monster, result.dmg, result.critical);
 		player_monster_kill_check(data->player, space->monster);
 		if (result.dmg && space->monster->stats.hp > 0) {
 			Uint32 pushCount = 1 + player_has_artifact(data->player, PUSH_BACK);
 			for (Uint32 i = 0; i < pushCount; ++i) {
-				monster_push(space->monster, data->player, data->matrix,
-				             data->direction);
-				if (space->monster->stats.hp <= 0
-				    || space->monster->sprite->state == SPRITE_STATE_FALLING) {
+				monster_push(space->monster, data->player, data->matrix, data->direction);
+				if (space->monster->stats.hp <= 0 || space->monster->sprite->state == SPRITE_STATE_FALLING) {
 					break;
 				}
 			}
-			monster_set_state(
-			    space->monster, STUNNED,
-			    (Uint8)(2 + player_has_artifact(data->player, INCREASED_STUN)));
+			monster_set_state(space->monster, STUNNED, (Uint8)(2 + player_has_artifact(data->player, INCREASED_STUN)));
 		}
 
 	} else {
@@ -840,8 +788,7 @@ skill_backstab(Skill *skill, SkillData *data)
 
 	mixer_play_effect(SWING0 + get_random(2));
 
-	player_update_pos(data->player,
-	                  (uint32_t)data->direction.x * TILE_DIMENSION,
+	player_update_pos(data->player, (uint32_t)data->direction.x * TILE_DIMENSION,
 	                  (uint32_t)data->direction.y * TILE_DIMENSION);
 	player_turn(data->player, &reverseDirection);
 
@@ -934,8 +881,7 @@ create_phase(void)
 static bool
 skill_sip_health_available(Player *player)
 {
-	bool hasSips = player->class == MAGE ? player->potion_sips > 1
-	                                     : player->potion_sips > 0;
+	bool hasSips = player->class == MAGE ? player->potion_sips > 1 : player->potion_sips > 0;
 	return hasSips > 0 && player->stats.hp != player->stats.maxhp;
 }
 
@@ -976,8 +922,7 @@ skill_charge_check_path(SkillData *data, Position origin, Position dest)
 	lastPos.x += (int)data->direction.x * 2;
 	lastPos.y += (int)data->direction.y * 2;
 	Uint8 steps = 1;
-	while (position_in_roommatrix(&itPos)
-	       && !position_equals(&itPos, &lastPos)) {
+	while (position_in_roommatrix(&itPos) && !position_equals(&itPos, &lastPos)) {
 		RoomSpace *space = &matrix->spaces[itPos.x][itPos.y];
 		if (space->monster) {
 			Monster *monster = matrix->spaces[itPos.x][itPos.y].monster;
@@ -986,8 +931,7 @@ skill_charge_check_path(SkillData *data, Position origin, Position dest)
 			mixer_play_effect(SWING0 + get_random(2));
 			CombatResult result = stats_fight(&tmpStats, &monster->stats);
 			if (result.dmg > 0) {
-				gui_log("You charged %s for %u damage", monster->lclabel,
-				        result.dmg);
+				gui_log("You charged %s for %u damage", monster->lclabel, result.dmg);
 				mixer_play_effect(SWORD_HIT);
 			}
 			monster_hit(monster, result.dmg, result.critical);
@@ -1058,8 +1002,7 @@ skill_charge(Skill *skill, SkillData *data)
 		particleArea = (Dimension){TILE_DIMENSION, abs(ydiff) * TILE_DIMENSION};
 
 	Position speedLinePos;
-	if (playerOriginPos.x < playerDestinationPos.x
-	    || playerOriginPos.y < playerDestinationPos.y)
+	if (playerOriginPos.x < playerDestinationPos.x || playerOriginPos.y < playerDestinationPos.y)
 		speedLinePos = playerOriginPos;
 	else
 		speedLinePos = playerDestinationPos;
@@ -1187,17 +1130,14 @@ skill_erupt(Skill *skill, SkillData *data)
 			RoomSpace *r = &rm->spaces[matrixPos.x][matrixPos.y];
 			if (r->monster) {
 				player->stats.advantage = true;
-				CombatResult result =
-				    stats_fight(&player->stats, &r->monster->stats);
+				CombatResult result = stats_fight(&player->stats, &r->monster->stats);
 				player->stats.advantage = false;
 				monster_hit(r->monster, result.dmg, result.critical);
-				gui_log("%s takes %d damage from the explosion",
-				        r->monster->label, result.dmg);
+				gui_log("%s takes %d damage from the explosion", r->monster->label, result.dmg);
 				monster_set_state(r->monster, SCARED, 3);
 
 				int lvl = 1 + player_has_artifact(player, PUSH_BACK);
-				Vector2d dir =
-				    vector2d_to_direction(&VEC2D((float)i, (float)j));
+				Vector2d dir = vector2d_to_direction(&VEC2D((float)i, (float)j));
 				for (int k = 0; k < lvl; ++k) {
 					if (r->monster->stats.hp > 0)
 						monster_push(r->monster, player, rm, dir);

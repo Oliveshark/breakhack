@@ -36,26 +36,18 @@ void steam_run_callbacks(void);
 
 void steam_set_achievement(EAchievement eAch);
 
-void steam_register_score(Sint32 nScore, const int32_t *details,
-                          int32_t nDetails);
+void steam_register_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
-void steam_register_qp_score(Sint32 nScore, const int32_t *details,
-                             int32_t nDetails);
+void steam_register_qp_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
-void steam_register_weekly_score(Sint32 nScore, const int32_t *details,
-                                 int32_t nDetails);
+void steam_register_weekly_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
-void steam_register_arcade_score(Sint32 nScore, const int32_t *details,
-                                 int32_t nDetails);
+void steam_register_arcade_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
-void steam_register_mage_score(Sint32 nScore, const int32_t *details,
-                               int32_t nDetails);
+void steam_register_mage_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
-void steam_register_warrior_score(Sint32 nScore, const int32_t *details,
-                                  int32_t nDetails);
+void steam_register_warrior_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
-void steam_register_rogue_score(Sint32 nScore, const int32_t *details,
-                                int32_t nDetails);
+void steam_register_rogue_score(Sint32 nScore, const int32_t *details, int32_t nDetails);
 
-void steam_register_kills(Sint32 nKills, const int32_t *details,
-                          int32_t nDetails);
+void steam_register_kills(Sint32 nKills, const int32_t *details, int32_t nDetails);

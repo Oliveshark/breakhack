@@ -29,8 +29,7 @@ getScreenDimensions(void)
 	SDL_DisplayID display = SDL_GetPrimaryDisplay();
 	const SDL_DisplayMode *dm = SDL_GetCurrentDisplayMode(display);
 	if (dm == NULL) {
-		error("SDL_GetDesktopDisplayMode(%d) failed: %s", display,
-		      SDL_GetError());
+		error("SDL_GetDesktopDisplayMode(%d) failed: %s", display, SDL_GetError());
 	}
 	Dimension dim = (Dimension){dm->w, dm->h};
 

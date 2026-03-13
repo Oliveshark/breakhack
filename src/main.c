@@ -123,8 +123,7 @@ initSDL(void)
 {
 	debug("Initializing SDL");
 	SDL_SetAppMetadata(GAME_TITLE, VERSION_STR, "com.oliveshark.breakhack");
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD
-	              | SDL_INIT_HAPTIC)) {
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC)) {
 		error("Could not initiate SDL3: %s", SDL_GetError());
 		return false;
 	}
@@ -143,8 +142,7 @@ initSDL(void)
 
 	char buffer[100] = {'\0'};
 #ifdef DEBUG
-	m_sprintf(buffer, 100, "%s %s %s", GAME_TITLE, VERSION_STR_FULL,
-	          RELEASE_TYPE);
+	m_sprintf(buffer, 100, "%s %s %s", GAME_TITLE, VERSION_STR_FULL, RELEASE_TYPE);
 #else
 	m_sprintf(buffer, 100, "%s %s %s", GAME_TITLE, VERSION_STR, RELEASE_TYPE);
 #endif
@@ -174,9 +172,7 @@ initSDL(void)
 		error("Unable to set blend mode: %s", SDL_GetError());
 		return false;
 	}
-	if (!SDL_SetRenderLogicalPresentation(gRenderer, SCREEN_WIDTH,
-	                                      SCREEN_HEIGHT,
-	                                      SDL_LOGICAL_PRESENTATION_LETTERBOX)) {
+	if (!SDL_SetRenderLogicalPresentation(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX)) {
 		error("Unable to initiate scaling: %s", SDL_GetError());
 		return false;
 	}
@@ -187,9 +183,8 @@ initSDL(void)
 	if (renderer_name != NULL) {
 		debug("Renderer: %s", renderer_name);
 		if (SDL_strcmp("gpu", renderer_name) == 0) {
-			SDL_GPUDevice *device = SDL_GetPointerProperty(
-			    SDL_GetRendererProperties(gRenderer),
-			    SDL_PROP_RENDERER_GPU_DEVICE_POINTER, NULL);
+			SDL_GPUDevice *device = SDL_GetPointerProperty(SDL_GetRendererProperties(gRenderer),
+			                                               SDL_PROP_RENDERER_GPU_DEVICE_POINTER, NULL);
 			debug("    Driver: %s", SDL_GetGPUDeviceDriver(device));
 		}
 	} else {
@@ -214,20 +209,15 @@ initViewports(Uint32 offset)
 
 	gameViewport = (SDL_Rect){offset, 0, GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT};
 
-	skillBarViewport =
-	    (SDL_Rect){offset, GAME_VIEW_HEIGHT, SKILL_BAR_WIDTH, SKILL_BAR_HEIGHT};
+	skillBarViewport = (SDL_Rect){offset, GAME_VIEW_HEIGHT, SKILL_BAR_WIDTH, SKILL_BAR_HEIGHT};
 
-	bottomGuiViewport = (SDL_Rect){offset, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT,
-	                               BOTTOM_GUI_WIDTH, BOTTOM_GUI_WIDTH};
+	bottomGuiViewport = (SDL_Rect){offset, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT, BOTTOM_GUI_WIDTH, BOTTOM_GUI_WIDTH};
 
-	statsGuiViewport = (SDL_Rect){offset + GAME_VIEW_WIDTH, 0, RIGHT_GUI_WIDTH,
-	                              STATS_GUI_HEIGHT};
+	statsGuiViewport = (SDL_Rect){offset + GAME_VIEW_WIDTH, 0, RIGHT_GUI_WIDTH, STATS_GUI_HEIGHT};
 
-	minimapViewport = (SDL_Rect){offset + GAME_VIEW_WIDTH, STATS_GUI_HEIGHT,
-	                             RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT};
+	minimapViewport = (SDL_Rect){offset + GAME_VIEW_WIDTH, STATS_GUI_HEIGHT, RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT};
 
-	menuViewport = (SDL_Rect){offset + ((SCREEN_WIDTH - GAME_VIEW_WIDTH) >> 1),
-	                          (SCREEN_HEIGHT - GAME_VIEW_HEIGHT) >> 1,
+	menuViewport = (SDL_Rect){offset + ((SCREEN_WIDTH - GAME_VIEW_WIDTH) >> 1), (SCREEN_HEIGHT - GAME_VIEW_HEIGHT) >> 1,
 	                          GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT};
 }
 
@@ -312,8 +302,7 @@ static void
 toggleInGameMenu(void *unused)
 {
 	UNUSED(unused);
-	if (gGameState == PLAYING || gGameState == GAME_OVER
-	    || gGameState == COMPLETED)
+	if (gGameState == PLAYING || gGameState == GAME_OVER || gGameState == COMPLETED)
 		gGameState = IN_GAME_MENU;
 	else if (is_player_dead())
 		gGameState = GAME_OVER;
@@ -340,8 +329,7 @@ static void
 goToCharacterMenu(void *unused)
 {
 	UNUSED(unused);
-	charSelectMenu =
-	    menu_create_character_selector(on_character_select, gCamera);
+	charSelectMenu = menu_create_character_selector(on_character_select, gCamera);
 	characterSelectScreen = screen_create_characterselect(gRenderer);
 	gGameState = CHARACTER_MENU;
 }
@@ -467,21 +455,15 @@ goToGameSelectMenu(void *unused)
 		    continueGame,
 		};
 	}
-	menuItems[i++] = (TEXT_MENU_ITEM){
-	    "STANDARD GAME", "Standard 20 level game, recommended for new players",
-	    startRegularGame};
+	menuItems[i++] =
+	    (TEXT_MENU_ITEM){"STANDARD GAME", "Standard 20 level game, recommended for new players", startRegularGame};
 #ifdef STEAM_BUILD
 	menuItems[i++] =
-	    (TEXT_MENU_ITEM){"WEEKLY CHALLENGE",
-	                     "Quick game with weekly leaderboards at breakhack.net",
-	                     startWeeklyGame};
+	    (TEXT_MENU_ITEM){"WEEKLY CHALLENGE", "Quick game with weekly leaderboards at breakhack.net", startWeeklyGame};
 #endif
-	menuItems[i++] = (TEXT_MENU_ITEM){
-	    "QUICK GAME",
-	    "Shorter 12 level game, with more action earlier in the game",
-	    startQuickGame};
-	menuItems[i++] = (TEXT_MENU_ITEM){
-	    "ARCADE GAME", "One big level with lots of action", startArcadeGame};
+	menuItems[i++] =
+	    (TEXT_MENU_ITEM){"QUICK GAME", "Shorter 12 level game, with more action earlier in the game", startQuickGame};
+	menuItems[i++] = (TEXT_MENU_ITEM){"ARCADE GAME", "One big level with lots of action", startArcadeGame};
 
 	menu_create_text_menu(&gameSelectMenu, menuItems, item_count, gRenderer);
 	free(menuItems);
@@ -513,8 +495,7 @@ static void
 createInGameGameOverMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-	    {"NEW GAME", "Start a new game with the same settings",
-	     goToCharacterMenu},
+	    {"NEW GAME", "Start a new game with the same settings", goToCharacterMenu},
 	    {"MAIN MENU", "", goToMainMenu},
 	    {"QUIT", "Exit game", exitGame},
 	};
@@ -819,8 +800,7 @@ handle_events(void)
 
 		input_handle_event(&input, &event, &device_type);
 
-		if (device_type != DeviceType_Unknown
-		    && device_type != last_device_type) {
+		if (device_type != DeviceType_Unknown && device_type != last_device_type) {
 			debug("Device type changed: %d", last_device_type);
 			last_device_type = device_type;
 			if (device_type == DeviceType_Gamepad) {
@@ -875,13 +855,11 @@ check_next_level(void)
 	if (tile->levelExit) {
 		++cLevel;
 		if (!weeklyGame) {
-			save_save(get_random_seed(), cLevel, quickGame, arcadeGame,
-			          gPlayer);
+			save_save(get_random_seed(), cLevel, quickGame, arcadeGame, gPlayer);
 		}
 
 		mixer_play_effect(NEXT_LEVEL);
-		gui_log("You descend the stairs. You have reached dungeon level %d",
-		        cLevel);
+		gui_log("You descend the stairs. You have reached dungeon level %d", cLevel);
 		gui_event_message("Dungeon level %d", cLevel);
 		choose_music();
 		if (!gameCompleted()) {
@@ -922,13 +900,11 @@ check_tooltip_activation(bool skillActivated)
 	Settings *settings = settings_get();
 	if (settings->tooltips_enabled) {
 		if (skillActivated) {
-			gGui->activeTooltip =
-			    tooltip_manager_get_tooltip(TOOLTIP_TYPE_SKILL);
+			gGui->activeTooltip = tooltip_manager_get_tooltip(TOOLTIP_TYPE_SKILL);
 		}
 		if (!artifactTooltipShown && gPlayer->equipment.hasArtifacts) {
 			artifactTooltipShown = true;
-			gGui->activeTooltip =
-			    tooltip_manager_get_tooltip(TOOLTIP_TYPE_ARTIFACT);
+			gGui->activeTooltip = tooltip_manager_get_tooltip(TOOLTIP_TYPE_ARTIFACT);
 		}
 	}
 }
@@ -1082,8 +1058,7 @@ run_game_render(void)
 static inline void
 register_scores(void)
 {
-	uint8_t details[4] = {(uint8_t)gPlayer->stats.lvl, (uint8_t)cLevel,
-	                      (uint8_t)(gPlayer->class + 1), 0};
+	uint8_t details[4] = {(uint8_t)gPlayer->stats.lvl, (uint8_t)cLevel, (uint8_t)(gPlayer->class + 1), 0};
 	steam_register_score((int)gPlayer->gold, (int32_t *)&details, 1);
 	steam_register_kills((int)gPlayer->stat_data.kills, (int32_t *)&details, 1);
 	if (quickGame) {
@@ -1099,8 +1074,7 @@ register_scores(void)
 		steam_set_achievement(ROGUE_LIKE);
 		steam_register_rogue_score((int)gPlayer->gold, (int32_t *)&details, 1);
 	} else if (gPlayer->class == WARRIOR) {
-		steam_register_warrior_score((int)gPlayer->gold, (int32_t *)&details,
-		                             1);
+		steam_register_warrior_score((int)gPlayer->gold, (int32_t *)&details, 1);
 	} else if (gPlayer->class == MAGE) {
 		steam_set_achievement(MAGICAL);
 		steam_register_mage_score((int)gPlayer->gold, (int32_t *)&details, 1);
@@ -1203,8 +1177,7 @@ run_menu(void)
 		map_move_monsters(gMap, gRoomMatrix);
 	}
 
-	if (gGameState != MENU && gGameState != CREDITS
-	    && gGameState != SCORE_SCREEN && gGameState != GAME_SELECT
+	if (gGameState != MENU && gGameState != CREDITS && gGameState != SCORE_SCREEN && gGameState != GAME_SELECT
 	    && gGameState != CHARACTER_MENU)
 		return;
 
@@ -1301,10 +1274,8 @@ run(void)
 		frame++;
 		if (timer_get_ticks(updateTimer) > 1000) {
 			char buffer[20];
-			m_sprintf(buffer, 20, "FPS: %lu",
-			          frame / (timer_get_ticks(fpsTime) / 1000));
-			texture_load_from_text(fpsSprite->textures[0], buffer, C_RED,
-			                       C_WHITE, gRenderer);
+			m_sprintf(buffer, 20, "FPS: %lu", frame / (timer_get_ticks(fpsTime) / 1000));
+			texture_load_from_text(fpsSprite->textures[0], buffer, C_RED, C_WHITE, gRenderer);
 			fpsSprite->dim = fpsSprite->textures[0]->dim;
 			timer_start(updateTimer);
 		}

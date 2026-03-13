@@ -42,8 +42,7 @@
 
 #define RIGHT_GUI_WIDTH (10 * SPRITE_DIMENSION) // 10 * 16
 #define MINIMAP_GUI_HEIGHT 128
-#define STATS_GUI_HEIGHT                                                       \
-	(GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT - MINIMAP_GUI_HEIGHT)
+#define STATS_GUI_HEIGHT (GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT - MINIMAP_GUI_HEIGHT)
 
 #define BOTTOM_GUI_HEIGHT (10 * SPRITE_DIMENSION)
 #define BOTTOM_GUI_WIDTH (GAME_VIEW_WIDTH + RIGHT_GUI_WIDTH)
@@ -53,10 +52,10 @@
 
 /* Quality of life stuff */
 #define DEFAULT_DIMENSION (Dimension){16, 16}
-#define GAME_DIMENSION                                                         \
-	(Dimension)                                                                \
-	{                                                                          \
-		TILE_DIMENSION, TILE_DIMENSION                                         \
+#define GAME_DIMENSION                                                                                                 \
+	(Dimension)                                                                                                        \
+	{                                                                                                                  \
+		TILE_DIMENSION, TILE_DIMENSION                                                                                 \
 	}
 #define CLIP16(x, y) (SDL_Rect){x, y, 16, 16}
 #define CLIP32(x, y) (SDL_Rect){x, y, 32, 32}
@@ -91,13 +90,9 @@ typedef enum Direction_t { UP, DOWN, LEFT, RIGHT, INVALID } Direction;
 
 typedef enum GameMode { REGULAR, QUICK, ARCADE } GameMode;
 
-#define CONTROLLER_BTN(xindex, mode)                                           \
-	CLIP16(xindex, mode == GAMEPAD_TYPE_XB ? 0 : 16)
-#define CONTROLLER_TRIGGER(xindex, mode)                                       \
-	CLIP16(xindex + (mode == GAMEPAD_TYPE_XB ? 16 : 0), 32)
-#define CONTROLLER_BUMPER(xindex, mode)                                        \
-	CLIP16(xindex + (mode == GAMEPAD_TYPE_XB ? 16 : 0), 48)
-#define CONTROLLER_OPT(xindex, mode)                                           \
-	CLIP16(xindex + (mode == GAMEPAD_TYPE_PS ? 16 : 0), 64)
+#define CONTROLLER_BTN(xindex, mode) CLIP16(xindex, mode == GAMEPAD_TYPE_XB ? 0 : 16)
+#define CONTROLLER_TRIGGER(xindex, mode) CLIP16(xindex + (mode == GAMEPAD_TYPE_XB ? 16 : 0), 32)
+#define CONTROLLER_BUMPER(xindex, mode) CLIP16(xindex + (mode == GAMEPAD_TYPE_XB ? 16 : 0), 48)
+#define CONTROLLER_OPT(xindex, mode) CLIP16(xindex + (mode == GAMEPAD_TYPE_PS ? 16 : 0), 64)
 
 #endif // DEFINES_H_

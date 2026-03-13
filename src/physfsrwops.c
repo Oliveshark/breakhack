@@ -37,8 +37,7 @@ physfsrwops_seek(void *userdata, Sint64 offset, enum SDL_IOWhence whence)
 		const PHYSFS_sint64 current = PHYSFS_tell(handle);
 		if (current == -1) {
 
-			SDL_SetError("Can't find position in file: %s",
-			             getLastPhysfsError());
+			SDL_SetError("Can't find position in file: %s", getLastPhysfsError());
 			return -1;
 		}
 
@@ -94,8 +93,7 @@ physfsrwops_read(void *userdata, void *ptr, size_t size, SDL_IOStatus *status)
 }
 
 static size_t SDLCALL
-physfsrwops_write(void *userdata, const void *ptr, size_t size,
-                  SDL_IOStatus *status)
+physfsrwops_write(void *userdata, const void *ptr, size_t size, SDL_IOStatus *status)
 {
 	PHYSFS_File *handle = (PHYSFS_File *)userdata;
 	const PHYSFS_uint64 writelen = (PHYSFS_uint64)size;

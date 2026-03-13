@@ -56,8 +56,7 @@ eat_flesh(Item *item, Player *player)
 		player->stats.hp = player->stats.maxhp;
 
 	mixer_play_effect(EAT);
-	gui_log("You eat some foul meat and gain %d health",
-	        player->stats.hp - original_hp);
+	gui_log("You eat some foul meat and gain %d health", player->stats.hp - original_hp);
 }
 
 static void
@@ -83,8 +82,7 @@ pickup_dagger(Item *item, Player *player)
 }
 
 static Item *
-create_item(const char *path0, const char *path1, SDL_Rect clip,
-            void (*cb)(Item *, Player *))
+create_item(const char *path0, const char *path1, SDL_Rect clip, void (*cb)(Item *, Player *))
 {
 	Item *item;
 
@@ -177,13 +175,11 @@ item_builder_build_key(unsigned int type)
 	switch (type) {
 		case 1:
 			m_sprintf(label, 20, "a silver key");
-			item = create_item("Extras/Keys.png", NULL, CLIP16(0, 0),
-			                   &pickup_silver_key);
+			item = create_item("Extras/Keys.png", NULL, CLIP16(0, 0), &pickup_silver_key);
 			break;
 		case 2:
 			m_sprintf(label, 20, "a gold key");
-			item = create_item("Extras/Keys.png", NULL, CLIP16(16, 0),
-			                   &pickup_gold_key);
+			item = create_item("Extras/Keys.png", NULL, CLIP16(16, 0), &pickup_gold_key);
 			break;
 		default:
 			fatal("Bad keytype provided");
@@ -237,16 +233,13 @@ item_builder_build_potion(PotionEffect effect)
 
 	switch (effect) {
 		case POTION_BLOODLUST:
-			item = create_item("Items/Potion.png", NULL, CLIP16(48, 32),
-			                   pickup_bloodlust);
+			item = create_item("Items/Potion.png", NULL, CLIP16(48, 32), pickup_bloodlust);
 			break;
 		case POTION_FROST:
-			item = create_item("Items/Potion.png", NULL, CLIP16(96, 0),
-			                   pickup_frost);
+			item = create_item("Items/Potion.png", NULL, CLIP16(96, 0), pickup_frost);
 			break;
 		case POTION_STONE:
-			item = create_item("Items/Potion.png", NULL, CLIP16(6 * 16, 2 * 16),
-			                   pickup_stone);
+			item = create_item("Items/Potion.png", NULL, CLIP16(6 * 16, 2 * 16), pickup_stone);
 			break;
 		case POTION_NONE:
 			fatal("Potion effect is POTION_NONE");
@@ -295,9 +288,7 @@ item_builder_build_item(ItemKey key, int level)
 			item = create_treasure(level * 2);
 			break;
 		case FLESH:
-			item = create_item(path_flesh, NULL,
-			                   CLIP16(get_random(7) * 16, get_random(1) * 16),
-			                   &eat_flesh);
+			item = create_item(path_flesh, NULL, CLIP16(get_random(7) * 16, get_random(1) * 16), &eat_flesh);
 			item->value = 1 + get_random(level);
 			break;
 		case HEALTH:
@@ -305,8 +296,7 @@ item_builder_build_item(ItemKey key, int level)
 			item->value = 1 + get_random(level);
 			break;
 		case DAGGER:
-			item =
-			    create_item(path_short_wep, NULL, CLIP16(0, 0), &pickup_dagger);
+			item = create_item(path_short_wep, NULL, CLIP16(0, 0), &pickup_dagger);
 			item->value = 1;
 			break;
 		default:
@@ -315,12 +305,9 @@ item_builder_build_item(ItemKey key, int level)
 	}
 
 	if (item->value != 1) {
-		Sprite *valueSprite = sprite_util_create_text_sprite(
-		    "GUI/SDS_8x8.ttf", 8, C_BLUE, C_BLACK, "%g", item->value);
-		valueSprite->offset.x =
-		    item->sprite->dim.width - valueSprite->dim.width;
-		valueSprite->offset.y =
-		    item->sprite->dim.height - valueSprite->dim.height;
+		Sprite *valueSprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf", 8, C_BLUE, C_BLACK, "%g", item->value);
+		valueSprite->offset.x = item->sprite->dim.width - valueSprite->dim.width;
+		valueSprite->offset.y = item->sprite->dim.height - valueSprite->dim.height;
 		linkedlist_append(&item->subsprites, valueSprite);
 	}
 
@@ -334,8 +321,7 @@ item_builder_build_sack(void)
 }
 
 Item *
-item_builder_build_container(const char *path0, const char *path1,
-                             SDL_Rect clip)
+item_builder_build_container(const char *path0, const char *path1, SDL_Rect clip)
 {
 	Item *chest = create_item(path0, path1, clip, NULL);
 	chest->openable = true;

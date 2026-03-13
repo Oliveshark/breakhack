@@ -289,9 +289,8 @@ void
 roommatrix_render_mouse_square(RoomMatrix *matrix, Camera *cam)
 {
 	Position mmc = position_to_matrix_coords(&matrix->mousePos);
-	SDL_FRect box = (SDL_FRect){(float)mmc.x * TILE_DIMENSION,
-	                            (float)mmc.y * TILE_DIMENSION, TILE_DIMENSION,
-	                            TILE_DIMENSION};
+	SDL_FRect box =
+	    (SDL_FRect){(float)mmc.x * TILE_DIMENSION, (float)mmc.y * TILE_DIMENSION, TILE_DIMENSION, TILE_DIMENSION};
 
 	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 0, 90);
 	SDL_RenderFillRect(cam->renderer, &box);
@@ -335,8 +334,7 @@ roommatrix_destroy(RoomMatrix *m)
 }
 
 size_t
-roommatrix_get_surrounding_spaces(RoomMatrix *rm, const Position *pos,
-                                  Position *tile_positions, size_t size)
+roommatrix_get_surrounding_spaces(RoomMatrix *rm, const Position *pos, Position *tile_positions, size_t size)
 {
 	BH_ASSERT(pos != NULL);
 	BH_ASSERT(tile_positions != NULL);
@@ -363,13 +361,11 @@ roommatrix_get_surrounding_spaces(RoomMatrix *rm, const Position *pos,
 			}
 			debug("[%u] Checking space %d, %d", found_spaces, x, y);
 			if (found_spaces >= size) {
-				fatal("Found more spaces than expected: %u >= %u", found_spaces,
-				      size);
+				fatal("Found more spaces than expected: %u >= %u", found_spaces, size);
 			}
 			space = &rm->spaces[x][y];
 			if (SPACE_IS_WALKABLE(space)) {
-				tile_positions[found_spaces++] =
-				    position_mcord_to_world_pos(&it_pos, &rm->roomPos);
+				tile_positions[found_spaces++] = position_mcord_to_world_pos(&it_pos, &rm->roomPos);
 			}
 		}
 	}

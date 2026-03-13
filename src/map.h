@@ -67,10 +67,10 @@ typedef struct Map_t {
 	LinkedList *items;                               /**< Item list */
 	LinkedList *artifacts;                           /**< Artifact list */
 	LinkedList *objects;                             /**< Object list */
-	Position currentRoom;    /**< Current room (room index) */
-	Timer *monsterMoveTimer; /**< Monster move timer */
-	int level;               /**< Level (depth) */
-	unsigned int lockTypes;  /**< Lock types in map */
+	Position currentRoom;                            /**< Current room (room index) */
+	Timer *monsterMoveTimer;                         /**< Monster move timer */
+	int level;                                       /**< Level (depth) */
+	unsigned int lockTypes;                          /**< Lock types in map */
 } Map;
 
 Map *map_create(void);
@@ -112,8 +112,7 @@ void map_render_top_layer(Map *, RoomMatrix *, Camera *);
  * \param[out]		first_visit	Set to true if this is the first visit to this
  * room
  */
-void map_set_current_room(Map *map, Position *player_world_pos,
-                          bool *first_visit);
+void map_set_current_room(Map *map, Position *player_world_pos, bool *first_visit);
 
 void map_trigger_tile_fall(MapTile *tile);
 

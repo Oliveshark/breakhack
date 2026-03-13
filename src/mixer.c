@@ -153,8 +153,7 @@ mixer_init(void)
 	if (music_track_properties == 0) {
 		fatal("Failed to create music properties: %s", SDL_GetError());
 	}
-	if (!SDL_SetNumberProperty(music_track_properties,
-	                           MIX_PROP_PLAY_LOOPS_NUMBER, -1)) {
+	if (!SDL_SetNumberProperty(music_track_properties, MIX_PROP_PLAY_LOOPS_NUMBER, -1)) {
 		fatal("Failed to set loop property: %s", SDL_GetError());
 	}
 

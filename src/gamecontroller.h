@@ -20,12 +20,7 @@
 
 #include <SDL3/SDL.h>
 
-typedef enum {
-	GAMEPAD_TYPE_NONE,
-	GAMEPAD_TYPE_XB,
-	GAMEPAD_TYPE_PS,
-	GAMEPAD_TYPE_MAX
-} GamepadType;
+typedef enum { GAMEPAD_TYPE_NONE, GAMEPAD_TYPE_XB, GAMEPAD_TYPE_PS, GAMEPAD_TYPE_MAX } GamepadType;
 
 typedef struct GameController {
 	SDL_Gamepad *controller;

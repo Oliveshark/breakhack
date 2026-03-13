@@ -20,6 +20,5 @@
 
 void sprite_util_init(SDL_Renderer *renderer);
 
-Sprite *sprite_util_create_text_sprite(const char *fontPath, int size,
-                                       SDL_Color fg, SDL_Color outline,
-                                       const char *fmt, ...);
+Sprite *sprite_util_create_text_sprite(const char *fontPath, int size, SDL_Color fg, SDL_Color outline, const char *fmt,
+                                       ...);

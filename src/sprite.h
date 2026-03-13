@@ -69,8 +69,7 @@ Sprite *sprite_create(void);
 
 void sprite_load_texture(Sprite *, const char *path, int index, SDL_Renderer *);
 
-void sprite_load_text_texture(Sprite *, const char *path, int index, int size,
-                              int outline);
+void sprite_load_text_texture(Sprite *, const char *path, int index, int size, int outline);
 
 void sprite_set_texture(Sprite *, Texture *, int index);
 

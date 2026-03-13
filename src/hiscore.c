@@ -83,8 +83,7 @@ hiscore_init(void)
 static void
 save_hiscore(double gold, int lvl, int dlvl)
 {
-	const char *query =
-	    "INSERT INTO hiscore(gold, playerLevel, dungeonLevel) values (?, ?, ?)";
+	const char *query = "INSERT INTO hiscore(gold, playerLevel, dungeonLevel) values (?, ?, ?)";
 	sqlite3_stmt *stmt = db_prepare(db, query);
 
 	debug("Saving high score: %dg %dpl %dl", gold, lvl, dlvl);
@@ -101,8 +100,7 @@ save_hiscore_artifact(int hid, int aid)
 	if (aid <= 0)
 		return;
 
-	const char *query =
-	    "INSERT INTO hiscore_artifacts(hiscoreId, artifactId) values(?, ?)";
+	const char *query = "INSERT INTO hiscore_artifacts(hiscoreId, artifactId) values(?, ?)";
 	sqlite3_stmt *stmt = db_prepare(db, query);
 	sqlite3_bind_int(stmt, 1, hid);
 	sqlite3_bind_int(stmt, 2, aid);

@@ -22,14 +22,7 @@
 #include <stdbool.h>
 #include "gamestate.h"
 
-typedef enum Music_t {
-	BOSS_MUSIC0,
-	GAME_MUSIC0,
-	GAME_MUSIC1,
-	GAME_MUSIC2,
-	MENU_MUSIC,
-	LAST_MUSIC
-} Music;
+typedef enum Music_t { BOSS_MUSIC0, GAME_MUSIC0, GAME_MUSIC1, GAME_MUSIC2, MENU_MUSIC, LAST_MUSIC } Music;
 
 typedef enum Fx_t {
 	BLAST_EFFECT,

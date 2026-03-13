@@ -93,8 +93,7 @@ item_collected(Item *item, Player *player)
 		player->gold -= item->price;
 		char costLabel[10];
 		m_sprintf(costLabel, 10, "-$%.0f", item->price);
-		actiontextbuilder_create_text(costLabel, C_YELLOW,
-		                              &player->sprite->pos);
+		actiontextbuilder_create_text(costLabel, C_YELLOW, &player->sprite->pos);
 	}
 
 	if (item->effect != NULL)

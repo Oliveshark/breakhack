@@ -47,8 +47,7 @@ const Save *save_get(void);
 
 bool save_exists(void);
 
-void save_save(unsigned int seed, unsigned int map_level, bool quickGame,
-               bool arcadeGame, Player *player);
+void save_save(unsigned int seed, unsigned int map_level, bool quickGame, bool arcadeGame, Player *player);
 
 void save_clear(void);
 

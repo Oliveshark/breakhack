@@ -62,16 +62,14 @@ typedef struct RoomSpace {
 
 #define SPACE_IS_OCCUPIED(space) ((space) && (space->flags & TILE_OCCUPIED))
 #define SPACE_IS_LETHAL(space) ((space) && (space->flags & TILE_LETHAL))
-#define SPACE_IS_LIGHTSOURCE(space)                                            \
-	((space) && (space->flags & TILE_LIGHTSOURCE))
+#define SPACE_IS_LIGHTSOURCE(space) ((space) && (space->flags & TILE_LIGHTSOURCE))
 #define SPACE_IS_DAMAGING(space) ((space) && (space->flags & TILE_DAMAGE))
 #define SPACE_SET_FLAG(space, flag) ((space) && ((space)->flags |= flag))
 #define SPACE_CLEAR_FLAG(space, flag) ((space)->flags &= ~flag)
 #define SPACE_TOGGLE_FLAG(space, flag) ((space) && ((space)->flags ^= flag))
 
 #define SPACE_IS_BLOCKED(space) (SPACE_IS_OCCUPIED(space) || (space)->monster)
-#define SPACE_IS_WALKABLE(space)                                               \
-	(!(space->flags & (TILE_OCCUPIED | TILE_LETHAL | TILE_DAMAGE)))
+#define SPACE_IS_WALKABLE(space) (!(space->flags & (TILE_OCCUPIED | TILE_LETHAL | TILE_DAMAGE)))
 
 typedef struct RoomMatrix_t {
 	RoomSpace spaces[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
@@ -114,8 +112,7 @@ RoomSpace *roommatrix_get_space_for(RoomMatrix *, const Position *p);
  * \param[in] size The size of the spaces array
  * \returns The number of spaces placed in the output array
  */
-size_t roommatrix_get_surrounding_spaces(RoomMatrix *rm, const Position *pos,
-                                         Position *tile_positions, size_t size);
+size_t roommatrix_get_surrounding_spaces(RoomMatrix *rm, const Position *pos, Position *tile_positions, size_t size);
 
 Player *roommatrix_get_player(RoomMatrix *);
 

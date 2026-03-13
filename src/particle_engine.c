@@ -82,20 +82,20 @@ next_global_particle(void)
 	return NULL;
 }
 
-#define NEXT_GAME_PARTICLE(p)                                                  \
-	do {                                                                       \
-		p = next_game_particle();                                              \
-		if (p == NULL) {                                                       \
-			return;                                                            \
-		}                                                                      \
+#define NEXT_GAME_PARTICLE(p)                                                                                          \
+	do {                                                                                                               \
+		p = next_game_particle();                                                                                      \
+		if (p == NULL) {                                                                                               \
+			return;                                                                                                    \
+		}                                                                                                              \
 	} while (0);
 
-#define NEXT_GLOBAL_PARTICLE(p)                                                \
-	do {                                                                       \
-		p = next_global_particle();                                            \
-		if (p == NULL) {                                                       \
-			return;                                                            \
-		}                                                                      \
+#define NEXT_GLOBAL_PARTICLE(p)                                                                                        \
+	do {                                                                                                               \
+		p = next_global_particle();                                                                                    \
+		if (p == NULL) {                                                                                               \
+			return;                                                                                                    \
+		}                                                                                                              \
 	} while (0);
 
 static void
@@ -200,8 +200,7 @@ particle_engine_fire_explosion(Position pos, Dimension dim)
 void
 particle_engine_blink(Position pos, Dimension dim)
 {
-	create_explosion(pos, dim, 3, (SDL_Color){0, 0, 255, 255}, C_BLUE,
-	                 C_LIGHTBLUE);
+	create_explosion(pos, dim, 3, (SDL_Color){0, 0, 255, 255}, C_BLUE, C_LIGHTBLUE);
 }
 
 void
@@ -283,8 +282,7 @@ particle_engine_bloodlust(Position pos, Dimension dim, void *userdata)
 }
 
 void
-particle_engine_sparkle(Position pos, Dimension dim, SDL_Color color,
-                        bool global)
+particle_engine_sparkle(Position pos, Dimension dim, SDL_Color color, bool global)
 {
 	int x, y, yv, alpha;
 	unsigned int lt;
@@ -349,8 +347,7 @@ particle_engine_wind(Vector2d direction)
 		build_rect_particle(p);
 		p->particle.rect.pos = (Position){x, y};
 		p->particle.rect.dim = (Dimension){w, h};
-		p->velocity = (Vector2d){direction.x * (float)velocity,
-		                         direction.y * (float)velocity};
+		p->velocity = (Vector2d){direction.x * (float)velocity, direction.y * (float)velocity};
 		p->movetime = lt;
 		p->lifetime = lt;
 		p->color = C_BLUE;
@@ -407,19 +404,13 @@ move_particle(Particle *particle, float deltaTime)
 	if (!particle->movetime)
 		return;
 	if (particle->type == RECT) {
-		particle->particle.rect.pos.x +=
-		    (int)(particle->velocity.x * deltaTime);
-		particle->particle.rect.pos.y +=
-		    (int)(particle->velocity.y * deltaTime);
+		particle->particle.rect.pos.x += (int)(particle->velocity.x * deltaTime);
+		particle->particle.rect.pos.y += (int)(particle->velocity.y * deltaTime);
 	} else if (particle->type == LINE) {
-		particle->particle.line.startPos.x +=
-		    (int)(particle->velocity.x * deltaTime);
-		particle->particle.line.startPos.y +=
-		    (int)(particle->velocity.y * deltaTime);
-		particle->particle.line.endPos.x +=
-		    (int)(particle->velocity.x * deltaTime);
-		particle->particle.line.endPos.y +=
-		    (int)(particle->velocity.y * deltaTime);
+		particle->particle.line.startPos.x += (int)(particle->velocity.x * deltaTime);
+		particle->particle.line.startPos.y += (int)(particle->velocity.y * deltaTime);
+		particle->particle.line.endPos.x += (int)(particle->velocity.x * deltaTime);
+		particle->particle.line.endPos.y += (int)(particle->velocity.y * deltaTime);
 	}
 }
 
@@ -448,8 +439,7 @@ update_particles(Particle *particles, size_t *idx, float deltaTime)
 void
 particle_engine_update(float deltaTime)
 {
-	update_particles(s_engine.global_particles, &s_engine.global_idx,
-	                 deltaTime);
+	update_particles(s_engine.global_particles, &s_engine.global_idx, deltaTime);
 	update_particles(s_engine.game_particles, &s_engine.game_idx, deltaTime);
 }
 
@@ -464,11 +454,8 @@ render_rect_particle(Particle *p, Camera *cam)
 
 	SDL_SetRenderDrawBlendMode(cam->renderer, p->blend_mode);
 
-	SDL_FRect box = {(float)pos.x, (float)pos.y,
-	                 (float)p->particle.rect.dim.width,
-	                 (float)p->particle.rect.dim.height};
-	SDL_SetRenderDrawColor(cam->renderer, p->color.r, p->color.g, p->color.b,
-	                       p->color.a);
+	SDL_FRect box = {(float)pos.x, (float)pos.y, (float)p->particle.rect.dim.width, (float)p->particle.rect.dim.height};
+	SDL_SetRenderDrawColor(cam->renderer, p->color.r, p->color.g, p->color.b, p->color.a);
 	SDL_RenderFillRect(cam->renderer, &box);
 
 	// Reset the blend mode
@@ -488,10 +475,8 @@ render_line_particle(Particle *p, Camera *cam)
 	}
 
 	SDL_SetRenderDrawBlendMode(cam->renderer, p->blend_mode);
-	SDL_SetRenderDrawColor(cam->renderer, p->color.r, p->color.g, p->color.b,
-	                       p->color.a);
-	SDL_RenderLine(cam->renderer, (float)spos.x, (float)spos.y, (float)epos.x,
-	               (float)epos.y);
+	SDL_SetRenderDrawColor(cam->renderer, p->color.r, p->color.g, p->color.b, p->color.a);
+	SDL_RenderLine(cam->renderer, (float)spos.x, (float)spos.y, (float)epos.x, (float)epos.y);
 
 	// Reset the blend mode
 	SDL_SetRenderDrawBlendMode(cam->renderer, SDL_BLENDMODE_BLEND);

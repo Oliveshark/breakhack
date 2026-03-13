@@ -41,8 +41,7 @@ static DbQuery MIGRATE_COMMANDS[] = {
     {NULL, NULL, NULL} // Sentinel
 };
 
-static int load_settings_cb(void *unused, int count, char **values,
-                            char **colNames);
+static int load_settings_cb(void *unused, int count, char **values, char **colNames);
 DbQuery LOAD_SETTINGS = {"SELECT * FROM settings_int", load_settings_cb, NULL};
 
 static void
@@ -119,8 +118,7 @@ settings_init(void)
 static void
 save_setting_int(const char *key, int value)
 {
-	const char *stmtStr =
-	    "INSERT OR REPLACE INTO settings_int(key, value) values (?, ?)";
+	const char *stmtStr = "INSERT OR REPLACE INTO settings_int(key, value) values (?, ?)";
 	sqlite3_stmt *stmt = db_prepare(db, stmtStr);
 
 	debug("Saving setting: %s = %d", key, value);

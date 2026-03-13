@@ -65,56 +65,35 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 		s->fixed = true;
 		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8, 0);
 		m_sprintf(buffer, 4, "%u", i + 1);
-		texture_load_from_text(s->textures[0], buffer, C_YELLOW, C_BLACK,
-		                       renderer);
+		texture_load_from_text(s->textures[0], buffer, C_YELLOW, C_BLACK, renderer);
 		linkedlist_append(&bar->sprites_keyboard, s);
 	}
 
 	/* Load ps controller sprites */
 	Uint8 i = 0;
-	linkedlist_append(
-	    &bar->sprites_gamepad_ps,
-	    create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-	                                    CONTROLLER_BTN(0, GAMEPAD_TYPE_PS)));
-	linkedlist_append(
-	    &bar->sprites_gamepad_ps,
-	    create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-	                                    CONTROLLER_BTN(16, GAMEPAD_TYPE_PS)));
-	linkedlist_append(
-	    &bar->sprites_gamepad_ps,
-	    create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-	                                    CONTROLLER_BTN(32, GAMEPAD_TYPE_PS)));
-	linkedlist_append(
-	    &bar->sprites_gamepad_ps,
-	    create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-	                                    CONTROLLER_BTN(48, GAMEPAD_TYPE_PS)));
-	linkedlist_append(
-	    &bar->sprites_gamepad_ps,
-	    create_controller_button_sprite(
-	        POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_PS)));
+	linkedlist_append(&bar->sprites_gamepad_ps,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(0, GAMEPAD_TYPE_PS)));
+	linkedlist_append(&bar->sprites_gamepad_ps,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(16, GAMEPAD_TYPE_PS)));
+	linkedlist_append(&bar->sprites_gamepad_ps,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(32, GAMEPAD_TYPE_PS)));
+	linkedlist_append(&bar->sprites_gamepad_ps,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(48, GAMEPAD_TYPE_PS)));
+	linkedlist_append(&bar->sprites_gamepad_ps,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_PS)));
 
 	/* Load xbox controller sprites */
 	i = 0;
-	linkedlist_append(
-	    &bar->sprites_gamepad_xb,
-	    create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-	                                    CONTROLLER_BTN(0, GAMEPAD_TYPE_XB)));
-	linkedlist_append(
-	    &bar->sprites_gamepad_xb,
-	    create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-	                                    CONTROLLER_BTN(16, GAMEPAD_TYPE_XB)));
-	linkedlist_append(
-	    &bar->sprites_gamepad_xb,
-	    create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-	                                    CONTROLLER_BTN(32, GAMEPAD_TYPE_XB)));
-	linkedlist_append(
-	    &bar->sprites_gamepad_xb,
-	    create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-	                                    CONTROLLER_BTN(48, GAMEPAD_TYPE_XB)));
-	linkedlist_append(
-	    &bar->sprites_gamepad_xb,
-	    create_controller_button_sprite(
-	        POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_XB)));
+	linkedlist_append(&bar->sprites_gamepad_xb,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(0, GAMEPAD_TYPE_XB)));
+	linkedlist_append(&bar->sprites_gamepad_xb,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(16, GAMEPAD_TYPE_XB)));
+	linkedlist_append(&bar->sprites_gamepad_xb,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(32, GAMEPAD_TYPE_XB)));
+	linkedlist_append(&bar->sprites_gamepad_xb,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(48, GAMEPAD_TYPE_XB)));
+	linkedlist_append(&bar->sprites_gamepad_xb,
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_XB)));
 }
 
 static void
@@ -305,15 +284,13 @@ render_activation_indicator(SkillBar *bar, Camera *cam)
 }
 
 static void
-render_skill_countdown(SkillBar *bar, int index, unsigned int count,
-                       Camera *cam)
+render_skill_countdown(SkillBar *bar, int index, unsigned int count, Camera *cam)
 {
 	char buffer[5];
 	Sprite *s = bar->countdowns[index];
 
 	m_sprintf(buffer, 5, "%u", count);
-	texture_load_from_text(s->textures[0], buffer, C_WHITE, C_BLACK,
-	                       cam->renderer);
+	texture_load_from_text(s->textures[0], buffer, C_WHITE, C_BLACK, cam->renderer);
 	sprite_render(s, cam);
 }
 
@@ -369,8 +346,7 @@ render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
 		if (skill->levelcap > player->stats.lvl) {
 			unavailable = true;
 			color = (SDL_Color){0, 0, 0, 220};
-		} else if (skill->resetCountdown
-		           || (skill->available && !skill->available(player))) {
+		} else if (skill->resetCountdown || (skill->available && !skill->available(player))) {
 			unavailable = true;
 			color = (SDL_Color){255, 0, 0, 70};
 		}
@@ -433,8 +409,7 @@ skillbar_update(SkillBar *bar, UpdateData *data)
 		if (!data->player->skills[i])
 			continue;
 		if (input_modkey_is_pressed(input, KEY_SHIFT_NUM1 << i)) {
-			data->gui->activeTooltip =
-			    data->player->skills[i]->tooltip->sprite[controller_type];
+			data->gui->activeTooltip = data->player->skills[i]->tooltip->sprite[controller_type];
 			return;
 		}
 	}
@@ -462,13 +437,11 @@ skillbar_update(SkillBar *bar, UpdateData *data)
 		char lvl[4];
 		m_sprintf(lvl, 4, "%u", bar->artifacts[i].lvl);
 
-		texture_load_from_text(bar->artifacts[i].lvlSprite->textures[0], lvl,
-		                       C_PURPLE, C_WHITE, data->cam->renderer);
+		texture_load_from_text(bar->artifacts[i].lvlSprite->textures[0], lvl, C_PURPLE, C_WHITE, data->cam->renderer);
 
 		// Only update position if this is the first pickup
 		if (origLevel == 0) {
-			bar->artifacts[i].lvlSprite->pos.x =
-			    bar->artifactDisplayOffset + 12;
+			bar->artifacts[i].lvlSprite->pos.x = bar->artifactDisplayOffset + 12;
 			bar->artifacts[i].lvlSprite->pos.y = 16;
 			bar->artifacts[i].aSprite->pos.x = bar->artifactDisplayOffset;
 			bar->artifacts[i].aSprite->pos.y = 8;

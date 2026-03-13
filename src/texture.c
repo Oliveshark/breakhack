@@ -41,11 +41,9 @@ texture_create(void)
 }
 
 void
-texture_create_blank(Texture *t, SDL_TextureAccess access,
-                     SDL_Renderer *renderer)
+texture_create_blank(Texture *t, SDL_TextureAccess access, SDL_Renderer *renderer)
 {
-	t->texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access,
-	                               t->dim.width, t->dim.height);
+	t->texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, t->dim.width, t->dim.height);
 	BH_ASSERT(t->texture != NULL);
 	t->textureAccessType = access;
 }
@@ -67,8 +65,7 @@ texture_unlock(Texture *t)
 }
 
 void
-texture_load_from_file(Texture *texture, const char *path,
-                       SDL_Renderer *renderer)
+texture_load_from_file(Texture *texture, const char *path, SDL_Renderer *renderer)
 {
 	SDL_Surface *surface = IMG_Load_IO(io_load_rwops(path), true);
 
@@ -138,8 +135,7 @@ load_from_surface(Texture *t, SDL_Surface *surface, SDL_Renderer *renderer)
 }
 
 void
-texture_load_from_text(Texture *t, const char *text, SDL_Color c, SDL_Color oc,
-                       SDL_Renderer *renderer)
+texture_load_from_text(Texture *t, const char *text, SDL_Color c, SDL_Color oc, SDL_Renderer *renderer)
 {
 	SDL_Surface *bg_surface = NULL;
 	SDL_Surface *fg_surface = NULL;
@@ -160,8 +156,7 @@ texture_load_from_text(Texture *t, const char *text, SDL_Color c, SDL_Color oc,
 	}
 
 	if (surface == NULL) {
-		error("Unable to create texture from rendered text: %s",
-		      SDL_GetError());
+		error("Unable to create texture from rendered text: %s", SDL_GetError());
 		return;
 	}
 
@@ -170,13 +165,11 @@ texture_load_from_text(Texture *t, const char *text, SDL_Color c, SDL_Color oc,
 }
 
 void
-texture_load_from_text_shaded(Texture *t, const char *text, SDL_Color fg,
-                              SDL_Color bg, SDL_Renderer *renderer)
+texture_load_from_text_shaded(Texture *t, const char *text, SDL_Color fg, SDL_Color bg, SDL_Renderer *renderer)
 {
 	SDL_Surface *surface = TTF_RenderText_Shaded(t->font, text, 0, fg, bg);
 	if (surface == NULL) {
-		error("Unable to create texture from rendered text: %s",
-		      SDL_GetError());
+		error("Unable to create texture from rendered text: %s", SDL_GetError());
 		return;
 	}
 
@@ -184,13 +177,11 @@ texture_load_from_text_shaded(Texture *t, const char *text, SDL_Color fg,
 }
 
 void
-texture_load_from_text_blended(Texture *t, const char *text, SDL_Color fg,
-                               SDL_Renderer *renderer)
+texture_load_from_text_blended(Texture *t, const char *text, SDL_Color fg, SDL_Renderer *renderer)
 {
 	SDL_Surface *surface = TTF_RenderText_Blended(t->font, text, 0, fg);
 	if (surface == NULL) {
-		error("Unable to create texture from rendered text: %s",
-		      SDL_GetError());
+		error("Unable to create texture from rendered text: %s", SDL_GetError());
 		return;
 	}
 
@@ -235,8 +226,7 @@ texture_render(Texture *texture, SDL_Rect *box, Camera *cam)
 }
 
 void
-texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip,
-                    Camera *cam)
+texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip, Camera *cam)
 {
 	if (!texture->texture)
 		return;
@@ -248,15 +238,13 @@ texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip,
 	if (box)
 		SDL_RectToFRect(box, &fbox);
 
-	SDL_RenderTexture(cam->renderer, texture->texture, clip ? &fclip : NULL,
-	                  box ? &fbox : NULL);
+	SDL_RenderTexture(cam->renderer, texture->texture, clip ? &fclip : NULL, box ? &fbox : NULL);
 
 	texture->lastAccess = SDL_GetTicks();
 }
 
 void
-texture_render_clip_ex(Texture *texture, SDL_Rect *dst, SDL_Rect *src,
-                       double angle, SDL_Point *rotation_point,
+texture_render_clip_ex(Texture *texture, SDL_Rect *dst, SDL_Rect *src, double angle, SDL_Point *rotation_point,
                        SDL_FlipMode flip_mode, Camera *cam)
 {
 	if (!texture->texture)
@@ -275,8 +263,7 @@ texture_render_clip_ex(Texture *texture, SDL_Rect *dst, SDL_Rect *src,
 		fpoint.y = (float)rotation_point->y;
 	}
 
-	SDL_RenderTextureRotated(cam->renderer, texture->texture,
-	                         src ? &fclip : NULL, dst ? &fbox : NULL, angle,
+	SDL_RenderTextureRotated(cam->renderer, texture->texture, src ? &fclip : NULL, dst ? &fbox : NULL, angle,
 	                         rotation_point ? &fpoint : NULL, flip_mode);
 
 	texture->lastAccess = SDL_GetTicks();

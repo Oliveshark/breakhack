@@ -104,8 +104,7 @@ save_exists(void)
 }
 
 void
-save_save(unsigned int seed, unsigned int map_level, bool quickGame,
-          bool arcadeGame, Player *player)
+save_save(unsigned int seed, unsigned int map_level, bool quickGame, bool arcadeGame, Player *player)
 {
 	debug("Saving game, Seed: %d, Map level: %d", seed, map_level);
 	save_clear();
@@ -124,10 +123,9 @@ save_save(unsigned int seed, unsigned int map_level, bool quickGame,
 	save.player_class = player->class;
 	save.player_equipment = player->equipment;
 
-	const char *query =
-	    "INSERT INTO saves"
-	    "(major_version, minor_version, patch_version, arch, save) "
-	    "VALUES(?, ?, ?, ?, ?)";
+	const char *query = "INSERT INTO saves"
+	                    "(major_version, minor_version, patch_version, arch, save) "
+	                    "VALUES(?, ?, ?, ?, ?)";
 
 	sqlite3_stmt *stmt = db_prepare(db, query);
 	sqlite3_bind_int(stmt, 1, MAJOR_VERSION);

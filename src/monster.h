@@ -29,27 +29,9 @@
 
 struct UpdateData;
 
-typedef enum {
-	PACIFIST,
-	NORMAL,
-	HOSTILE,
-	GUERILLA,
-	COWARD,
-	SENTINEL,
-	FIRE_DEMON,
-	SORCERER,
-	ASSASSIN
-} MonsterBehaviour;
+typedef enum { PACIFIST, NORMAL, HOSTILE, GUERILLA, COWARD, SENTINEL, FIRE_DEMON, SORCERER, ASSASSIN } MonsterBehaviour;
 
-typedef enum {
-	PASSIVE,
-	AGRESSIVE,
-	SCARED,
-	STATIONARY,
-	SLEEPING,
-	SCANNING,
-	STUNNED
-} StateType;
+typedef enum { PASSIVE, AGRESSIVE, SCARED, STATIONARY, SLEEPING, SCANNING, STUNNED } StateType;
 
 typedef struct State {
 	StateType current;

@@ -105,9 +105,8 @@ static void
 switch_tile(Map *map, Position *tile_pos, MapTile *tile, MapTile **oldTile)
 {
 	// Set the decoration sprites position to match tile pos
-	tile->sprite->pos = POS(
-	    tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
-	    tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
+	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
+	                        tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
 
 	if (*oldTile != NULL) {
 		map_tile_destroy(*oldTile);
@@ -144,8 +143,7 @@ map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 {
 	const Position *cr = &map->currentRoom;
 	Room *room = map->rooms[cr->x][cr->y];
-	switch_tile(map, tile_pos, tile,
-	            &room->decorations[tile_pos->x][tile_pos->y]);
+	switch_tile(map, tile_pos, tile, &room->decorations[tile_pos->x][tile_pos->y]);
 }
 
 void
@@ -243,8 +241,7 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 	LinkedList *m = map->monsters;
 	bool allDone = true;
 
-	if (timer_started(map->monsterMoveTimer)
-	    && timer_get_ticks(map->monsterMoveTimer) < 100)
+	if (timer_started(map->monsterMoveTimer) && timer_get_ticks(map->monsterMoveTimer) < 100)
 		return false;
 
 	while (m) {
@@ -257,8 +254,7 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 
 		// Prevent passive monsters from being "dodgy"
 		Position pos = position_to_matrix_coords(&monster->sprite->pos);
-		if (monster->state.current == PASSIVE
-		    && position_proximity(1, &rm->playerRoomPos, &pos))
+		if (monster->state.current == PASSIVE && position_proximity(1, &rm->playerRoomPos, &pos))
 			continue;
 		if (monster->steps >= monster->stats.speed)
 			continue;
@@ -414,16 +410,14 @@ map_set_current_room(Map *map, Position *player_world_pos, bool *first_visit)
 	if (player_world_pos->x <= 0) {
 		map->currentRoom.x = 0;
 	} else {
-		unsigned int room_cord_x =
-		    player_world_pos->x - (player_world_pos->x % room_width);
+		unsigned int room_cord_x = player_world_pos->x - (player_world_pos->x % room_width);
 		map->currentRoom.x = room_cord_x / room_width;
 	}
 
 	if (player_world_pos->y <= 0) {
 		map->currentRoom.y = 0;
 	} else {
-		unsigned int room_cord_y =
-		    player_world_pos->y - (player_world_pos->y % room_height);
+		unsigned int room_cord_y = player_world_pos->y - (player_world_pos->y % room_height);
 		map->currentRoom.y = room_cord_y / room_height;
 	}
 
@@ -468,8 +462,7 @@ map_room_destroy(Room *room)
 void
 map_trigger_tile_fall(MapTile *tile)
 {
-	if (tile->sprite->state != SPRITE_STATE_FALLING
-	    && tile->sprite->state != SPRITE_STATE_PLUMMETED)
+	if (tile->sprite->state != SPRITE_STATE_FALLING && tile->sprite->state != SPRITE_STATE_PLUMMETED)
 		particle_engine_dust_puff(tile->sprite->pos, tile->sprite->dim);
 
 	tile->sprite->state = SPRITE_STATE_FALLING;
@@ -479,8 +472,7 @@ map_trigger_tile_fall(MapTile *tile)
 bool
 map_open_door(MapTile *tile, Player *player)
 {
-	if (tile->lockType == LOCK_NONE
-	    || tile->lockType & player->equipment.keys) {
+	if (tile->lockType == LOCK_NONE || tile->lockType & player->equipment.keys) {
 		// Open the door
 		if (tile->lockType != LOCK_NONE)
 			gui_log("You unlocked a door!");

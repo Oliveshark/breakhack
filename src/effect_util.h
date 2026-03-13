@@ -21,6 +21,5 @@
 #include "position.h"
 #include "stats.h"
 
-void effect_damage_surroundings(Position *pos, RoomMatrix *rm, Player *player,
-                                Stats *attackerStats, unsigned int radius,
-                                unsigned int pushRadius, bool damagePlayer);
+void effect_damage_surroundings(Position *pos, RoomMatrix *rm, Player *player, Stats *attackerStats,
+                                unsigned int radius, unsigned int pushRadius, bool damagePlayer);

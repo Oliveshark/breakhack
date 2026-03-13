@@ -25,8 +25,7 @@
 #include "util.h"
 
 static bool
-render_button_texture_for(const char *text, Position pos, Camera *cam,
-                          GamepadType controller_type)
+render_button_texture_for(const char *text, Position pos, Camera *cam, GamepadType controller_type)
 {
 	if (controller_type == GAMEPAD_TYPE_NONE) {
 		return false;
@@ -62,8 +61,7 @@ render_button_texture_for(const char *text, Position pos, Camera *cam,
 }
 
 static void
-load_texture_for(Texture *text, char *content, SDL_Rect *renderBox,
-                 SDL_Renderer *renderer)
+load_texture_for(Texture *text, char *content, SDL_Rect *renderBox, SDL_Renderer *renderer)
 {
 	texture_load_from_text(text, content, C_WHITE, C_WHITE, renderer);
 
@@ -81,8 +79,8 @@ tooltip_create_sprite(char **content, Camera *cam, GamepadType controller_type)
 		contentIndex++;
 	}
 
-	Sprite *sprite = gui_util_create_tooltip_frame_sprite(
-	    BOTTOM_GUI_WIDTH / 16 - 6, (Uint32)((rowCount * 8 + 48) / 16), cam);
+	Sprite *sprite =
+	    gui_util_create_tooltip_frame_sprite(BOTTOM_GUI_WIDTH / 16 - 6, (Uint32)((rowCount * 8 + 48) / 16), cam);
 	sprite->pos.x = 48;
 	sprite->pos.y = 48;
 	Texture *texture = sprite->textures[0];
@@ -93,9 +91,7 @@ tooltip_create_sprite(char **content, Camera *cam, GamepadType controller_type)
 
 	while (*content) {
 		if (strlen(*content) > 0) {
-			if (render_button_texture_for(*content,
-			                              POS(renderBox.x, renderBox.y - 4),
-			                              cam, controller_type)) {
+			if (render_button_texture_for(*content, POS(renderBox.x, renderBox.y - 4), cam, controller_type)) {
 				renderBox.x += 16;
 			} else {
 				load_texture_for(text, *content, &renderBox, cam->renderer);
