@@ -94,7 +94,7 @@ save_hiscore(double gold, int lvl, int dlvl, unsigned int moves)
 	sqlite3_bind_double(stmt, 1, gold);
 	sqlite3_bind_int(stmt, 2, lvl);
 	sqlite3_bind_int(stmt, 3, dlvl);
-	sqlite3_bind_int(stmt, 4, (int)moves);
+	sqlite3_bind_int64(stmt, 4, (sqlite3_int64)moves);
 	int rc = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	return rc == SQLITE_DONE ? (int)sqlite3_last_insert_rowid(db) : 0;
@@ -143,8 +143,10 @@ load_hiscore_cb(void *result, int count, char **values, char **colNames)
 			score->playerLevel = atoi(values[i]);
 		else if (strcmp(colNames[i], "dungeonLevel") == 0)
 			score->dungeonLevel = atoi(values[i]);
-		else if (strcmp(colNames[i], "moves") == 0)
-			score->moves = (unsigned int)atoi(values[i]);
+		else if (strcmp(colNames[i], "moves") == 0) {
+			unsigned long parsed = values[i] ? strtoul(values[i], NULL, 10) : 0UL;
+			score->moves = (unsigned int)parsed;
+		}
 	}
 	LinkedList **scores = result;
 	linkedlist_append(scores, score);
