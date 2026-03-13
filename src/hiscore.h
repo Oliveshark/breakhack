@@ -26,6 +26,7 @@ typedef struct HiScore {
 	double gold;
 	unsigned int playerLevel;
 	unsigned int dungeonLevel;
+	unsigned int moves;
 	LinkedList *artifacts;
 } HiScore;
 
