@@ -20,9 +20,9 @@
 #define DIMENSION_H_
 
 #define DIM(x, y)                                                                                                      \
-	(Dimension)                                                                                                        \
-	{                                                                                                                  \
-		x, y                                                                                                           \
+	(Dimension)                                                                                                    \
+	{                                                                                                              \
+		x, y                                                                                                   \
 	}
 
 typedef struct {

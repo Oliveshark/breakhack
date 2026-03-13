@@ -72,7 +72,8 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 
 		Sprite *s1 = sprite_create();
 		sprite_load_text_texture(s1, "GUI/SDS_8x8.ttf", 0, 25, 2);
-		texture_load_from_text(s1->textures[0], menu_items[i].label, C_MENU_DEFAULT, C_MENU_OUTLINE_DEFAULT, renderer);
+		texture_load_from_text(s1->textures[0], menu_items[i].label, C_MENU_DEFAULT, C_MENU_OUTLINE_DEFAULT,
+		                       renderer);
 
 		hcenter = (SCREEN_WIDTH / 2) - (s1->textures[0]->dim.width / 2);
 		s1->pos = (Position){(int)hcenter, (int)200 + (i * 50)};
@@ -81,7 +82,8 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 
 		Sprite *s2 = sprite_create();
 		sprite_load_text_texture(s2, "GUI/SDS_8x8.ttf", 0, 25, 2);
-		texture_load_from_text(s2->textures[0], menu_items[i].label, C_MENU_HOVER, C_MENU_OUTLINE_DEFAULT, renderer);
+		texture_load_from_text(s2->textures[0], menu_items[i].label, C_MENU_HOVER, C_MENU_OUTLINE_DEFAULT,
+		                       renderer);
 
 		s2->pos = (Position){(int)hcenter, (int)200 + (i * 50)};
 		s2->dim = s2->textures[0]->dim;
@@ -98,7 +100,8 @@ menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size
 Menu *
 menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *cam)
 {
-	static char *const spriteSheets[] = {"Commissions/Warrior.png", "Commissions/Rogue.png", "Commissions/Mage.png"};
+	static char *const spriteSheets[] = {"Commissions/Warrior.png", "Commissions/Rogue.png",
+	                                     "Commissions/Mage.png"};
 
 	static char *const callbackData[] = {"warrior", "rogue", "mage"};
 

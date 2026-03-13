@@ -20,7 +20,6 @@
 
 #include "sprite.h"
 #include "player.h"
-#include "update_data.h"
 #include "camera.h"
 
 typedef struct Trap {

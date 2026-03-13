@@ -172,7 +172,8 @@ initSDL(void)
 		error("Unable to set blend mode: %s", SDL_GetError());
 		return false;
 	}
-	if (!SDL_SetRenderLogicalPresentation(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX)) {
+	if (!SDL_SetRenderLogicalPresentation(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT,
+	                                      SDL_LOGICAL_PRESENTATION_LETTERBOX)) {
 		error("Unable to initiate scaling: %s", SDL_GetError());
 		return false;
 	}
@@ -217,8 +218,8 @@ initViewports(Uint32 offset)
 
 	minimapViewport = (SDL_Rect){offset + GAME_VIEW_WIDTH, STATS_GUI_HEIGHT, RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT};
 
-	menuViewport = (SDL_Rect){offset + ((SCREEN_WIDTH - GAME_VIEW_WIDTH) >> 1), (SCREEN_HEIGHT - GAME_VIEW_HEIGHT) >> 1,
-	                          GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT};
+	menuViewport = (SDL_Rect){offset + ((SCREEN_WIDTH - GAME_VIEW_WIDTH) >> 1),
+	                          (SCREEN_HEIGHT - GAME_VIEW_HEIGHT) >> 1, GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT};
 }
 
 static bool
@@ -458,11 +459,11 @@ goToGameSelectMenu(void *unused)
 	menuItems[i++] =
 	    (TEXT_MENU_ITEM){"STANDARD GAME", "Standard 20 level game, recommended for new players", startRegularGame};
 #ifdef STEAM_BUILD
-	menuItems[i++] =
-	    (TEXT_MENU_ITEM){"WEEKLY CHALLENGE", "Quick game with weekly leaderboards at breakhack.net", startWeeklyGame};
+	menuItems[i++] = (TEXT_MENU_ITEM){"WEEKLY CHALLENGE", "Quick game with weekly leaderboards at breakhack.net",
+	                                  startWeeklyGame};
 #endif
-	menuItems[i++] =
-	    (TEXT_MENU_ITEM){"QUICK GAME", "Shorter 12 level game, with more action earlier in the game", startQuickGame};
+	menuItems[i++] = (TEXT_MENU_ITEM){"QUICK GAME", "Shorter 12 level game, with more action earlier in the game",
+	                                  startQuickGame};
 	menuItems[i++] = (TEXT_MENU_ITEM){"ARCADE GAME", "One big level with lots of action", startArcadeGame};
 
 	menu_create_text_menu(&gameSelectMenu, menuItems, item_count, gRenderer);

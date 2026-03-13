@@ -31,7 +31,7 @@
 #define verbose(...) log_print(stdout, "VERBOSE", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #else
 #define verbose(...)                                                                                                   \
-	do {                                                                                                               \
+	do {                                                                                                           \
 	} while (0)
 #endif
 
@@ -40,10 +40,10 @@
 #define info(...) log_print(stdout, "INFO", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #else // DEBUG
 #define debug(...)                                                                                                     \
-	do {                                                                                                               \
+	do {                                                                                                           \
 	} while (0)
 #define info(...)                                                                                                      \
-	do {                                                                                                               \
+	do {                                                                                                           \
 	} while (0)
 #endif // DEBUG
 
@@ -51,29 +51,29 @@
 #define error(...) log_print(stderr, "ERROR", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #ifdef DEBUG
 #define fatal(...)                                                                                                     \
-	{                                                                                                                  \
-		log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__, __VA_ARGS__);                                        \
-		printf("\n- Press any key to close -\n");                                                                      \
-		getchar();                                                                                                     \
-		exit(-1);                                                                                                      \
+	{                                                                                                              \
+		log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__, __VA_ARGS__);                                \
+		printf("\n- Press any key to close -\n");                                                              \
+		getchar();                                                                                             \
+		exit(-1);                                                                                              \
 	}
 #else // DEBUG
 #define fatal(...)                                                                                                     \
-	{                                                                                                                  \
-		log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__, __VA_ARGS__);                                        \
-		exit(-1);                                                                                                      \
+	{                                                                                                              \
+		log_print(stderr, "FATAL", __FNAME__, __LINE__, __func__, __VA_ARGS__);                                \
+		exit(-1);                                                                                              \
 	}
 #endif // DEBUG
 
 #ifdef DEBUG
 #define BH_ASSERT(x)                                                                                                   \
-	if (!(x)) {                                                                                                        \
-		fatal("Assertion failed: %s\n", #x);                                                                           \
-		exit(-1);                                                                                                      \
+	if (!(x)) {                                                                                                    \
+		fatal("Assertion failed: %s\n", #x);                                                                   \
+		exit(-1);                                                                                              \
 	}
 #else
 #define BH_ASSERT(x)                                                                                                   \
-	do {                                                                                                               \
+	do {                                                                                                           \
 	} while (0)
 #endif // DEBUG
 

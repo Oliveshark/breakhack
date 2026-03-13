@@ -244,8 +244,8 @@ sprite_render(Sprite *s, Camera *cam)
 	SDL_Rect box = {cameraPos.x, cameraPos.y, s->dim.width, s->dim.height};
 
 	if (s->angle != 0 || s->flip != SDL_FLIP_NONE) {
-		texture_render_clip_ex(s->textures[s->texture_index], &box, &s->clip, s->angle, &s->rotationPoint, s->flip,
-		                       cam);
+		texture_render_clip_ex(s->textures[s->texture_index], &box, &s->clip, s->angle, &s->rotationPoint,
+		                       s->flip, cam);
 	} else if (s->clip.w && s->clip.h) {
 		texture_render_clip(s->textures[s->texture_index], &box, &s->clip, cam);
 	} else {

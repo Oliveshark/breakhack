@@ -147,7 +147,8 @@ loot_drop(Monster *monster, Map *map, RoomMatrix *rm, Player *player)
 	Position monsterTilePos = position_to_tile_pos(&monster->sprite->pos);
 
 	/* Find possible loot drop positions */
-	size_t space_count = roommatrix_get_surrounding_spaces(rm, &monsterTilePos, drop_positions, DROP_POSITION_COUNT);
+	size_t space_count =
+	    roommatrix_get_surrounding_spaces(rm, &monsterTilePos, drop_positions, DROP_POSITION_COUNT);
 
 	/* Drop artifacts */
 	if (monster->boss) {

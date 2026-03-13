@@ -79,8 +79,9 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(32, GAMEPAD_TYPE_PS)));
 	linkedlist_append(&bar->sprites_gamepad_ps,
 	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(48, GAMEPAD_TYPE_PS)));
-	linkedlist_append(&bar->sprites_gamepad_ps,
-	                  create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_PS)));
+	linkedlist_append(
+	    &bar->sprites_gamepad_ps,
+	    create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_PS)));
 
 	/* Load xbox controller sprites */
 	i = 0;
@@ -92,8 +93,9 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(32, GAMEPAD_TYPE_XB)));
 	linkedlist_append(&bar->sprites_gamepad_xb,
 	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(48, GAMEPAD_TYPE_XB)));
-	linkedlist_append(&bar->sprites_gamepad_xb,
-	                  create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_XB)));
+	linkedlist_append(
+	    &bar->sprites_gamepad_xb,
+	    create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_XB)));
 }
 
 static void
@@ -437,7 +439,8 @@ skillbar_update(SkillBar *bar, UpdateData *data)
 		char lvl[4];
 		m_sprintf(lvl, 4, "%u", bar->artifacts[i].lvl);
 
-		texture_load_from_text(bar->artifacts[i].lvlSprite->textures[0], lvl, C_PURPLE, C_WHITE, data->cam->renderer);
+		texture_load_from_text(bar->artifacts[i].lvlSprite->textures[0], lvl, C_PURPLE, C_WHITE,
+		                       data->cam->renderer);
 
 		// Only update position if this is the first pickup
 		if (origLevel == 0) {

@@ -91,7 +91,8 @@ tooltip_create_sprite(char **content, Camera *cam, GamepadType controller_type)
 
 	while (*content) {
 		if (strlen(*content) > 0) {
-			if (render_button_texture_for(*content, POS(renderBox.x, renderBox.y - 4), cam, controller_type)) {
+			if (render_button_texture_for(*content, POS(renderBox.x, renderBox.y - 4), cam,
+			                              controller_type)) {
 				renderBox.x += 16;
 			} else {
 				load_texture_for(text, *content, &renderBox, cam->renderer);

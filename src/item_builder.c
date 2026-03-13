@@ -288,7 +288,8 @@ item_builder_build_item(ItemKey key, int level)
 			item = create_treasure(level * 2);
 			break;
 		case FLESH:
-			item = create_item(path_flesh, NULL, CLIP16(get_random(7) * 16, get_random(1) * 16), &eat_flesh);
+			item =
+			    create_item(path_flesh, NULL, CLIP16(get_random(7) * 16, get_random(1) * 16), &eat_flesh);
 			item->value = 1 + get_random(level);
 			break;
 		case HEALTH:
@@ -305,7 +306,8 @@ item_builder_build_item(ItemKey key, int level)
 	}
 
 	if (item->value != 1) {
-		Sprite *valueSprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf", 8, C_BLUE, C_BLACK, "%g", item->value);
+		Sprite *valueSprite =
+		    sprite_util_create_text_sprite("GUI/SDS_8x8.ttf", 8, C_BLUE, C_BLACK, "%g", item->value);
 		valueSprite->offset.x = item->sprite->dim.width - valueSprite->dim.width;
 		valueSprite->offset.y = item->sprite->dim.height - valueSprite->dim.height;
 		linkedlist_append(&item->subsprites, valueSprite);

@@ -344,8 +344,8 @@ move(Player *player, RoomMatrix *matrix, Vector2d direction)
 		action_spent(player);
 		RoomSpace *lastSpace = &matrix->spaces[lastPos.x][lastPos.y];
 		if (matrix->modifier->type == RMOD_TYPE_CRUMBLING && lastPos.x > 1 && lastPos.y > 1 && lastPos.x < 14
-		    && lastPos.y < 10 && lastSpace->decoration == NULL && lastSpace->trap == NULL && lastSpace->objects == NULL
-		    && lastSpace->items == NULL) {
+		    && lastPos.y < 10 && lastSpace->decoration == NULL && lastSpace->trap == NULL
+		    && lastSpace->objects == NULL && lastSpace->items == NULL) {
 			map_trigger_tile_fall(lastSpace->tile);
 		}
 	}
@@ -563,10 +563,11 @@ static void
 build_sword_animation(Player *p, SDL_Renderer *renderer)
 {
 	animation_load_texture(p->swordAnimation, "Extras/SwordSwing.png", renderer);
-	animation_set_frames(
-	    p->swordAnimation,
-	    (AnimationClip[]){
-	        {0, 0, 32, 32, 50}, {32, 0, 32, 32, 50}, {64, 0, 32, 32, 50}, {96, 0, 32, 32, 50}, {128, 0, 32, 32, 50}});
+	animation_set_frames(p->swordAnimation, (AnimationClip[]){{0, 0, 32, 32, 50},
+	                                                          {32, 0, 32, 32, 50},
+	                                                          {64, 0, 32, 32, 50},
+	                                                          {96, 0, 32, 32, 50},
+	                                                          {128, 0, 32, 32, 50}});
 
 	p->swordAnimation->loop = false;
 	p->swordAnimation->sprite->dim = GAME_DIMENSION;

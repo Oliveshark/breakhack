@@ -134,8 +134,8 @@ init_sprites(Gui *gui, Camera *cam)
 	}
 
 	for (i = 0; i < 8; ++i) {
-		linkedlist_append(&gui->xp_bar,
-		                  create_xp_sprite(t, (SDL_Rect){6 * 16, 4 * 16, 16, 16}, POS(16 + (i * 16), POS_Y_XPBAR)));
+		linkedlist_append(&gui->xp_bar, create_xp_sprite(t, (SDL_Rect){6 * 16, 4 * 16, 16, 16},
+		                                                 POS(16 + (i * 16), POS_Y_XPBAR)));
 	}
 
 	Sprite *s;
@@ -348,14 +348,16 @@ gui_update_player_stats(Gui *gui, Player *player, Map *map, SDL_Renderer *render
 
 	if (dungeon_level != (unsigned int)map->level) {
 		m_sprintf(buffer, 200, "Dungeon level: %d", map->level);
-		texture_load_from_text(gui->labels[DUNGEON_LEVEL_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
+		texture_load_from_text(gui->labels[DUNGEON_LEVEL_LABEL]->textures[0], buffer, C_WHITE, C_BLACK,
+		                       renderer);
 		gui->labels[DUNGEON_LEVEL_LABEL]->dim = gui->labels[DUNGEON_LEVEL_LABEL]->textures[0]->dim;
 		dungeon_level = (unsigned int)map->level;
 	}
 
 	if (current_potion_sips != (int)player->potion_sips) {
 		m_sprintf(buffer, 200, "x %u", (unsigned int)player->potion_sips);
-		texture_load_from_text(gui->labels[HEALTH_POTION_LABEL]->textures[0], buffer, C_WHITE, C_BLACK, renderer);
+		texture_load_from_text(gui->labels[HEALTH_POTION_LABEL]->textures[0], buffer, C_WHITE, C_BLACK,
+		                       renderer);
 		gui->labels[HEALTH_POTION_LABEL]->dim = gui->labels[HEALTH_POTION_LABEL]->textures[0]->dim;
 		current_potion_sips = player->potion_sips;
 	}
@@ -501,8 +503,8 @@ gui_update_minimap_pos(Gui *gui, Camera *cam, RoomMatrix *rm)
 	SDL_RenderClear(cam->renderer);
 
 	// Render current room square
-	const SDL_FRect r = {(float)rm->roomPos.x * MAP_ROOM_WIDTH, (float)rm->roomPos.y * MAP_ROOM_HEIGHT, MAP_ROOM_WIDTH,
-	                     MAP_ROOM_HEIGHT};
+	const SDL_FRect r = {(float)rm->roomPos.x * MAP_ROOM_WIDTH, (float)rm->roomPos.y * MAP_ROOM_HEIGHT,
+	                     MAP_ROOM_WIDTH, MAP_ROOM_HEIGHT};
 	SDL_SetRenderDrawColor(cam->renderer, 235, 235, 52, 200);
 	SDL_RenderRect(cam->renderer, &r);
 

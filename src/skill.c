@@ -644,7 +644,8 @@ skill_bash(Skill *skill, SkillData *data)
 			gui_log("You hit for %u damage", result.dmg);
 			if (monster->stats.hp > 0) {
 				gui_log("%s seems dazed and confused", monster->label);
-				monster_set_state(monster, STUNNED, (Uint8)(3 + player_has_artifact(data->player, INCREASED_STUN)));
+				monster_set_state(monster, STUNNED,
+				                  (Uint8)(3 + player_has_artifact(data->player, INCREASED_STUN)));
 			}
 			mixer_play_effect(SLAM);
 		} else {
@@ -719,11 +720,13 @@ skill_trip(Skill *skill, SkillData *data)
 			Uint32 pushCount = 1 + player_has_artifact(data->player, PUSH_BACK);
 			for (Uint32 i = 0; i < pushCount; ++i) {
 				monster_push(space->monster, data->player, data->matrix, data->direction);
-				if (space->monster->stats.hp <= 0 || space->monster->sprite->state == SPRITE_STATE_FALLING) {
+				if (space->monster->stats.hp <= 0
+				    || space->monster->sprite->state == SPRITE_STATE_FALLING) {
 					break;
 				}
 			}
-			monster_set_state(space->monster, STUNNED, (Uint8)(2 + player_has_artifact(data->player, INCREASED_STUN)));
+			monster_set_state(space->monster, STUNNED,
+			                  (Uint8)(2 + player_has_artifact(data->player, INCREASED_STUN)));
 		}
 
 	} else {

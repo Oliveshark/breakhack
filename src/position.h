@@ -22,9 +22,9 @@
 #include <stdbool.h>
 
 #define POS(x, y)                                                                                                      \
-	(Position)                                                                                                         \
-	{                                                                                                                  \
-		x, y                                                                                                           \
+	(Position)                                                                                                     \
+	{                                                                                                              \
+		x, y                                                                                                   \
 	}
 
 /**

@@ -519,7 +519,8 @@ l_load_script(lua_State *L)
 
 	io_load_file_buffer(&content, &size, filename);
 	if (luaL_loadbuffer(L, content, size, name) != 0) {
-		luaL_error(L, "Error loading module %s from file %s\n\t%s", lua_tostring(L, 1), filename, lua_tostring(L, -1));
+		luaL_error(L, "Error loading module %s from file %s\n\t%s", lua_tostring(L, 1), filename,
+		           lua_tostring(L, -1));
 	}
 	free(content);
 

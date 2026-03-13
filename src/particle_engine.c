@@ -83,19 +83,19 @@ next_global_particle(void)
 }
 
 #define NEXT_GAME_PARTICLE(p)                                                                                          \
-	do {                                                                                                               \
-		p = next_game_particle();                                                                                      \
-		if (p == NULL) {                                                                                               \
-			return;                                                                                                    \
-		}                                                                                                              \
+	do {                                                                                                           \
+		p = next_game_particle();                                                                              \
+		if (p == NULL) {                                                                                       \
+			return;                                                                                        \
+		}                                                                                                      \
 	} while (0);
 
 #define NEXT_GLOBAL_PARTICLE(p)                                                                                        \
-	do {                                                                                                               \
-		p = next_global_particle();                                                                                    \
-		if (p == NULL) {                                                                                               \
-			return;                                                                                                    \
-		}                                                                                                              \
+	do {                                                                                                           \
+		p = next_global_particle();                                                                            \
+		if (p == NULL) {                                                                                       \
+			return;                                                                                        \
+		}                                                                                                      \
 	} while (0);
 
 static void
@@ -454,7 +454,8 @@ render_rect_particle(Particle *p, Camera *cam)
 
 	SDL_SetRenderDrawBlendMode(cam->renderer, p->blend_mode);
 
-	SDL_FRect box = {(float)pos.x, (float)pos.y, (float)p->particle.rect.dim.width, (float)p->particle.rect.dim.height};
+	SDL_FRect box = {(float)pos.x, (float)pos.y, (float)p->particle.rect.dim.width,
+	                 (float)p->particle.rect.dim.height};
 	SDL_SetRenderDrawColor(cam->renderer, p->color.r, p->color.g, p->color.b, p->color.a);
 	SDL_RenderFillRect(cam->renderer, &box);
 

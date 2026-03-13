@@ -447,7 +447,8 @@ get_optimal_move_towards(Monster *m, RoomMatrix *rm, const Position dest)
 			};
 
 			if (!position_equals(&next, &dest)) {
-				if (!position_in_roommatrix(&next) || (rm->spaces[next.x][next.y].flags & (TILE_OCCUPIED | TILE_LETHAL))
+				if (!position_in_roommatrix(&next)
+				    || (rm->spaces[next.x][next.y].flags & (TILE_OCCUPIED | TILE_LETHAL))
 				    || rm->spaces[next.x][next.y].trap) {
 					continue;
 				}
