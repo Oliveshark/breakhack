@@ -472,6 +472,14 @@ goToGameSelectMenu(void *unused)
 }
 
 static void
+openSeedEntry(void *unused)
+{
+	(void)unused;
+	gGameState = SEED_ENTRY;
+	// TODO: Create this view...
+}
+
+static void
 showHowToTooltip(void *unused)
 {
 	(void)unused;
@@ -580,6 +588,7 @@ initMainMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
 	    {"PLAY", "Start game", goToGameSelectMenu},
+	    {"SET SEED", "Set the game seed", openSeedEntry},
 	    {"SCORES", "View your top 10 scores", viewScoreScreen},
 	    {"CREDITS", "View game credits", viewCredits},
 	    {"QUIT", "Exit game", exitGame},
