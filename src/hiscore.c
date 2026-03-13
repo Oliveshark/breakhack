@@ -28,7 +28,8 @@ static DbQuery MIGRATE_COMMANDS[] = {
      "time DATETIME DEFAULT CURRENT_TIMESTAMP, "
      "gold FLOAT, "
      "playerLevel INTEGER, "
-     "dungeonLevel INTEGER)",
+     "dungeonLevel INTEGER, "
+     "moves INTEGER DEFAULT 0)",
      NULL, NULL},
     {"CREATE TABLE IF NOT EXISTS hiscore_artifacts("
      "id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -42,7 +43,7 @@ static DbQuery MIGRATE_COMMANDS[] = {
 static int load_hiscore_cb(void *, int count, char **values, char **colNames);
 
 static DbQuery GET_TOP_10_COMMAND = {"SELECT datetime(time, 'localtime') as "
-                                     "time, gold, playerLevel, dungeonLevel "
+                                     "time, gold, playerLevel, dungeonLevel, moves "
                                      "FROM hiscore "
                                      "ORDER BY gold DESC "
                                      "LIMIT 10",
@@ -68,6 +69,9 @@ create_tables(void)
 
 		db_execute(db, query);
 	}
+
+	// Soft migration: add moves column to existing databases (ignore error if already present)
+	(void)db_execute_stmnt("ALTER TABLE hiscore ADD COLUMN moves INTEGER DEFAULT 0", db, NULL, NULL);
 }
 
 void
@@ -81,15 +85,16 @@ hiscore_init(void)
 }
 
 static void
-save_hiscore(double gold, int lvl, int dlvl)
+save_hiscore(double gold, int lvl, int dlvl, unsigned int moves)
 {
-	const char *query = "INSERT INTO hiscore(gold, playerLevel, dungeonLevel) values (?, ?, ?)";
+	const char *query = "INSERT INTO hiscore(gold, playerLevel, dungeonLevel, moves) values (?, ?, ?, ?)";
 	sqlite3_stmt *stmt = db_prepare(db, query);
 
-	debug("Saving high score: %dg %dpl %dl", gold, lvl, dlvl);
+	debug("Saving high score: %dg %dpl %dl %dm", gold, lvl, dlvl, moves);
 	sqlite3_bind_double(stmt, 1, gold);
 	sqlite3_bind_int(stmt, 2, lvl);
 	sqlite3_bind_int(stmt, 3, dlvl);
+	sqlite3_bind_int(stmt, 4, (int)moves);
 	sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 }
@@ -111,7 +116,7 @@ save_hiscore_artifact(int hid, int aid)
 void
 hiscore_register(Player *p, unsigned int dungeonLevel)
 {
-	save_hiscore(p->gold, p->stats.lvl, dungeonLevel);
+	save_hiscore(p->gold, p->stats.lvl, dungeonLevel, p->stat_data.total_steps);
 	int hiscoreId = (int)sqlite3_last_insert_rowid(db);
 	if (!hiscoreId) {
 		error("Failed to retrieve last inserted hiscore id");
@@ -138,6 +143,8 @@ load_hiscore_cb(void *result, int count, char **values, char **colNames)
 			score->playerLevel = atoi(values[i]);
 		else if (strcmp(colNames[i], "dungeonLevel") == 0)
 			score->dungeonLevel = atoi(values[i]);
+		else if (strcmp(colNames[i], "moves") == 0)
+			score->moves = (unsigned int)atoi(values[i]);
 	}
 	LinkedList **scores = result;
 	linkedlist_append(scores, score);
