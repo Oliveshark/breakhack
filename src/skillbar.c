@@ -323,7 +323,7 @@ render_skills(Player *player, Camera *cam)
 static void
 render_artifacts(SkillBar *bar, Camera *cam)
 {
-	UNUSED(bar);
+	(void)bar;
 	for (size_t i = 0; i < LAST_ARTIFACT_EFFECT; ++i) {
 		if (bar->artifacts[i].lvl == 0)
 			continue;

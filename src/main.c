@@ -289,7 +289,7 @@ startGame(void)
 static void
 exitGame(void *unused)
 {
-	UNUSED(unused);
+	(void)unused;
 	gGameState = QUIT;
 }
 
@@ -302,7 +302,7 @@ gameCompleted(void)
 static void
 toggleInGameMenu(void *unused)
 {
-	UNUSED(unused);
+	(void)unused;
 	if (gGameState == PLAYING || gGameState == GAME_OVER || gGameState == COMPLETED)
 		gGameState = IN_GAME_MENU;
 	else if (is_player_dead())
@@ -329,7 +329,7 @@ on_character_select(const char *str)
 static void
 goToCharacterMenu(void *unused)
 {
-	UNUSED(unused);
+	(void)unused;
 	charSelectMenu = menu_create_character_selector(on_character_select, gCamera);
 	characterSelectScreen = screen_create_characterselect(gRenderer);
 	gGameState = CHARACTER_MENU;
@@ -423,7 +423,7 @@ startArcadeGame(void *unused)
 static void
 goToMainMenu(void *unused)
 {
-	UNUSED(unused);
+	(void)unused;
 	save_load();
 	gui_clear_message_log();
 	gGameState = MENU;
@@ -439,7 +439,7 @@ goToMainMenu(void *unused)
 static void
 goToGameSelectMenu(void *unused)
 {
-	UNUSED(unused);
+	(void)unused;
 	int item_count = 3;
 #ifdef STEAM_BUILD
 	item_count += 1;
@@ -474,7 +474,7 @@ goToGameSelectMenu(void *unused)
 static void
 showHowToTooltip(void *unused)
 {
-	UNUSED(unused);
+	(void)unused;
 	toggleInGameMenu(NULL);
 	gGui->activeTooltip = tooltip_manager_get_tooltip(TOOLTIP_TYPE_HOWTO);
 }
@@ -511,14 +511,14 @@ createInGameGameOverMenu(void)
 static void
 viewCredits(void *unused)
 {
-	UNUSED(unused);
+	(void)unused;
 	gGameState = CREDITS;
 }
 
 static void
 viewScoreScreen(void *unused)
 {
-	UNUSED(unused);
+	(void)unused;
 	gGameState = SCORE_SCREEN;
 }
 
@@ -1381,7 +1381,7 @@ validate_lib_checksum(void)
 int
 main(int argc, char *argv[])
 {
-	UNUSED(argc);
+	(void)argc;
 
 #ifdef CHECKSUM_VALIDATION
 	validate_lib_checksum();

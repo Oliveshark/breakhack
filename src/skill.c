@@ -333,7 +333,7 @@ check_skill_validity(Position *playerPos, Position *targetPos, SkillData *data)
 static bool
 vampiric_blow_skill(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 
 	Position playerPos, targetPos;
 	Player *player = data->player;
@@ -412,7 +412,7 @@ create_vampiric_blow(Camera *cam)
 static bool
 skill_use_flurry(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 
 	Position playerPos, targetPos;
 	if (!check_skill_validity(&playerPos, &targetPos, data)) {
@@ -489,7 +489,7 @@ skill_throw_dagger_available(Player *player)
 static bool
 skill_throw_dagger(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 
 	if (data->player->daggers == 0)
 		return false;
@@ -542,7 +542,7 @@ create_throw_dagger(void)
 static bool
 skill_bash(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 
 	Position playerPos, targetPos;
 	if (!check_skill_validity(&playerPos, &targetPos, data)) {
@@ -614,7 +614,7 @@ create_bash(Camera *cam)
 static bool
 skill_trip(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 
 	Position playerPos, targetPos;
 	if (!check_skill_validity(&playerPos, &targetPos, data)) {
@@ -688,7 +688,7 @@ create_trip(Camera *cam)
 static bool
 skill_backstab(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 
 	Position playerPos, targetPos;
 	if (!check_skill_validity(&playerPos, &targetPos, data)) {
@@ -770,7 +770,7 @@ create_backstab(Camera *cam)
 static bool
 skill_phase(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 	mixer_play_effect(FADE_OUT);
 	data->player->phase_count = 3;
 	return true;
@@ -805,7 +805,7 @@ skill_sip_health_available(Player *player)
 static bool
 skill_sip_health(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 	player_sip_health(data->player);
 	return true;
 }
@@ -870,7 +870,7 @@ skill_charge_check_path(SkillData *data, Position origin, Position dest)
 static bool
 skill_charge(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 
 	Player *player = data->player;
 	RoomMatrix *matrix = data->matrix;
@@ -954,7 +954,7 @@ create_charge(void)
 static bool
 skill_blink(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 
 	Player *player = data->player;
 	RoomMatrix *matrix = data->matrix;
@@ -1023,7 +1023,7 @@ create_blink(void)
 static bool
 skill_erupt(Skill *skill, SkillData *data)
 {
-	UNUSED(skill);
+	(void)skill;
 
 	Player *player = data->player;
 	RoomMatrix *rm = data->matrix;

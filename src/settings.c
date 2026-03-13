@@ -69,7 +69,7 @@ create_tables(void)
 static int
 load_settings_cb(void *unused, int count, char **values, char **colNames)
 {
-	UNUSED(unused);
+	(void)unused;
 
 	int i = 0;
 	while (i < count) {

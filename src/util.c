@@ -35,7 +35,7 @@ void
 m_strcpy(char *dest, size_t destsz, const char *src)
 {
 #ifndef _MSC_VER
-	UNUSED(destsz);
+	(void)destsz;
 	strncpy(dest, src, destsz);
 #else  // _MSC_VER
 	strcpy_s(dest, destsz, src);
@@ -46,8 +46,8 @@ void
 m_strncat(char *dest, size_t destsz, char *src, size_t srcsz)
 {
 #ifndef _MSC_VER
-	UNUSED(destsz);
-	UNUSED(srcsz);
+	(void)destsz;
+	(void)srcsz;
 	strncat(dest, src, srcsz);
 #else  // _MSC_VER
 	strncat_s(dest, destsz, src, srcsz);
@@ -61,7 +61,7 @@ m_sprintf(char *dest, size_t destsz, const char *format, ...)
 
 	va_start(args, format);
 #ifndef _MSC_VER
-	UNUSED(destsz);
+	(void)destsz;
 	vsnprintf(dest, destsz, format, args);
 #else  // _MSC_VER
 	vsprintf_s(dest, destsz, format, args);
@@ -73,7 +73,7 @@ void
 m_vsprintf(char *dest, size_t sz, const char *fmt, va_list args)
 {
 #ifndef _MSC_VER
-	UNUSED(sz);
+	(void)sz;
 	vsnprintf(dest, sz, fmt, args);
 #else  // _MSC_VER
 	vsprintf_s(dest, sz, fmt, args);
@@ -108,10 +108,10 @@ log_print(FILE *out, const char *prefix, const char *file, int line, const char 
 	fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line, function);
 #endif // _WIN32
 #else  // DEBUG
-	UNUSED(prefix);
-	UNUSED(file);
-	UNUSED(line);
-	UNUSED(function);
+	(void)prefix;
+	(void)file;
+	(void)line;
+	(void)function;
 #endif // DEBUG
 	va_start(args, fmt);
 	vfprintf(out, fmt, args);
