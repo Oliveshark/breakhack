@@ -20,7 +20,6 @@
 
 #include "sprite.h"
 #include "player.h"
-#include "update_data.h"
 #include "camera.h"
 
 typedef struct Trap {
@@ -28,14 +27,10 @@ typedef struct Trap {
 	Uint32 damage;
 } Trap;
 
-Trap *
-trap_create(void);
+Trap *trap_create(void);
 
-void
-trap_activate(Trap*, Player*);
+void trap_activate(Trap *, Player *);
 
-void
-trap_render(Trap*, Camera*);
+void trap_render(Trap *, Camera *);
 
-void
-trap_destroy(Trap*);
+void trap_destroy(Trap *);

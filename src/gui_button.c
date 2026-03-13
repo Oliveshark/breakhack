@@ -22,7 +22,7 @@
 #include "collisions.h"
 
 GuiButton *
-gui_button_create(SDL_Rect area, void (*event)(void*), void *usrdata)
+gui_button_create(SDL_Rect area, void (*event)(void *), void *usrdata)
 {
 	GuiButton *button = ec_malloc(sizeof(GuiButton));
 	button->area = area;
@@ -42,7 +42,7 @@ gui_button_check_pointer(GuiButton *button, Pointer *pointer)
 void
 gui_button_update(GuiButton *button, Input *input)
 {
-	Position p = { input->mouseX, input->mouseY };
+	Position p = {input->mouseX, input->mouseY};
 	button->hover = position_in_rect(&p, &button->area);
 
 	if (input_mousebutton_is_pressed(input, MBUTTON_LEFT)) {

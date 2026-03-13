@@ -17,25 +17,20 @@
  */
 
 #ifndef KEYBOARD_H_
-#define	KEYBOARD_H_
+#define KEYBOARD_H_
 
 #include <SDL3/SDL.h>
 #include <stdbool.h>
 #include "defines.h"
 
-bool
-keyboard_direction_press(Direction, SDL_Event*);
+bool keyboard_direction_press(Direction, SDL_Event *);
 
-bool
-keyboard_direction_release(Direction, SDL_Event*);
+bool keyboard_direction_release(Direction, SDL_Event *);
 
-bool
-keyboard_press(Uint32 key, SDL_Event*);
+bool keyboard_press(Uint32 key, SDL_Event *);
 
-bool
-keyboard_release(Uint32 key, SDL_Event*);
+bool keyboard_release(Uint32 key, SDL_Event *);
 
-bool
-keyboard_mod_press(Uint32 key, Uint32 mod, SDL_Event*);
+bool keyboard_mod_press(Uint32 key, Uint32 mod, SDL_Event *);
 
 #endif // KEYBOARD_H_

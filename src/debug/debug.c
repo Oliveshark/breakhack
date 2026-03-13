@@ -43,10 +43,10 @@ debug_update(UpdateData *ud)
 			sprite->pos = mpos;
 
 			Destination dest = {
-				.pos = POS(mpos.x + 64, mpos.y + 64),
-				.dim = DIM(32, 32),
-				.angle = 0.0f,
-				.time_ms = 400,
+			    .pos = POS(mpos.x + 64, mpos.y + 64),
+			    .dim = DIM(32, 32),
+			    .angle = 0.0f,
+			    .time_ms = 400,
 			};
 
 			sprite_interpolate_to(sprite, &dest);

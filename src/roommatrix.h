@@ -77,31 +77,24 @@ typedef struct RoomMatrix_t {
 	Position playerRoomPos;
 	Position mousePos;
 	RoomModifierData *modifier;
-    Texture *lightmap;
+	Texture *lightmap;
 } RoomMatrix;
 
-RoomMatrix* roommatrix_create(SDL_Renderer *renderer);
+RoomMatrix *roommatrix_create(SDL_Renderer *renderer);
 
-void
-roommatrix_update(struct UpdateData*);
+void roommatrix_update(struct UpdateData *);
 
-void
-roommatrix_populate_from_map(RoomMatrix*, Map*);
+void roommatrix_populate_from_map(RoomMatrix *, Map *);
 
-void
-roommatrix_add_lightsource(RoomMatrix*, Position*);
+void roommatrix_add_lightsource(RoomMatrix *, Position *);
 
-void
-roommatrix_build_lightmap(RoomMatrix*, Camera*);
+void roommatrix_build_lightmap(RoomMatrix *, Camera *);
 
-void
-roommatrix_render_mouse_square(RoomMatrix*, Camera*);
+void roommatrix_render_mouse_square(RoomMatrix *, Camera *);
 
-void
-roommatrix_render_lightmap(RoomMatrix*, Camera*);
+void roommatrix_render_lightmap(RoomMatrix *, Camera *);
 
-RoomSpace*
-roommatrix_get_space_for(RoomMatrix*, const Position *p);
+RoomSpace *roommatrix_get_space_for(RoomMatrix *, const Position *p);
 
 /**
  * \brief Get all 8 unblocked spaces surrounding the provided space
@@ -119,16 +112,12 @@ roommatrix_get_space_for(RoomMatrix*, const Position *p);
  * \param[in] size The size of the spaces array
  * \returns The number of spaces placed in the output array
  */
-size_t
-roommatrix_get_surrounding_spaces(RoomMatrix* rm, const Position *pos, Position *tile_positions, size_t size);
+size_t roommatrix_get_surrounding_spaces(RoomMatrix *rm, const Position *pos, Position *tile_positions, size_t size);
 
-Player *
-roommatrix_get_player(RoomMatrix*);
+Player *roommatrix_get_player(RoomMatrix *);
 
 #ifdef DEBUG
-void
-roommatrix_render_debug(RoomMatrix*, Camera*);
+void roommatrix_render_debug(RoomMatrix *, Camera *);
 #endif
 
-void
-roommatrix_destroy(RoomMatrix*);
+void roommatrix_destroy(RoomMatrix *);

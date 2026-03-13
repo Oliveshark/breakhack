@@ -17,7 +17,7 @@
  */
 
 #ifndef ACTIONTEXT_H_
-#define	ACTIONTEXT_H_
+#define ACTIONTEXT_H_
 
 #include <SDL3/SDL.h>
 #include <stdbool.h>
@@ -38,12 +38,12 @@ typedef struct {
 	SDL_Color color;
 } ActionText;
 
-ActionText* actiontext_create(Sprite*);
+ActionText *actiontext_create(Sprite *);
 
-void actiontext_update(ActionText*, struct UpdateData*);
+void actiontext_update(ActionText *, struct UpdateData *);
 
-void actiontext_render(ActionText*, Camera*);
+void actiontext_render(ActionText *, Camera *);
 
-void actiontext_destroy(ActionText*);
+void actiontext_destroy(ActionText *);
 
 #endif // ACTIONTEXT_H_

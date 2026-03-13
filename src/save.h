@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef SAVE_H_
-#define	SAVE_H_
+#define SAVE_H_
 
 #include <stdbool.h>
 #include "player.h"
@@ -39,29 +39,18 @@ typedef struct Save {
 	PlayerEquipment player_equipment;
 } Save;
 
-void
-save_init(void);
+void save_init(void);
 
-void
-save_load(void);
+void save_load(void);
 
-const Save *
-save_get(void);
+const Save *save_get(void);
 
-bool
-save_exists(void);
+bool save_exists(void);
 
-void
-save_save(unsigned int seed,
-	  unsigned int map_level,
-	  bool quickGame,
-	  bool arcadeGame,
-	  Player *player);
+void save_save(unsigned int seed, unsigned int map_level, bool quickGame, bool arcadeGame, Player *player);
 
-void
-save_clear(void);
+void save_clear(void);
 
-void
-save_close(void);
+void save_close(void);
 
 #endif // SAVE_H_

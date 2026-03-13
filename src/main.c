@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <SDL3/SDL.h>
@@ -71,47 +70,44 @@
 #include "steam/steamworks_api_wrapper.h"
 #endif // STEAM_BUILD
 
-typedef enum Turn_t {
-	PLAYER,
-	MONSTER
-} Turn;
+typedef enum Turn_t { PLAYER, MONSTER } Turn;
 
-static SDL_Window	*gWindow		= NULL;
-static SDL_Renderer	*gRenderer		= NULL;
-static Player		*gPlayer		= NULL;
-static Map		*gMap			= NULL;
-static RoomMatrix	*gRoomMatrix		= NULL;
-static Gui		*gGui			= NULL;
-static SkillBar		*gSkillBar		= NULL;
-static Menu		*mainMenu		= NULL;
-static Menu		*gameSelectMenu		= NULL;
-static Menu		*inGameMenu		= NULL;
-static Menu		*charSelectMenu		= NULL;
-static Timer		*menuTimer		= NULL;
-static Camera		*gCamera		= NULL;
-static Screen		*creditsScreen		= NULL;
-static Screen		*scoreScreen		= NULL;
-static Screen		*characterSelectScreen	= NULL;
-static unsigned int	cLevel			= 1;
-static float		deltaTime		= 1.0;
-static Turn		currentTurn		= PLAYER;
-static class_t		playerClass		= WARRIOR;
-static bool		quickGame		= false;
-static bool		arcadeGame		= false;
-static bool		weeklyGame		= false;
-static GameState	gGameState;
-static SDL_Rect		mainViewport;
-static SDL_Rect		gameViewport;
-static SDL_Rect		skillBarViewport;
-static SDL_Rect		bottomGuiViewport;
-static SDL_Rect		statsGuiViewport;
-static SDL_Rect		minimapViewport;
-static SDL_Rect		menuViewport;
-static Input		input;
+static SDL_Window *gWindow = NULL;
+static SDL_Renderer *gRenderer = NULL;
+static Player *gPlayer = NULL;
+static Map *gMap = NULL;
+static RoomMatrix *gRoomMatrix = NULL;
+static Gui *gGui = NULL;
+static SkillBar *gSkillBar = NULL;
+static Menu *mainMenu = NULL;
+static Menu *gameSelectMenu = NULL;
+static Menu *inGameMenu = NULL;
+static Menu *charSelectMenu = NULL;
+static Timer *menuTimer = NULL;
+static Camera *gCamera = NULL;
+static Screen *creditsScreen = NULL;
+static Screen *scoreScreen = NULL;
+static Screen *characterSelectScreen = NULL;
+static unsigned int cLevel = 1;
+static float deltaTime = 1.0;
+static Turn currentTurn = PLAYER;
+static class_t playerClass = WARRIOR;
+static bool quickGame = false;
+static bool arcadeGame = false;
+static bool weeklyGame = false;
+static GameState gGameState;
+static SDL_Rect mainViewport;
+static SDL_Rect gameViewport;
+static SDL_Rect skillBarViewport;
+static SDL_Rect bottomGuiViewport;
+static SDL_Rect statsGuiViewport;
+static SDL_Rect minimapViewport;
+static SDL_Rect menuViewport;
+static Input input;
 
 #ifdef DEBUG
-static Sprite	*fpsSprite	= NULL;
-static Pointer	*gPointer	= NULL;
+static Sprite *fpsSprite = NULL;
+static Pointer *gPointer = NULL;
 #endif // DEBUG
 
 static void resetGame(void);
@@ -122,21 +118,19 @@ static void initGamepads(void);
 static SDL_Surface *window_icon = NULL;
 static bool gShowMap = false;
 
-static
-bool initSDL(void)
+static bool
+initSDL(void)
 {
 	debug("Initializing SDL");
 	SDL_SetAppMetadata(GAME_TITLE, VERSION_STR, "com.oliveshark.breakhack");
-	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC))
-	{
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC)) {
 		error("Could not initiate SDL3: %s", SDL_GetError());
 		return false;
 	}
 
 	debug("Initializing SDL_ttf");
 	if (!TTF_Init()) {
-		error("Unable to initiate ttf library: %s",
-		       SDL_GetError());
+		error("Unable to initiate ttf library: %s", SDL_GetError());
 		return false;
 	}
 
@@ -146,17 +140,14 @@ bool initSDL(void)
 	debug("Initializing SDL_mixer");
 	mixer_init();
 
-	char buffer[100] = { '\0' };
+	char buffer[100] = {'\0'};
 #ifdef DEBUG
 	m_sprintf(buffer, 100, "%s %s %s", GAME_TITLE, VERSION_STR_FULL, RELEASE_TYPE);
 #else
 	m_sprintf(buffer, 100, "%s %s %s", GAME_TITLE, VERSION_STR, RELEASE_TYPE);
 #endif
-	gWindow = SDL_CreateWindow(buffer,
-				   SCREEN_WIDTH,
-				   SCREEN_HEIGHT, 0);
-	if (gWindow == NULL)
-	{
+	gWindow = SDL_CreateWindow(buffer, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+	if (gWindow == NULL) {
 		error("Unable to create window: %s", SDL_GetError());
 		return false;
 	}
@@ -173,8 +164,7 @@ bool initSDL(void)
 #endif
 
 	gRenderer = SDL_CreateRenderer(gWindow, NULL);
-	if (gRenderer == NULL)
-	{
+	if (gRenderer == NULL) {
 		error("Unable to create renderer: %s", SDL_GetError());
 		return false;
 	}
@@ -182,10 +172,9 @@ bool initSDL(void)
 		error("Unable to set blend mode: %s", SDL_GetError());
 		return false;
 	}
-	if (!SDL_SetRenderLogicalPresentation(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_LOGICAL_PRESENTATION_LETTERBOX))
-	{
-		error("Unable to initiate scaling: %s",
-		       SDL_GetError());
+	if (!SDL_SetRenderLogicalPresentation(gRenderer, SCREEN_WIDTH, SCREEN_HEIGHT,
+	                                      SDL_LOGICAL_PRESENTATION_LETTERBOX)) {
+		error("Unable to initiate scaling: %s", SDL_GetError());
 		return false;
 	}
 
@@ -195,10 +184,8 @@ bool initSDL(void)
 	if (renderer_name != NULL) {
 		debug("Renderer: %s", renderer_name);
 		if (SDL_strcmp("gpu", renderer_name) == 0) {
-			SDL_GPUDevice *device =
-				SDL_GetPointerProperty(SDL_GetRendererProperties(gRenderer),
-						SDL_PROP_RENDERER_GPU_DEVICE_POINTER,
-						NULL);
+			SDL_GPUDevice *device = SDL_GetPointerProperty(SDL_GetRendererProperties(gRenderer),
+			                                               SDL_PROP_RENDERER_GPU_DEVICE_POINTER, NULL);
 			debug("    Driver: %s", SDL_GetGPUDeviceDriver(device));
 		}
 	} else {
@@ -219,31 +206,20 @@ initViewports(Uint32 offset)
 {
 	/* FIXME: This does not work with
 	 * SDL_SetRenderLogicalPresentation any longer. Needs looking at. */
-	mainViewport = (SDL_Rect) { offset, 0,
-		SCREEN_WIDTH, SCREEN_HEIGHT
-	};
+	mainViewport = (SDL_Rect){offset, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 
-	gameViewport = (SDL_Rect) { offset, 0,
-		GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
+	gameViewport = (SDL_Rect){offset, 0, GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT};
 
-	skillBarViewport = (SDL_Rect) { offset, GAME_VIEW_HEIGHT,
-		SKILL_BAR_WIDTH, SKILL_BAR_HEIGHT };
+	skillBarViewport = (SDL_Rect){offset, GAME_VIEW_HEIGHT, SKILL_BAR_WIDTH, SKILL_BAR_HEIGHT};
 
-	bottomGuiViewport = (SDL_Rect) { offset, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT,
-		BOTTOM_GUI_WIDTH, BOTTOM_GUI_WIDTH };
+	bottomGuiViewport = (SDL_Rect){offset, GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT, BOTTOM_GUI_WIDTH, BOTTOM_GUI_WIDTH};
 
-	statsGuiViewport = (SDL_Rect) { offset + GAME_VIEW_WIDTH, 0,
-		RIGHT_GUI_WIDTH, STATS_GUI_HEIGHT };
+	statsGuiViewport = (SDL_Rect){offset + GAME_VIEW_WIDTH, 0, RIGHT_GUI_WIDTH, STATS_GUI_HEIGHT};
 
-	minimapViewport = (SDL_Rect) { offset + GAME_VIEW_WIDTH, STATS_GUI_HEIGHT,
-		RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT };
+	minimapViewport = (SDL_Rect){offset + GAME_VIEW_WIDTH, STATS_GUI_HEIGHT, RIGHT_GUI_WIDTH, MINIMAP_GUI_HEIGHT};
 
-	menuViewport = (SDL_Rect) {
-		offset + ((SCREEN_WIDTH - GAME_VIEW_WIDTH) >> 1),
-		(SCREEN_HEIGHT - GAME_VIEW_HEIGHT) >> 1,
-		GAME_VIEW_WIDTH,
-		GAME_VIEW_HEIGHT
-	};
+	menuViewport = (SDL_Rect){offset + ((SCREEN_WIDTH - GAME_VIEW_WIDTH) >> 1),
+	                          (SCREEN_HEIGHT - GAME_VIEW_HEIGHT) >> 1, GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT};
 }
 
 static bool
@@ -285,7 +261,7 @@ startGame(void)
 		cLevel = 1;
 
 	if (weeklyGame)
-		set_random_seed((unsigned int) time_get_weekly_seed());
+		set_random_seed((unsigned int)time_get_weekly_seed());
 	else
 		set_random_seed(0);
 
@@ -327,9 +303,7 @@ static void
 toggleInGameMenu(void *unused)
 {
 	UNUSED(unused);
-	if (gGameState == PLAYING ||
-	    gGameState == GAME_OVER ||
-	    gGameState == COMPLETED)
+	if (gGameState == PLAYING || gGameState == GAME_OVER || gGameState == COMPLETED)
 		gGameState = IN_GAME_MENU;
 	else if (is_player_dead())
 		gGameState = GAME_OVER;
@@ -364,7 +338,7 @@ goToCharacterMenu(void *unused)
 static void
 choose_music(void)
 {
-	if (cLevel > (unsigned int) (quickGame ? 11 : 19)) {
+	if (cLevel > (unsigned int)(quickGame ? 11 : 19)) {
 		mixer_play_music(BOSS_MUSIC0);
 	} else if (cLevel % (quickGame ? 3 : 5) == 0) {
 		gui_log("You sense something powerful in the vicinity");
@@ -377,7 +351,7 @@ choose_music(void)
 static void
 continueGame(void *unused)
 {
-	(void) unused;
+	(void)unused;
 	const Save *save = save_get();
 	quickGame = save->quickGame;
 	arcadeGame = save->arcadeGame;
@@ -456,8 +430,8 @@ goToMainMenu(void *unused)
 	menu_destroy(inGameMenu);
 	inGameMenu = NULL;
 	initMainMenu();
-	Position p = { 0, 0 };
-	gPlayer->sprite->pos = (Position) { 32, 32 };
+	Position p = {0, 0};
+	gPlayer->sprite->pos = (Position){32, 32};
 	map_set_current_room(gMap, &p, NULL);
 	camera_follow_position(gCamera, &p);
 }
@@ -476,34 +450,21 @@ goToGameSelectMenu(void *unused)
 	TEXT_MENU_ITEM *menuItems = ec_malloc(item_count * sizeof(TEXT_MENU_ITEM));
 	int i = 0;
 	if (save_exists()) {
-		menuItems[i++] = (TEXT_MENU_ITEM) {
-			"CONTINUE",
-			"Continue your last session",
-			continueGame,
+		menuItems[i++] = (TEXT_MENU_ITEM){
+		    "CONTINUE",
+		    "Continue your last session",
+		    continueGame,
 		};
 	}
-	menuItems[i++] = (TEXT_MENU_ITEM) {
-		"STANDARD GAME",
-		"Standard 20 level game, recommended for new players",
-		startRegularGame
-	};
+	menuItems[i++] =
+	    (TEXT_MENU_ITEM){"STANDARD GAME", "Standard 20 level game, recommended for new players", startRegularGame};
 #ifdef STEAM_BUILD
-	menuItems[i++] = (TEXT_MENU_ITEM) {
-		"WEEKLY CHALLENGE",
-		"Quick game with weekly leaderboards at breakhack.net",
-		startWeeklyGame
-	};
+	menuItems[i++] = (TEXT_MENU_ITEM){"WEEKLY CHALLENGE", "Quick game with weekly leaderboards at breakhack.net",
+	                                  startWeeklyGame};
 #endif
-	menuItems[i++] = (TEXT_MENU_ITEM) {
-		"QUICK GAME",
-		"Shorter 12 level game, with more action earlier in the game",
-		startQuickGame
-	};
-	menuItems[i++] = (TEXT_MENU_ITEM) {
-		"ARCADE GAME",
-		"One big level with lots of action",
-		startArcadeGame
-	};
+	menuItems[i++] = (TEXT_MENU_ITEM){"QUICK GAME", "Shorter 12 level game, with more action earlier in the game",
+	                                  startQuickGame};
+	menuItems[i++] = (TEXT_MENU_ITEM){"ARCADE GAME", "One big level with lots of action", startArcadeGame};
 
 	menu_create_text_menu(&gameSelectMenu, menuItems, item_count, gRenderer);
 	free(menuItems);
@@ -522,10 +483,10 @@ static void
 initInGameMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "RESUME", "", toggleInGameMenu },
-		{ "HOW TO PLAY", "", showHowToTooltip },
-		{ "MAIN MENU", "", goToMainMenu },
-		{ "QUIT", "Exit game", exitGame },
+	    {"RESUME", "", toggleInGameMenu},
+	    {"HOW TO PLAY", "", showHowToTooltip},
+	    {"MAIN MENU", "", goToMainMenu},
+	    {"QUIT", "Exit game", exitGame},
 	};
 
 	menu_create_text_menu(&inGameMenu, &menu_items[0], 4, gRenderer);
@@ -535,10 +496,9 @@ static void
 createInGameGameOverMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "NEW GAME", "Start a new game with the same settings",
-			goToCharacterMenu },
-		{ "MAIN MENU", "", goToMainMenu },
-		{ "QUIT", "Exit game", exitGame },
+	    {"NEW GAME", "Start a new game with the same settings", goToCharacterMenu},
+	    {"MAIN MENU", "", goToMainMenu},
+	    {"QUIT", "Exit game", exitGame},
 	};
 
 	if (inGameMenu) {
@@ -586,10 +546,10 @@ static void
 initMainMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
-		{ "PLAY", "Start game", goToGameSelectMenu },
-		{ "SCORES", "View your top 10 scores", viewScoreScreen },
-		{ "CREDITS", "View game credits", viewCredits },
-		{ "QUIT", "Exit game", exitGame },
+	    {"PLAY", "Start game", goToGameSelectMenu},
+	    {"SCORES", "View your top 10 scores", viewScoreScreen},
+	    {"CREDITS", "View game credits", viewCredits},
+	    {"QUIT", "Exit game", exitGame},
 	};
 
 	if (gMap)
@@ -610,8 +570,7 @@ static void
 repopulate_roommatrix(void)
 {
 	roommatrix_populate_from_map(gRoomMatrix, gMap);
-	roommatrix_add_lightsource(gRoomMatrix,
-		&gPlayer->sprite->pos);
+	roommatrix_add_lightsource(gRoomMatrix, &gPlayer->sprite->pos);
 	roommatrix_build_lightmap(gRoomMatrix, gCamera);
 }
 
@@ -721,7 +680,7 @@ init(void)
 	initMainMenu();
 	tooltip_manager_init(gCamera);
 
-	gCamera->pos = (Position) { 0, 0 };
+	gCamera->pos = (Position){0, 0};
 
 	gGameState = MENU;
 
@@ -807,7 +766,6 @@ handle_main_input(void)
 			default:
 				break;
 		}
-
 	}
 
 	handle_settings_input();
@@ -824,7 +782,6 @@ handle_events(void)
 
 	InputDeviceType device_type = DeviceType_Unknown;
 	bool quit = false;
-
 
 	input_reset(&input);
 	while (SDL_PollEvent(&event) != 0) {
@@ -899,11 +856,7 @@ check_next_level(void)
 	if (tile->levelExit) {
 		++cLevel;
 		if (!weeklyGame) {
-			save_save(get_random_seed(),
-				  cLevel,
-				  quickGame,
-				  arcadeGame,
-				  gPlayer);
+			save_save(get_random_seed(), cLevel, quickGame, arcadeGame, gPlayer);
 		}
 
 		mixer_play_effect(NEXT_LEVEL);
@@ -1036,7 +989,7 @@ render_game_completed(void)
 	gui_render_event_message(gGui, gCamera);
 
 	if (gGameState == IN_GAME_MENU) {
-		SDL_FRect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+		SDL_FRect dimmer = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);
 		SDL_RenderFillRect(gRenderer, &dimmer);
 		menu_render(inGameMenu, gCamera);
@@ -1089,7 +1042,7 @@ run_game_render(void)
 	gui_render_tooltip(gGui, gCamera);
 
 	if (gGameState == IN_GAME_MENU) {
-		SDL_FRect dimmer = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+		SDL_FRect dimmer = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 		SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 150);
 		SDL_RenderFillRect(gRenderer, &dimmer);
 		menu_render(inGameMenu, gCamera);
@@ -1106,38 +1059,27 @@ run_game_render(void)
 static inline void
 register_scores(void)
 {
-		uint8_t details[4] = {
-			(uint8_t) gPlayer->stats.lvl,
-			(uint8_t) cLevel, (uint8_t) (gPlayer->class + 1), 0
-		};
-		steam_register_score((int) gPlayer->gold, (int32_t*)
-				     &details, 1);
-		steam_register_kills((int) gPlayer->stat_data.kills,
-				     (int32_t*) &details, 1);
-		if (quickGame) {
-			steam_register_qp_score((int) gPlayer->gold,
-						(int32_t*) &details, 1);
-		}
-		if (weeklyGame) {
-			steam_register_weekly_score((int) gPlayer->gold,
-						    (int32_t*) &details, 1);
-		}
-		if (arcadeGame) {
-			steam_register_arcade_score((int)gPlayer->gold,
-						    (int32_t*) &details, 1);
-		}
-		if (gPlayer->class == ROGUE) {
-			steam_set_achievement(ROGUE_LIKE);
-			steam_register_rogue_score((int) gPlayer->gold,
-						   (int32_t*) &details, 1);
-		} else if (gPlayer->class == WARRIOR) {
-			steam_register_warrior_score((int) gPlayer->gold,
-						     (int32_t*) &details, 1);
-		} else if (gPlayer->class == MAGE) {
-			steam_set_achievement(MAGICAL);
-			steam_register_mage_score((int) gPlayer->gold,
-						  (int32_t*) &details, 1);
-		}
+	uint8_t details[4] = {(uint8_t)gPlayer->stats.lvl, (uint8_t)cLevel, (uint8_t)(gPlayer->class + 1), 0};
+	steam_register_score((int)gPlayer->gold, (int32_t *)&details, 1);
+	steam_register_kills((int)gPlayer->stat_data.kills, (int32_t *)&details, 1);
+	if (quickGame) {
+		steam_register_qp_score((int)gPlayer->gold, (int32_t *)&details, 1);
+	}
+	if (weeklyGame) {
+		steam_register_weekly_score((int)gPlayer->gold, (int32_t *)&details, 1);
+	}
+	if (arcadeGame) {
+		steam_register_arcade_score((int)gPlayer->gold, (int32_t *)&details, 1);
+	}
+	if (gPlayer->class == ROGUE) {
+		steam_set_achievement(ROGUE_LIKE);
+		steam_register_rogue_score((int)gPlayer->gold, (int32_t *)&details, 1);
+	} else if (gPlayer->class == WARRIOR) {
+		steam_register_warrior_score((int)gPlayer->gold, (int32_t *)&details, 1);
+	} else if (gPlayer->class == MAGE) {
+		steam_set_achievement(MAGICAL);
+		steam_register_mage_score((int)gPlayer->gold, (int32_t *)&details, 1);
+	}
 }
 #endif
 
@@ -1236,19 +1178,15 @@ run_menu(void)
 		map_move_monsters(gMap, gRoomMatrix);
 	}
 
-	if (gGameState != MENU
-	    && gGameState != CREDITS
-	    && gGameState != SCORE_SCREEN
-	    && gGameState != GAME_SELECT
+	if (gGameState != MENU && gGameState != CREDITS && gGameState != SCORE_SCREEN && gGameState != GAME_SELECT
 	    && gGameState != CHARACTER_MENU)
 		return;
-
 
 	menu_update(get_active_menu(), &input, gCamera);
 
 	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(gRenderer);
-	if (gGameState != CHARACTER_MENU)  {
+	if (gGameState != CHARACTER_MENU) {
 		SDL_SetRenderViewport(gRenderer, &menuViewport);
 		map_render(gMap, gCamera);
 		map_render_mid_layer(gMap, gCamera);
@@ -1287,8 +1225,7 @@ run(void)
 
 	Timer *fpsTimer = _timer_create();
 
-	while (!quit)
-	{
+	while (!quit) {
 		timer_start(fpsTimer);
 
 		quit = handle_events();
@@ -1322,9 +1259,9 @@ run(void)
 				break;
 		}
 
-		Uint32 ticks = (Uint32) timer_get_ticks(fpsTimer);
-		if (ticks < 1000/60)
-			SDL_Delay((1000/60) - ticks);
+		Uint32 ticks = (Uint32)timer_get_ticks(fpsTimer);
+		if (ticks < 1000 / 60)
+			SDL_Delay((1000 / 60) - ticks);
 		timer_stop(fpsTimer);
 
 		if (currentTime == 0)
@@ -1338,8 +1275,7 @@ run(void)
 		frame++;
 		if (timer_get_ticks(updateTimer) > 1000) {
 			char buffer[20];
-			m_sprintf(buffer, 20, "FPS: %lu",
-					frame / (timer_get_ticks(fpsTime) / 1000));
+			m_sprintf(buffer, 20, "FPS: %lu", frame / (timer_get_ticks(fpsTime) / 1000));
 			texture_load_from_text(fpsSprite->textures[0], buffer, C_RED, C_WHITE, gRenderer);
 			fpsSprite->dim = fpsSprite->textures[0]->dim;
 			timer_start(updateTimer);
@@ -1354,8 +1290,8 @@ run(void)
 #endif // DEBUG
 }
 
-static
-void close(void)
+static void
+close(void)
 {
 
 	if (gPlayer)
@@ -1421,7 +1357,7 @@ validate_lib_checksum(void)
 	const char *file = "./steam_api.dll";
 	unsigned int expected = DLL_LIBSTEAM_CHECKSUM;
 	fopen_s(&fp, file, "rb");
-#else // WIN32
+#else  // WIN32
 	const char *file = "./libsteam_api.so";
 	unsigned int expected = SO_LIBSTEAM_CHECKSUM;
 	fp = fopen(file, "rb");
@@ -1442,7 +1378,8 @@ validate_lib_checksum(void)
 }
 #endif // CHECKSUM_VALIDATION
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
 	UNUSED(argc);
 

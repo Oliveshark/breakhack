@@ -28,27 +28,21 @@ static sqlite3 *db = NULL;
 static bool loaded = false;
 static Save save;
 
-static
-DbQuery MIGRATE_COMMAND = {
-	"CREATE TABLE IF NOT EXISTS saves("
-		"major_version INTEGER, "
-		"minor_version INTEGER, "
-		"patch_version INTEGER, "
-		"arch INTEGER, "
-		"save BLOB)",
-	NULL, NULL
-};
+static DbQuery MIGRATE_COMMAND = {"CREATE TABLE IF NOT EXISTS saves("
+                                  "major_version INTEGER, "
+                                  "minor_version INTEGER, "
+                                  "patch_version INTEGER, "
+                                  "arch INTEGER, "
+                                  "save BLOB)",
+                                  NULL, NULL};
 
-static
-DbQuery CLEAR_SAVE = { 
-	"DELETE FROM saves "
+static DbQuery CLEAR_SAVE = {"DELETE FROM saves "
 #ifdef _WIN32
-	"WHERE arch = 1",
-#else // _WIN32
-	"WHERE arch = 2",
+                             "WHERE arch = 1",
+#else  // _WIN32
+                             "WHERE arch = 2",
 #endif // _WIN32
-	NULL,
-	NULL };
+                             NULL, NULL};
 
 static void
 create_table(void)
@@ -60,17 +54,16 @@ void
 save_load(void)
 {
 	debug("Loading save");
-	const char *query =
-		"SELECT save FROM saves "
-		"WHERE major_version = ? "
-		"AND minor_version = ? "
-		"AND patch_version = ? "
+	const char *query = "SELECT save FROM saves "
+	                    "WHERE major_version = ? "
+	                    "AND minor_version = ? "
+	                    "AND patch_version = ? "
 #ifdef _WIN32
-		"AND arch = 1 "
-#else // _WIN32
-		"AND arch = 2 "
+	                    "AND arch = 1 "
+#else  // _WIN32
+	                    "AND arch = 2 "
 #endif // _WIN32
-		"LIMIT 1";
+	                    "LIMIT 1";
 
 	sqlite3_stmt *stmt = db_prepare(db, query);
 	sqlite3_bind_int(stmt, 1, MAJOR_VERSION);
@@ -111,11 +104,7 @@ save_exists(void)
 }
 
 void
-save_save(unsigned int seed,
-	  unsigned int map_level,
-	  bool quickGame,
-	  bool arcadeGame,
-	  Player *player)
+save_save(unsigned int seed, unsigned int map_level, bool quickGame, bool arcadeGame, Player *player)
 {
 	debug("Saving game, Seed: %d, Map level: %d", seed, map_level);
 	save_clear();
@@ -134,10 +123,9 @@ save_save(unsigned int seed,
 	save.player_class = player->class;
 	save.player_equipment = player->equipment;
 
-	const char *query =
-		"INSERT INTO saves"
-		"(major_version, minor_version, patch_version, arch, save) "
-		"VALUES(?, ?, ?, ?, ?)";
+	const char *query = "INSERT INTO saves"
+	                    "(major_version, minor_version, patch_version, arch, save) "
+	                    "VALUES(?, ?, ?, ?, ?)";
 
 	sqlite3_stmt *stmt = db_prepare(db, query);
 	sqlite3_bind_int(stmt, 1, MAJOR_VERSION);
@@ -145,7 +133,7 @@ save_save(unsigned int seed,
 	sqlite3_bind_int(stmt, 3, PATCH_VERSION);
 #ifdef _WIN32
 	sqlite3_bind_int(stmt, 4, 1);
-#else // _WIN32
+#else  // _WIN32
 	sqlite3_bind_int(stmt, 4, 2);
 #endif // _WIN32
 	sqlite3_bind_blob(stmt, 5, &save, sizeof(Save), SQLITE_STATIC);

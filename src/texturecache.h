@@ -22,20 +22,14 @@
 #include <SDL3/SDL.h>
 #include "texture.h"
 
-void
-texturecache_init(SDL_Renderer*);
+void texturecache_init(SDL_Renderer *);
 
-Texture*
-texturecache_add(const char *path);
+Texture *texturecache_add(const char *path);
 
-Texture*
-texturecache_get(const char *path);
+Texture *texturecache_get(const char *path);
 
-bool
-texturecache_remove(Texture **texture);
+bool texturecache_remove(Texture **texture);
 
-void
-texturecache_close(void);
+void texturecache_close(void);
 
 #endif // TEXTURECACHE_H_
-

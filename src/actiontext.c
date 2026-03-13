@@ -21,15 +21,15 @@
 #include "util.h"
 #include "update_data.h"
 
-ActionText*
+ActionText *
 actiontext_create(Sprite *sprite)
 {
 	ActionText *t = ec_malloc(sizeof(ActionText));
-	t->pos = (Position) { 0, 0 };
+	t->pos = (Position){0, 0};
 	t->sprite = sprite;
 	t->timer = _timer_create();
 	t->dead = false;
-	t->velocity = (Vector2d) { 0, -100 };
+	t->velocity = (Vector2d){0, -100};
 	t->color = C_WHITE;
 	return t;
 }
@@ -37,8 +37,8 @@ actiontext_create(Sprite *sprite)
 void
 actiontext_update(ActionText *t, UpdateData *data)
 {
-	t->sprite->pos.x += (int) (t->velocity.x * data->deltatime);
-	t->sprite->pos.y += (int) (t->velocity.y * data->deltatime);
+	t->sprite->pos.x += (int)(t->velocity.x * data->deltatime);
+	t->sprite->pos.y += (int)(t->velocity.y * data->deltatime);
 }
 
 void

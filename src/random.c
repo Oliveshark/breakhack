@@ -38,7 +38,7 @@ generate_random_seeds(void)
 	}
 
 	// Set a more random seed for runtime random
-	runtime_seed = (unsigned int) time(NULL);
+	runtime_seed = (unsigned int)time(NULL);
 	bh_srand(runtime_seed);
 	debug("Runtime random seed: %d", runtime_seed);
 }
@@ -47,7 +47,7 @@ static void
 init_seed(void)
 {
 	if (seed == 0) {
-		seed = (unsigned int) time(NULL);
+		seed = (unsigned int)time(NULL);
 		generate_random_seeds();
 	}
 }
@@ -70,7 +70,7 @@ unsigned int
 get_random_map_seed(unsigned int level)
 {
 	init_seed();
-	return map_seeds[level-1];
+	return map_seeds[level - 1];
 }
 
 unsigned int

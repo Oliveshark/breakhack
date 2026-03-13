@@ -19,6 +19,7 @@
 #include "tooltip.h"
 #include "sprite.h"
 
+// clang-format off
 static char *artifacts_tooltip[] = {
 	"CONGRATULATIONS!", "",
 	"",
@@ -94,26 +95,30 @@ static char *how_to_play_tooltip[] = {
 	"Press ", "ESC", " to close", "",
 	NULL
 };
+// clang-format on
 
-static Tooltip	*new_skill_tooltip	= NULL;
-static Tooltip	*howto_tooltip		= NULL;
-static Tooltip	*new_artifact_tooltip	= NULL;
+static Tooltip *new_skill_tooltip = NULL;
+static Tooltip *howto_tooltip = NULL;
+static Tooltip *new_artifact_tooltip = NULL;
 
-static GamepadType	controller_type	= GAMEPAD_TYPE_NONE;
+static GamepadType controller_type = GAMEPAD_TYPE_NONE;
 
-void tooltip_manager_init(Camera *gCamera)
+void
+tooltip_manager_init(Camera *gCamera)
 {
 	howto_tooltip = tooltip_create(how_to_play_tooltip, gCamera);
 	new_skill_tooltip = tooltip_create(skills_tooltip, gCamera);
 	new_artifact_tooltip = tooltip_create(artifacts_tooltip, gCamera);
 }
 
-void tooltip_manager_set_controller_mode(GamepadType mode)
+void
+tooltip_manager_set_controller_mode(GamepadType mode)
 {
 	controller_type = mode;
 }
 
-Sprite* tooltip_manager_get_tooltip(TooltipType type)
+Sprite *
+tooltip_manager_get_tooltip(TooltipType type)
 {
 	switch (type) {
 		case TOOLTIP_TYPE_HOWTO:
@@ -130,7 +135,8 @@ Sprite* tooltip_manager_get_tooltip(TooltipType type)
 	return NULL;
 }
 
-void tooltip_manager_close(void)
+void
+tooltip_manager_close(void)
 {
 	tooltip_destroy(new_skill_tooltip);
 	tooltip_destroy(howto_tooltip);

@@ -86,86 +86,81 @@ artifact_set_effect(Artifact *a, MagicalEffect effect)
 }
 
 static int WarriorArtifacts[] = {
-	IMPROVED_HEARING,	// 0
-	TRAP_AVOIDANCE,         // 1
-	PIERCING_DAGGERS,       // 2
-	DAGGER_RECOVERY,        // 3
-	PUSH_BACK,              // 4
-	FEAR_INDUCING,          // 5
-	INCREASED_STUN,         // 6
-	DAGGER_BOUNCE,		// 7
-	EXPLOSIVE_KILLS,	// 8
-	VOLATILE_DAGGERS,	// 9
-	CHARGE_THROUGH          // 10
+    IMPROVED_HEARING, // 0
+    TRAP_AVOIDANCE,   // 1
+    PIERCING_DAGGERS, // 2
+    DAGGER_RECOVERY,  // 3
+    PUSH_BACK,        // 4
+    FEAR_INDUCING,    // 5
+    INCREASED_STUN,   // 6
+    DAGGER_BOUNCE,    // 7
+    EXPLOSIVE_KILLS,  // 8
+    VOLATILE_DAGGERS, // 9
+    CHARGE_THROUGH    // 10
 };
 
 static int RogueArtifacts[] = {
-	IMPROVED_HEARING,	// 0
-	TRAP_AVOIDANCE,		// 1
-	PIERCING_DAGGERS,	// 2
-	DAGGER_RECOVERY,	// 3
-	PUSH_BACK,		// 4
-	FEAR_INDUCING,		// 5
-	INCREASED_STUN,		// 6
-	DAGGER_BOUNCE,		// 7
-	EXPLOSIVE_KILLS,	// 8
-	VOLATILE_DAGGERS,	// 9
-	PHASE_IMPROVEMENT	// 10
+    IMPROVED_HEARING, // 0
+    TRAP_AVOIDANCE,   // 1
+    PIERCING_DAGGERS, // 2
+    DAGGER_RECOVERY,  // 3
+    PUSH_BACK,        // 4
+    FEAR_INDUCING,    // 5
+    INCREASED_STUN,   // 6
+    DAGGER_BOUNCE,    // 7
+    EXPLOSIVE_KILLS,  // 8
+    VOLATILE_DAGGERS, // 9
+    PHASE_IMPROVEMENT // 10
 };
 
 static int MageArtifacts[] = {
-	IMPROVED_HEARING,	// 0
-	TRAP_AVOIDANCE,		// 1
-	PIERCING_DAGGERS,	// 2
-	DAGGER_RECOVERY,	// 3
-	PUSH_BACK,		// 4
-	FEAR_INDUCING,		// 5
-	INCREASED_STUN,		// 6
-	DAGGER_BOUNCE,		// 7
-	EXPLOSIVE_KILLS,	// 8
-	VOLATILE_DAGGERS,	// 9
-	SKILL_RADIUS		// 10
+    IMPROVED_HEARING, // 0
+    TRAP_AVOIDANCE,   // 1
+    PIERCING_DAGGERS, // 2
+    DAGGER_RECOVERY,  // 3
+    PUSH_BACK,        // 4
+    FEAR_INDUCING,    // 5
+    INCREASED_STUN,   // 6
+    DAGGER_BOUNCE,    // 7
+    EXPLOSIVE_KILLS,  // 8
+    VOLATILE_DAGGERS, // 9
+    SKILL_RADIUS      // 10
 };
 
 /* Not in play yet */
 static int PaladinArtifacts[] = {
-	IMPROVED_HEARING,	// 0
-	TRAP_AVOIDANCE,		// 1
-	PIERCING_DAGGERS,	// 2
-	DAGGER_RECOVERY,	// 3
-	PUSH_BACK,		// 4
-	FEAR_INDUCING,		// 5
-	INCREASED_STUN,		// 6
-	DAGGER_BOUNCE,		// 7
-	EXPLOSIVE_KILLS,	// 8
-	VOLATILE_DAGGERS,	// 9
-	SKILL_RADIUS		// 10
+    IMPROVED_HEARING, // 0
+    TRAP_AVOIDANCE,   // 1
+    PIERCING_DAGGERS, // 2
+    DAGGER_RECOVERY,  // 3
+    PUSH_BACK,        // 4
+    FEAR_INDUCING,    // 5
+    INCREASED_STUN,   // 6
+    DAGGER_BOUNCE,    // 7
+    EXPLOSIVE_KILLS,  // 8
+    VOLATILE_DAGGERS, // 9
+    SKILL_RADIUS      // 10
 };
 
 /* Not in play yet */
 static int EngineerArtifacts[] = {
-	IMPROVED_HEARING,	// 0
-	TRAP_AVOIDANCE,		// 1
-	PIERCING_DAGGERS,	// 2
-	DAGGER_RECOVERY,	// 3
-	PUSH_BACK,		// 4
-	FEAR_INDUCING,		// 5
-	INCREASED_STUN,		// 6
-	DAGGER_BOUNCE,		// 7
-	EXPLOSIVE_KILLS,	// 8
-	VOLATILE_DAGGERS,	// 9
-	PHASE_IMPROVEMENT	// 10
+    IMPROVED_HEARING, // 0
+    TRAP_AVOIDANCE,   // 1
+    PIERCING_DAGGERS, // 2
+    DAGGER_RECOVERY,  // 3
+    PUSH_BACK,        // 4
+    FEAR_INDUCING,    // 5
+    INCREASED_STUN,   // 6
+    DAGGER_BOUNCE,    // 7
+    EXPLOSIVE_KILLS,  // 8
+    VOLATILE_DAGGERS, // 9
+    PHASE_IMPROVEMENT // 10
 };
 
 static void
 add_level_sprite(Artifact *a)
 {
-	Sprite *sprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf",
-							8,
-							C_BLUE,
-							C_BLACK,
-							"%u",
-							a->level);
+	Sprite *sprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf", 8, C_BLUE, C_BLACK, "%u", a->level);
 	sprite->pos = a->sprite->pos;
 	sprite->offset = POS(32 - sprite->dim.width, 32 - sprite->dim.height);
 	a->levelSprite = sprite;
@@ -176,7 +171,7 @@ artifact_create_random(Player *p, Uint8 level)
 {
 	int option = get_random(9);
 
-	int * artifactPool = NULL;
+	int *artifactPool = NULL;
 	if (p->class == ROGUE)
 		artifactPool = RogueArtifacts;
 	else if (p->class == MAGE)
@@ -199,12 +194,7 @@ void
 artifact_add_price(Artifact *a, unsigned int price)
 {
 
-	Sprite *sprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf",
-							8,
-							C_YELLOW,
-							C_BLACK,
-							"$%u",
-							price);
+	Sprite *sprite = sprite_util_create_text_sprite("GUI/SDS_8x8.ttf", 8, C_YELLOW, C_BLACK, "$%u", price);
 	sprite->pos = a->sprite->pos;
 	a->price = price;
 	a->priceSprite = sprite;
@@ -219,12 +209,12 @@ artifact_sprite_for(MagicalEffect effect)
 		case IMPROVED_HEARING:
 			t = texturecache_add("Items/Potion.png");
 			sprite_set_texture(sprite, t, 0);
-			sprite->clip = CLIP16(7*16, 4*16);
+			sprite->clip = CLIP16(7 * 16, 4 * 16);
 			break;
 		case TRAP_AVOIDANCE:
 			t = texturecache_add("Items/Boot.png");
 			sprite_set_texture(sprite, t, 0);
-			sprite->clip = CLIP16(5*16, 0);
+			sprite->clip = CLIP16(5 * 16, 0);
 			break;
 		case PIERCING_DAGGERS:
 			t = texturecache_add("Items/Rock.png");
@@ -244,27 +234,27 @@ artifact_sprite_for(MagicalEffect effect)
 		case DAGGER_RECOVERY:
 			t = texturecache_add("Items/LongWep.png");
 			sprite_set_texture(sprite, t, 0);
-			sprite->clip = CLIP16(0, 6*16);
+			sprite->clip = CLIP16(0, 6 * 16);
 			break;
 		case INCREASED_STUN:
 			t = texturecache_add("Items/Shield.png");
 			sprite_set_texture(sprite, t, 0);
-			sprite->clip = CLIP16(4*16, 0);
+			sprite->clip = CLIP16(4 * 16, 0);
 			break;
 		case FEAR_INDUCING:
 			t = texturecache_add("Items/Armor.png");
 			sprite_set_texture(sprite, t, 0);
-			sprite->clip = CLIP16(6*16, 8*16);
+			sprite->clip = CLIP16(6 * 16, 8 * 16);
 			break;
 		case PHASE_IMPROVEMENT:
 			t = texturecache_add("Items/Armor.png");
 			sprite_set_texture(sprite, t, 0);
-			sprite->clip = CLIP16(1*16, 5*16);
+			sprite->clip = CLIP16(1 * 16, 5 * 16);
 			break;
 		case SKILL_RADIUS:
 			t = texturecache_add("Items/Wand.png");
 			sprite_set_texture(sprite, t, 0);
-			sprite->clip = CLIP16(2*16, 0);
+			sprite->clip = CLIP16(2 * 16, 0);
 			break;
 		case DAGGER_BOUNCE:
 			t = texturecache_add("Extras/Artifacts.png");

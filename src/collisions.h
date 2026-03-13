@@ -17,14 +17,13 @@
  */
 
 #ifndef COLLISIONS_H_
-#define	COLLISIONS_H_
+#define COLLISIONS_H_
 
 #include <SDL3/SDL.h>
 #include <stdbool.h>
 
 #include "position.h"
 
-bool
-position_in_rect(const Position*, const SDL_Rect*);
+bool position_in_rect(const Position *, const SDL_Rect *);
 
 #endif // COLLISIONS_H_

@@ -27,25 +27,22 @@
 static sqlite3 *db = NULL;
 static Settings settings;
 
-static const char *KEY_MUSIC_ENABLED		= "music_enabled";
-static const char *KEY_SOUND_ENABLED		= "sound_enabled";
-static const char *KEY_TOOLTIPS_ENABLED		= "tooltips_enabled";
-static const char *KEY_HOW_TO_PLAY_SHOWN	= "how_to_play_shown";
-static const char *KEY_FULLSCREEN_ENABLED	= "fullscreen_enabled";
+static const char *KEY_MUSIC_ENABLED = "music_enabled";
+static const char *KEY_SOUND_ENABLED = "sound_enabled";
+static const char *KEY_TOOLTIPS_ENABLED = "tooltips_enabled";
+static const char *KEY_HOW_TO_PLAY_SHOWN = "how_to_play_shown";
+static const char *KEY_FULLSCREEN_ENABLED = "fullscreen_enabled";
 
-static
-DbQuery MIGRATE_COMMANDS[] = {
-	{
-		"CREATE TABLE IF NOT EXISTS settings_int("
-			"key TEXT PRIMARY KEY, "
-			"value INTEGER)",
-		NULL, NULL
-	},
-	{ NULL, NULL, NULL} // Sentinel
+static DbQuery MIGRATE_COMMANDS[] = {
+    {"CREATE TABLE IF NOT EXISTS settings_int("
+     "key TEXT PRIMARY KEY, "
+     "value INTEGER)",
+     NULL, NULL},
+    {NULL, NULL, NULL} // Sentinel
 };
 
 static int load_settings_cb(void *unused, int count, char **values, char **colNames);
-DbQuery LOAD_SETTINGS = { "SELECT * FROM settings_int", load_settings_cb, NULL };
+DbQuery LOAD_SETTINGS = {"SELECT * FROM settings_int", load_settings_cb, NULL};
 
 static void
 set_default_settings(void)
@@ -83,20 +80,16 @@ load_settings_cb(void *unused, int count, char **values, char **colNames)
 		if (!strcmp(KEY_SOUND_ENABLED, values[i])) {
 			settings.sound_enabled = (bool)atoi(values[i + 1]);
 			i += 2;
-		}
-		else if (!strcmp(KEY_MUSIC_ENABLED, values[i])) {
+		} else if (!strcmp(KEY_MUSIC_ENABLED, values[i])) {
 			settings.music_enabled = (bool)atoi(values[i + 1]);
 			i += 2;
-		}
-		else if (!strcmp(KEY_HOW_TO_PLAY_SHOWN, values[i])) {
+		} else if (!strcmp(KEY_HOW_TO_PLAY_SHOWN, values[i])) {
 			settings.howto_tooltip_shown = (bool)atoi(values[i + 1]);
 			i += 2;
-		}
-		else if (!strcmp(KEY_FULLSCREEN_ENABLED, values[i])) {
+		} else if (!strcmp(KEY_FULLSCREEN_ENABLED, values[i])) {
 			settings.fullscreen_enabled = (bool)atoi(values[i + 1]);
 			i += 2;
-		}
-		else if (!strcmp(KEY_TOOLTIPS_ENABLED, values[i])) {
+		} else if (!strcmp(KEY_TOOLTIPS_ENABLED, values[i])) {
 			settings.tooltips_enabled = (bool)atoi(values[i + 1]);
 			i += 2;
 		}
@@ -129,11 +122,7 @@ save_setting_int(const char *key, int value)
 	sqlite3_stmt *stmt = db_prepare(db, stmtStr);
 
 	debug("Saving setting: %s = %d", key, value);
-	sqlite3_bind_text(stmt,
-			  1,
-			  key,
-			  (int) strlen(key),
-			  NULL);
+	sqlite3_bind_text(stmt, 1, key, (int)strlen(key), NULL);
 
 	sqlite3_bind_int(stmt, 2, value);
 	sqlite3_step(stmt);

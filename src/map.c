@@ -30,7 +30,7 @@
 #include "mixer.h"
 #include "loot.h"
 
-static Room*
+static Room *
 create_room(void)
 {
 	int i, j;
@@ -40,8 +40,8 @@ create_room(void)
 	room->modifier.type = RMOD_TYPE_NONE;
 	room->visited = false;
 	room->lockTypes = 0;
-	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
-		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
+	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			room->tiles[i][j] = NULL;
 			room->walls[i][j] = NULL;
 			room->decorations[i][j] = NULL;
@@ -52,7 +52,7 @@ create_room(void)
 	return room;
 }
 
-Map*
+Map *
 map_create(void)
 {
 	int i, j;
@@ -63,13 +63,13 @@ map_create(void)
 	map->items = linkedlist_create();
 	map->artifacts = linkedlist_create();
 	map->objects = linkedlist_create();
-	map->currentRoom = (Position) { 0, 0 };
+	map->currentRoom = (Position){0, 0};
 	map->monsterMoveTimer = _timer_create();
 	map->level = 1;
 	map->lockTypes = 0;
 
-	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {
-		for (j=0; j < MAP_V_ROOM_COUNT; ++j) {
+	for (i = 0; i < MAP_H_ROOM_COUNT; ++i) {
+		for (j = 0; j < MAP_V_ROOM_COUNT; ++j) {
 			map->rooms[i][j] = create_room();
 		}
 	}
@@ -77,7 +77,7 @@ map_create(void)
 	return map;
 }
 
-MapTile*
+MapTile *
 map_create_tile(void)
 {
 	MapTile *tile = ec_malloc(sizeof(MapTile));
@@ -106,7 +106,7 @@ switch_tile(Map *map, Position *tile_pos, MapTile *tile, MapTile **oldTile)
 {
 	// Set the decoration sprites position to match tile pos
 	tile->sprite->pos = POS(tile_pos->x * TILE_DIMENSION + (map->currentRoom.x * GAME_VIEW_WIDTH),
-				tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
+	                        tile_pos->y * TILE_DIMENSION + (map->currentRoom.y * GAME_VIEW_HEIGHT));
 
 	if (*oldTile != NULL) {
 		map_tile_destroy(*oldTile);
@@ -138,7 +138,8 @@ map_add_wall(Map *map, Position *tile_pos, MapTile *tile)
 	switch_tile(map, tile_pos, tile, &room->walls[tile_pos->x][tile_pos->y]);
 }
 
-void map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
+void
+map_add_decoration(Map *map, Position *tile_pos, MapTile *tile)
 {
 	const Position *cr = &map->currentRoom;
 	Room *room = map->rooms[cr->x][cr->y];
@@ -240,8 +241,7 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 	LinkedList *m = map->monsters;
 	bool allDone = true;
 
-	if (timer_started(map->monsterMoveTimer)
-	    && timer_get_ticks(map->monsterMoveTimer) < 100)
+	if (timer_started(map->monsterMoveTimer) && timer_get_ticks(map->monsterMoveTimer) < 100)
 		return false;
 
 	while (m) {
@@ -254,8 +254,7 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 
 		// Prevent passive monsters from being "dodgy"
 		Position pos = position_to_matrix_coords(&monster->sprite->pos);
-		if (monster->state.current == PASSIVE
-		    && position_proximity(1, &rm->playerRoomPos, &pos))
+		if (monster->state.current == PASSIVE && position_proximity(1, &rm->playerRoomPos, &pos))
 			continue;
 		if (monster->steps >= monster->stats.speed)
 			continue;
@@ -265,7 +264,7 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 
 	if (allDone) {
 		timer_stop(map->monsterMoveTimer);
-		linkedlist_each(&map->monsters, (void (*)(void*)) monster_reset_steps);
+		linkedlist_each(&map->monsters, (void (*)(void *))monster_reset_steps);
 	} else {
 		timer_start(map->monsterMoveTimer);
 	}
@@ -273,7 +272,8 @@ map_move_monsters(Map *map, RoomMatrix *rm)
 	return allDone;
 }
 
-int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
+int
+map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
 {
 	Texture *t = texture_create();
 	texture_load_from_file(t, path, renderer);
@@ -281,8 +281,8 @@ int map_add_texture(Map *map, const char *path, SDL_Renderer *renderer)
 	return linkedlist_size(map->textures) - 1;
 }
 
-static
-void map_tile_render(MapTile *tile, Camera *cam)
+static void
+map_tile_render(MapTile *tile, Camera *cam)
 {
 	if (tile == NULL)
 		return;
@@ -312,10 +312,10 @@ map_update(UpdateData *data)
 		monster_update(m, data);
 	}
 
-	Position roomPos = { map->currentRoom.x, map->currentRoom.y };
+	Position roomPos = {map->currentRoom.x, map->currentRoom.y};
 	Room *room = map->rooms[roomPos.x][roomPos.y];
-	for (size_t i=0; i < MAP_ROOM_WIDTH; ++i) {
-		for (size_t j=0; j < MAP_ROOM_HEIGHT; ++j) {
+	for (size_t i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (size_t j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			if (room->tiles[i][j])
 				sprite_update(room->tiles[i][j]->sprite, data);
 		}
@@ -334,14 +334,15 @@ map_update(UpdateData *data)
 	}
 }
 
-void map_render(Map *map, Camera *cam)
+void
+map_render(Map *map, Camera *cam)
 {
 	unsigned int i, j;
 
-	Position roomPos = { map->currentRoom.x, map->currentRoom.y };
+	Position roomPos = {map->currentRoom.x, map->currentRoom.y};
 	Room *room = map->rooms[roomPos.x][roomPos.y];
-	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
-		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
+	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			map_tile_render(room->tiles[i][j], cam);
 			map_tile_render(room->walls[i][j], cam);
 			map_tile_render(room->doors[i][j], cam);
@@ -356,7 +357,6 @@ void map_render(Map *map, Camera *cam)
 	} else if (room->modifier.type == RMOD_TYPE_FIRE) {
 		particle_engine_heat();
 	}
-
 }
 
 void
@@ -399,7 +399,8 @@ map_render_top_layer(Map *map, RoomMatrix *rm, Camera *cam)
 	}
 }
 
-void map_set_current_room(Map *map, Position *player_world_pos, bool *first_visit)
+void
+map_set_current_room(Map *map, Position *player_world_pos, bool *first_visit)
 {
 	unsigned int room_width, room_height;
 
@@ -432,12 +433,12 @@ void map_set_current_room(Map *map, Position *player_world_pos, bool *first_visi
 	room->visited = true;
 }
 
-static
-void map_room_destroy(Room *room)
+static void
+map_room_destroy(Room *room)
 {
 	int i, j;
-	for (i=0; i < MAP_ROOM_WIDTH; ++i) {
-		for (j=0; j < MAP_ROOM_HEIGHT; ++j) {
+	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
+		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
 			if (room->tiles[i][j]) {
 				map_tile_destroy(room->tiles[i][j]);
 			}
@@ -488,8 +489,8 @@ void
 map_destroy(Map *map)
 {
 	int i, j;
-	for (i=0; i < MAP_H_ROOM_COUNT; ++i) {
-		for (j=0; j < MAP_V_ROOM_COUNT; ++j) {
+	for (i = 0; i < MAP_H_ROOM_COUNT; ++i) {
+		for (j = 0; j < MAP_V_ROOM_COUNT; ++j) {
 			map_room_destroy(map->rooms[i][j]);
 		}
 	}

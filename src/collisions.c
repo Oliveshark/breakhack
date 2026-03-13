@@ -21,6 +21,6 @@
 bool
 position_in_rect(const Position *p, const SDL_Rect *r)
 {
-	SDL_Point point = { p->x, p->y };
+	SDL_Point point = {p->x, p->y};
 	return SDL_PointInRect(&point, r);
 }

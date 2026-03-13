@@ -41,6 +41,7 @@
 #include "effect_util.h"
 #include "object.h"
 
+// clang-format off
 static char *flurry_tooltip[] = {
 	"FLURRY", "",
 	"",
@@ -101,7 +102,7 @@ static char *trip_tooltip[] = {
 	"",
 	"   Trips an adjecant enemy causing him to fall (move), in", "",
 	"   the direction you tripped it in.", "",
-	"   On a successful hit the enemy will also be stunned." "",
+	"   On a successful hit the enemy will also be stunned.", "",
 	"",
 	"   This can be combined with traps and pits to great effect.", "",
 	"",
@@ -257,6 +258,7 @@ static char *health_tooltip[] = {
 	"Press ", "ESC", " to close", "",
 	NULL
 };
+// clang-format on
 
 static void
 perform_pickups_for_space(RoomSpace *space, Player *player)
@@ -277,8 +279,7 @@ perform_pickups_for_space(RoomSpace *space, Player *player)
 }
 
 static void
-handle_space_effects(RoomSpace *space,
-		     Player *player)
+handle_space_effects(RoomSpace *space, Player *player)
 {
 	if (SPACE_IS_LETHAL(space))
 		player_set_falling(player);
@@ -318,8 +319,8 @@ check_skill_validity(Position *playerPos, Position *targetPos, SkillData *data)
 {
 	*playerPos = position_to_matrix_coords(&data->player->sprite->pos);
 	*targetPos = *playerPos;
-	targetPos->x += (int) data->direction.x;
-	targetPos->y += (int) data->direction.y;
+	targetPos->x += (int)data->direction.x;
+	targetPos->y += (int)data->direction.y;
 
 	player_turn(data->player, &data->direction);
 
@@ -332,7 +333,7 @@ check_skill_validity(Position *playerPos, Position *targetPos, SkillData *data)
 static bool
 vampiric_blow_skill(Skill *skill, SkillData *data)
 {
-	UNUSED (skill);
+	UNUSED(skill);
 
 	Position playerPos, targetPos;
 	Player *player = data->player;
@@ -354,17 +355,14 @@ vampiric_blow_skill(Skill *skill, SkillData *data)
 			monster_set_bleeding(monster);
 
 			unsigned int gain = player->stats.lvl * 3;
-			gain = min(gain, (unsigned int) player->stats.maxhp - player->stats.hp);
+			gain = min(gain, (unsigned int)player->stats.maxhp - player->stats.hp);
 			if (gain > 0) {
 				gui_log("You gain %u health", gain);
 				char msg[4];
 				m_sprintf(msg, 4, "+%u", gain);
-				actiontextbuilder_create_text(msg,
-							      C_GREEN,
-							      &player->sprite->pos);
+				actiontextbuilder_create_text(msg, C_GREEN, &player->sprite->pos);
 				player->stats.hp += gain;
-				player->stats.hp = min(player->stats.maxhp,
-						       player->stats.hp);
+				player->stats.hp = min(player->stats.maxhp, player->stats.hp);
 			}
 		} else {
 			gui_log("You missed %s", monster->lclabel);
@@ -396,25 +394,25 @@ create_vampiric_blow(Camera *cam)
 
 	Animation *a = skill->animation;
 	animation_load_texture(a, "Extras/VampiricBlow.png", cam->renderer);
-	animation_set_frames(a, (AnimationClip[]) {
-			     {  0, 0, 32, 32, 120 },
-			     { 32, 0, 32, 32, 120 },
-			     { 64, 0, 32, 32, 120 },
-			     { 96, 0, 32, 32, 120 },
-			     { 128, 0, 32, 32, 120 },
-			     { 160, 0, 32, 32, 120 },
-			});
+	animation_set_frames(a, (AnimationClip[]){
+	                            {0, 0, 32, 32, 120},
+	                            {32, 0, 32, 32, 120},
+	                            {64, 0, 32, 32, 120},
+	                            {96, 0, 32, 32, 120},
+	                            {128, 0, 32, 32, 120},
+	                            {160, 0, 32, 32, 120},
+	                        });
 	a->loop = false;
 	a->sprite->dim = GAME_DIMENSION;
-	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
-	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+	a->sprite->clip = (SDL_Rect){0, 0, 32, 32};
+	a->sprite->rotationPoint = (SDL_Point){16, 16};
 	return skill;
 }
 
 static bool
 skill_use_flurry(Skill *skill, SkillData *data)
 {
-	UNUSED (skill);
+	UNUSED(skill);
 
 	Position playerPos, targetPos;
 	if (!check_skill_validity(&playerPos, &targetPos, data)) {
@@ -467,20 +465,18 @@ create_flurry(Camera *cam)
 
 	Animation *a = skill->animation;
 	animation_load_texture(a, "Extras/TrippleSwing.png", cam->renderer);
-	animation_set_frames(a, (AnimationClip[]) {
-			     {  0, 0, 32, 32, 20 },
-			     { 32, 0, 32, 32, 20 },
-			     { 64, 0, 32, 32, 20 },
-			     { 96, 0, 32, 32, 20 },
-			     { 128, 0, 32, 32, 20 },
-			     { 160, 0, 32, 32, 20 },
-			     { 192, 0, 32, 32, 20 },
-			     { 224, 0, 32, 32, 20 }
-			});
+	animation_set_frames(a, (AnimationClip[]){{0, 0, 32, 32, 20},
+	                                          {32, 0, 32, 32, 20},
+	                                          {64, 0, 32, 32, 20},
+	                                          {96, 0, 32, 32, 20},
+	                                          {128, 0, 32, 32, 20},
+	                                          {160, 0, 32, 32, 20},
+	                                          {192, 0, 32, 32, 20},
+	                                          {224, 0, 32, 32, 20}});
 	a->loop = false;
 	a->sprite->dim = GAME_DIMENSION;
-	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
-	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+	a->sprite->clip = (SDL_Rect){0, 0, 32, 32};
+	a->sprite->rotationPoint = (SDL_Point){16, 16};
 	return skill;
 }
 
@@ -502,19 +498,16 @@ skill_throw_dagger(Skill *skill, SkillData *data)
 
 	Projectile *p = projectile_dagger_create();
 	if (vector2d_equals(VECTOR2D_UP, data->direction)) {
-		p->velocity = (Vector2d) { 0, -DAGGER_VELOCITY };
+		p->velocity = (Vector2d){0, -DAGGER_VELOCITY};
 		p->sprite->flip = SDL_FLIP_VERTICAL;
-	}
-	else if (vector2d_equals(VECTOR2D_DOWN, data->direction)) {
-		p->velocity = (Vector2d) { 0, DAGGER_VELOCITY };
+	} else if (vector2d_equals(VECTOR2D_DOWN, data->direction)) {
+		p->velocity = (Vector2d){0, DAGGER_VELOCITY};
 		p->sprite->flip = SDL_FLIP_HORIZONTAL;
-	}
-	else if (vector2d_equals(VECTOR2D_RIGHT, data->direction)) {
-		p->velocity = (Vector2d) { DAGGER_VELOCITY, 0 };
+	} else if (vector2d_equals(VECTOR2D_RIGHT, data->direction)) {
+		p->velocity = (Vector2d){DAGGER_VELOCITY, 0};
 		p->sprite->flip = SDL_FLIP_HORIZONTAL;
-	}
-	else {
-		p->velocity = (Vector2d) { -DAGGER_VELOCITY, 0 };
+	} else {
+		p->velocity = (Vector2d){-DAGGER_VELOCITY, 0};
 		p->sprite->angle = -270;
 	}
 
@@ -549,7 +542,7 @@ create_throw_dagger(void)
 static bool
 skill_bash(Skill *skill, SkillData *data)
 {
-	UNUSED (skill);
+	UNUSED(skill);
 
 	Position playerPos, targetPos;
 	if (!check_skill_validity(&playerPos, &targetPos, data)) {
@@ -566,7 +559,7 @@ skill_bash(Skill *skill, SkillData *data)
 			if (monster->stats.hp > 0) {
 				gui_log("%s seems dazed and confused", monster->label);
 				monster_set_state(monster, STUNNED,
-						  (Uint8) (3 + player_has_artifact(data->player, INCREASED_STUN)));
+				                  (Uint8)(3 + player_has_artifact(data->player, INCREASED_STUN)));
 			}
 			mixer_play_effect(SLAM);
 		} else {
@@ -602,26 +595,26 @@ create_bash(Camera *cam)
 	Animation *a = skill->animation;
 
 	animation_load_texture(a, "Extras/ShieldBash.png", cam->renderer);
-	animation_set_frames(a, (AnimationClip[]) {
-			     {  0, 0, 32, 32, 20 },
-			     { 32, 0, 32, 32, 20 },
-			     { 64, 0, 32, 32, 20 },
-			     { 96, 0, 32, 32, 20 },
-			     { 128, 0, 32, 32, 20 },
-			     { 160, 0, 32, 32, 20 },
-			     { 192, 0, 32, 32, 20 },
-			});
+	animation_set_frames(a, (AnimationClip[]){
+	                            {0, 0, 32, 32, 20},
+	                            {32, 0, 32, 32, 20},
+	                            {64, 0, 32, 32, 20},
+	                            {96, 0, 32, 32, 20},
+	                            {128, 0, 32, 32, 20},
+	                            {160, 0, 32, 32, 20},
+	                            {192, 0, 32, 32, 20},
+	                        });
 	a->loop = false;
 	a->sprite->dim = GAME_DIMENSION;
-	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
-	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+	a->sprite->clip = (SDL_Rect){0, 0, 32, 32};
+	a->sprite->rotationPoint = (SDL_Point){16, 16};
 	return skill;
 }
 
 static bool
 skill_trip(Skill *skill, SkillData *data)
 {
-	UNUSED (skill);
+	UNUSED(skill);
 
 	Position playerPos, targetPos;
 	if (!check_skill_validity(&playerPos, &targetPos, data)) {
@@ -641,13 +634,14 @@ skill_trip(Skill *skill, SkillData *data)
 			Uint32 pushCount = 1 + player_has_artifact(data->player, PUSH_BACK);
 			for (Uint32 i = 0; i < pushCount; ++i) {
 				monster_push(space->monster, data->player, data->matrix, data->direction);
-				if (space->monster->stats.hp <= 0 || space->monster->sprite->state == SPRITE_STATE_FALLING) {
+				if (space->monster->stats.hp <= 0
+				    || space->monster->sprite->state == SPRITE_STATE_FALLING) {
 					break;
 				}
 			}
-			monster_set_state(space->monster, STUNNED, (Uint8)(2 + player_has_artifact(data->player, INCREASED_STUN)));
+			monster_set_state(space->monster, STUNNED,
+			                  (Uint8)(2 + player_has_artifact(data->player, INCREASED_STUN)));
 		}
-
 
 	} else {
 		gui_log("You flail at the air");
@@ -676,20 +670,18 @@ create_trip(Camera *cam)
 
 	Animation *a = skill->animation;
 	animation_load_texture(a, "Extras/Trip.png", cam->renderer);
-	animation_set_frames(a, (AnimationClip[]) {
-			     {  0, 0, 32, 32, 20 },
-			     { 32, 0, 32, 32, 20 },
-			     { 64, 0, 32, 32, 20 },
-			     { 96, 0, 32, 32, 20 },
-			     { 128, 0, 32, 32, 20 },
-			     { 160, 0, 32, 32, 20 },
-			     { 192, 0, 32, 32, 20 },
-			     { 224, 0, 32, 32, 20 }
-			});
+	animation_set_frames(a, (AnimationClip[]){{0, 0, 32, 32, 20},
+	                                          {32, 0, 32, 32, 20},
+	                                          {64, 0, 32, 32, 20},
+	                                          {96, 0, 32, 32, 20},
+	                                          {128, 0, 32, 32, 20},
+	                                          {160, 0, 32, 32, 20},
+	                                          {192, 0, 32, 32, 20},
+	                                          {224, 0, 32, 32, 20}});
 	a->loop = false;
 	a->sprite->dim = GAME_DIMENSION;
-	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
-	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+	a->sprite->clip = (SDL_Rect){0, 0, 32, 32};
+	a->sprite->rotationPoint = (SDL_Point){16, 16};
 	return skill;
 }
 
@@ -713,8 +705,8 @@ skill_backstab(Skill *skill, SkillData *data)
 
 	mixer_play_effect(SWING0 + get_random(2));
 
-	player_update_pos(data->player, (uint32_t) data->direction.x * TILE_DIMENSION,
-			  (uint32_t) data->direction.y * TILE_DIMENSION);
+	player_update_pos(data->player, (uint32_t)data->direction.x * TILE_DIMENSION,
+	                  (uint32_t)data->direction.y * TILE_DIMENSION);
 	player_turn(data->player, &reverseDirection);
 
 	if (targetSpace->monster) {
@@ -759,21 +751,19 @@ create_backstab(Camera *cam)
 
 	Animation *a = skill->animation;
 	animation_load_texture(a, "Extras/BackStab.png", cam->renderer);
-	animation_set_frames(a, (AnimationClip[]) {
-			     {  0, 0, 32, 32, 100 },
-			     { 32, 0, 32, 32, 100 },
-			     { 64, 0, 32, 32, 100 },
-			     { 96, 0, 32, 32, 100 },
-			     { 128, 0, 32, 32, 100 },
-			     { 160, 0, 32, 32, 100 },
-			     { 192, 0, 32, 32, 100 },
-			     { 224, 0, 32, 32, 100 },
-			     { 256, 0, 32, 32, 100 }
-			});
+	animation_set_frames(a, (AnimationClip[]){{0, 0, 32, 32, 100},
+	                                          {32, 0, 32, 32, 100},
+	                                          {64, 0, 32, 32, 100},
+	                                          {96, 0, 32, 32, 100},
+	                                          {128, 0, 32, 32, 100},
+	                                          {160, 0, 32, 32, 100},
+	                                          {192, 0, 32, 32, 100},
+	                                          {224, 0, 32, 32, 100},
+	                                          {256, 0, 32, 32, 100}});
 	a->loop = false;
 	a->sprite->dim = GAME_DIMENSION;
-	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
-	a->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+	a->sprite->clip = (SDL_Rect){0, 0, 32, 32};
+	a->sprite->rotationPoint = (SDL_Point){16, 16};
 	return skill;
 }
 
@@ -808,15 +798,14 @@ create_phase(void)
 static bool
 skill_sip_health_available(Player *player)
 {
-	bool hasSips = player->class == MAGE ?
-		player->potion_sips > 1 : player->potion_sips > 0;
+	bool hasSips = player->class == MAGE ? player->potion_sips > 1 : player->potion_sips > 0;
 	return hasSips > 0 && player->stats.hp != player->stats.maxhp;
 }
 
 static bool
 skill_sip_health(Skill *skill, SkillData *data)
 {
-	UNUSED (skill);
+	UNUSED(skill);
 	player_sip_health(data->player);
 	return true;
 }
@@ -840,17 +829,15 @@ create_sip_health(void)
 }
 
 static void
-skill_charge_check_path(SkillData *data,
-			Position origin,
-			Position dest)
+skill_charge_check_path(SkillData *data, Position origin, Position dest)
 {
 	RoomMatrix *matrix = data->matrix;
 	Player *player = data->player;
 
 	Position itPos = origin;
 	Position lastPos = dest;
-	lastPos.x += (int) data->direction.x * 2;
-	lastPos.y += (int) data->direction.y * 2;
+	lastPos.x += (int)data->direction.x * 2;
+	lastPos.y += (int)data->direction.y * 2;
 	Uint8 steps = 1;
 	while (position_in_roommatrix(&itPos) && !position_equals(&itPos, &lastPos)) {
 		RoomSpace *space = &matrix->spaces[itPos.x][itPos.y];
@@ -873,8 +860,8 @@ skill_charge_check_path(SkillData *data,
 		if (space->trap)
 			space->trap->sprite->animate = true;
 
-		itPos.x += (int) data->direction.x;
-		itPos.y += (int) data->direction.y;
+		itPos.x += (int)data->direction.x;
+		itPos.y += (int)data->direction.y;
 
 		steps++;
 	}
@@ -892,14 +879,13 @@ skill_charge(Skill *skill, SkillData *data)
 	Position destination = playerStartPos;
 
 	// Find collider
-	destination.x += (int) data->direction.x;
-	destination.y += (int) data->direction.y;
+	destination.x += (int)data->direction.x;
+	destination.y += (int)data->direction.y;
 	RoomSpace *space = &matrix->spaces[destination.x][destination.y];
 	Uint32 passThroughCount = 0;
 	Uint32 chargeThroughLvl = player_has_artifact(data->player, CHARGE_THROUGH);
 	Position lastAvailableDest = playerStartPos;
-	while (position_in_roommatrix(&destination))
-	{
+	while (position_in_roommatrix(&destination)) {
 		if (SPACE_IS_BLOCKED(space)) {
 			if (!space->monster || passThroughCount >= chargeThroughLvl)
 				break;
@@ -909,8 +895,8 @@ skill_charge(Skill *skill, SkillData *data)
 			lastAvailableDest = destination;
 		}
 
-		destination.x += (int) data->direction.x;
-		destination.y += (int) data->direction.y;
+		destination.x += (int)data->direction.x;
+		destination.y += (int)data->direction.y;
 		space = &matrix->spaces[destination.x][destination.y];
 	}
 
@@ -928,9 +914,9 @@ skill_charge(Skill *skill, SkillData *data)
 	bool horizontal = data->direction.x != 0;
 	Dimension particleArea;
 	if (horizontal)
-		particleArea = (Dimension) { abs(xdiff) * TILE_DIMENSION, TILE_DIMENSION };
+		particleArea = (Dimension){abs(xdiff) * TILE_DIMENSION, TILE_DIMENSION};
 	else
-		particleArea = (Dimension) { TILE_DIMENSION, abs(ydiff) * TILE_DIMENSION };
+		particleArea = (Dimension){TILE_DIMENSION, abs(ydiff) * TILE_DIMENSION};
 
 	Position speedLinePos;
 	if (playerOriginPos.x < playerDestinationPos.x || playerOriginPos.y < playerDestinationPos.y)
@@ -977,11 +963,10 @@ skill_blink(Skill *skill, SkillData *data)
 	Position destination = playerStartPos;
 
 	// Find collider
-	destination.x += (int) data->direction.x;
-	destination.y += (int) data->direction.y;
+	destination.x += (int)data->direction.x;
+	destination.y += (int)data->direction.y;
 	Position lastAvailableDest = playerStartPos;
-	while (position_in_roommatrix(&destination))
-	{
+	while (position_in_roommatrix(&destination)) {
 		RoomSpace *space = &matrix->spaces[destination.x][destination.y];
 
 		if (SPACE_IS_OCCUPIED(space)) {
@@ -993,8 +978,8 @@ skill_blink(Skill *skill, SkillData *data)
 		}
 
 		perform_pickups_for_space(space, player);
-		destination.x += (int) data->direction.x;
-		destination.y += (int) data->direction.y;
+		destination.x += (int)data->direction.x;
+		destination.y += (int)data->direction.y;
 	}
 
 	destination = lastAvailableDest;
@@ -1069,13 +1054,10 @@ skill_erupt(Skill *skill, SkillData *data)
 				monster_set_state(r->monster, SCARED, 3);
 
 				int lvl = 1 + player_has_artifact(player, PUSH_BACK);
-				Vector2d dir = vector2d_to_direction(&VEC2D((float) i, (float) j));
+				Vector2d dir = vector2d_to_direction(&VEC2D((float)i, (float)j));
 				for (int k = 0; k < lvl; ++k) {
 					if (r->monster->stats.hp > 0)
-						monster_push(r->monster,
-							     player,
-							     rm,
-							     dir);
+						monster_push(r->monster, player, rm, dir);
 				}
 			}
 		}
@@ -1103,25 +1085,23 @@ create_erupt(Camera *cam)
 
 	Animation *a = skill->animation;
 	animation_load_texture(a, "Extras/AcidSplash.png", cam->renderer);
-	animation_set_frames(a, (AnimationClip[]) {
-			     {  0, 0, 64, 64, 80 },
-			     { 64, 0, 64, 64, 80 },
-			     { 128, 0, 64, 64, 80 },
-			     { 192, 0, 64, 64, 80 },
-			     { 256, 0, 64, 64, 80 },
-			     { 320, 0, 64, 64, 80 },
-			     { 384, 0, 64, 64, 100 },
-			     { 448, 0, 64, 64,100 }
-			});
+	animation_set_frames(a, (AnimationClip[]){{0, 0, 64, 64, 80},
+	                                          {64, 0, 64, 64, 80},
+	                                          {128, 0, 64, 64, 80},
+	                                          {192, 0, 64, 64, 80},
+	                                          {256, 0, 64, 64, 80},
+	                                          {320, 0, 64, 64, 80},
+	                                          {384, 0, 64, 64, 100},
+	                                          {448, 0, 64, 64, 100}});
 	a->loop = false;
 	a->sprite->dim = DIM(96, 96);
-	a->sprite->clip = (SDL_Rect) { 0, 0, 64, 64 };
+	a->sprite->clip = (SDL_Rect){0, 0, 64, 64};
 	skill->animation_properties.offset = POS(-32, -32);
 	skill->animation_properties.on_player = true;
 	return skill;
 }
 
-Skill*
+Skill *
 skill_create(enum SkillType t, Camera *cam)
 {
 	Skill *skill;
@@ -1165,7 +1145,7 @@ skill_create(enum SkillType t, Camera *cam)
 			skill->tooltip = tooltip_create(phase_tooltip, cam);
 			break;
 		default:
-			fatal("Unknown SkillType %u", (unsigned int) t);
+			fatal("Unknown SkillType %u", (unsigned int)t);
 			return NULL;
 	}
 

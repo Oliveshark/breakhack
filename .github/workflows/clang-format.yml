@@ -1,0 +1,23 @@
+name: clang-format
+
+on:
+  push:
+    branches: [ "dev", "feature/*" ]
+  pull_request:
+    branches: [ "dev" ]
+
+jobs:
+  clang-format:
+    name: Check formatting
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install clang-format
+      run: pip install clang-format==21.1.8
+
+    - name: Check formatting
+      run: |
+        find src -name '*.c' -o -name '*.h' \
+          | xargs clang-format --dry-run --Werror

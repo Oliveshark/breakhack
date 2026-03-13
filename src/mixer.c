@@ -34,19 +34,19 @@ static MIX_Mixer *mixer = NULL;
 static MIX_Track *music_track = NULL;
 
 static uint8_t fx_track_idx = 0;
-static MIX_Track *fx_tracks[FX_TRACK_COUNT] = { NULL };
+static MIX_Track *fx_tracks[FX_TRACK_COUNT] = {NULL};
 
 static SDL_PropertiesID music_track_properties = 0;
 
 static char *music[LAST_MUSIC] = {
-	 "Sounds/Music/fantasy-forest-battle.ogg",		  // MENU_MUSIC
-	 "Sounds/Music/fantasy-game-background-looping.ogg",	  // GAME_MUSIC0
-	 "Sounds/Music/bog-creatures-on-the-move-looping.ogg",	  // GAME_MUSIC1
-	 "Sounds/Music/fantascape-looping.ogg",			  // GAME_MUSIC2
-	 "Sounds/Music/forward-assault.ogg"			  // BOSS_MUSIC0
+    "Sounds/Music/fantasy-forest-battle.ogg",             // MENU_MUSIC
+    "Sounds/Music/fantasy-game-background-looping.ogg",   // GAME_MUSIC0
+    "Sounds/Music/bog-creatures-on-the-move-looping.ogg", // GAME_MUSIC1
+    "Sounds/Music/fantascape-looping.ogg",                // GAME_MUSIC2
+    "Sounds/Music/forward-assault.ogg"                    // BOSS_MUSIC0
 };
 
-static MIX_Audio*
+static MIX_Audio *
 load_song(char *path)
 {
 	MIX_Audio *m = MIX_LoadAudio_IO(mixer, io_load_rwops(path), false, true);
@@ -55,7 +55,7 @@ load_song(char *path)
 	return m;
 }
 
-static MIX_Audio*
+static MIX_Audio *
 load_effect(char *path)
 {
 	verbose("Loading effect: %s", path);
@@ -198,15 +198,15 @@ mixer_play_effect(Fx fx)
 	MIX_Track *track = fx_tracks[fx_track_idx];
 	MIX_SetTrackAudio(track, effects[fx]);
 	if (!MIX_PlayTrack(track, 0))
-		error("Unable to play sound: %u", (unsigned int) fx);
+		error("Unable to play sound: %u", (unsigned int)fx);
 }
 
 void
 mixer_play_music(Music mus)
 {
 	/* TODO(Linus): We should be able to leverage this call here:
-		-> MIX_SetTrackIOStream(MIX_Track *track, SDL_IOStream *io, bool closeio);
-	   This should reduce RAM usage. */
+	    -> MIX_SetTrackIOStream(MIX_Track *track, SDL_IOStream *io, bool
+	   closeio); This should reduce RAM usage. */
 	if (!settings_get()->music_enabled)
 		return;
 

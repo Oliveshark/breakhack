@@ -39,14 +39,14 @@ skillbar_set_controller_mode(Uint8 ctrl_mode)
 static Sprite *
 create_controller_button_sprite(Position pos, SDL_Rect clip)
 {
-		Texture *t = texturecache_add("Extras/Controller.png");
-		Sprite *s = sprite_create();
-		sprite_set_texture(s, t, 0);
-		s->pos = pos;
-		s->fixed = true;
-		s->clip = clip;
-		s->dim = DIM(16, 16);
-		return s;
+	Texture *t = texturecache_add("Extras/Controller.png");
+	Sprite *s = sprite_create();
+	sprite_set_texture(s, t, 0);
+	s->pos = pos;
+	s->fixed = true;
+	s->clip = clip;
+	s->dim = DIM(16, 16);
+	return s;
 }
 
 static void
@@ -60,8 +60,8 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	for (unsigned int i = 0; i < 5; ++i) {
 		char buffer[4];
 		Sprite *s = sprite_create();
-		s->pos = (Position) { i * 32 + 20, 20 };
-		s->dim = (Dimension) { 8, 8 };
+		s->pos = (Position){i * 32 + 20, 20};
+		s->dim = (Dimension){8, 8};
 		s->fixed = true;
 		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 8, 0);
 		m_sprintf(buffer, 4, "%u", i + 1);
@@ -72,38 +72,30 @@ load_texture(SkillBar *bar, const char *path, SDL_Renderer *renderer)
 	/* Load ps controller sprites */
 	Uint8 i = 0;
 	linkedlist_append(&bar->sprites_gamepad_ps,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-							  CONTROLLER_BTN(0, GAMEPAD_TYPE_PS)));
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(0, GAMEPAD_TYPE_PS)));
 	linkedlist_append(&bar->sprites_gamepad_ps,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-							  CONTROLLER_BTN(16, GAMEPAD_TYPE_PS)));
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(16, GAMEPAD_TYPE_PS)));
 	linkedlist_append(&bar->sprites_gamepad_ps,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-							  CONTROLLER_BTN(32, GAMEPAD_TYPE_PS)));
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(32, GAMEPAD_TYPE_PS)));
 	linkedlist_append(&bar->sprites_gamepad_ps,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-							  CONTROLLER_BTN(48, GAMEPAD_TYPE_PS)));
-	linkedlist_append(&bar->sprites_gamepad_ps,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 20),
-							  CONTROLLER_BUMPER(32, GAMEPAD_TYPE_PS)));
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(48, GAMEPAD_TYPE_PS)));
+	linkedlist_append(
+	    &bar->sprites_gamepad_ps,
+	    create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_PS)));
 
 	/* Load xbox controller sprites */
 	i = 0;
 	linkedlist_append(&bar->sprites_gamepad_xb,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-							  CONTROLLER_BTN(0, GAMEPAD_TYPE_XB)));
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(0, GAMEPAD_TYPE_XB)));
 	linkedlist_append(&bar->sprites_gamepad_xb,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-							  CONTROLLER_BTN(16, GAMEPAD_TYPE_XB)));
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(16, GAMEPAD_TYPE_XB)));
 	linkedlist_append(&bar->sprites_gamepad_xb,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-							  CONTROLLER_BTN(32, GAMEPAD_TYPE_XB)));
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(32, GAMEPAD_TYPE_XB)));
 	linkedlist_append(&bar->sprites_gamepad_xb,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 16),
-							  CONTROLLER_BTN(48, GAMEPAD_TYPE_XB)));
-	linkedlist_append(&bar->sprites_gamepad_xb,
-			  create_controller_button_sprite(POS(i++ * 32 + 16, 20),
-							  CONTROLLER_BUMPER(32, GAMEPAD_TYPE_XB)));
+	                  create_controller_button_sprite(POS(i++ * 32 + 16, 16), CONTROLLER_BTN(48, GAMEPAD_TYPE_XB)));
+	linkedlist_append(
+	    &bar->sprites_gamepad_xb,
+	    create_controller_button_sprite(POS(i++ * 32 + 16, 20), CONTROLLER_BUMPER(32, GAMEPAD_TYPE_XB)));
 }
 
 static void
@@ -113,50 +105,48 @@ load_countdown_sprites(SkillBar *bar)
 		Sprite *s = sprite_create();
 		sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 14, 1);
 		s->fixed = true;
-		s->pos = (Position) { 8 + (32 * i), 8 };
-		s->dim = (Dimension) { 16, 16 };
+		s->pos = (Position){8 + (32 * i), 8};
+		s->dim = (Dimension){16, 16};
 		bar->countdowns[i] = s;
 	}
 }
 
-static Sprite*
+static Sprite *
 create_frame_sprite(Camera *cam)
 {
-	static SDL_Rect c_top_left	= { 1*16, 10*16, 16, 16 };
-	static SDL_Rect c_top_right	= { 3*16, 10*16, 16, 16 };
-	static SDL_Rect c_center_top	= { 2*16, 10*16, 16, 16 };
-	static SDL_Rect c_center_bottom	= { 2*16, 12*16, 16, 16 };
-	static SDL_Rect c_bottom_left	= { 1*16, 12*16, 16, 16 };
-	static SDL_Rect c_bottom_right	= { 3*16, 12*16, 16, 16 };
+	static SDL_Rect c_top_left = {1 * 16, 10 * 16, 16, 16};
+	static SDL_Rect c_top_right = {3 * 16, 10 * 16, 16, 16};
+	static SDL_Rect c_center_top = {2 * 16, 10 * 16, 16, 16};
+	static SDL_Rect c_center_bottom = {2 * 16, 12 * 16, 16, 16};
+	static SDL_Rect c_bottom_left = {1 * 16, 12 * 16, 16, 16};
+	static SDL_Rect c_bottom_right = {3 * 16, 12 * 16, 16, 16};
 
 	Sprite *frame = sprite_create();
 	Texture *texture = texture_create();
-	texture->dim = (Dimension) { GAME_VIEW_WIDTH, 32 };
+	texture->dim = (Dimension){GAME_VIEW_WIDTH, 32};
 	frame->textures[0] = texture;
 	frame->destroyTextures = true;
-	frame->pos = (Position) { 0, 0 };
-	frame->dim = (Dimension) { GAME_VIEW_WIDTH, 32 };
+	frame->pos = (Position){0, 0};
+	frame->dim = (Dimension){GAME_VIEW_WIDTH, 32};
 	frame->fixed = true;
-	texture_create_blank(texture,
-			     SDL_TEXTUREACCESS_TARGET,
-			     cam->renderer);
+	texture_create_blank(texture, SDL_TEXTUREACCESS_TARGET, cam->renderer);
 
 	SDL_SetRenderTarget(cam->renderer, texture->texture);
 	SDL_SetRenderDrawColor(cam->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(cam->renderer);
 
 	Texture *t = texturecache_get("GUI/GUI0.png");
-	SDL_Rect box = { 0, 0, 16, 16 };
+	SDL_Rect box = {0, 0, 16, 16};
 
 	// Render skill squares
 	for (Uint32 i = 0; i < 5; ++i) {
-		box.x = i*32;
+		box.x = i * 32;
 		box.y = 0;
 		texture_render_clip(t, &box, &c_top_left, cam);
 		box.y = 16;
 		texture_render_clip(t, &box, &c_bottom_left, cam);
 
-		box.x = i*32 + 16;
+		box.x = i * 32 + 16;
 		box.y = 0;
 		texture_render_clip(t, &box, &c_top_right, cam);
 		box.y = 16;
@@ -176,7 +166,7 @@ create_frame_sprite(Camera *cam)
 	texture_render_clip(t, &box, &c_center_bottom, cam);
 
 	for (Uint32 i = 6; i < MAP_ROOM_WIDTH - 1; ++i) {
-		box.x = i*32;
+		box.x = i * 32;
 		box.y = 0;
 		texture_render_clip(t, &box, &c_center_top, cam);
 		box.y = 16;
@@ -289,8 +279,8 @@ render_activation_indicator(SkillBar *bar, Camera *cam)
 		return;
 	}
 
-	SDL_FRect square = { (float) (bar->lastActivation - 1) * 32, 0, 32, 32 };
-	unsigned int opacity = (unsigned int) ticks/2;
+	SDL_FRect square = {(float)(bar->lastActivation - 1) * 32, 0, 32, 32};
+	unsigned int opacity = (unsigned int)ticks / 2;
 	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 0, (Uint8)(255 - opacity));
 	SDL_RenderRect(cam->renderer, &square);
 }
@@ -309,21 +299,21 @@ render_skill_countdown(SkillBar *bar, int index, unsigned int count, Camera *cam
 static void
 render_skills(Player *player, Camera *cam)
 {
-	static SDL_FRect activeSkillBox = { 0, 0, 32, 32 };
+	static SDL_FRect activeSkillBox = {0, 0, 32, 32};
 
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (!player->skills[i])
 			continue;
 
 		Skill *skill = player->skills[i];
-		if (skill->icon->dim.width >16)
-			skill->icon->pos = (Position) { i * 32, 0 };
+		if (skill->icon->dim.width > 16)
+			skill->icon->pos = (Position){i * 32, 0};
 		else
-			skill->icon->pos = (Position) { 8 + i * 32, 8 };
+			skill->icon->pos = (Position){8 + i * 32, 8};
 		sprite_render(skill->icon, cam);
 
 		if (player->skills[i]->active) {
-			activeSkillBox.x = (float) i * 32.0f;
+			activeSkillBox.x = (float)i * 32.0f;
 			SDL_SetRenderDrawColor(cam->renderer, 0, 0, 255, 100);
 			SDL_RenderFillRect(cam->renderer, &activeSkillBox);
 		}
@@ -345,7 +335,7 @@ render_artifacts(SkillBar *bar, Camera *cam)
 static void
 render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
 {
-	static SDL_FRect unavailableSkillBox = { 0, 0, 32, 32 };
+	static SDL_FRect unavailableSkillBox = {0, 0, 32, 32};
 
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		bool unavailable = false;
@@ -357,23 +347,18 @@ render_skill_unavailable(SkillBar *bar, Player *player, Camera *cam)
 		Skill *skill = player->skills[i];
 		if (skill->levelcap > player->stats.lvl) {
 			unavailable = true;
-			color = (SDL_Color) { 0, 0, 0, 220 };
-		} else if (skill->resetCountdown
-			   || (skill->available && !skill->available(player)))
-		{
+			color = (SDL_Color){0, 0, 0, 220};
+		} else if (skill->resetCountdown || (skill->available && !skill->available(player))) {
 			unavailable = true;
-			color = (SDL_Color) { 255, 0, 0, 70 };
+			color = (SDL_Color){255, 0, 0, 70};
 		}
 
 		if (unavailable) {
-			unavailableSkillBox.x = (float) i * 32;
+			unavailableSkillBox.x = (float)i * 32;
 			SDL_SetRenderDrawColor(cam->renderer, UNPACK_COLOR(color));
 			SDL_RenderFillRect(cam->renderer, &unavailableSkillBox);
 			if (skill->resetCountdown) {
-				render_skill_countdown(bar,
-						       i,
-						       skill->resetCountdown,
-						       cam);
+				render_skill_countdown(bar, i, skill->resetCountdown, cam);
 			}
 		}
 	}
@@ -391,8 +376,8 @@ render_skill_sparkles(SkillBar *bar, Player *player)
 		return;
 	}
 
-	Position pos = { 0, GAME_VIEW_HEIGHT };
-	Dimension dim = { 32, 32 };
+	Position pos = {0, GAME_VIEW_HEIGHT};
+	Dimension dim = {32, 32};
 	for (int i = 0; i < PLAYER_SKILL_COUNT; ++i) {
 		if (!player->skills[i])
 			continue;
@@ -414,7 +399,7 @@ skillbar_render(SkillBar *bar, Player *player, Camera *cam)
 	render_skill_unavailable(bar, player, cam);
 	render_activation_indicator(bar, cam);
 	if (timer_started(bar->skillSparkleTimer))
-	    render_skill_sparkles(bar, player);
+		render_skill_sparkles(bar, player);
 }
 
 void
@@ -454,8 +439,8 @@ skillbar_update(SkillBar *bar, UpdateData *data)
 		char lvl[4];
 		m_sprintf(lvl, 4, "%u", bar->artifacts[i].lvl);
 
-		texture_load_from_text(bar->artifacts[i].lvlSprite->textures[0],
-				       lvl, C_PURPLE, C_WHITE, data->cam->renderer);
+		texture_load_from_text(bar->artifacts[i].lvlSprite->textures[0], lvl, C_PURPLE, C_WHITE,
+		                       data->cam->renderer);
 
 		// Only update position if this is the first pickup
 		if (origLevel == 0) {

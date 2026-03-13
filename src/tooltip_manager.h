@@ -31,6 +31,6 @@ void tooltip_manager_init(Camera *gCamera);
 
 void tooltip_manager_set_controller_mode(GamepadType mode);
 
-Sprite* tooltip_manager_get_tooltip(TooltipType type);
+Sprite *tooltip_manager_get_tooltip(TooltipType type);
 
 void tooltip_manager_close(void);

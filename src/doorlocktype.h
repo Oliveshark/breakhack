@@ -18,11 +18,6 @@
 #ifndef _DOORLOCK_TYPE_H_
 #define _DOORLOCK_TYPE_H_
 
-typedef enum DoorLockType {
-	LOCK_NONE,
-	LOCK_SILVER,
-	LOCK_GOLD
-} DoorLockType;
+typedef enum DoorLockType { LOCK_NONE, LOCK_SILVER, LOCK_GOLD } DoorLockType;
 
-#endif  // _DOORLOCK_TYPE_H_
-
+#endif // _DOORLOCK_TYPE_H_

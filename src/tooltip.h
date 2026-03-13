@@ -26,8 +26,6 @@ typedef struct tooltip {
 	Sprite *sprite[GAMEPAD_TYPE_MAX];
 } Tooltip;
 
-Tooltip *
-tooltip_create(char **content, Camera*);
+Tooltip *tooltip_create(char **content, Camera *);
 
-void
-tooltip_destroy(Tooltip *tooltip);
+void tooltip_destroy(Tooltip *tooltip);

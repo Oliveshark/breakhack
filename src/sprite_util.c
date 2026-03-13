@@ -30,12 +30,7 @@ sprite_util_init(SDL_Renderer *renderer)
 }
 
 Sprite *
-sprite_util_create_text_sprite(const char *fontPath,
-			       int size,
-			       SDL_Color fg,
-			       SDL_Color outline,
-			       const char *fmt,
-			       ...)
+sprite_util_create_text_sprite(const char *fontPath, int size, SDL_Color fg, SDL_Color outline, const char *fmt, ...)
 {
 	va_list args;
 	Sprite *sprite = sprite_create();
@@ -47,11 +42,7 @@ sprite_util_create_text_sprite(const char *fontPath,
 	m_vsprintf(priceLabel, 10, fmt, args);
 	va_end(args);
 
-	texture_load_from_text(sprite->textures[0],
-			       priceLabel,
-			       fg,
-			       outline,
-			       utilData.renderer);
+	texture_load_from_text(sprite->textures[0], priceLabel, fg, outline, utilData.renderer);
 
 	sprite->dim = sprite->textures[0]->dim;
 

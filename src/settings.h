@@ -17,7 +17,7 @@
  */
 
 #ifndef SETTINGS_H_
-#define	SETTINGS_H_
+#define SETTINGS_H_
 
 #include <stdbool.h>
 
@@ -29,13 +29,10 @@ typedef struct Settings {
 	bool fullscreen_enabled;
 } Settings;
 
-void
-settings_init(void);
+void settings_init(void);
 
-Settings *
-settings_get(void);
+Settings *settings_get(void);
 
-void
-settings_close(void);
+void settings_close(void);
 
 #endif // SETTINGS_H_

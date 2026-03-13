@@ -21,22 +21,20 @@ create_explosion(Position pos)
 	sprite_set_texture(a->sprite, t, 0);
 	a->sprite->pos.x = pos.x - 16;
 	a->sprite->pos.y = pos.y - 16;
-	a->sprite->dim = (Dimension) { 64, 64 };
-	a->sprite->clip = (SDL_Rect) { 0, 0, 32, 32 };
-	a->sprite->rotationPoint = (SDL_Point) { 32, 32 };
+	a->sprite->dim = (Dimension){64, 64};
+	a->sprite->clip = (SDL_Rect){0, 0, 32, 32};
+	a->sprite->rotationPoint = (SDL_Point){32, 32};
 
 	a->loop = false;
 	a->running = true;
-	animation_set_frames(a, (AnimationClip[]) {
-			     {  0, 0, 32, 32, 100 },
-			     { 32, 0, 32, 32, 100 },
-			     { 64, 0, 32, 32, 100 },
-			     { 96, 0, 32, 32, 100 },
-			     { 128, 0, 32, 32, 100 },
-			     { 160, 0, 32, 32, 100 },
-			     { 192, 0, 32, 32, 300 },
-			     { 224, 0, 32, 32, 300 }
-			});
+	animation_set_frames(a, (AnimationClip[]){{0, 0, 32, 32, 100},
+	                                          {32, 0, 32, 32, 100},
+	                                          {64, 0, 32, 32, 100},
+	                                          {96, 0, 32, 32, 100},
+	                                          {128, 0, 32, 32, 100},
+	                                          {160, 0, 32, 32, 100},
+	                                          {192, 0, 32, 32, 300},
+	                                          {224, 0, 32, 32, 300}});
 }
 
 void

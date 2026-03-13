@@ -55,26 +55,30 @@ roommatrix_reset(RoomMatrix *m)
 				linkedlist_pop(&space->objects);
 		}
 	}
-	m->roomPos = (Position) { 0, 0 };
-	m->playerRoomPos = (Position) { 1, 1 };
+	m->roomPos = (Position){0, 0};
+	m->playerRoomPos = (Position){1, 1};
 }
 
-RoomMatrix* roommatrix_create(SDL_Renderer *renderer)
+RoomMatrix *
+roommatrix_create(SDL_Renderer *renderer)
 {
 	int i, j;
 	RoomMatrix *m = ec_malloc(sizeof(RoomMatrix));
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			m->spaces[i][j].items = linkedlist_create();;
-			m->spaces[i][j].artifacts = linkedlist_create();;
-			m->spaces[i][j].objects = linkedlist_create();;
+			m->spaces[i][j].items = linkedlist_create();
+			;
+			m->spaces[i][j].artifacts = linkedlist_create();
+			;
+			m->spaces[i][j].objects = linkedlist_create();
+			;
 		}
 	}
 	roommatrix_reset(m);
 
 	/* Create a lightmap texture */
 	Texture *lm = texture_create();
-	lm->dim = (Dimension) { MAP_ROOM_WIDTH, MAP_ROOM_HEIGHT };
+	lm->dim = (Dimension){MAP_ROOM_WIDTH, MAP_ROOM_HEIGHT};
 	texture_create_blank(lm, SDL_TEXTUREACCESS_TARGET, renderer);
 	texture_set_scale_mode(lm, SDL_SCALEMODE_LINEAR);
 	texture_set_blend_mode(lm, SDL_BLENDMODE_BLEND);
@@ -98,16 +102,15 @@ roommatrix_update(UpdateData *data)
 	RoomMatrix *matrix = data->matrix;
 	Input *input = data->input;
 
-	if (input->mouseX < GAME_VIEW_WIDTH
-	    && input->mouseY < GAME_VIEW_HEIGHT)
-	{
+	if (input->mouseX < GAME_VIEW_WIDTH && input->mouseY < GAME_VIEW_HEIGHT) {
 		matrix->mousePos.x = input->mouseX;
 		matrix->mousePos.y = input->mouseY;
 	}
 	roommatrix_update_with_player(matrix, data->player);
 }
 
-void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
+void
+roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 {
 	int i, j;
 	Position position;
@@ -170,11 +173,9 @@ void roommatrix_populate_from_map(RoomMatrix *rm, Map *m)
 		if (!position_in_room(&monster->sprite->pos, &m->currentRoom))
 			continue;
 
-		position =
-			position_to_matrix_coords(&monster->sprite->pos);
+		position = position_to_matrix_coords(&monster->sprite->pos);
 
-		rm->spaces[position.x][position.y]
-			.monster = monster;
+		rm->spaces[position.x][position.y].monster = monster;
 	}
 
 	LinkedList *items = m->items;
@@ -247,10 +248,10 @@ set_light_for_tile(RoomMatrix *matrix, int x, int y)
 		for (int j = y_min; j <= y_max; ++j) {
 			int lightval = matrix->spaces[i][j].light;
 
-			double dx = x-i;
-			double dy = y-j;
-			double distance = sqrt(dx*dx + dy*dy);
-			int distance_modifier = (int) (distance);
+			double dx = x - i;
+			double dy = y - j;
+			double distance = sqrt(dx * dx + dy * dy);
+			int distance_modifier = (int)(distance);
 			lightval += 255 - distance_modifier * 50;
 			lightval = clamp(0, 255, lightval);
 			matrix->spaces[i][j].light = lightval;
@@ -276,9 +277,9 @@ roommatrix_build_lightmap(RoomMatrix *matrix, Camera *camera)
 	SDL_RenderClear(camera->renderer);
 	for (i = 0; i < MAP_ROOM_WIDTH; ++i) {
 		for (j = 0; j < MAP_ROOM_HEIGHT; ++j) {
-			light = (Uint8) matrix->spaces[i][j].light;
-			SDL_SetRenderDrawColor(camera->renderer, 0, 0, 0, 255-light);
-			SDL_RenderPoint(camera->renderer, (float) i, (float) j);
+			light = (Uint8)matrix->spaces[i][j].light;
+			SDL_SetRenderDrawColor(camera->renderer, 0, 0, 0, 255 - light);
+			SDL_RenderPoint(camera->renderer, (float)i, (float)j);
 		}
 	}
 	SDL_SetRenderTarget(camera->renderer, NULL);
@@ -288,12 +289,8 @@ void
 roommatrix_render_mouse_square(RoomMatrix *matrix, Camera *cam)
 {
 	Position mmc = position_to_matrix_coords(&matrix->mousePos);
-	SDL_FRect box = (SDL_FRect) {
-			(float) mmc.x*TILE_DIMENSION,
-			(float) mmc.y*TILE_DIMENSION,
-			TILE_DIMENSION,
-			TILE_DIMENSION
-	};
+	SDL_FRect box =
+	    (SDL_FRect){(float)mmc.x * TILE_DIMENSION, (float)mmc.y * TILE_DIMENSION, TILE_DIMENSION, TILE_DIMENSION};
 
 	SDL_SetRenderDrawColor(cam->renderer, 255, 255, 0, 90);
 	SDL_RenderFillRect(cam->renderer, &box);
@@ -302,20 +299,21 @@ roommatrix_render_mouse_square(RoomMatrix *matrix, Camera *cam)
 void
 roommatrix_render_lightmap(RoomMatrix *matrix, Camera *cam)
 {
-	SDL_Rect src_rect = { 0, 0, MAP_ROOM_WIDTH, MAP_ROOM_HEIGHT };
-	SDL_Rect dst_rect = { 0, 0, GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT };
+	SDL_Rect src_rect = {0, 0, MAP_ROOM_WIDTH, MAP_ROOM_HEIGHT};
+	SDL_Rect dst_rect = {0, 0, GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT};
 
 	texture_render_clip(matrix->lightmap, &dst_rect, &src_rect, cam);
 }
 
-RoomSpace*
+RoomSpace *
 roommatrix_get_space_for(RoomMatrix *matrix, const Position *p)
 {
 	Position roomPos = position_to_matrix_coords(p);
 	return &matrix->spaces[roomPos.x][roomPos.y];
 }
 
-void roommatrix_destroy(RoomMatrix *m)
+void
+roommatrix_destroy(RoomMatrix *m)
 {
 	// Clear the list but don't destroy the items
 	// The items are destroyed in the map destruction
@@ -330,7 +328,7 @@ void roommatrix_destroy(RoomMatrix *m)
 				linkedlist_pop(&space->objects);
 		}
 	}
-    texture_destroy(m->lightmap);
+	texture_destroy(m->lightmap);
 
 	free(m);
 }

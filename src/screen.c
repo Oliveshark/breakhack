@@ -35,7 +35,7 @@ credit_txt(const char *msg, SDL_Color color, int x, int y, SDL_Renderer *rendere
 	Sprite *s = sprite_create();
 	sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 14, 1);
 	texture_load_from_text(s->textures[0], msg, color, C_BLACK, renderer);
-	s->pos = (Position) { x, y };
+	s->pos = (Position){x, y};
 	s->fixed = true;
 	s->dim = s->textures[0]->dim;
 	return s;
@@ -47,7 +47,7 @@ score_txt(const char *msg, SDL_Color color, int x, int y, SDL_Renderer *renderer
 	Sprite *s = sprite_create();
 	sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 10, 1);
 	texture_load_from_text(s->textures[0], msg, color, C_BLACK, renderer);
-	s->pos = (Position) { x, y };
+	s->pos = (Position){x, y};
 	s->fixed = true;
 	s->dim = s->textures[0]->dim;
 	return s;
@@ -94,7 +94,8 @@ screen_create_credits(SDL_Renderer *renderer)
 	y += 30;
 	linkedlist_push(&screen->sprites, credit_txt("ArtisticDuded", C_WHITE, x + columnOffset, y, renderer));
 	y += 20;
-	linkedlist_push(&screen->sprites, credit_txt("opengameart.org/users/artisticdude", C_WHITE, x + columnOffset, y, renderer));
+	linkedlist_push(&screen->sprites,
+	                credit_txt("opengameart.org/users/artisticdude", C_WHITE, x + columnOffset, y, renderer));
 	linkedlist_push(&screen->sprites, score_txt("Press ESC to go back", C_RED, 15, SCREEN_HEIGHT - 25, renderer));
 	return screen;
 }
@@ -109,26 +110,10 @@ screen_create_hiscore(SDL_Renderer *renderer)
 	int lvlCol = 400;
 	int dlvlCol = 550;
 
-	linkedlist_push(&screen->sprites, score_txt("Date",
-						    C_GREEN,
-						    dateCol,
-						    y,
-						    renderer));
-	linkedlist_push(&screen->sprites, score_txt("Gold",
-						    C_GREEN,
-						    goldCol,
-						    y,
-						    renderer));
-	linkedlist_push(&screen->sprites, score_txt("Level",
-						    C_GREEN,
-						    lvlCol,
-						    y,
-						    renderer));
-	linkedlist_push(&screen->sprites, score_txt("Depth",
-						    C_GREEN,
-						    dlvlCol,
-						    y,
-						    renderer));
+	linkedlist_push(&screen->sprites, score_txt("Date", C_GREEN, dateCol, y, renderer));
+	linkedlist_push(&screen->sprites, score_txt("Gold", C_GREEN, goldCol, y, renderer));
+	linkedlist_push(&screen->sprites, score_txt("Level", C_GREEN, lvlCol, y, renderer));
+	linkedlist_push(&screen->sprites, score_txt("Depth", C_GREEN, dlvlCol, y, renderer));
 
 	LinkedList *scores = hiscore_get_top10();
 	while (scores) {
@@ -136,33 +121,13 @@ screen_create_hiscore(SDL_Renderer *renderer)
 		HiScore *score = linkedlist_pop(&scores);
 		char content[80];
 		m_sprintf(content, 80, "%s", score->timestamp);
-		linkedlist_push(&screen->sprites,
-				score_txt(content,
-					  C_WHITE,
-					  dateCol,
-					  y,
-					  renderer));
+		linkedlist_push(&screen->sprites, score_txt(content, C_WHITE, dateCol, y, renderer));
 		m_sprintf(content, 80, "%.2lf", score->gold);
-		linkedlist_push(&screen->sprites,
-				score_txt(content,
-					  C_YELLOW,
-					  goldCol,
-					  y,
-					  renderer));
+		linkedlist_push(&screen->sprites, score_txt(content, C_YELLOW, goldCol, y, renderer));
 		m_sprintf(content, 80, "%d", score->playerLevel);
-		linkedlist_push(&screen->sprites,
-				score_txt(content,
-					  C_BLUE,
-					  lvlCol,
-					  y,
-					  renderer));
+		linkedlist_push(&screen->sprites, score_txt(content, C_BLUE, lvlCol, y, renderer));
 		m_sprintf(content, 80, "%d", score->dungeonLevel);
-		linkedlist_push(&screen->sprites,
-				score_txt(content,
-					  C_RED,
-					  dlvlCol,
-					  y,
-					  renderer));
+		linkedlist_push(&screen->sprites, score_txt(content, C_RED, dlvlCol, y, renderer));
 		hiscore_destroy(score);
 	}
 	linkedlist_push(&screen->sprites, score_txt("Press ESC to go back", C_RED, 15, SCREEN_HEIGHT - 25, renderer));
@@ -177,7 +142,7 @@ screen_create_characterselect(SDL_Renderer *renderer)
 	Sprite *s = sprite_create();
 	sprite_load_text_texture(s, "GUI/SDS_8x8.ttf", 0, 18, 1);
 	texture_load_from_text(s->textures[0], "Choose your class:", C_BLUE, C_WHITE, renderer);
-	s->pos = (Position) { (SCREEN_WIDTH - s->textures[0]->dim.width) >> 1,  80 };
+	s->pos = (Position){(SCREEN_WIDTH - s->textures[0]->dim.width) >> 1, 80};
 	s->fixed = true;
 	s->dim = s->textures[0]->dim;
 

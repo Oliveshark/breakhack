@@ -43,9 +43,8 @@ gamecontroller_set(SDL_Gamepad *ctrler)
 	SDL_SetGamepadEventsEnabled(true);
 
 	// Try to determine if this is a PS3/4 controller
-	if (ctrlName[0] == 'P' &&
-	    ctrlName[1] == 'S' &&
-	    (ctrlName[2] == '4' || ctrlName[2] == '3' || ctrlName[2] == '5'))
+	if (ctrlName[0] == 'P' && ctrlName[1] == 'S'
+	    && (ctrlName[2] == '4' || ctrlName[2] == '3' || ctrlName[2] == '5'))
 		controllerMode = GAMEPAD_TYPE_PS;
 	else
 		controllerMode = GAMEPAD_TYPE_XB;

@@ -43,19 +43,19 @@
 static char RendererKey = 'r';
 static char PlayerKey = 'p';
 
-static
-lua_State* load_lua_state(void)
+static lua_State *
+load_lua_state(void)
 {
 	lua_State *L = luaL_newstate();
 	luaL_openlibs(L);
 	return L;
 }
 
-static
-int l_create_map(lua_State *L)
+static int
+l_create_map(lua_State *L)
 {
 	Map *map = map_create();
-	map->level = (int) luaL_checkinteger(L, 1);
+	map->level = (int)luaL_checkinteger(L, 1);
 	lua_pushlightuserdata(L, map);
 	return 1;
 }
@@ -68,8 +68,8 @@ l_print_info(lua_State *L)
 	return 0;
 }
 
-static
-Map* luaL_checkmap(lua_State *L, int index)
+static Map *
+luaL_checkmap(lua_State *L, int index)
 {
 	Map *map;
 
@@ -83,8 +83,8 @@ Map* luaL_checkmap(lua_State *L, int index)
 	return map;
 }
 
-static
-SDL_Renderer* luaL_checksdlrenderer(lua_State *L)
+static SDL_Renderer *
+luaL_checksdlrenderer(lua_State *L)
 {
 	SDL_Renderer *renderer;
 
@@ -100,7 +100,7 @@ SDL_Renderer* luaL_checksdlrenderer(lua_State *L)
 	return renderer;
 }
 
-static Player*
+static Player *
 luaL_checkplayer(lua_State *L)
 {
 	Player *player;
@@ -156,10 +156,10 @@ l_map_set_current_room(lua_State *L)
 	unsigned int room_x, room_y;
 
 	map = luaL_checkmap(L, 1);
-	room_x = (int) luaL_checkinteger(L, 2);
-	room_y = (int) luaL_checkinteger(L, 3);
+	room_x = (int)luaL_checkinteger(L, 2);
+	room_y = (int)luaL_checkinteger(L, 3);
 
-	map->currentRoom = (Position) { room_x, room_y };
+	map->currentRoom = (Position){room_x, room_y};
 
 	return 0;
 }
@@ -181,8 +181,7 @@ l_add_texture(lua_State *L)
 }
 
 static void
-extract_tile_data(lua_State *L,
-		  void (*f_add_tile)(Map*, Position*, MapTile*))
+extract_tile_data(lua_State *L, void (*f_add_tile)(Map *, Position *, MapTile *))
 {
 	Map *map;
 	int tile_x, tile_y;
@@ -191,8 +190,8 @@ extract_tile_data(lua_State *L,
 	int lockType;
 
 	map = luaL_checkmap(L, 1);
-	tile_x = (int) luaL_checkinteger(L, 2);
-	tile_y = (int) luaL_checkinteger(L, 3);
+	tile_x = (int)luaL_checkinteger(L, 2);
+	tile_y = (int)luaL_checkinteger(L, 3);
 
 	// Read the table
 	lua_settop(L, 4);
@@ -209,21 +208,21 @@ extract_tile_data(lua_State *L,
 	lua_getfield(L, 4, "isLethal");
 	lua_getfield(L, 4, "lockType");
 
-	t_index0 = (int) luaL_checkinteger(L, -9);
-	t_index1 = (int) luaL_checkinteger(L, -8);
-	tile_clip_x = (int) luaL_checkinteger(L, -7);
-	tile_clip_y = (int) luaL_checkinteger(L, -6);
+	t_index0 = (int)luaL_checkinteger(L, -9);
+	t_index1 = (int)luaL_checkinteger(L, -8);
+	tile_clip_x = (int)luaL_checkinteger(L, -7);
+	tile_clip_y = (int)luaL_checkinteger(L, -6);
 	collider = lua_toboolean(L, -5);
 	lightsource = lua_toboolean(L, -4);
 	levelExit = lua_toboolean(L, -3);
 	lethal = lua_toboolean(L, -2);
-	lockType = (int) luaL_checkinteger(L, -1);
+	lockType = (int)luaL_checkinteger(L, -1);
 
 	// Clear the stack
 	lua_pop(L, 9);
 
-	Position tilePos = (Position) { tile_x, tile_y };
-	SDL_Rect clip = (SDL_Rect) { tile_clip_x, tile_clip_y, 16, 16 };
+	Position tilePos = (Position){tile_x, tile_y};
+	SDL_Rect clip = (SDL_Rect){tile_clip_x, tile_clip_y, 16, 16};
 
 	MapTile *tile = map_create_tile();
 	if (t_index0 >= 0)
@@ -261,16 +260,16 @@ lua_checkstats(lua_State *L, int index)
 	lua_getfield(L, tableIndex, "def");
 	lua_getfield(L, tableIndex, "speed");
 
-	int hp = (int) luaL_checkinteger(L, -5);
-	int dmg = (int) luaL_checkinteger(L, -4);
-	int atk = (int) luaL_checkinteger(L, -3);
-	int def = (int) luaL_checkinteger(L, -2);
-	int speed = (int) luaL_checkinteger(L, -1);
+	int hp = (int)luaL_checkinteger(L, -5);
+	int dmg = (int)luaL_checkinteger(L, -4);
+	int atk = (int)luaL_checkinteger(L, -3);
+	int def = (int)luaL_checkinteger(L, -2);
+	int speed = (int)luaL_checkinteger(L, -1);
 
 	// Reset the stack
 	lua_pop(L, 6);
 
-	Stats stats = { hp, hp, dmg, atk, def, speed, 1, false, false };
+	Stats stats = {hp, hp, dmg, atk, def, speed, 1, false, false};
 	return stats;
 }
 
@@ -306,8 +305,8 @@ static int
 l_add_trap(lua_State *L)
 {
 	Map *map = luaL_checkmap(L, 1);
-	int xpos = (int) luaL_checkinteger(L, 2);
-	int ypos = (int) luaL_checkinteger(L, 3);
+	int xpos = (int)luaL_checkinteger(L, 2);
+	int ypos = (int)luaL_checkinteger(L, 3);
 
 	// Read the table
 	lua_settop(L, 4);
@@ -322,9 +321,9 @@ l_add_trap(lua_State *L)
 
 	const char *texturePath1 = luaL_checkstring(L, -5);
 	const char *texturePath2 = luaL_checkstring(L, -4);
-	int clipx = (int) luaL_checkinteger(L, -3);
-	int clipy = (int) luaL_checkinteger(L, -2);
-	int damage = (int) luaL_checkinteger(L, -1);
+	int clipx = (int)luaL_checkinteger(L, -3);
+	int clipy = (int)luaL_checkinteger(L, -2);
+	int damage = (int)luaL_checkinteger(L, -1);
 
 	Texture *t0 = texturecache_add(texturePath1);
 	Texture *t1 = texturecache_add(texturePath2);
@@ -337,13 +336,11 @@ l_add_trap(lua_State *L)
 	sprite_set_texture(trap->sprite, t0, 0);
 	sprite_set_texture(trap->sprite, t1, 1);
 	trap->sprite->clip = CLIP16(clipx, clipy);
-	trap->sprite->pos = (Position) {
-		cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + xpos * TILE_DIMENSION,
-		cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + ypos * TILE_DIMENSION
-	};
+	trap->sprite->pos = (Position){cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + xpos * TILE_DIMENSION,
+	                               cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + ypos * TILE_DIMENSION};
 	trap->damage = damage;
 
-	Position trapPos = { xpos, ypos };
+	Position trapPos = {xpos, ypos};
 	map_add_trap(map, &trapPos, trap);
 
 	return 0;
@@ -353,9 +350,9 @@ static int
 l_add_chest(lua_State *L)
 {
 	Map *map = luaL_checkmap(L, 1);
-	int x = (int) luaL_checkinteger(L, 2);
-	int y = (int) luaL_checkinteger(L, 3);
-	int level = (int) luaL_checkinteger(L, 4);
+	int x = (int)luaL_checkinteger(L, 2);
+	int y = (int)luaL_checkinteger(L, 3);
+	int level = (int)luaL_checkinteger(L, 4);
 
 	// Read the table
 	lua_settop(L, 5);
@@ -368,17 +365,13 @@ l_add_chest(lua_State *L)
 
 	const char *texture_path_1 = luaL_checkstring(L, -4);
 	const char *texture_path_2 = luaL_checkstring(L, -3);
-	int clip_x = (int) luaL_checkinteger(L, -2);
-	int clip_y = (int) luaL_checkinteger(L, -1);
+	int clip_x = (int)luaL_checkinteger(L, -2);
+	int clip_y = (int)luaL_checkinteger(L, -1);
 
-	Item *chest = item_builder_build_container(texture_path_1,
-						   texture_path_2,
-						   CLIP16(clip_x, clip_y));
+	Item *chest = item_builder_build_container(texture_path_1, texture_path_2, CLIP16(clip_x, clip_y));
 	const Position *cr = &map->currentRoom;
-	chest->sprite->pos = (Position) {
-		cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + x * TILE_DIMENSION,
-		cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + y * TILE_DIMENSION
-	};
+	chest->sprite->pos = (Position){cr->x * MAP_ROOM_WIDTH * TILE_DIMENSION + x * TILE_DIMENSION,
+	                                cr->y * MAP_ROOM_HEIGHT * TILE_DIMENSION + y * TILE_DIMENSION};
 	lua_pop(L, 4);
 
 	if (get_random(1) == 0)
@@ -455,8 +448,8 @@ l_add_monster(lua_State *L)
 	Stats stats;
 
 	map = luaL_checkmap(L, 1);
-	x = (int) luaL_checkinteger(L, 2);
-	y = (int) luaL_checkinteger(L, 3);
+	x = (int)luaL_checkinteger(L, 2);
+	y = (int)luaL_checkinteger(L, 3);
 
 	// Read the table
 	lua_settop(L, 4);
@@ -475,10 +468,10 @@ l_add_monster(lua_State *L)
 	texture_path_1 = luaL_checkstring(L, -7);
 	texture_path_2 = luaL_checkstring(L, -6);
 	stats = lua_checkstats(L, -5);
-	clip_x = (int) luaL_checkinteger(L, -4);
-	clip_y = (int) luaL_checkinteger(L, -3);
-	behaviour = (int) luaL_checkinteger(L, -2);
-	boss = (bool) lua_toboolean(L, -1);
+	clip_x = (int)luaL_checkinteger(L, -4);
+	clip_y = (int)luaL_checkinteger(L, -3);
+	behaviour = (int)luaL_checkinteger(L, -2);
+	boss = (bool)lua_toboolean(L, -1);
 
 	texture1 = texturecache_add(texture_path_1);
 	texture2 = texturecache_add(texture_path_2);
@@ -489,8 +482,8 @@ l_add_monster(lua_State *L)
 
 	// Make sure traders stay hostile if you've killed one
 	monster = monster_create();
-	monster->sprite->clip = (SDL_Rect) { clip_x, clip_y, 16, 16 };
-	monster_update_pos(monster, (Position) { x, y });
+	monster->sprite->clip = (SDL_Rect){clip_x, clip_y, 16, 16};
+	monster_update_pos(monster, (Position){x, y});
 	sprite_set_texture(monster->sprite, texture1, 0);
 	sprite_set_texture(monster->sprite, texture2, 1);
 	monster_set_behaviour(monster, behaviour);
@@ -526,7 +519,8 @@ l_load_script(lua_State *L)
 
 	io_load_file_buffer(&content, &size, filename);
 	if (luaL_loadbuffer(L, content, size, name) != 0) {
-		luaL_error(L, "Error loading module %s from file %s\n\t%s", lua_tostring(L, 1), filename, lua_tostring(L, -1));
+		luaL_error(L, "Error loading module %s from file %s\n\t%s", lua_tostring(L, 1), filename,
+		           lua_tostring(L, -1));
 	}
 	free(content);
 
@@ -555,7 +549,7 @@ l_read_file(lua_State *L)
 static int
 l_get_random_seed(lua_State *L)
 {
-	unsigned int level = (unsigned int) luaL_checkinteger(L, 1);
+	unsigned int level = (unsigned int)luaL_checkinteger(L, 1);
 	lua_pushnumber(L, get_random_map_seed(level));
 	return 1;
 }
@@ -563,7 +557,7 @@ l_get_random_seed(lua_State *L)
 static int
 l_set_random_seed(lua_State *L)
 {
-	unsigned int seed = (unsigned int) luaL_checkinteger(L, 1);
+	unsigned int seed = (unsigned int)luaL_checkinteger(L, 1);
 	bh_map_srand(seed);
 	return 0;
 }
@@ -571,7 +565,7 @@ l_set_random_seed(lua_State *L)
 static int
 l_get_random(lua_State *L)
 {
-	unsigned int max = (unsigned int) luaL_checkinteger(L, 1);
+	unsigned int max = (unsigned int)luaL_checkinteger(L, 1);
 	lua_pushnumber(L, (bh_map_rand() % max) + 1);
 	return 1;
 }
@@ -585,8 +579,8 @@ l_create_shop_artifact(lua_State *L)
 		return 0;
 
 	Map *map = luaL_checkmap(L, 1);
-	int x = (int) luaL_checkinteger(L, 2);
-	int y = (int) luaL_checkinteger(L, 3);
+	int x = (int)luaL_checkinteger(L, 2);
+	int y = (int)luaL_checkinteger(L, 3);
 
 	Artifact *a = artifact_create_random(player, 2);
 	a->sprite->pos = POS(x, y);
@@ -608,7 +602,7 @@ build_player_state_table(lua_State *L, Player *player)
 	lua_setglobal(L, "PlayerData");
 }
 
-static Map*
+static Map *
 generate_map(unsigned int level, const char *file, GameMode gameMode, Player *player, SDL_Renderer *renderer)
 {
 	int status, result;
@@ -630,8 +624,8 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, Player *pl
 	// Present stuff to lua
 	build_player_state_table(L, player);
 
-    /* Register state variables in the registry. We use static variable
-     * addresses as keys to avoid key conflicts. */
+	/* Register state variables in the registry. We use static variable
+	 * addresses as keys to avoid key conflicts. */
 	lua_pushlightuserdata(L, &RendererKey);
 	lua_pushlightuserdata(L, renderer);
 	lua_settable(L, LUA_REGISTRYINDEX);
@@ -721,23 +715,23 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, Player *pl
 	lua_close(L);
 
 	// Reset the map
-	map->currentRoom = (Position) { 0, 0 };
+	map->currentRoom = (Position){0, 0};
 
 	debug("Running lua script %s: Done", file);
 
 	return map;
 }
 
-Map* map_lua_generator_single_room__run(unsigned int level, SDL_Renderer *renderer)
+Map *
+map_lua_generator_single_room__run(unsigned int level, SDL_Renderer *renderer)
 {
 	char file[] = "menumapgen.lua";
 	return generate_map(level, file, REGULAR, NULL, renderer);
 }
 
-Map* map_lua_generator_run(unsigned int level, GameMode gameMode, Player *player, SDL_Renderer *renderer)
+Map *
+map_lua_generator_run(unsigned int level, GameMode gameMode, Player *player, SDL_Renderer *renderer)
 {
 	char file[] = "mapgen.lua";
 	return generate_map(level, file, gameMode, player, renderer);
 }
-
-

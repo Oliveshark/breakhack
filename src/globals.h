@@ -17,7 +17,7 @@
  */
 
 #ifndef GLOBALS_H_
-#define	GLOBALS_H_
+#define GLOBALS_H_
 
 #include <SDL3/SDL3/SDL_ttf.h>
 

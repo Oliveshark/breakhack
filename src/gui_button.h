@@ -17,7 +17,7 @@
  */
 
 #ifndef GUI_BUTTON_H_
-#define	GUI_BUTTON_H_
+#define GUI_BUTTON_H_
 
 #include <SDL3/SDL.h>
 #include "pointer.h"
@@ -30,19 +30,15 @@ typedef struct GuiButton {
 	SDL_Rect area;
 	bool hover;
 	void *usrdata;
-	void (*event)(void*);
+	void (*event)(void *);
 } GuiButton;
 
-GuiButton *
-gui_button_create(SDL_Rect, void (*)(void*), void*);
+GuiButton *gui_button_create(SDL_Rect, void (*)(void *), void *);
 
-void
-gui_button_check_pointer(GuiButton*, Pointer*);
+void gui_button_check_pointer(GuiButton *, Pointer *);
 
-void
-gui_button_update(GuiButton*, Input*);
+void gui_button_update(GuiButton *, Input *);
 
-void
-gui_button_destroy(GuiButton*);
+void gui_button_destroy(GuiButton *);
 
 #endif // GUI_BUTTON_H_

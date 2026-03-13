@@ -40,11 +40,7 @@ db_prepare(sqlite3 *db, const char *query)
 	sqlite3_stmt *stmt;
 	int result;
 
-	result = sqlite3_prepare_v2(db,
-				    query,
-				    (int) strlen(query),
-				    &stmt,
-				    &pzTest);
+	result = sqlite3_prepare_v2(db, query, (int)strlen(query), &stmt, &pzTest);
 	if (result != SQLITE_OK)
 		fatal("Failed to prepare statement: %s", query);
 
@@ -61,10 +57,7 @@ db_execute(sqlite3 *db, DbQuery *query)
 }
 
 bool
-db_execute_stmnt(const char *stmnt,
-		 sqlite3 *db,
-		 int(*cb)(void*, int, char**, char**),
-		 void *cb_arg)
+db_execute_stmnt(const char *stmnt, sqlite3 *db, int (*cb)(void *, int, char **, char **), void *cb_arg)
 {
 	debug("Executing sql: %s", stmnt);
 
@@ -78,7 +71,8 @@ db_execute_stmnt(const char *stmnt,
 	return true;
 }
 
-void db_close(sqlite3 **db)
+void
+db_close(sqlite3 **db)
 {
 	debug("Closing db: %s", sqlite3_db_filename(*db, NULL));
 	sqlite3_close(*db);

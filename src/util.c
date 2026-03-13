@@ -37,28 +37,25 @@ m_strcpy(char *dest, size_t destsz, const char *src)
 #ifndef _MSC_VER
 	UNUSED(destsz);
 	strncpy(dest, src, destsz);
-#else // _MSC_VER
+#else  // _MSC_VER
 	strcpy_s(dest, destsz, src);
 #endif // _MSC_VER
 }
 
 void
-m_strncat(char *dest,
-	 size_t destsz,
-	 char *src,
-	 size_t srcsz)
+m_strncat(char *dest, size_t destsz, char *src, size_t srcsz)
 {
 #ifndef _MSC_VER
 	UNUSED(destsz);
 	UNUSED(srcsz);
 	strncat(dest, src, srcsz);
-#else // _MSC_VER
+#else  // _MSC_VER
 	strncat_s(dest, destsz, src, srcsz);
 #endif // _MSC_VER
 }
 
 void
-m_sprintf(char * dest, size_t destsz, const char * format, ...)
+m_sprintf(char *dest, size_t destsz, const char *format, ...)
 {
 	va_list args;
 
@@ -66,7 +63,7 @@ m_sprintf(char * dest, size_t destsz, const char * format, ...)
 #ifndef _MSC_VER
 	UNUSED(destsz);
 	vsnprintf(dest, destsz, format, args);
-#else // _MSC_VER
+#else  // _MSC_VER
 	vsprintf_s(dest, destsz, format, args);
 #endif // _MSC_VER
 	va_end(args);
@@ -76,21 +73,15 @@ void
 m_vsprintf(char *dest, size_t sz, const char *fmt, va_list args)
 {
 #ifndef _MSC_VER
-	UNUSED (sz);
+	UNUSED(sz);
 	vsnprintf(dest, sz, fmt, args);
-#else // _MSC_VER
+#else  // _MSC_VER
 	vsprintf_s(dest, sz, fmt, args);
 #endif // _MSC_VER
 }
 
 void
-log_print(FILE *out,
-	  const char *prefix,
-	  const char *file,
-	  int line,
-	  const char *function,
-	  const char * fmt,
-	  ...)
+log_print(FILE *out, const char *prefix, const char *file, int line, const char *function, const char *fmt, ...)
 {
 	va_list args;
 	char tstamp[10];
@@ -109,15 +100,14 @@ log_print(FILE *out,
 		else
 			fprintf(out, "\033[32m");
 		fprintf(out, "[%5s]", prefix);
-		fprintf(out, "\033[36m[%20s:%-3d]\033[37m[%20s()]\033[0m ",
-			file, line, function);
+		fprintf(out, "\033[36m[%20s:%-3d]\033[37m[%20s()]\033[0m ", file, line, function);
 	} else {
 		fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line, function);
 	}
-#else // _WIN32
+#else  // _WIN32
 	fprintf(out, "[%s][%5s][%20s:%-3d][%20s()] ", tstamp, prefix, file, line, function);
 #endif // _WIN32
-#else // DEBUG
+#else  // DEBUG
 	UNUSED(prefix);
 	UNUSED(file);
 	UNUSED(line);
@@ -168,7 +158,7 @@ timestamp(char *tstamp, size_t sz)
 #ifdef _MSC_VER
 	tm_info = ec_malloc(sizeof(struct tm));
 	localtime_s(tm_info, &cTime);
-#else // _MSC_VER
+#else  // _MSC_VER
 	tm_info = localtime(&cTime);
 #endif // _MSC_VER
 
@@ -185,10 +175,10 @@ to_lower(const char *str)
 	char *lcstr;
 	unsigned int i;
 
-	lcstr = ec_malloc(((unsigned int) strlen(str) + 1) * sizeof(char));
+	lcstr = ec_malloc(((unsigned int)strlen(str) + 1) * sizeof(char));
 
 	for (i = 0; i < strlen(str); ++i) {
-		lcstr[i] = (char) tolower(str[i]);
+		lcstr[i] = (char)tolower(str[i]);
 	}
 	lcstr[i] = '\0';
 

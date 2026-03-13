@@ -25,21 +25,13 @@ extract_key(Direction dir, SDL_Event *event)
 	Uint32 key = event->key.key;
 	switch (dir) {
 		case UP:
-			return key == SDLK_UP
-				|| key == SDLK_W
-				|| key == SDLK_K;
+			return key == SDLK_UP || key == SDLK_W || key == SDLK_K;
 		case DOWN:
-			return key == SDLK_DOWN
-				|| key == SDLK_S
-				|| key == SDLK_J;
+			return key == SDLK_DOWN || key == SDLK_S || key == SDLK_J;
 		case LEFT:
-			return key == SDLK_LEFT
-				|| key == SDLK_A
-				|| key == SDLK_H;
+			return key == SDLK_LEFT || key == SDLK_A || key == SDLK_H;
 		case RIGHT:
-			return key == SDLK_RIGHT
-				|| key == SDLK_L
-				|| key == SDLK_D;
+			return key == SDLK_RIGHT || key == SDLK_L || key == SDLK_D;
 		default:
 			return false;
 	}
@@ -69,7 +61,7 @@ keyboard_press(Uint32 key, SDL_Event *event)
 	if (event->type != SDL_EVENT_KEY_DOWN)
 		return false;
 
-	return key == (Uint32) event->key.key;
+	return key == (Uint32)event->key.key;
 }
 
 bool
@@ -78,7 +70,7 @@ keyboard_release(Uint32 key, SDL_Event *event)
 	if (event->type != SDL_EVENT_KEY_UP)
 		return false;
 
-	return key == (Uint32) event->key.key;
+	return key == (Uint32)event->key.key;
 }
 
 bool
@@ -90,6 +82,5 @@ keyboard_mod_press(Uint32 key, Uint32 mod, SDL_Event *event)
 	if (!(event->key.mod & mod))
 		return false;
 
-	return key == (Uint32) event->key.key;
+	return key == (Uint32)event->key.key;
 }
-

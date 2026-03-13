@@ -8,24 +8,22 @@
 #include "../timer.h"
 #include "../time.h"
 
-static const char *LB_HIGHSCORE			= "Highscore";
-static const char *LB_QUICKPLAY_HIGHSCORE	= "Quickplay Highscore";
-static const char *LB_ARCADE_HIGHSCORE	= "Arcade Highscore";
-static const char *LB_ROGUE_HIGHSCORE		= "Rogue Highscore";
-static const char *LB_MAGE_HIGHSCORE		= "Mage Highscore";
-static const char *LB_WARRIOR_HIGHSCORE		= "Warrior Highscore";
-static const char *LB_KILLS			= "Most Kills";
+static const char *LB_HIGHSCORE = "Highscore";
+static const char *LB_QUICKPLAY_HIGHSCORE = "Quickplay Highscore";
+static const char *LB_ARCADE_HIGHSCORE = "Arcade Highscore";
+static const char *LB_ROGUE_HIGHSCORE = "Rogue Highscore";
+static const char *LB_MAGE_HIGHSCORE = "Mage Highscore";
+static const char *LB_WARRIOR_HIGHSCORE = "Warrior Highscore";
+static const char *LB_KILLS = "Most Kills";
 static char *lb_weekly = NULL;
 
-static Achievement g_Achievements[] = {
-	_ACH_ID(BAD_DOG, "Bad Dog"),
-	_ACH_ID(THE_DOCTOR_IS_OUT, "The Doctor is Out"),
-	_ACH_ID(LIGHTS_ON, "Omnidirectional light"),
-	_ACH_ID(BACK_TO_WORK, "Back to work"),
-	_ACH_ID(DRAGON_SLAYER, "Platinum dragon slayer"),
-	_ACH_ID(ROGUE_LIKE, "Rogue-like"),
-	_ACH_ID(MAGICAL, "Magical")
-};
+static Achievement g_Achievements[] = {_ACH_ID(BAD_DOG, "Bad Dog"),
+                                       _ACH_ID(THE_DOCTOR_IS_OUT, "The Doctor is Out"),
+                                       _ACH_ID(LIGHTS_ON, "Omnidirectional light"),
+                                       _ACH_ID(BACK_TO_WORK, "Back to work"),
+                                       _ACH_ID(DRAGON_SLAYER, "Platinum dragon slayer"),
+                                       _ACH_ID(ROGUE_LIKE, "Rogue-like"),
+                                       _ACH_ID(MAGICAL, "Magical")};
 static Uint8 numAchievements = 7;
 
 static bool m_Initiated = false;
@@ -86,7 +84,8 @@ steam_init(void)
 	requestDataTimer = _timer_create();
 }
 
-void steam_shutdown(void)
+void
+steam_shutdown(void)
 {
 	c_SteamAPI_Shutdown();
 	timer_destroy(requestDataTimer);
@@ -122,7 +121,8 @@ request_data_queue_run(void)
 	}
 }
 
-void steam_run_callbacks(void)
+void
+steam_run_callbacks(void)
 {
 	if (m_Initiated) {
 		c_SteamAPI_RunCallbacks();
@@ -130,7 +130,8 @@ void steam_run_callbacks(void)
 	}
 }
 
-void steam_set_achievement(EAchievement eAch)
+void
+steam_set_achievement(EAchievement eAch)
 {
 	if (!m_Initiated)
 		return;
@@ -144,56 +145,64 @@ void steam_set_achievement(EAchievement eAch)
 	}
 }
 
-void steam_register_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
+void
+steam_register_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hHighscoreLeaderboard)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hHighscoreLeaderboard, nScore, details, nDetails);
 }
 
-void steam_register_qp_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
+void
+steam_register_qp_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hQpHighscoreLeaderboard)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hQpHighscoreLeaderboard, nScore, details, nDetails);
 }
 
-void steam_register_weekly_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
+void
+steam_register_weekly_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hWeeklyHighscore)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hWeeklyHighscore, nScore, details, nDetails);
 }
 
-void steam_register_arcade_score(Sint32 nScore, const int32_t * details, int32_t nDetails)
+void
+steam_register_arcade_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hArcadeHighscoreLeaderboard)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hArcadeHighscoreLeaderboard, nScore, details, nDetails);
 }
 
-void steam_register_mage_score(Sint32 nScore, const int32_t * details, int32_t nDetails)
+void
+steam_register_mage_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hMageHighscore)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hMageHighscore, nScore, details, nDetails);
 }
 
-void steam_register_warrior_score(Sint32 nScore, const int32_t * details, int32_t nDetails)
+void
+steam_register_warrior_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hWarriorHighscore)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hWarriorHighscore, nScore, details, nDetails);
 }
 
-void steam_register_rogue_score(Sint32 nScore, const int32_t * details, int32_t nDetails)
+void
+steam_register_rogue_score(Sint32 nScore, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hRogueHighscore)
 		return;
 	c_SteamUserStats_UploadLeaderboardScore(m_hRogueHighscore, nScore, details, nDetails);
 }
 
-void steam_register_kills(Sint32 nKills, const int32_t *details, int32_t nDetails)
+void
+steam_register_kills(Sint32 nKills, const int32_t *details, int32_t nDetails)
 {
 	if (!m_hKillsLeaderboard)
 		return;

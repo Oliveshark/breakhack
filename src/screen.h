@@ -27,17 +27,12 @@ typedef struct Screen {
 	LinkedList *textures;
 } Screen;
 
-Screen *
-screen_create_credits(SDL_Renderer*);
+Screen *screen_create_credits(SDL_Renderer *);
 
-Screen *
-screen_create_hiscore(SDL_Renderer*);
+Screen *screen_create_hiscore(SDL_Renderer *);
 
-Screen *
-screen_create_characterselect(SDL_Renderer*);
+Screen *screen_create_characterselect(SDL_Renderer *);
 
-void
-screen_render(Screen *screen, Camera *cam);
+void screen_render(Screen *screen, Camera *cam);
 
-void
-screen_destroy(Screen *screen);
+void screen_destroy(Screen *screen);

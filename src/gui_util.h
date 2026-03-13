@@ -21,12 +21,6 @@
 #include "sprite.h"
 #include "camera.h"
 
-Sprite *
-gui_util_create_frame_sprite(Uint32 width,
-							 Uint32 height,
-							 Camera*);
+Sprite *gui_util_create_frame_sprite(Uint32 width, Uint32 height, Camera *);
 
-Sprite *
-gui_util_create_tooltip_frame_sprite(Uint32 width,
-									 Uint32 height,
-									 Camera*);
+Sprite *gui_util_create_tooltip_frame_sprite(Uint32 width, Uint32 height, Camera *);

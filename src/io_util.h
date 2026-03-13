@@ -21,11 +21,8 @@
 
 #include <SDL3/SDL.h>
 
-SDL_IOStream *
-io_load_rwops(const char *path);
+SDL_IOStream *io_load_rwops(const char *path);
 
-void
-io_load_file_buffer(char **dest, unsigned long *len, const char *filepath);
+void io_load_file_buffer(char **dest, unsigned long *len, const char *filepath);
 
 #endif // IO_UTIL_H_
-

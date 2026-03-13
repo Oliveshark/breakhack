@@ -23,15 +23,15 @@
 
 #include "screenresolution.h"
 
-Dimension getScreenDimensions(void)
+Dimension
+getScreenDimensions(void)
 {
 	SDL_DisplayID display = SDL_GetPrimaryDisplay();
 	const SDL_DisplayMode *dm = SDL_GetCurrentDisplayMode(display);
-	if (dm == NULL)
-	{
+	if (dm == NULL) {
 		error("SDL_GetDesktopDisplayMode(%d) failed: %s", display, SDL_GetError());
 	}
-	Dimension dim = (Dimension) { dm->w, dm->h };
+	Dimension dim = (Dimension){dm->w, dm->h};
 
 	return dim;
 }

@@ -32,23 +32,16 @@ typedef struct Object {
 	bool dead;
 } Object;
 
-Object *
-object_create(void);
+Object *object_create(void);
 
-Object *
-object_create_fire(void);
+Object *object_create_fire(void);
 
-Object *
-object_create_green_gas(void);
+Object *object_create_green_gas(void);
 
-void
-object_render(Object*, Camera*);
+void object_render(Object *, Camera *);
 
-void
-object_damage(Object*, Player*);
+void object_damage(Object *, Player *);
 
-void
-object_step(Object*);
+void object_step(Object *);
 
-void
-object_destroy(Object*);
+void object_destroy(Object *);

@@ -25,44 +25,24 @@ typedef struct {
 	SDL_Renderer *renderer;
 } ItemBuilder;
 
-typedef enum {
-	COPPER,
-	SILVER,
-	GOLD,
-	PLATINUM,
-	TREASURE_COUNT
-} Treasure;
+typedef enum { COPPER, SILVER, GOLD, PLATINUM, TREASURE_COUNT } Treasure;
 
-typedef enum {
-	HEALTH,
-	DAGGER,
-	FLESH,
-	TREASURE,
-	ITEM_COUNT
-} ItemKey;
+typedef enum { HEALTH, DAGGER, FLESH, TREASURE, ITEM_COUNT } ItemKey;
 
-void
-item_builder_init(SDL_Renderer *);
+void item_builder_init(SDL_Renderer *);
 
-Item *
-item_builder_build_item(ItemKey key, int level);
+Item *item_builder_build_item(ItemKey key, int level);
 
-Item *
-item_builder_build_sack(void);
+Item *item_builder_build_sack(void);
 
-Item *
-item_builder_build_container(const char *path0, const char *path1, SDL_Rect clip);
+Item *item_builder_build_container(const char *path0, const char *path1, SDL_Rect clip);
 
-Item *
-item_builder_build_treasure(Treasure type, double goldAmt);
+Item *item_builder_build_treasure(Treasure type, double goldAmt);
 
-Item *
-item_builder_build_key(unsigned int type);
+Item *item_builder_build_key(unsigned int type);
 
-Item *
-item_builder_build_potion(PotionEffect type);
+Item *item_builder_build_potion(PotionEffect type);
 
-void
-item_builder_close(void);
+void item_builder_close(void);
 
 #endif // ITEMBUILDER_H_

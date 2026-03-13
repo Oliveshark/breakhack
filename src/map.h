@@ -17,7 +17,7 @@
  */
 
 #ifndef MAP_H_
-#define	MAP_H_
+#define MAP_H_
 
 #include <SDL3/SDL.h>
 #include <stdbool.h>
@@ -47,11 +47,11 @@ typedef struct MapTile_t {
 } MapTile;
 
 typedef struct Room_t {
-	MapTile* tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
-	MapTile* walls[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
-	MapTile* decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
-	MapTile* doors[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
-	Trap* traps[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	MapTile *tiles[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	MapTile *walls[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	MapTile *decorations[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	MapTile *doors[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
+	Trap *traps[MAP_ROOM_WIDTH][MAP_ROOM_HEIGHT];
 	RoomModifierData modifier;
 	bool visited;
 	unsigned int lockTypes;
@@ -61,82 +61,63 @@ typedef struct Room_t {
  * \brief Map struct
  */
 typedef struct Map_t {
-	Room* rooms[MAP_H_ROOM_COUNT][MAP_V_ROOM_COUNT]; /**< Rooms */
-	LinkedList *textures; /**< Texture list */
-	LinkedList *monsters; /**< Monster list */
-	LinkedList *items; /**< Item list */
-	LinkedList *artifacts; /**< Artifact list */
-	LinkedList *objects; /**< Object list */
-	Position currentRoom; /**< Current room (room index) */
-	Timer *monsterMoveTimer; /**< Monster move timer */
-	int level; /**< Level (depth) */
-	unsigned int lockTypes; /**< Lock types in map */
+	Room *rooms[MAP_H_ROOM_COUNT][MAP_V_ROOM_COUNT]; /**< Rooms */
+	LinkedList *textures;                            /**< Texture list */
+	LinkedList *monsters;                            /**< Monster list */
+	LinkedList *items;                               /**< Item list */
+	LinkedList *artifacts;                           /**< Artifact list */
+	LinkedList *objects;                             /**< Object list */
+	Position currentRoom;                            /**< Current room (room index) */
+	Timer *monsterMoveTimer;                         /**< Monster move timer */
+	int level;                                       /**< Level (depth) */
+	unsigned int lockTypes;                          /**< Lock types in map */
 } Map;
 
-Map*
-map_create(void);
+Map *map_create(void);
 
-MapTile *
-map_create_tile(void);
+MapTile *map_create_tile(void);
 
-int
-map_add_texture(Map*, const char *path, SDL_Renderer*);
+int map_add_texture(Map *, const char *path, SDL_Renderer *);
 
-void
-map_add_tile(Map *map, Position *tile_pos, MapTile*);
+void map_add_tile(Map *map, Position *tile_pos, MapTile *);
 
-void
-map_add_wall(Map *map, Position *tile_pos, MapTile*);
+void map_add_wall(Map *map, Position *tile_pos, MapTile *);
 
-void
-map_add_decoration(Map *map, Position *tile_pos, MapTile*);
+void map_add_decoration(Map *map, Position *tile_pos, MapTile *);
 
-void
-map_add_door(Map *map, Position *tile_pos, MapTile*);
+void map_add_door(Map *map, Position *tile_pos, MapTile *);
 
-void
-map_add_trap(Map*, Position*, Trap*);
+void map_add_trap(Map *, Position *, Trap *);
 
-void
-map_add_monster(Map*, Monster*);
+void map_add_monster(Map *, Monster *);
 
-bool
-map_move_monsters(Map*, RoomMatrix*);
+bool map_move_monsters(Map *, RoomMatrix *);
 
-bool
-map_clear_expired_entities(Map*, RoomMatrix *, Player*);
+bool map_clear_expired_entities(Map *, RoomMatrix *, Player *);
 
-void
-map_on_new_turn(Map*);
+void map_on_new_turn(Map *);
 
-void
-map_update(UpdateData*);
+void map_update(UpdateData *);
 
-void
-map_render(Map*, Camera*);
+void map_render(Map *, Camera *);
 
-void
-map_render_mid_layer(Map*, Camera*);
+void map_render_mid_layer(Map *, Camera *);
 
-void
-map_render_top_layer(Map*, RoomMatrix*, Camera*);
+void map_render_top_layer(Map *, RoomMatrix *, Camera *);
 
 /**
  * \brief Set the current room based on player position
  * \param[in]		map		The map
  * \param[in]		pos		The players current world position
- * \param[out]		first_visit	Set to true if this is the first visit to this room
+ * \param[out]		first_visit	Set to true if this is the first visit to this
+ * room
  */
-void
-map_set_current_room(Map* map, Position* player_world_pos, bool* first_visit);
+void map_set_current_room(Map *map, Position *player_world_pos, bool *first_visit);
 
-void
-map_trigger_tile_fall(MapTile *tile);
+void map_trigger_tile_fall(MapTile *tile);
 
-bool
-map_open_door(MapTile *tile, Player *player);
+bool map_open_door(MapTile *tile, Player *player);
 
-void
-map_destroy(Map*);
+void map_destroy(Map *);
 
 #endif // MAP_H_

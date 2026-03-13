@@ -49,13 +49,11 @@ projectile_dagger_create(void)
 	p->sprite->onRender = onDaggerRender;
 	p->sprite->animate = false;
 	p->sprite->clip = CLIP16(0, 0);
-	p->sprite->dim = (Dimension) { 32, 32 };
-	p->sprite->rotationPoint = (SDL_Point) { 16, 16 };
+	p->sprite->dim = (Dimension){32, 32};
+	p->sprite->rotationPoint = (SDL_Point){16, 16};
 	p->collisionCount = 0;
 	p->bounceCount = 0;
-	memset(&p->processedSpaces,
-	       false,
-	       sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
+	memset(&p->processedSpaces, false, sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
 	return p;
 }
 
@@ -76,8 +74,10 @@ static Position
 get_collision_pos_for(Projectile *p)
 {
 	Position collisionPos = p->sprite->pos;
-	if (p->velocity.x > 0) collisionPos.x += TILE_DIMENSION;
-	if(p->velocity.y > 0) collisionPos.y += TILE_DIMENSION;
+	if (p->velocity.x > 0)
+		collisionPos.x += TILE_DIMENSION;
+	if (p->velocity.y > 0)
+		collisionPos.y += TILE_DIMENSION;
 	return collisionPos;
 }
 
@@ -85,17 +85,17 @@ static Position
 get_projectile_pos_for(Projectile *p)
 {
 	Position projectilePos = p->sprite->pos;
-	if (p->velocity.x < 0) projectilePos.x += TILE_DIMENSION;
-	if (p->velocity.y < 0) projectilePos.y += TILE_DIMENSION;
+	if (p->velocity.x < 0)
+		projectilePos.x += TILE_DIMENSION;
+	if (p->velocity.y < 0)
+		projectilePos.y += TILE_DIMENSION;
 	return projectilePos;
 }
 
 static void
 clear_processed_spaces(Projectile *p)
 {
-	memset(&p->processedSpaces,
-	       false,
-	       sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
+	memset(&p->processedSpaces, false, sizeof(p->processedSpaces[0][0]) * MAP_ROOM_WIDTH * MAP_ROOM_HEIGHT);
 }
 
 static void
@@ -105,13 +105,8 @@ perform_dagger_explosion(Player *player, RoomMatrix *rm, Position *collisionPos)
 		mixer_play_effect(EXPLOSION_EFFECT);
 		particle_engine_fire_explosion(*collisionPos, DIM(32, 32));
 		animation_controller_create(EXPLOSION_ANIMATION, *collisionPos);
-		effect_damage_surroundings(collisionPos,
-					   rm,
-					   player,
-					   &player->stats,
-					   player_has_artifact(player, VOLATILE_DAGGERS),
-					   0,
-					   false);
+		effect_damage_surroundings(collisionPos, rm, player, &player->stats,
+		                           player_has_artifact(player, VOLATILE_DAGGERS), 0, false);
 	}
 }
 
@@ -120,8 +115,8 @@ projectile_update(Projectile *p, UpdateData *data)
 {
 	bool alive = false;
 
-	p->sprite->pos.x += (int) (p->velocity.x * data->deltatime);
-	p->sprite->pos.y += (int) (p->velocity.y * data->deltatime);
+	p->sprite->pos.x += (int)(p->velocity.x * data->deltatime);
+	p->sprite->pos.y += (int)(p->velocity.y * data->deltatime);
 
 	if (timer_get_ticks(p->lifetime) > 2000)
 		p->alive = false;

@@ -17,7 +17,7 @@
  */
 
 #ifndef POINTER_H_
-#define	POINTER_H_
+#define POINTER_H_
 
 #include <SDL3/SDL.h>
 #include "sprite.h"
@@ -28,19 +28,14 @@ typedef struct Pointer_t {
 	Sprite *sprite;
 } Pointer;
 
-Pointer *
-pointer_create(SDL_Renderer *renderer);
+Pointer *pointer_create(SDL_Renderer *renderer);
 
-void
-pointer_handle_input(Pointer*, Input *);
+void pointer_handle_input(Pointer *, Input *);
 
-void
-pointer_toggle_clickable_pointer(Pointer *, bool clickable);
+void pointer_toggle_clickable_pointer(Pointer *, bool clickable);
 
-void
-pointer_render(Pointer*, Camera*);
+void pointer_render(Pointer *, Camera *);
 
-void
-pointer_destroy(Pointer*);
+void pointer_destroy(Pointer *);
 
 #endif // POINTER_H_

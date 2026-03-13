@@ -17,7 +17,7 @@
  */
 
 #ifndef MENU_H_
-#define	MENU_H_
+#define MENU_H_
 
 #include <SDL3/SDL.h>
 #include "camera.h"
@@ -28,7 +28,7 @@
 typedef struct TEXT_MENU_ITEM {
 	char *label;
 	char *description;
-	void (*callback)(void*);
+	void (*callback)(void *);
 } TEXT_MENU_ITEM;
 
 typedef struct Menu_t {
@@ -38,25 +38,18 @@ typedef struct Menu_t {
 	int selected;
 } Menu;
 
-Menu *
-menu_create(void);
+Menu *menu_create(void);
 
-void
-menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size, SDL_Renderer *);
+void menu_create_text_menu(Menu **menu, TEXT_MENU_ITEM *menu_items, unsigned int size, SDL_Renderer *);
 
-Menu *
-menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *cam);
+Menu *menu_create_character_selector(void (*onCharacterSelect)(const char *), Camera *cam);
 
-void
-menu_update(Menu*, Input*, Camera *cam);
+void menu_update(Menu *, Input *, Camera *cam);
 
-void
-menu_item_add(Menu*, Sprite*, Sprite*, void (*)(void*));
+void menu_item_add(Menu *, Sprite *, Sprite *, void (*)(void *));
 
-void
-menu_render(Menu*, Camera*);
+void menu_render(Menu *, Camera *);
 
-void
-menu_destroy(Menu*);
+void menu_destroy(Menu *);
 
 #endif // MENU_H_

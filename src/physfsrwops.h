@@ -73,4 +73,3 @@ PHYSFS_DECL SDL_IOStream *PHYSFSIO_makeIOStream(PHYSFS_File *handle);
 #endif /* include-once blocker */
 
 /* end of physfsrwops.h ... */
-

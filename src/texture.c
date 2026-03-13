@@ -24,7 +24,7 @@
 #include "util.h"
 #include "io_util.h"
 
-Texture*
+Texture *
 texture_create(void)
 {
 	Texture *t = ec_malloc(sizeof(Texture));
@@ -41,15 +41,9 @@ texture_create(void)
 }
 
 void
-texture_create_blank(Texture *t,
-		     SDL_TextureAccess access,
-		     SDL_Renderer *renderer)
+texture_create_blank(Texture *t, SDL_TextureAccess access, SDL_Renderer *renderer)
 {
-	t->texture = SDL_CreateTexture(renderer,
-				       SDL_PIXELFORMAT_RGBA8888,
-				       access,
-				       t->dim.width,
-				       t->dim.height);
+	t->texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, access, t->dim.width, t->dim.height);
 	BH_ASSERT(t->texture != NULL);
 	t->textureAccessType = access;
 }
@@ -57,7 +51,7 @@ texture_create_blank(Texture *t,
 void
 texture_lock(Texture *t, SDL_Rect *rect, void **pixels, int *pitch)
 {
-	BH_ASSERT (!t->locked);
+	BH_ASSERT(!t->locked);
 	t->locked = true;
 	SDL_LockTexture(t->texture, rect, pixels, pitch);
 }
@@ -65,22 +59,18 @@ texture_lock(Texture *t, SDL_Rect *rect, void **pixels, int *pitch)
 void
 texture_unlock(Texture *t)
 {
-	BH_ASSERT (t->locked);
+	BH_ASSERT(t->locked);
 	t->locked = false;
 	SDL_UnlockTexture(t->texture);
 }
 
 void
-texture_load_from_file(Texture *texture,
-		       const char *path,
-		       SDL_Renderer *renderer)
+texture_load_from_file(Texture *texture, const char *path, SDL_Renderer *renderer)
 {
 	SDL_Surface *surface = IMG_Load_IO(io_load_rwops(path), true);
 
-	if (surface == NULL)
-	{
-		error("Failed to load texture (%s): %s",
-		       path, SDL_GetError());
+	if (surface == NULL) {
+		error("Failed to load texture (%s): %s", path, SDL_GetError());
 		return;
 	}
 
@@ -91,13 +81,9 @@ texture_load_from_file(Texture *texture,
 
 	texture->dim.height = surface->h;
 	texture->dim.width = surface->w;
-	texture->texture = SDL_CreateTextureFromSurface(renderer,
-							surface);
-	if (texture->texture == NULL)
-	{
-		error("Failed to create texture (%s): %s",
-		       path,
-		       SDL_GetError());
+	texture->texture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (texture->texture == NULL) {
+		error("Failed to create texture (%s): %s", path, SDL_GetError());
 	}
 
 	texture->lastAccess = SDL_GetTicks();
@@ -115,16 +101,14 @@ texture_load_font(Texture *t, const char *path, unsigned int size, int outline)
 	if (t->outlineFont)
 		TTF_CloseFont(t->outlineFont);
 
-	t->font = TTF_OpenFontIO(io_load_rwops(path), true, (float) size);
+	t->font = TTF_OpenFontIO(io_load_rwops(path), true, (float)size);
 	if (outline) {
-		t->outlineFont = TTF_OpenFontIO(io_load_rwops(path), true, (float) size);
+		t->outlineFont = TTF_OpenFontIO(io_load_rwops(path), true, (float)size);
 		TTF_SetFontOutline(t->outlineFont, outline);
 	}
 
 	if (t->font == NULL) {
-		error("Failed to load font %s: %s",
-			path,
-			SDL_GetError());
+		error("Failed to load font %s: %s", path, SDL_GetError());
 		return;
 	}
 	t->path = path;
@@ -138,10 +122,9 @@ load_from_surface(Texture *t, SDL_Surface *surface, SDL_Renderer *renderer)
 		t->texture = NULL;
 	}
 
-	t->texture = SDL_CreateTextureFromSurface( renderer, surface );
+	t->texture = SDL_CreateTextureFromSurface(renderer, surface);
 	if (t->texture == NULL) {
-		error("Failed to create texture from text: %s",
-		       SDL_GetError());
+		error("Failed to create texture from text: %s", SDL_GetError());
 		return;
 	}
 
@@ -152,35 +135,28 @@ load_from_surface(Texture *t, SDL_Surface *surface, SDL_Renderer *renderer)
 }
 
 void
-texture_load_from_text(Texture *t,
-		       const char *text,
-		       SDL_Color c,
-		       SDL_Color oc,
-		       SDL_Renderer *renderer)
+texture_load_from_text(Texture *t, const char *text, SDL_Color c, SDL_Color oc, SDL_Renderer *renderer)
 {
 	SDL_Surface *bg_surface = NULL;
 	SDL_Surface *fg_surface = NULL;
 	if (t->outlineFont) {
 		bg_surface = TTF_RenderText_Blended(t->outlineFont, text, 0, oc);
 		fg_surface = TTF_RenderText_Blended(t->font, text, 0, c);
-	}
-	else {
+	} else {
 		fg_surface = TTF_RenderText_Blended(t->font, text, 0, c);
 	}
 	SDL_Surface *surface = fg_surface;
 	if (bg_surface) {
 		int outline = TTF_GetFontOutline(t->outlineFont);
-		SDL_Rect rect = { outline, outline, fg_surface->w, fg_surface->h };
+		SDL_Rect rect = {outline, outline, fg_surface->w, fg_surface->h};
 		SDL_SetSurfaceBlendMode(fg_surface, SDL_BLENDMODE_BLEND);
 		SDL_BlitSurface(fg_surface, NULL, bg_surface, &rect);
 		surface = bg_surface;
 		SDL_DestroySurface(fg_surface);
 	}
 
-	if (surface == NULL)
-	{
-		error("Unable to create texture from rendered text: %s",
-		       SDL_GetError());
+	if (surface == NULL) {
+		error("Unable to create texture from rendered text: %s", SDL_GetError());
 		return;
 	}
 
@@ -189,21 +165,11 @@ texture_load_from_text(Texture *t,
 }
 
 void
-texture_load_from_text_shaded(Texture *t,
-			      const char *text,
-			      SDL_Color fg,
-			      SDL_Color bg,
-			      SDL_Renderer *renderer)
+texture_load_from_text_shaded(Texture *t, const char *text, SDL_Color fg, SDL_Color bg, SDL_Renderer *renderer)
 {
-	SDL_Surface *surface = TTF_RenderText_Shaded( t->font,
-						      text,
-						      0,
-						      fg,
-						      bg );
-	if (surface == NULL)
-	{
-		error("Unable to create texture from rendered text: %s",
-		       SDL_GetError());
+	SDL_Surface *surface = TTF_RenderText_Shaded(t->font, text, 0, fg, bg);
+	if (surface == NULL) {
+		error("Unable to create texture from rendered text: %s", SDL_GetError());
 		return;
 	}
 
@@ -211,13 +177,11 @@ texture_load_from_text_shaded(Texture *t,
 }
 
 void
-texture_load_from_text_blended(Texture *t, const char * text, SDL_Color fg, SDL_Renderer *renderer)
+texture_load_from_text_blended(Texture *t, const char *text, SDL_Color fg, SDL_Renderer *renderer)
 {
-	SDL_Surface *surface = TTF_RenderText_Blended( t->font, text, 0, fg );
-	if (surface == NULL)
-	{
-		error("Unable to create texture from rendered text: %s",
-		       SDL_GetError());
+	SDL_Surface *surface = TTF_RenderText_Blended(t->font, text, 0, fg);
+	if (surface == NULL) {
+		error("Unable to create texture from rendered text: %s", SDL_GetError());
 		return;
 	}
 
@@ -234,8 +198,8 @@ texture_set_blend_mode(Texture *t, SDL_BlendMode mode)
 void
 texture_set_scale_mode(Texture *t, SDL_ScaleMode mode)
 {
-    BH_ASSERT(t->texture);
-    SDL_SetTextureScaleMode(t->texture, mode);
+	BH_ASSERT(t->texture);
+	SDL_SetTextureScaleMode(t->texture, mode);
 }
 
 void
@@ -274,21 +238,17 @@ texture_render_clip(Texture *texture, SDL_Rect *box, SDL_Rect *clip, Camera *cam
 	if (box)
 		SDL_RectToFRect(box, &fbox);
 
-	SDL_RenderTexture(cam->renderer,
-		       texture->texture,
-		       clip ? &fclip : NULL,
-		       box ? &fbox : NULL);
+	SDL_RenderTexture(cam->renderer, texture->texture, clip ? &fclip : NULL, box ? &fbox : NULL);
 
 	texture->lastAccess = SDL_GetTicks();
 }
 
 void
 texture_render_clip_ex(Texture *texture, SDL_Rect *dst, SDL_Rect *src, double angle, SDL_Point *rotation_point,
-		       SDL_FlipMode flip_mode, Camera *cam)
+                       SDL_FlipMode flip_mode, Camera *cam)
 {
 	if (!texture->texture)
 		return;
-
 
 	SDL_FRect fbox;
 	SDL_FRect fclip;
@@ -299,22 +259,18 @@ texture_render_clip_ex(Texture *texture, SDL_Rect *dst, SDL_Rect *src, double an
 	if (src)
 		SDL_RectToFRect(src, &fclip);
 	if (rotation_point) {
-		fpoint.x = (float) rotation_point->x;
-		fpoint.y = (float) rotation_point->y;
+		fpoint.x = (float)rotation_point->x;
+		fpoint.y = (float)rotation_point->y;
 	}
 
-	SDL_RenderTextureRotated(cam->renderer,
-			 texture->texture,
-			 src ? &fclip : NULL,
-			 dst ? &fbox : NULL,
-			 angle,
-			 rotation_point ? &fpoint : NULL,
-			 flip_mode);
+	SDL_RenderTextureRotated(cam->renderer, texture->texture, src ? &fclip : NULL, dst ? &fbox : NULL, angle,
+	                         rotation_point ? &fpoint : NULL, flip_mode);
 
 	texture->lastAccess = SDL_GetTicks();
 }
 
-void texture_destroy(Texture *texture)
+void
+texture_destroy(Texture *texture)
 {
 	if (texture->texture)
 		SDL_DestroyTexture(texture->texture);

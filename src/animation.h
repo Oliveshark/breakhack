@@ -17,7 +17,7 @@
  */
 
 #ifndef _ANIMATION_H
-#define	_ANIMATION_H
+#define _ANIMATION_H
 
 #include <SDL3/SDL.h>
 #include <stdbool.h>
@@ -26,8 +26,7 @@ typedef struct Timer Timer;
 typedef struct Camera Camera;
 typedef struct Sprite Sprite;
 
-typedef struct AnimationClip
-{
+typedef struct AnimationClip {
 	unsigned int x;
 	unsigned int y;
 	unsigned int w;
@@ -35,8 +34,7 @@ typedef struct AnimationClip
 	unsigned int renderTime;
 } AnimationClip;
 
-typedef struct Animation
-{
+typedef struct Animation {
 	Sprite *sprite;
 	Timer *clipTimer;
 	unsigned int currentClip;
@@ -46,30 +44,20 @@ typedef struct Animation
 	AnimationClip clips[];
 } Animation;
 
-Animation*
-animation_create(unsigned int clipCount);
+Animation *animation_create(unsigned int clipCount);
 
-void
-animation_load_texture(Animation *, const char *path, SDL_Renderer*);
+void animation_load_texture(Animation *, const char *path, SDL_Renderer *);
 
-void
-animation_set_frames(Animation*, const AnimationClip clips[]);
+void animation_set_frames(Animation *, const AnimationClip clips[]);
 
-void
-animation_run(Animation*);
+void animation_run(Animation *);
 
-void
-animation_update(Animation*);
+void animation_update(Animation *);
 
-void
-animation_render(Animation*, Camera*);
+void animation_render(Animation *, Camera *);
 
-void
-animation_stop(Animation*);
+void animation_stop(Animation *);
 
-void
-animation_destroy(Animation*);
+void animation_destroy(Animation *);
 
 #endif // _ANIMATION_H
-
-

@@ -32,14 +32,10 @@ typedef struct ParticleEmitter {
 	bool enabled;
 } ParticleEmitter;
 
-ParticleEmitter *
-particle_emitter_create(void);
+ParticleEmitter *particle_emitter_create(void);
 
-void
-particle_emitter_render(ParticleEmitter*);
+void particle_emitter_render(ParticleEmitter *);
 
-void
-particle_emitter_update(ParticleEmitter*, Position, Dimension);
+void particle_emitter_update(ParticleEmitter *, Position, Dimension);
 
-void
-particle_emitter_destroy(ParticleEmitter*);
+void particle_emitter_destroy(ParticleEmitter *);

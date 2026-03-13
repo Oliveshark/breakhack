@@ -17,7 +17,7 @@
  */
 
 #ifndef MAP_ROOM_MODIFIERS_H_
-#define	MAP_ROOM_MODIFIERS_H_
+#define MAP_ROOM_MODIFIERS_H_
 
 #include "vector2d.h"
 
@@ -45,10 +45,7 @@ typedef struct RoomModifierData {
 	RoomModifierDataContainer data;
 } RoomModifierData;
 
-void
-map_room_modifier_player_effect(Player*,
-								RoomMatrix*,
-								Vector2d *direction,
-								void (*)(Player*, RoomMatrix*, Vector2d));
+void map_room_modifier_player_effect(Player *, RoomMatrix *, Vector2d *direction,
+                                     void (*)(Player *, RoomMatrix *, Vector2d));
 
 #endif // MAP_ROOM_MODIFIERS_H_
