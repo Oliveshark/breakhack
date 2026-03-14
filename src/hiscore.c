@@ -90,7 +90,7 @@ save_hiscore(double gold, int lvl, int dlvl, unsigned int moves)
 	const char *query = "INSERT INTO hiscore(gold, playerLevel, dungeonLevel, moves) values (?, ?, ?, ?)";
 	sqlite3_stmt *stmt = db_prepare(db, query);
 
-	debug("Saving high score: %dg %dpl %dl %um", gold, lvl, dlvl, moves);
+	debug("Saving high score: gold=%g player_level=%d, level=%d, moves=%u", gold, lvl, dlvl, moves);
 	sqlite3_bind_double(stmt, 1, gold);
 	sqlite3_bind_int(stmt, 2, lvl);
 	sqlite3_bind_int(stmt, 3, dlvl);
