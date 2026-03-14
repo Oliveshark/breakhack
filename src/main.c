@@ -1117,6 +1117,7 @@ run_game_render(void)
 static inline void
 register_scores(void)
 {
+	debug("Registering steam scores");
 	uint8_t details[4] = {(uint8_t)gPlayer->stats.lvl, (uint8_t)cLevel, (uint8_t)(gPlayer->class + 1), 0};
 	steam_register_score((int)gPlayer->gold, (int32_t *)&details, 1);
 	steam_register_kills((int)gPlayer->stat_data.kills, (int32_t *)&details, 1);
@@ -1137,6 +1138,10 @@ register_scores(void)
 	} else if (gPlayer->class == MAGE) {
 		steam_set_achievement(MAGICAL);
 		steam_register_mage_score((int)gPlayer->gold, (int32_t *)&details, 1);
+	}
+
+	if (gCustomSeed != 0 && !weeklyGame) {
+		steam_set_achievement(SEEDLING);
 	}
 }
 #endif
