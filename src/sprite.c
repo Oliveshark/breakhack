@@ -207,8 +207,6 @@ sprite_update(Sprite *s, UpdateData *data)
 void
 sprite_interpolate_to(Sprite *s, Destination *dest)
 {
-	debug("Interpolating:");
-	debug("    Pos: %dx%d -> %dx%d", s->pos.x, s->pos.y, dest->pos.x, dest->pos.y);
 	s->offset = POS((dest->dim.width - s->dim.width) / 2, (dest->dim.height - s->dim.width) / 2);
 	s->rotationPoint = (SDL_Point){dest->dim.width / 2, dest->dim.height / 2};
 	s->state = SPRITE_STATE_MOVING;
