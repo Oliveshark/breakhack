@@ -485,7 +485,7 @@ openSeedEntry(void *unused)
 	(void)unused;
 	char seed_str[16] = {0};
 	if (gCustomSeed > 0) {
-		SDL_snprintf(seed_str, 15, "%d", gCustomSeed);
+		SDL_snprintf(seed_str, sizeof(seed_str), "%u", gCustomSeed);
 	}
 	text_input_init(gWindow, gRenderer, "Enter game seed:", seed_str);
 	gGameState = SEED_ENTRY;
