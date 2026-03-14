@@ -56,6 +56,7 @@
 #include "event.h"
 #include "config.h"
 #include "save.h"
+#include "text_input.h"
 
 #ifdef DEBUG
 #include "debug/debug.h"
@@ -104,6 +105,7 @@ static SDL_Rect statsGuiViewport;
 static SDL_Rect minimapViewport;
 static SDL_Rect menuViewport;
 static Input input;
+static unsigned int gCustomSeed = 0;
 
 #ifdef DEBUG
 static Sprite *fpsSprite = NULL;
@@ -260,10 +262,16 @@ startGame(void)
 	else
 		cLevel = 1;
 
-	if (weeklyGame)
+	if (weeklyGame) {
+		debug("Using weekly game seed");
 		set_random_seed((unsigned int)time_get_weekly_seed());
-	else
-		set_random_seed(0);
+	} else if (gCustomSeed) {
+		debug("Using custom game seed");
+		set_random_seed(gCustomSeed);
+	} else {
+		debug("Setting random seed");
+		set_random_seed(0); // 0 will trigger a random seed later on.
+	}
 
 	gGameState = PLAYING;
 	if (gPlayer)
@@ -472,6 +480,18 @@ goToGameSelectMenu(void *unused)
 }
 
 static void
+openSeedEntry(void *unused)
+{
+	(void)unused;
+	char seed_str[16] = {0};
+	if (gCustomSeed > 0) {
+		SDL_snprintf(seed_str, sizeof(seed_str), "%u", gCustomSeed);
+	}
+	text_input_init(gWindow, gRenderer, "Enter game seed:", seed_str);
+	gGameState = SEED_ENTRY;
+}
+
+static void
 showHowToTooltip(void *unused)
 {
 	(void)unused;
@@ -480,32 +500,65 @@ showHowToTooltip(void *unused)
 }
 
 static void
+copySeedToClipboard(void *unused)
+{
+	(void)unused;
+	char seed_str[16];
+	SDL_snprintf(seed_str, sizeof(seed_str), "%u", get_random_seed());
+	SDL_SetClipboardText(seed_str);
+	gui_event_message("Seed copied to clipboard");
+	toggleInGameMenu(NULL);
+}
+
+static void
+buildSeedLabel(char *buf, size_t size)
+{
+	SDL_snprintf(buf, size, "SEED:%u", get_random_seed());
+}
+
+static void
 initInGameMenu(void)
 {
-	static TEXT_MENU_ITEM menu_items[] = {
-	    {"RESUME", "", toggleInGameMenu},
-	    {"HOW TO PLAY", "", showHowToTooltip},
-	    {"MAIN MENU", "", goToMainMenu},
-	    {"QUIT", "Exit game", exitGame},
-	};
+	static char seed_label[32];
+	buildSeedLabel(seed_label, sizeof(seed_label));
 
-	menu_create_text_menu(&inGameMenu, &menu_items[0], 4, gRenderer);
+	TEXT_MENU_ITEM menu_items[5];
+	int count = 0;
+
+	menu_items[count++] = (TEXT_MENU_ITEM){"RESUME", "Resume the current game", toggleInGameMenu};
+	menu_items[count++] = (TEXT_MENU_ITEM){"HOW TO PLAY", "Show the in-game guide", showHowToTooltip};
+	if (!weeklyGame) {
+		menu_items[count++] = (TEXT_MENU_ITEM){seed_label, "Copy seed to clipboard", copySeedToClipboard};
+	}
+	menu_items[count++] = (TEXT_MENU_ITEM){"MAIN MENU", "Return to the main menu", goToMainMenu};
+	menu_items[count++] = (TEXT_MENU_ITEM){"QUIT", "Exit game", exitGame};
+
+	menu_create_text_menu(&inGameMenu, &menu_items[0], count, gRenderer);
 }
 
 static void
 createInGameGameOverMenu(void)
 {
-	static TEXT_MENU_ITEM menu_items[] = {
-	    {"NEW GAME", "Start a new game with the same settings", goToCharacterMenu},
-	    {"MAIN MENU", "", goToMainMenu},
-	    {"QUIT", "Exit game", exitGame},
-	};
+	static char seed_label[32];
+	buildSeedLabel(seed_label, sizeof(seed_label));
 
 	if (inGameMenu) {
 		menu_destroy(inGameMenu);
 		inGameMenu = NULL;
 	}
-	menu_create_text_menu(&inGameMenu, &menu_items[0], 3, gRenderer);
+
+	TEXT_MENU_ITEM menu_items[4];
+	int count = 0;
+
+	menu_items[count++] =
+	    (TEXT_MENU_ITEM){"NEW GAME", "Start a new game with the same settings", goToCharacterMenu};
+	if (!weeklyGame) {
+		menu_items[count++] = (TEXT_MENU_ITEM){seed_label, "Copy seed to clipboard", copySeedToClipboard};
+	}
+	menu_items[count++] = (TEXT_MENU_ITEM){"MAIN MENU", "Return to the main menu", goToMainMenu};
+	menu_items[count++] = (TEXT_MENU_ITEM){"QUIT", "Exit game", exitGame};
+
+	menu_create_text_menu(&inGameMenu, &menu_items[0], count, gRenderer);
 }
 
 static void
@@ -547,6 +600,7 @@ initMainMenu(void)
 {
 	static TEXT_MENU_ITEM menu_items[] = {
 	    {"PLAY", "Start game", goToGameSelectMenu},
+	    {"SET SEED", "Set the game seed", openSeedEntry},
 	    {"SCORES", "View your top 10 scores", viewScoreScreen},
 	    {"CREDITS", "View game credits", viewCredits},
 	    {"QUIT", "Exit game", exitGame},
@@ -557,7 +611,7 @@ initMainMenu(void)
 
 	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
 
-	menu_create_text_menu(&mainMenu, &menu_items[0], 4, gRenderer);
+	menu_create_text_menu(&mainMenu, &menu_items[0], SDL_arraysize(menu_items), gRenderer);
 	mixer_play_music(MENU_MUSIC);
 	creditsScreen = screen_create_credits(gRenderer);
 	scoreScreen = screen_create_hiscore(gRenderer);
@@ -752,6 +806,10 @@ handle_main_input(void)
 				charSelectMenu = NULL;
 				gGameState = GAME_SELECT;
 				break;
+			case SEED_ENTRY:
+				text_input_close(gWindow);
+				gGameState = MENU;
+				break;
 			case MENU:
 				gGameState = QUIT;
 				break;
@@ -769,7 +827,7 @@ handle_main_input(void)
 	}
 
 	handle_settings_input();
-	if (input_key_is_pressed(&input, KEY_TAB)) {
+	if ((gGameState == PLAYING || gGameState == GAME_OVER) && input_key_is_pressed(&input, KEY_TAB)) {
 		gShowMap = !gShowMap;
 	}
 }
@@ -1059,6 +1117,7 @@ run_game_render(void)
 static inline void
 register_scores(void)
 {
+	debug("Registering steam scores");
 	uint8_t details[4] = {(uint8_t)gPlayer->stats.lvl, (uint8_t)cLevel, (uint8_t)(gPlayer->class + 1), 0};
 	steam_register_score((int)gPlayer->gold, (int32_t *)&details, 1);
 	steam_register_kills((int)gPlayer->stat_data.kills, (int32_t *)&details, 1);
@@ -1079,6 +1138,10 @@ register_scores(void)
 	} else if (gPlayer->class == MAGE) {
 		steam_set_achievement(MAGICAL);
 		steam_register_mage_score((int)gPlayer->gold, (int32_t *)&details, 1);
+	}
+
+	if (gCustomSeed != 0 && !weeklyGame) {
+		steam_set_achievement(SEEDLING);
 	}
 }
 #endif
@@ -1208,6 +1271,28 @@ run_menu(void)
 }
 
 static void
+run_seed_entry(void)
+{
+	SDL_SetRenderViewport(gRenderer, &mainViewport);
+	text_input_update(&input);
+	text_input_render(gCamera);
+	SDL_RenderPresent(gRenderer);
+
+	// Di this last since it resets the text_input
+	if (text_input_is_confirmed()) {
+		const char *val = text_input_get_value();
+		if (SDL_strlen(val) > 0) {
+			gCustomSeed = (unsigned int)SDL_atoi(val);
+			debug("Custom seed set: %u", gCustomSeed);
+		} else {
+			gCustomSeed = 0;
+		}
+		text_input_close(gWindow);
+		gGameState = MENU;
+	}
+}
+
+static void
 run(void)
 {
 	static Uint64 oldTime = 0;
@@ -1251,6 +1336,9 @@ run(void)
 			case GAME_SELECT:
 			case CHARACTER_MENU:
 				run_menu();
+				break;
+			case SEED_ENTRY:
+				run_seed_entry();
 				break;
 			case QUIT:
 				quit = true;

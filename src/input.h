@@ -40,6 +40,7 @@
 #define KEY_ENTER 0x8000
 #define KEY_SPACE 0x10000
 #define KEY_TAB 0x20000
+#define KEY_BACKSPACE 0x40000
 
 #define KEY_CTRL_M 0x1
 #define KEY_CTRL_S 0x2
@@ -50,10 +51,13 @@
 #define KEY_SHIFT_NUM4 0x40
 #define KEY_SHIFT_NUM5 0x80
 #define KEY_CTRL_F 0x100
+#define KEY_CTRL_V 0x200
 
 #define MBUTTON_LEFT 0x1
 #define MBUTTON_MIDDLE 0x2
 #define MBUTTON_RIGHT 0x4
+
+#define TEXT_INPUT_MAX_LEN 16
 
 typedef enum InputDeviceType { DeviceType_Unknown, DeviceType_Keyboard, DeviceType_Gamepad } InputDeviceType;
 
@@ -68,6 +72,7 @@ typedef struct Input {
 	Uint32 lastMouseY;
 	Uint32 mouseX;
 	Uint32 mouseY;
+	char textInput[TEXT_INPUT_MAX_LEN];
 } Input;
 
 void input_init(Input *);

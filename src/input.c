@@ -31,6 +31,7 @@ input_init(Input *input)
 	input->lastMouseY = 0;
 	input->modKeyState = 0;
 	input->lastModKeyState = 0;
+	input->textInput[0] = '\0';
 }
 
 void
@@ -44,6 +45,7 @@ input_reset(Input *input)
 	input->modKeyState = 0;
 	input->lastMouseX = input->mouseX;
 	input->lastMouseY = input->mouseY;
+	input->textInput[0] = '\0';
 }
 
 static Uint64
@@ -100,6 +102,9 @@ get_event_key(SDL_Event *event)
 			break;
 		case SDLK_TAB:
 			key = KEY_TAB;
+			break;
+		case SDLK_BACKSPACE:
+			key = KEY_BACKSPACE;
 			break;
 		default:
 			key = 0;
@@ -195,6 +200,9 @@ get_event_modkey(SDL_Event *event)
 			case SDLK_F:
 				key = KEY_CTRL_F;
 				break;
+			case SDLK_V:
+				key = KEY_CTRL_V;
+				break;
 		}
 	} else if (event->key.mod & (SDL_KMOD_LSHIFT | SDL_KMOD_RSHIFT)) {
 		switch (event->key.key) {
@@ -278,6 +286,10 @@ input_handle_event(Input *input, SDL_Event *event, InputDeviceType *device_type)
 		} else {
 			input->keyState &= ~get_axis_motion(event);
 		}
+	} else if (event->type == SDL_EVENT_TEXT_INPUT) {
+		// Copy the string and ensure null-termination
+		strncpy(input->textInput, event->text.text, TEXT_INPUT_MAX_LEN - 1);
+		input->textInput[TEXT_INPUT_MAX_LEN - 1] = '\0';
 	}
 
 	if (device_type != NULL) {

@@ -23,8 +23,9 @@ static Achievement g_Achievements[] = {_ACH_ID(BAD_DOG, "Bad Dog"),
                                        _ACH_ID(BACK_TO_WORK, "Back to work"),
                                        _ACH_ID(DRAGON_SLAYER, "Platinum dragon slayer"),
                                        _ACH_ID(ROGUE_LIKE, "Rogue-like"),
-                                       _ACH_ID(MAGICAL, "Magical")};
-static Uint8 numAchievements = 7;
+                                       _ACH_ID(MAGICAL, "Magical"),
+                                       _ACH_ID(SEEDLING, "Seedling")};
+static Uint8 numAchievements = SDL_arraysize(g_Achievements);
 
 static bool m_Initiated = false;
 static uint32_t m_AppID = 0;
@@ -140,6 +141,7 @@ steam_set_achievement(EAchievement eAch)
 		Achievement *a = &g_Achievements[i];
 		if (a->m_eAchievementID == eAch && !a->m_bAchieved) {
 			c_SteamUserStats_SetAchievement(g_Achievements[i].m_pchAchievementID);
+			debug("Setting \"%s\" achievement", a->m_rgchName);
 			gui_log("You just earned the \"%s\" achievement", a->m_rgchName);
 		}
 	}

@@ -13,7 +13,8 @@ typedef enum EAchievement {
 	BUGGCREATOR = 8,
 	ROGUE_LIKE = 9,
 	MAGICAL = 10,
-	ARCADE_HACK = 11
+	ARCADE_HACK = 11,
+	SEEDLING = 12,
 } EAchievement;
 
 #define _ACH_ID(id, name) {id, #id, name, "", 0, 0}
