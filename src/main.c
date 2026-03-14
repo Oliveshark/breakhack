@@ -56,6 +56,7 @@
 #include "event.h"
 #include "config.h"
 #include "save.h"
+#include "text_input.h"
 
 #ifdef DEBUG
 #include "debug/debug.h"
@@ -104,6 +105,7 @@ static SDL_Rect statsGuiViewport;
 static SDL_Rect minimapViewport;
 static SDL_Rect menuViewport;
 static Input input;
+static unsigned int gCustomSeed = 0;
 
 #ifdef DEBUG
 static Sprite *fpsSprite = NULL;
@@ -260,10 +262,16 @@ startGame(void)
 	else
 		cLevel = 1;
 
-	if (weeklyGame)
+	if (weeklyGame) {
+		debug("Using weekly game seed");
 		set_random_seed((unsigned int)time_get_weekly_seed());
-	else
-		set_random_seed(0);
+	} else if (gCustomSeed) {
+		debug("Using custom game seed");
+		set_random_seed(gCustomSeed);
+	} else {
+		debug("Setting random seed");
+		set_random_seed(0); // 0 will trigger a random seed later on.
+	}
 
 	gGameState = PLAYING;
 	if (gPlayer)
@@ -475,8 +483,12 @@ static void
 openSeedEntry(void *unused)
 {
 	(void)unused;
+	char seed_str[16] = {0};
+	if (gCustomSeed > 0) {
+		SDL_snprintf(seed_str, 15, "%d", gCustomSeed);
+	}
+	text_input_init(gWindow, gRenderer, "Enter game seed:", seed_str);
 	gGameState = SEED_ENTRY;
-	// TODO: Create this view...
 }
 
 static void
@@ -490,7 +502,7 @@ showHowToTooltip(void *unused)
 static void
 copySeedToClipboard(void *unused)
 {
-	UNUSED(unused);
+	(void)unused;
 	char seed_str[16];
 	SDL_snprintf(seed_str, sizeof(seed_str), "%u", get_random_seed());
 	SDL_SetClipboardText(seed_str);
@@ -794,6 +806,10 @@ handle_main_input(void)
 				charSelectMenu = NULL;
 				gGameState = GAME_SELECT;
 				break;
+			case SEED_ENTRY:
+				text_input_close(gWindow);
+				gGameState = MENU;
+				break;
 			case MENU:
 				gGameState = QUIT;
 				break;
@@ -811,7 +827,7 @@ handle_main_input(void)
 	}
 
 	handle_settings_input();
-	if (input_key_is_pressed(&input, KEY_TAB)) {
+	if ((gGameState == PLAYING || gGameState == GAME_OVER) && input_key_is_pressed(&input, KEY_TAB)) {
 		gShowMap = !gShowMap;
 	}
 }
@@ -1250,6 +1266,28 @@ run_menu(void)
 }
 
 static void
+run_seed_entry(void)
+{
+	SDL_SetRenderViewport(gRenderer, &mainViewport);
+	text_input_update(&input);
+	text_input_render(gCamera);
+	SDL_RenderPresent(gRenderer);
+
+	// Di this last since it resets the text_input
+	if (text_input_is_confirmed()) {
+		const char *val = text_input_get_value();
+		if (SDL_strlen(val) > 0) {
+			gCustomSeed = (unsigned int)SDL_atoi(val);
+			debug("Custom seed set: %u", gCustomSeed);
+		} else {
+			gCustomSeed = 0;
+		}
+		text_input_close(gWindow);
+		gGameState = MENU;
+	}
+}
+
+static void
 run(void)
 {
 	static Uint64 oldTime = 0;
@@ -1293,6 +1331,9 @@ run(void)
 			case GAME_SELECT:
 			case CHARACTER_MENU:
 				run_menu();
+				break;
+			case SEED_ENTRY:
+				run_seed_entry();
 				break;
 			case QUIT:
 				quit = true;
