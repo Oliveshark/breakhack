@@ -611,7 +611,7 @@ initMainMenu(void)
 
 	gMap = map_lua_generator_single_room__run(cLevel, gRenderer);
 
-	menu_create_text_menu(&mainMenu, &menu_items[0], 4, gRenderer);
+	menu_create_text_menu(&mainMenu, &menu_items[0], SDL_arraysize(menu_items), gRenderer);
 	mixer_play_music(MENU_MUSIC);
 	creditsScreen = screen_create_credits(gRenderer);
 	scoreScreen = screen_create_hiscore(gRenderer);
