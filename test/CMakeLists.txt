@@ -17,6 +17,10 @@ add_test(test_input test_input.c ../src/input.c ../src/keyboard.c)
 add_test(test_position test_position.c ../src/position.c)
 add_test(test_collisions test_collisions.c ../src/collisions.c)
 
+add_test(test_random test_random.c ../src/random.c ../src/util.c)
+target_include_directories(test_random PRIVATE ${CMAKE_SOURCE_DIR}/lib/bh_random/src)
+target_link_libraries(test_random bh_random)
+
 # roommatrix needs a real SDL renderer (lightmap texture), so it uses the
 # offscreen video driver. Extra libs: SDL_image + SDL_ttf (pulled in by
 # texture.c) and physfs (pulled in by io_util.c / physfsrwops.c).
