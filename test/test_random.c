@@ -119,11 +119,9 @@ int
 main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_seed_roundtrip),
-		cmocka_unit_test(test_map_seeds_are_deterministic),
-		cmocka_unit_test(test_different_seeds_differ),
-		cmocka_unit_test(test_get_random_bounds),
-		cmocka_unit_test(test_seed_zero_reinit),
+	    cmocka_unit_test(test_seed_roundtrip),         cmocka_unit_test(test_map_seeds_are_deterministic),
+	    cmocka_unit_test(test_different_seeds_differ), cmocka_unit_test(test_get_random_bounds),
+	    cmocka_unit_test(test_seed_zero_reinit),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
