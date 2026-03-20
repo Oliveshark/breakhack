@@ -35,7 +35,7 @@ local floorDecor = {}
 local blockingFloorDecor = {}
 local lightDecor = {}
 
-local function load_decor_textures()
+local function load_decor_textures(map)
 	local td0 = add_texture(map, "Objects/Decor0.png")
 	local td1 = add_texture(map, "Objects/Decor1.png")
 
@@ -107,7 +107,7 @@ local function load_decor_textures()
 	lightDecor.candle2 = { td0, td1, 32, 8 * 16, true, true }
 end
 
-local function load_special_tiles()
+local function load_special_tiles(map)
 	local tt = add_texture(map, "Objects/Tile.png")
 	special.level_exit = { tt, -1, 16, 16, false, true, true }
 end
@@ -591,8 +591,8 @@ function module.load_textures(map)
 	wall.vertical = { t_wall, -1, xo + 0, yo + 16, true }
 	wall.horizontal = { t_wall, -1, xo + 16, yo + 0, true }
 
-	load_decor_textures()
-	load_special_tiles()
+	load_decor_textures(map)
+	load_special_tiles(map)
 end
 
 return module
