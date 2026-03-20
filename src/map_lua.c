@@ -709,7 +709,7 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, Player *pl
 		fatal("Failed to run script: %s\n", lua_tostring(L, -1));
 	}
 
-	Map *map = lua_touserdata(L, -1);
+	Map *map = luaL_checkmap(L, -1);
 
 	lua_close(L);
 
