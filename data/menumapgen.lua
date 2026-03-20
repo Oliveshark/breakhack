@@ -3,7 +3,7 @@ local monster_gen = require("monstergen")
 local trap_gen = require("trapgen")
 local chest_gen = require("chestgen")
 
-map = create_map(CURRENT_LEVEL) -- 'map' needs to be global
+local map = create_map(CURRENT_LEVEL)
 
 room_builder.load_textures(map)
 
@@ -18,3 +18,5 @@ room_builder.load_room(map, room)
 monster_gen.load_monsters(map, room.monsters)
 trap_gen.load_traps(map, room.traps)
 chest_gen.load_chests(map, room.chests)
+
+return map

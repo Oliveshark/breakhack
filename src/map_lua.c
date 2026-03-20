@@ -74,11 +74,11 @@ luaL_checkmap(lua_State *L, int index)
 	Map *map;
 
 	if (!lua_islightuserdata(L, index))
-		fatal("in luaL_checkmap(), pointer lost in lua script");
+		fatal("pointer lost in lua script");
 
 	map = lua_touserdata(L, index);
 	if (map == NULL)
-		fatal("in luaL_checkmap(), bad map pointer");
+		fatal("bad map pointer");
 
 	return map;
 }
@@ -91,11 +91,11 @@ luaL_checksdlrenderer(lua_State *L)
 	lua_pushlightuserdata(L, &RendererKey);
 	lua_gettable(L, LUA_REGISTRYINDEX);
 	if (!lua_islightuserdata(L, -1))
-		fatal("in luaL_checksdlrenderer(), pointer lost in lua script");
+		fatal("pointer lost in lua script");
 
 	renderer = lua_touserdata(L, -1);
 	if (renderer == NULL)
-		fatal("in luaL_checksdlrenderer(), bad SDL_Renderer pointer");
+		fatal("bad SDL_Renderer pointer");
 
 	return renderer;
 }
@@ -107,7 +107,7 @@ luaL_checkplayer(lua_State *L)
 	lua_pushlightuserdata(L, &PlayerKey);
 	lua_gettable(L, LUA_REGISTRYINDEX);
 	if (!lua_islightuserdata(L, -1))
-		fatal("in luaL_checkplayer(), pointer lost in lua script");
+		fatal("pointer lost in lua script");
 
 	player = lua_touserdata(L, -1);
 	return player;
@@ -709,8 +709,7 @@ generate_map(unsigned int level, const char *file, GameMode gameMode, Player *pl
 		fatal("Failed to run script: %s\n", lua_tostring(L, -1));
 	}
 
-	lua_getglobal(L, "map");
-	Map *map = lua_touserdata(L, 1);
+	Map *map = lua_touserdata(L, -1);
 
 	lua_close(L);
 

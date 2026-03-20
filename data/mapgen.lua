@@ -165,7 +165,7 @@ end
 -- END FUNCTIONS
 
 -- BEGIN SCRIPT
-map = create_map(CURRENT_LEVEL) -- 'map' needs to be global
+local map = create_map(CURRENT_LEVEL)
 room_builder.load_textures(map)
 local map_matrix = generate_path()
 
@@ -188,4 +188,7 @@ end
 if lockedDoorsAdded then
 	add_keybearers(map)
 end
+
+-- Finalize by returning the map
+return map
 -- END SCRIPT
