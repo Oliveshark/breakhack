@@ -206,8 +206,6 @@ initSDL(void)
 static void
 initViewports(Uint32 offset)
 {
-	/* FIXME: This does not work with
-	 * SDL_SetRenderLogicalPresentation any longer. Needs looking at. */
 	mainViewport = (SDL_Rect){offset, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 	gameViewport = (SDL_Rect){offset, 0, GAME_VIEW_WIDTH, GAME_VIEW_HEIGHT};
