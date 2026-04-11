@@ -700,6 +700,7 @@ gui_destroy(Gui *gui)
 	sprite_destroy(gui->bottomFrame);
 	sprite_destroy(gui->statsFrame);
 	sprite_destroy(gui->miniMap);
+	sprite_destroy(gui->miniMapOverlay);
 	sprite_destroy(gui->silverKey);
 	sprite_destroy(gui->goldKey);
 
