@@ -39,7 +39,7 @@
 #define DEFAULT_EVENT_MESSAGES {NULL, 5, 0, LOG_LINES_MAX_LEN}
 
 #define POS_Y_COLLECTABLES 64
-#define POS_Y_XPBAR 128
+#define POS_Y_XPBAR        128
 
 static struct LogData_t {
 	char log[LOG_LINES_COUNT][LOG_LINES_MAX_LEN];

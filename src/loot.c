@@ -23,8 +23,8 @@
 #include "gui.h"
 #include "mixer.h"
 
-#define MAX_ITEM_DROP 16
-#define ITEM_DROP_TIME_MS 175
+#define MAX_ITEM_DROP       16
+#define ITEM_DROP_TIME_MS   175
 #define DROP_POSITION_COUNT 9
 
 static bool item_dropped = false;

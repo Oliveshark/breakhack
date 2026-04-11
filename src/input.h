@@ -22,40 +22,40 @@
 #include <SDL3/SDL.h>
 #include <stdbool.h>
 
-#define KEY_LEFT 0x1
-#define KEY_RIGHT 0x2
-#define KEY_UP 0x4
-#define KEY_DOWN 0x8
-#define KEY_NUM0 0x10
-#define KEY_NUM1 0x20
-#define KEY_NUM2 0x40
-#define KEY_NUM3 0x80
-#define KEY_NUM4 0x100
-#define KEY_NUM5 0x200
-#define KEY_NUM6 0x400
-#define KEY_NUM7 0x800
-#define KEY_NUM8 0x1000
-#define KEY_NUM9 0x2000
-#define KEY_ESC 0x4000
-#define KEY_ENTER 0x8000
-#define KEY_SPACE 0x10000
-#define KEY_TAB 0x20000
+#define KEY_LEFT      0x1
+#define KEY_RIGHT     0x2
+#define KEY_UP        0x4
+#define KEY_DOWN      0x8
+#define KEY_NUM0      0x10
+#define KEY_NUM1      0x20
+#define KEY_NUM2      0x40
+#define KEY_NUM3      0x80
+#define KEY_NUM4      0x100
+#define KEY_NUM5      0x200
+#define KEY_NUM6      0x400
+#define KEY_NUM7      0x800
+#define KEY_NUM8      0x1000
+#define KEY_NUM9      0x2000
+#define KEY_ESC       0x4000
+#define KEY_ENTER     0x8000
+#define KEY_SPACE     0x10000
+#define KEY_TAB       0x20000
 #define KEY_BACKSPACE 0x40000
 
-#define KEY_CTRL_M 0x1
-#define KEY_CTRL_S 0x2
-#define KEY_CTRL_D 0x4
+#define KEY_CTRL_M     0x1
+#define KEY_CTRL_S     0x2
+#define KEY_CTRL_D     0x4
 #define KEY_SHIFT_NUM1 0x8
 #define KEY_SHIFT_NUM2 0x10
 #define KEY_SHIFT_NUM3 0x20
 #define KEY_SHIFT_NUM4 0x40
 #define KEY_SHIFT_NUM5 0x80
-#define KEY_CTRL_F 0x100
-#define KEY_CTRL_V 0x200
+#define KEY_CTRL_F     0x100
+#define KEY_CTRL_V     0x200
 
-#define MBUTTON_LEFT 0x1
+#define MBUTTON_LEFT   0x1
 #define MBUTTON_MIDDLE 0x2
-#define MBUTTON_RIGHT 0x4
+#define MBUTTON_RIGHT  0x4
 
 #define TEXT_INPUT_MAX_LEN 16
 

@@ -19,3 +19,7 @@ SpaceAfterCStyleCast: false
 SpacesInParentheses: false
 SpacesInContainerLiterals: false
 BreakBeforeBinaryOperators: NonAssignment
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false

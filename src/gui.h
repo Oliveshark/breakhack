@@ -20,13 +20,13 @@
 #define GUI_H_
 
 #include "roommatrix.h"
-#define LOG_LINES_COUNT 10
+#define LOG_LINES_COUNT   10
 #define LOG_LINES_MAX_LEN 200
-#define LOG_FONT_SIZE 8
-#define LABEL_FONT_SIZE 8
+#define LOG_FONT_SIZE     8
+#define LABEL_FONT_SIZE   8
 
 #define EVENT_MESSAGE_DISPLAY_TIME 2500
-#define EVENT_MESSAGE_FONT_SIZE 20
+#define EVENT_MESSAGE_FONT_SIZE    20
 
 #include "linkedlist.h"
 #include "sprite.h"

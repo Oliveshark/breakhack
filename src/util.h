@@ -37,7 +37,7 @@
 
 #ifdef DEBUG
 #define debug(...) log_print(stdout, "DEBUG", __FNAME__, __LINE__, __func__, __VA_ARGS__)
-#define info(...) log_print(stdout, "INFO", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#define info(...)  log_print(stdout, "INFO", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #else // DEBUG
 #define debug(...)                                                                                                     \
 	do {                                                                                                           \
@@ -47,7 +47,7 @@
 	} while (0)
 #endif // DEBUG
 
-#define warn(...) log_print(stderr, "WARN", __FNAME__, __LINE__, __func__, __VA_ARGS__)
+#define warn(...)  log_print(stderr, "WARN", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #define error(...) log_print(stderr, "ERROR", __FNAME__, __LINE__, __func__, __VA_ARGS__)
 #ifdef DEBUG
 #define fatal(...)                                                                                                     \

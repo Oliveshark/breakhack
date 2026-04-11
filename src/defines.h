@@ -24,30 +24,30 @@
 #include "config.h"
 
 /* Room/Map dimensions */
-#define MAP_ROOM_WIDTH 16
+#define MAP_ROOM_WIDTH  16
 #define MAP_ROOM_HEIGHT 12
 
 #define MAP_V_ROOM_COUNT 10
 #define MAP_H_ROOM_COUNT 10
 
-#define TILE_DIMENSION 32
+#define TILE_DIMENSION   32
 #define SPRITE_DIMENSION 16
 
 /* Display stuff */
-#define GAME_VIEW_WIDTH (MAP_ROOM_WIDTH * TILE_DIMENSION)   // 16 * 32
+#define GAME_VIEW_WIDTH  (MAP_ROOM_WIDTH * TILE_DIMENSION)  // 16 * 32
 #define GAME_VIEW_HEIGHT (MAP_ROOM_HEIGHT * TILE_DIMENSION) // 12 * 32
 
-#define SKILL_BAR_WIDTH GAME_VIEW_WIDTH
+#define SKILL_BAR_WIDTH  GAME_VIEW_WIDTH
 #define SKILL_BAR_HEIGHT 32
 
-#define RIGHT_GUI_WIDTH (10 * SPRITE_DIMENSION) // 10 * 16
+#define RIGHT_GUI_WIDTH    (10 * SPRITE_DIMENSION) // 10 * 16
 #define MINIMAP_GUI_HEIGHT 128
-#define STATS_GUI_HEIGHT (GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT - MINIMAP_GUI_HEIGHT)
+#define STATS_GUI_HEIGHT   (GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT - MINIMAP_GUI_HEIGHT)
 
 #define BOTTOM_GUI_HEIGHT (10 * SPRITE_DIMENSION)
-#define BOTTOM_GUI_WIDTH (GAME_VIEW_WIDTH + RIGHT_GUI_WIDTH)
+#define BOTTOM_GUI_WIDTH  (GAME_VIEW_WIDTH + RIGHT_GUI_WIDTH)
 
-#define SCREEN_WIDTH (GAME_VIEW_WIDTH + RIGHT_GUI_WIDTH)
+#define SCREEN_WIDTH  (GAME_VIEW_WIDTH + RIGHT_GUI_WIDTH)
 #define SCREEN_HEIGHT (GAME_VIEW_HEIGHT + SKILL_BAR_HEIGHT + BOTTOM_GUI_HEIGHT)
 
 /* Quality of life stuff */
@@ -66,15 +66,15 @@
 #endif // _WIN32
 
 #define UNPACK_COLOR(color) color.r, color.g, color.b, color.a
-#define C_WHITE (SDL_Color){255, 255, 255, 255}
-#define C_RED (SDL_Color){255, 0, 0, 255}
-#define C_GREEN (SDL_Color){0, 255, 0, 255}
-#define C_BLUE (SDL_Color){60, 134, 252, 255}
-#define C_LIGHTBLUE (SDL_Color){143, 178, 234, 255}
-#define C_YELLOW (SDL_Color){255, 255, 0, 255}
-#define C_BLACK (SDL_Color){0, 0, 0, 255}
-#define C_PURPLE (SDL_Color){137, 16, 229, 255}
-#define C_GREY (SDL_Color){89, 89, 89, 255}
+#define C_WHITE             (SDL_Color){255, 255, 255, 255}
+#define C_RED               (SDL_Color){255, 0, 0, 255}
+#define C_GREEN             (SDL_Color){0, 255, 0, 255}
+#define C_BLUE              (SDL_Color){60, 134, 252, 255}
+#define C_LIGHTBLUE         (SDL_Color){143, 178, 234, 255}
+#define C_YELLOW            (SDL_Color){255, 255, 0, 255}
+#define C_BLACK             (SDL_Color){0, 0, 0, 255}
+#define C_PURPLE            (SDL_Color){137, 16, 229, 255}
+#define C_GREY              (SDL_Color){89, 89, 89, 255}
 
 // MSVC seems to have min/max defined.
 // Haven't looked into it further.
@@ -88,9 +88,9 @@ typedef enum Direction_t { UP, DOWN, LEFT, RIGHT, INVALID } Direction;
 
 typedef enum GameMode { REGULAR, QUICK, ARCADE } GameMode;
 
-#define CONTROLLER_BTN(xindex, mode) CLIP16(xindex, mode == GAMEPAD_TYPE_XB ? 0 : 16)
+#define CONTROLLER_BTN(xindex, mode)     CLIP16(xindex, mode == GAMEPAD_TYPE_XB ? 0 : 16)
 #define CONTROLLER_TRIGGER(xindex, mode) CLIP16(xindex + (mode == GAMEPAD_TYPE_XB ? 16 : 0), 32)
-#define CONTROLLER_BUMPER(xindex, mode) CLIP16(xindex + (mode == GAMEPAD_TYPE_XB ? 16 : 0), 48)
-#define CONTROLLER_OPT(xindex, mode) CLIP16(xindex + (mode == GAMEPAD_TYPE_PS ? 16 : 0), 64)
+#define CONTROLLER_BUMPER(xindex, mode)  CLIP16(xindex + (mode == GAMEPAD_TYPE_XB ? 16 : 0), 48)
+#define CONTROLLER_OPT(xindex, mode)     CLIP16(xindex + (mode == GAMEPAD_TYPE_PS ? 16 : 0), 64)
 
 #endif // DEFINES_H_
