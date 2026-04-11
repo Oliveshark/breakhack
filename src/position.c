@@ -20,7 +20,7 @@
 #include "position.h"
 #include "defines.h"
 
-#define ROOM_PX_WIDTH (TILE_DIMENSION * MAP_ROOM_WIDTH)
+#define ROOM_PX_WIDTH  (TILE_DIMENSION * MAP_ROOM_WIDTH)
 #define ROOM_PX_HEIGHT (TILE_DIMENSION * MAP_ROOM_HEIGHT)
 
 Position

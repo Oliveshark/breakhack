@@ -17,4 +17,3 @@ uint64_t estimate_cpu_freq(uint64_t test_time);
 #endif
 
 #endif // _RDTSC_H_
-

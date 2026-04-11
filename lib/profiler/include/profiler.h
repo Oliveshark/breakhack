@@ -19,4 +19,3 @@ extern "C" {
 #endif
 
 #endif // _PROFILER_H_
-

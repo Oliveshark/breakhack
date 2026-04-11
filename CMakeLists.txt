@@ -92,22 +92,22 @@ else()
 endif()
 
 if ( MSVC )
-    MESSAGE ( STATUS "Setting MSVC MT switches")
-		string (REPLACE
+	MESSAGE ( STATUS "Setting MSVC MT switches")
+	string (REPLACE
 			"/MDd"
 			"/MTd"
 			CMAKE_C_FLAGS_DEBUG
 			${CMAKE_C_FLAGS_DEBUG}
-    )
-		string (REPLACE
+				)
+	string (REPLACE
 			"/MDd"
 			"/MTd"
 			CMAKE_C_FLAGS_RELEASE
 			${CMAKE_C_FLAGS_RELEASE}
-    )
+				)
 elseif ( WIN32 )
-    set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -mconsole")
-    set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -mwindows")
+	set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -mconsole")
+	set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -mwindows")
 elseif ( GCC AND NOT MINGW )
 	set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
 	set (CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O2")

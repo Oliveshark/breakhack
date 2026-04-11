@@ -20,8 +20,8 @@
 #include "time.h"
 #include "util.h"
 
-#define SECONDS_PER_DAY 86400
-#define SECONDS_PER_HOUR 3600
+#define SECONDS_PER_DAY    86400
+#define SECONDS_PER_HOUR   3600
 #define SECONDS_PER_MINUTE 60
 
 #if defined(_MSC_VER) || defined(__MINGW32__)

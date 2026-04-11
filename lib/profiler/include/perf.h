@@ -11,5 +11,4 @@ uint64_t perf_read_page_fault_count(void);
 
 void perf_close(void);
 
-#endif  // _PERF_H_
-
+#endif // _PERF_H_
