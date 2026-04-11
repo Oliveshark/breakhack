@@ -1,16 +1,18 @@
 #ifndef __MACROS_H_
 #define __MACROS_H_
 
+#ifdef PROFILER
+
 #include "internal/profiler_c.h"
 #include "rdtsc.h"
-
-#ifdef PROFILER
 
 #define PROFILER_SETUP() prof_start();
 
 #define PROFILER_STOP(fp)                                                                                              \
-	prof_stop();                                                                                                   \
-	prof_print(fp);
+	do {                                                                                                           \
+		prof_stop();                                                                                           \
+		prof_print(fp);                                                                                        \
+	} while (0)
 
 #define _NameConcat(A, B) A##B
 #define NameConcat(A, B)  _NameConcat(A, B)
